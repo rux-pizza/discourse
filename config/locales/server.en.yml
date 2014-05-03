@@ -385,9 +385,9 @@ en:
       description: 'Bookmark this post'
       long_form: 'bookmarked this post'
     like:
-      title: 'Like'
-      description: 'Like this post'
-      long_form: 'liked this'
+      title: 'Fuck'
+      description: 'Give a fuck'
+      long_form: 'gave a fuck'
     vote:
       title: 'Vote'
       description: 'Vote for this post'
@@ -447,9 +447,9 @@ en:
       xaxis: "Day"
       yaxis: "Number of new posts"
     likes:
-      title: "Likes"
+      title: "Fucks"
       xaxis: "Day"
-      yaxis: "Number of new likes"
+      yaxis: "Number of new fucks"
     flags:
       title: "Flags"
       xaxis: "Day"
@@ -632,7 +632,7 @@ en:
     use_https: "Should the full url for the site (Discourse.base_url) be http or https? DO NOT ENABLE THIS UNLESS HTTPS IS ALREADY SET UP AND WORKING!"
     summary_score_threshold: "The minimum score of a post to be included in the 'summary'"
     summary_posts_required: "Minimum posts in a topic before 'summary' mode is enabled"
-    summary_likes_required: "Minimum likes in a topic before the 'summary' mode will be enabled"
+    summary_likes_required: "Minimum fucks in a topic before the 'summary' mode will be enabled"
     summary_percent_filter: "When a user clicks summary, show the top % of posts"
     enable_private_messages: "Allow basic (1) trust level users to create private messages and reply to private messages"
 
@@ -656,7 +656,7 @@ en:
     flag_sockpuppets: "If a new user (i.e., registered in the last 24 hours) who started a topic and a new user who replies in that topic are at the same IP address, both their posts will automatically be flagged as spam."
 
     traditional_markdown_linebreaks: "Use traditional linebreaks in Markdown, which require two trailing spaces for a linebreak"
-    post_undo_action_window_mins: "Number of seconds users are allowed to reverse actions on a post (like, flag, etc)"
+    post_undo_action_window_mins: "Number of seconds users are allowed to reverse actions on a post (lemon, flag, etc)"
     must_approve_users: "Admins must approve all users before they gain access"
     ga_tracking_code: "Google analytics (ga.js) tracking code code, eg: UA-12345678-9; see http://google.com/analytics"
     ga_domain_name: "Google analytics (ga.js) domain name, eg: mysite.com; see http://google.com/analytics"
@@ -740,7 +740,7 @@ en:
     rate_limit_create_topic: "After creating a topic, users must wait this many seconds before they can create another topic"
     rate_limit_create_post: "After posting, users must wait this many seconds before they can create another post"
 
-    max_likes_per_day: "Maximum number of likes per user per day"
+    max_likes_per_day: "Maximum number of fucks per user per day"
     max_flags_per_day: "Maximum number of flags per user per day"
     max_bookmarks_per_day: "Maximum number of bookmarks per user per day"
     max_edits_per_day: "Maximum number of edits per user per day"
@@ -772,8 +772,8 @@ en:
     regular_requires_read_posts: "How many posts a basic user must read before promotion to regular (2) trust level"
     regular_requires_time_spent_mins: "How many minutes a basic user must read posts before promotion to regular (2) trust level"
     regular_requires_days_visited: "How many days a basic user must visit the site before promotion to regular (2) trust level"
-    regular_requires_likes_received: "How many likes a basic user must receive before promotion to regular (2) trust level"
-    regular_requires_likes_given: "How many likes a basic user must cast before promotion to regular (2) trust level"
+    regular_requires_likes_received: "How many fucks a basic user must receive before promotion to regular (2) trust level"
+    regular_requires_likes_given: "How many fucks a basic user must cast before promotion to regular (2) trust level"
     regular_requires_topic_reply_count: "How many topics a basic user must reply to before promotion to regular (2) trust level"
 
     min_trust_to_create_topic: "The minimum trust level required to create a new topic."
@@ -820,7 +820,7 @@ en:
     newuser_spam_host_threshold: "How many times a new user can post a link to the same host within their `newuser_spam_host_posts` posts before being considered spam."
 
     white_listed_spam_host_domains: "A pipe-delimited list of domains excluded from spam host testing, new users will be able to create an unrestricted count of posts with links to this domain"
-    staff_like_weight: "Extra weighting factor given to likes when performed by staff."
+    staff_like_weight: "Extra weighting factor given to fucks when performed by staff."
 
     reply_by_email_enabled: "Enable replying to topics via email"
     reply_by_email_address: "Template for reply by email incoming email address, for example: %{reply_key}@reply.example.com or replies+%{reply_key}@example.com"
@@ -888,7 +888,7 @@ en:
 
   notification_types:
     mentioned: "%{display_username} mentioned you in %{link}"
-    liked: "%{display_username} liked your post in %{link}"
+    liked: "%{display_username} gave you a fuck in %{link}"
     replied: "%{display_username} replied to your post in %{link}"
     quoted: "%{display_username} quoted your post in %{link}"
     edited: "%{display_username} edited your post in %{link}"
@@ -1147,7 +1147,7 @@ en:
 
         ### Look at that post!
 
-        To let someone know that you enjoyed their post, use the like ♥ button at the bottom of the post. If you see a problem with a post, don't hesitate to use the flag button and privately let our staff know about it.
+        To let someone know that you enjoyed their post, use the give a fuck button at the bottom of the post. If you see a problem with a post, don't hesitate to use the flag button and privately let our staff know about it.
 
         ### Where am I?
 

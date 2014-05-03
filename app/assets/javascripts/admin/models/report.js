@@ -94,7 +94,7 @@ Discourse.Report = Discourse.Model.extend({
     case 'flags':
       return 'fa-flag';
     case 'likes':
-      return 'fa-heart';
+      return 'fa-lemon-o';
     default:
       return null;
     }

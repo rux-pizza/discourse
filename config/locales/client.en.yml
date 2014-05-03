@@ -199,8 +199,8 @@ en:
         everyone: "Everyone"
 
     user_action_groups:
-      "1": "Likes Given"
-      "2": "Likes Received"
+      "1": "Fucks Given"
+      "2": "Fucks Received"
       "3": "Bookmarks"
       "4": "Topics"
       "5": "Posts"
@@ -601,7 +601,7 @@ en:
       replied: "<i title='replied' class='fa fa-reply'></i> {{username}} {{link}}"
       posted: "<i title='replied' class='fa fa-reply'></i> {{username}} {{link}}"
       edited: "<i title='edited' class='fa fa-pencil'></i> {{username}} {{link}}"
-      liked: "<i title='liked' class='fa fa-heart'></i> {{username}} {{link}}"
+      liked: "<i title='liked' class='fa fa-lemon-o'></i> {{username}} {{link}}"
       private_message: "<i class='fa fa-envelope-o' title='private message'></i> {{username}} {{link}}"
       invited_to_private_message: "<i class='fa fa-envelope-o' title='private message'></i> {{username}} {{link}}"
       invitee_accepted: "<i title='accepted your invitation' class='fa fa-sign-in'></i> {{username}} accepted your invitation"
@@ -973,14 +973,14 @@ en:
           inappropriate: "Flag it too"
           custom_flag: "Flag it too"
           bookmark: "Bookmark it too"
-          like: "Like it too"
+          like: "Give a fuck too"
           vote: "Vote for it too"
         undo:
           off_topic: "Undo flag"
           spam: "Undo flag"
           inappropriate: "Undo flag"
           bookmark: "Undo bookmark"
-          like: "Undo like"
+          like: "Take your fuck back"
           vote: "Undo vote"
         people:
           off_topic: "{{icons}} marked this as off-topic"
@@ -991,7 +991,7 @@ en:
           notify_user: "{{icons}} sent a private message"
           notify_user_with_url: "{{icons}} sent a <a href='{{postUrl}}'>private message</a>"
           bookmark: "{{icons}} bookmarked this"
-          like: "{{icons}} liked this"
+          like: "{{icons}} gave a fuck"
           vote: "{{icons}} voted for this"
         by_you:
           off_topic: "You flagged this as off-topic"
@@ -1000,7 +1000,7 @@ en:
           notify_moderators: "You flagged this for moderation"
           notify_user: "You sent a private message to this user"
           bookmark: "You bookmarked this post"
-          like: "You liked this"
+          like: "You gave a fuck"
           vote: "You voted for this post"
         by_you_and_others:
           off_topic:
@@ -1022,8 +1022,8 @@ en:
             one: "You and 1 other bookmarked this post"
             other: "You and {{count}} other people bookmarked this post"
           like:
-            one: "You and 1 other liked this"
-            other: "You and {{count}} other people liked this"
+            one: "You and 1 other gave a fuck"
+            other: "You and {{count}} other people gave a fuck"
           vote:
             one: "You and 1 other voted for this post"
             other: "You and {{count}} other people voted for this post"
@@ -1047,8 +1047,8 @@ en:
             one: "1 person bookmarked this post"
             other: "{{count}} people bookmarked this post"
           like:
-            one: "1 person liked this"
-            other: "{{count}} people liked this"
+            one: "A single fuck was given"
+            other: "{{count}} people gave a fuck"
           vote:
             one: "1 person voted for this post"
             other: "{{count}} people voted for this post"
@@ -1178,8 +1178,8 @@ en:
     replies: "Replies"
     views_long: "this topic has been viewed {{number}} times"
     activity: "Activity"
-    likes: "Likes"
-    likes_long: "there are {{number}} likes in this topic"
+    likes: "Fucks"
+    likes_long: "{{number}} fucks were given in this topic"
     users: "Users"
     category_title: "Category"
     history: "History"
@@ -1639,7 +1639,7 @@ en:
         reputation: Reputation
         permissions: Permissions
         activity: Activity
-        like_count: Likes Received
+        like_count: Fucks Received
         private_topics_count: Private Topics
         posts_read_count: Posts Read
         post_count: Posts Created
@@ -1785,7 +1785,7 @@ en:
         share_post: '<b>shift s</b> Share post'
         reply_topic: '<b>r</b> Reply to topic'
         reply_post: '<b>shift r</b> Reply to post'
-        like: '<b>l</b> Like post'
+        like: '<b>l</b> Give a fuck'
         flag: '<b>!</b> Flag post'
         bookmark: '<b>b</b> Bookmark post'
         edit: '<b>e</b> Edit post'

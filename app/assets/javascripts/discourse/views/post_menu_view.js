@@ -132,7 +132,7 @@ Discourse.PostMenuView = Discourse.View.extend({
     if (!post.get('actionByName.like.can_act')) return;
     buffer.push("<button title=\"" +
                 (I18n.t("post.controls.like")) +
-                "\" data-action=\"like\" class='like'><i class=\"fa fa-heart\"></i></button>");
+                "\" data-action=\"like\" class='like'><i class=\"fa fa-lemon-o\"></i></button>");
   },
 
   clickLike: function() {
