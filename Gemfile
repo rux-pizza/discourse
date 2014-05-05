@@ -223,6 +223,9 @@ gem 'simple-rss', require: false
 gem 'gctools', require: false, platform: :mri_21
 gem 'stackprof', require: false, platform: :mri_21
 
+# Disabled as it conflicts with our /admin/logs routes
+# gem 'logster'
+
 # perftools only works on 1.9 atm
 group :profile do
   # travis refuses to install this, instead of fuffing, just avoid it for now
