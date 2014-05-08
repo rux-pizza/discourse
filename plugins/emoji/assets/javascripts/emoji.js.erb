@@ -5,41 +5,41 @@
   function imageFor(code) {
     if (emoji.indexOf(code) !== -1) {
       var url = Discourse.getURL('/plugins/emoji/images/' + code + '.png');
-      return ['img', {href: url, title: ':' + code + ':', 'class': 'emoji', alt: code}];
+      return ['img', {href: url, title: '&' + code + '&', 'class': 'emoji', alt: code}];
     }
   }
 
   // Also support default emotions
   var translations = {
-    ':)'   : 'smile',
-    ':-)'   : 'smile',
-    ':('   : 'frowning',
-    ':-('   : 'frowning',
-    ';)'   : 'wink',
-    ';-)'   : 'wink',
-    ':\'(' : 'cry',
-    ':\'-(' : 'cry',
-    ':-\'(' : 'cry',
-    ':p'   : 'stuck_out_tongue',
-    ':P'   : 'stuck_out_tongue',
-    ':-P'   : 'stuck_out_tongue',
-    ':O'   : 'open_mouth',
-    ':-O'   : 'open_mouth',
-    ':D'   : 'smiley',
-    ':-D'   : 'smiley',
-    ':|'   : 'expressionless',
-    ':-|'   : 'expressionless',
-    ";P"   : 'stuck_out_tongue_winking_eye',
-    ";-P"   : 'stuck_out_tongue_winking_eye',
-    ';)'   : 'wink',
-    ';-)'   : 'wink',
-    ":$"   : 'blush',
-    ":-$"   : 'blush'
+    // ':)'   : 'smile',
+    // ':-)'   : 'smile',
+    // ':('   : 'frowning',
+    // ':-('   : 'frowning',
+    // ';)'   : 'wink',
+    // ';-)'   : 'wink',
+    // ':\'(' : 'cry',
+    // ':\'-(' : 'cry',
+    // ':-\'(' : 'cry',
+    // ':p'   : 'stuck_out_tongue',
+    // ':P'   : 'stuck_out_tongue',
+    // ':-P'   : 'stuck_out_tongue',
+    // ':O'   : 'open_mouth',
+    // ':-O'   : 'open_mouth',
+    // ':D'   : 'smiley',
+    // ':-D'   : 'smiley',
+    // ':|'   : 'expressionless',
+    // ':-|'   : 'expressionless',
+    // ";P"   : 'stuck_out_tongue_winking_eye',
+    // ";-P"   : 'stuck_out_tongue_winking_eye',
+    // ';)'   : 'wink',
+    // ';-)'   : 'wink',
+    // ":$"   : 'blush',
+    // ":-$"   : 'blush'
   };
 
   var translationsWithColon = {};
   Object.keys(translations).forEach(function (t) {
-    if (t[0] === ':') {
+    if (t[0] === '&') {
       translationsWithColon[t] = translations[t];
     } else {
       var replacement = translations[t];
@@ -59,8 +59,8 @@
                                            }).join("|")
                                          );
 
-  Discourse.Dialect.registerInline(':', function(text, match, prev) {
-    var endPos = text.indexOf(':', 1),
+  Discourse.Dialect.registerInline('&', function(text, match, prev) {
+    var endPos = text.indexOf('&', 1),
         firstSpace = text.search(/\s/),
         contents;
 
@@ -112,11 +112,11 @@
 
       $('#wmd-input').autocomplete({
         template: template,
-        key: ":",
-        transformComplete: function(v){ return v + ":"; },
+        key: "&",
+        transformComplete: function(v){ return v + "&"; },
         dataSource: function(term){
 
-          var full = ":" + term;
+          var full = "&" + term;
           term = term.toLowerCase();
 
           if (term === "") {
