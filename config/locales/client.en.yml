@@ -142,10 +142,10 @@ en:
       title: "Suggested Topics"
 
     bookmarks:
-      not_logged_in: "Sorry, you must be logged in to bookmark posts."
-      created: "You've bookmarked this post."
-      not_bookmarked: "You've read this post; click to bookmark it."
-      last_read: "This is the last post you've read; click to bookmark it."
+      not_logged_in: "sorry, you must be logged in to bookmark posts"
+      created: "you've bookmarked this post"
+      not_bookmarked: "you've read this post; click to bookmark it"
+      last_read: "this is the last post you've read; click to bookmark it"
 
     new_topics_inserted: "{{count}} new topics."
     show_new_topics: "Click to show."
@@ -844,7 +844,7 @@ en:
         error: "Sorry, there was an error inviting that user."
 
       invite_reply:
-        title: 'Invite Friends'
+        title: 'Invite'
         action: 'Email Invite'
         help: 'send invitations to friends so they can reply to this topic with a single click'
         to_topic: "We'll send a brief email allowing your friend to immediately reply to this topic by clicking a link, no login required."
@@ -923,6 +923,7 @@ en:
       gap:
         one: "1 post hidden"
         other: "{{count}} posts hidden"
+      more_links: "{{count}} more..."
 
       has_replies:
         one: "Reply"

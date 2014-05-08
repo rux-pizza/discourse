@@ -863,7 +863,7 @@ en:
     suppress_uncategorized_badge: "Don't show the badge for uncategorized topics in topic lists"
     min_posts_for_search_in_topic: "Disable search within topic if topics have less than minimum number posts"
 
-    global_notice: "Display a global banner to all users of the site, change to blank to hide it (HTML is allowed)"
+    global_notice: "Display an URGENT, EMERGENCY global banner notice to all visitors, change to blank to hide it (HTML allowed)."
 
     enable_names: "Allow users to show their full names"
     display_name_on_posts: "Also show a user's full name on their posts"
@@ -1058,9 +1058,9 @@ en:
 
       - See what's new in the [GitHub changelog](https://github.com/discourse/discourse/commits/master).
 
-      - Upgrade by visiting [%{base_url}/admin/docker](%{base_url}/admin/docker), refreshing the page a few times, and pressing the "Upgrade Discourse" button.
+      - Upgrade by visiting [%{base_url}/admin/docker](%{base_url}/admin/docker) and pressing the "Upgrade" button.
 
-      - Visit http://meta.discourse.org for news, discussion, and support for Discourse.
+      - Visit [meta.discourse.org](http://meta.discourse.org) for news, discussion, and support for Discourse.
 
   new_version_mailer_with_notes:
     subject_template: "[%{site_name}] update available"
@@ -1072,9 +1072,9 @@ en:
 
       - See what's new in the [GitHub changelog](https://github.com/discourse/discourse/commits/master).
 
-      - Upgrade by visiting [%{base_url}/admin/docker](%{base_url}/admin/docker), refreshing the page a few times, and pressing the "Upgrade Discourse" button.
+      - Upgrade by visiting [%{base_url}/admin/docker](%{base_url}/admin/docker), and pressing the "Upgrade" button.
 
-      - Visit http://meta.discourse.org for news, discussion, and support for Discourse.
+      - Visit [meta.discourse.org](http://meta.discourse.org) for news, discussion, and support for Discourse.
 
       ### Release notes
 
@@ -1380,8 +1380,8 @@ en:
       click_here: "click here"
       from: "%{site_name} digest"
       read_more: "Read More"
-      more_topics: "%{new_topics_since_seen} new topics posted since you last visited on %{last_seen_at}."
-      more_topics_category: "%{new_topics_since_seen} new topics posted in these categories since you last visited on %{last_seen_at}:"
+      more_topics: "There were %{new_topics_since_seen} new topics posted since you last visited on %{last_seen_at}."
+      more_topics_category: "There were %{new_topics_since_seen} new topics posted in these categories since you last visited on %{last_seen_at}:"
 
       posts:
         one: "1 post"

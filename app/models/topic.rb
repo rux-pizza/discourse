@@ -108,14 +108,12 @@ class Topic < ActiveRecord::Base
   attr_accessor :include_last_poster
 
   # The regular order
-  scope :topic_list_order, lambda { order('topics.bumped_at desc') }
+  scope :topic_list_order, -> { order('topics.bumped_at desc') }
 
   # Return private message topics
-  scope :private_messages, lambda {
-    where(archetype: Archetype.private_message)
-  }
+  scope :private_messages, -> { where(archetype: Archetype.private_message) }
 
-  scope :listable_topics, lambda { where('topics.archetype <> ?', [Archetype.private_message]) }
+  scope :listable_topics, -> { where('topics.archetype <> ?', [Archetype.private_message]) }
 
   scope :by_newest, -> { order('topics.created_at desc, topics.id desc') }
 
@@ -123,16 +121,15 @@ class Topic < ActiveRecord::Base
 
   scope :created_since, lambda { |time_ago| where('created_at > ?', time_ago) }
 
-  scope :secured, lambda {|guardian=nil|
+  scope :secured, lambda { |guardian=nil|
     ids = guardian.secure_category_ids if guardian
 
     # Query conditions
-    condition =
-      if ids.present?
-        ["NOT c.read_restricted or c.id in (:cats)", cats: ids]
-      else
-        ["NOT c.read_restricted"]
-      end
+    condition = if ids.present?
+      ["NOT c.read_restricted or c.id in (:cats)", cats: ids]
+    else
+      ["NOT c.read_restricted"]
+    end
 
     where("category_id IS NULL OR category_id IN (
            SELECT c.id FROM categories c
@@ -447,7 +444,7 @@ class Topic < ActiveRecord::Base
   end
 
   def changed_to_category(cat)
-    return true if cat.blank? || Category.where(topic_id: id).first.present?
+    return true if cat.blank? || Category.find_by(topic_id: id).present?
 
     Topic.transaction do
       old_category = category
@@ -502,9 +499,9 @@ class Topic < ActiveRecord::Base
   def change_category(name)
     # If the category name is blank, reset the attribute
     if name.blank?
-      cat = Category.where(id: SiteSetting.uncategorized_category_id).first
+      cat = Category.find_by(id: SiteSetting.uncategorized_category_id)
     else
-      cat = Category.where(name: name).first
+      cat = Category.find_by(name: name)
     end
 
     return true if cat == category
@@ -514,9 +511,9 @@ class Topic < ActiveRecord::Base
 
 
   def remove_allowed_user(username)
-    user = User.where(username: username).first
+    user = User.find_by(username: username)
     if user
-      topic_user = topic_allowed_users.where(user_id: user.id).first
+      topic_user = topic_allowed_users.find_by(user_id: user.id)
       if topic_user
         topic_user.destroy
       else
@@ -559,7 +556,7 @@ class Topic < ActiveRecord::Base
   end
 
   def grant_permission_to_user(lower_email)
-    user = User.where(email: lower_email).first
+    user = User.find_by(email: lower_email)
     topic_allowed_users.create!(user_id: user.id)
   end
 
