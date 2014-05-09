@@ -42,10 +42,7 @@ class TextSentinel
 
   def valid?
     @text.present? &&
-    seems_meaningful? &&
-    seems_pronounceable? &&
-    seems_unpretentious? &&
-    seems_quiet?
+    seems_meaningful?
   end
 
   private
