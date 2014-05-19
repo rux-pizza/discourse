@@ -202,9 +202,11 @@ class TopicsController < ApplicationController
     username_or_email = params[:user] ? fetch_username : fetch_email
 
     topic = Topic.find_by(id: params[:topic_id])
-    guardian.ensure_can_invite_to!(topic)
 
-    if topic.invite(current_user, username_or_email)
+    group_ids = Group.lookup_group_ids(params)
+    guardian.ensure_can_invite_to!(topic,group_ids)
+
+    if topic.invite(current_user, username_or_email, group_ids)
       user = User.find_by_username_or_email(username_or_email)
       if user
         render_json_dump BasicUserSerializer.new(user, scope: guardian, root: 'user')

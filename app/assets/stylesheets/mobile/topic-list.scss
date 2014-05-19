@@ -44,7 +44,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border-top: 1px solid scale-color($primary, $lightness: 90%);
+  border-top: 1px solid scale-color-diff();
 
   > tbody > tr {
     background-color: $secondary;
@@ -69,6 +69,7 @@
     line-height: 1.25;
     text-align: left;
     vertical-align: middle;
+    color: scale-color($primary, $lightness: 50%);
     &:first-of-type {
       padding-left: 5px;
     }
@@ -77,7 +78,7 @@
     }
   }
   th {
-    color: $primary;
+    color: scale-color($primary, $lightness: 50%);
     font-weight: bold;
     font-size: 13px;
     &:first-of-type {
@@ -88,12 +89,12 @@
     }
   }
   td {
-    color: $primary;
     font-size: 14px;
   }
   .main-link {
     font-size: 16px;
-
+      a {color: $primary;}
+      a:visited {color: scale-color($primary, $lightness: 50%);}
     i.score {
       color: $success;
       cursor: pointer;
@@ -120,6 +121,10 @@
   .badge-notification {
     position: relative;
     top: -1px;
+    color: $tertiary !important;
+    /* this important is a terrible hack but the badge colors are
+    being overridden in a way I can't figure out on mobile, appears
+    to be a CSS precedence problem */
   }
 
   .topic-item-stats {
@@ -240,7 +245,7 @@
     display: none;
   }
   > footer {
-    border-bottom: 1px solid scale-color($primary, $lightness: 90%);
+    border-bottom: 1px solid scale-color-diff();
     border-top: 0;
     padding: 7px 10px;
     background-color: scale-color($primary, $lightness: 95%);
@@ -304,7 +309,7 @@
 .list-controls {
   .home {
     color: $primary;
-    background-color: scale-color($primary, $lightness: 90%);
+    background-color: scale-color-diff();
   }
 
   .badge-category {
@@ -315,7 +320,7 @@
     float: left;
   }
   .category-dropdown-button {
-    padding: 4px 10px 3px 8px;
+    padding: 4px 10px 4px 8px;
     border-left: 1px solid rgba(0, 0, 0, 0.15);
     font-size: 16px;
     width: 10px;
@@ -397,7 +402,7 @@ span.posted {
   margin: 1px 0 0;
   list-style: none;
   background-color: $secondary;
-  border: 1px solid scale-color($primary, $lightness: 90%);;
+  border: 1px solid scale-color-diff();
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
@@ -417,9 +422,9 @@ span.posted {
 .dropdown-menu li > a:hover,
 .dropdown-menu .active > a,
 .dropdown-menu .active > a:hover {
-  color: $secondary;
+  color: $tertiary;
   text-decoration: none;
-  background-color: $tertiary;
+  background-color: scale-color($tertiary, $lightness: 75%);
 }
 .open > .dropdown-menu {
   display: block;
@@ -438,7 +443,7 @@ ol.category-breadcrumb {
   display: block;
   float: left;
   list-style: none;
-  margin: 0 10px 0 0;
+  margin: 5px 10px 0 0;
   padding: 0;
 
   li {
@@ -451,9 +456,8 @@ ol.category-breadcrumb {
   overflow-x: hidden;
   overflow-y: scroll;
   position: absolute;
-  border: 1px solid scale-color($primary, $lightness: 90%);;
+  border: 1px solid scale-color-diff();;
   background-color: $secondary;
-  width: 200px;
   height: 200px;
   padding: 8px 5px 0 7px;
   z-index: 100;
@@ -468,5 +472,11 @@ ol.category-breadcrumb {
 
   div {
     margin-bottom: 10px;
+  }
+}
+
+.top-lists {margin-left: 15px;
+  #topic-list-bottom {
+    margin: 20px 0 0 0;
   }
 }

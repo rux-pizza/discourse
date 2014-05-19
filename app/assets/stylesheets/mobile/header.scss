@@ -9,8 +9,8 @@
   position: absolute;
   top: 0;
   z-index: 1001;
-  background-color: $secondary;
-  box-shadow: 0 0 3px rgba($primary, .6);
+  background-color: $header_background;
+  box-shadow: 0 0 3px rgba($header_primary, .6);
 
   .docked & {
     position: fixed;
@@ -47,7 +47,7 @@
     float: left;
     display: none;
     a {
-      color: darken($primary, 40%);
+      color: darken($header_primary, 40%);
       font-size: 14px;
       line-height: 40px;
     }
@@ -69,7 +69,7 @@
     .icon {
       display: block;
       padding: 4px;
-      color: scale-color($primary, $lightness: 50%);
+      color: scale-color($header_primary, $lightness: 50%);
       text-decoration: none;
       cursor: pointer;
       &:hover {
@@ -85,8 +85,8 @@
       position: relative;
       color: scale-color($primary, $lightness: 75%);
       background-color: $secondary;
+      border: 1px solid scale-color-diff();
       cursor: default;
-      @include box-shadow((6px 0 6px -6px rgba($primary, 0.2), -6px 0 6px -6px rgba($primary, 0.2), inset 0 13px 13px -13px rgba($primary, 0.1)));
       &:after {
         display: block;
         position: absolute;
@@ -96,7 +96,7 @@
         width: 100%;
         height: 0;
         content: "";
-        border-top: 1px solid scale-color($primary, $lightness: 90%);
+        border-top: 1px solid $secondary;
       }
     }
     [class^="fa fa-"] {
@@ -114,6 +114,10 @@
       top: -9px;
       z-index: 1;
       margin-left: 0;
+      color: $tertiary !important;
+      /* this !important is a terrible hack but the badge colors are
+      being overridden in a way I can't figure out on mobile, appears
+      to be a CSS precedence problem */
     }
     .unread-notifications {
       right: -4px;
@@ -122,12 +126,15 @@
     }
     .unread-private-messages {
       left: -4px;
-      background-color: $success;
     }
   }
   .flagged-posts {
     background-color: $danger;
   }
+}
+/* needs to be global, used in user-drop down and user page too */
+.unread-private-messages {
+  background-color: $success;
 }
 
 #main {
@@ -149,7 +156,7 @@
   right: 0;
   z-index: 1100;
   margin-top: -1px;
-  border: 1px solid scale-color($primary, $lightness: 90%);;
+  border: 1px solid scale-color-diff();;
   background-color: $secondary;
   @include box-shadow(0 1px 1px rgba($primary, 0.2));
 
@@ -193,6 +200,13 @@
     }
     .none {
       padding: 5px;
+    }
+    .loading {
+      padding: 10px;
+      display: block;
+      color: #777;
+      font-size: 24px;
+      text-align: center;
     }
   }
 

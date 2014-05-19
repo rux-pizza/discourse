@@ -22,6 +22,8 @@ class Topic < ActiveRecord::Base
   def_delegator :notifier, :muted!, :notify_muted!
   def_delegator :notifier, :toggle_mute, :toggle_mute
 
+  attr_accessor :allowed_user_ids
+
   def self.max_sort_order
     2**31 - 1
   end
@@ -103,6 +105,7 @@ class Topic < ActiveRecord::Base
   # When we want to temporarily attach some data to a forum topic (usually before serialization)
   attr_accessor :user_data
   attr_accessor :posters  # TODO: can replace with posters_summary once we remove old list code
+  attr_accessor :participants
   attr_accessor :topic_list
   attr_accessor :meta_data
   attr_accessor :include_last_poster
@@ -523,7 +526,7 @@ class Topic < ActiveRecord::Base
   end
 
   # Invite a user to the topic by username or email. Returns success/failure
-  def invite(invited_by, username_or_email)
+  def invite(invited_by, username_or_email, group_ids=nil)
     if private_message?
       # If the user exists, add them to the topic.
       user = User.find_by_username_or_email(username_or_email)
@@ -541,14 +544,14 @@ class Topic < ActiveRecord::Base
 
     if username_or_email =~ /^.+@.+$/
       # NOTE callers expect an invite object if an invite was sent via email
-      invite_by_email(invited_by, username_or_email)
+      invite_by_email(invited_by, username_or_email, group_ids)
     else
       false
     end
   end
 
-  def invite_by_email(invited_by, email)
-    Invite.invite_by_email(email, invited_by, self)
+  def invite_by_email(invited_by, email, group_ids=nil)
+    Invite.invite_by_email(email, invited_by, self, group_ids)
   end
 
   def email_already_exists_for?(invite)
@@ -594,9 +597,12 @@ class Topic < ActiveRecord::Base
     end
   end
 
-
   def posters_summary(options = {})
     @posters_summary ||= TopicPostersSummary.new(self, options).summary
+  end
+
+  def participants_summary(options = {})
+    @participants_summary ||= TopicParticipantsSummary.new(self, options).summary
   end
 
   # Enable/disable the star on the topic

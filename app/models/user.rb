@@ -447,6 +447,7 @@ class User < ActiveRecord::Base
     transaction do
       self.save!
       Group.user_trust_level_change!(self.id, self.trust_level)
+      BadgeGranter.update_badges(self, trust_level: trust_level)
     end
   end
 
@@ -777,6 +778,9 @@ end
 #  primary_group_id              :integer
 #  locale                        :string(10)
 #  profile_background            :string(255)
+#  email_hash                    :string(255)
+#  registration_ip_address       :inet
+#  last_redirected_to_top_at     :datetime
 #
 # Indexes
 #

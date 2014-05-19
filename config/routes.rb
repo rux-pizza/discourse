@@ -214,6 +214,7 @@ Discourse::Application.routes.draw do
   post "uploads" => "uploads#create"
 
   get "posts/by_number/:topic_id/:post_number" => "posts#by_number"
+  put "posts/by_number/:topic_id/:post_number/bookmarks/remove" => "posts#remove_bookmark_by_number"
   get "posts/:id/reply-history" => "posts#reply_history"
 
   resources :groups do
@@ -224,6 +225,7 @@ Discourse::Application.routes.draw do
 
   resources :posts do
     put "bookmark"
+    put "wiki"
     get "replies"
     get "revisions/:revision" => "posts#revisions"
     put "recover"
@@ -362,6 +364,8 @@ Discourse::Application.routes.draw do
   get "draft" => "draft#show"
   post "draft" => "draft#update"
   delete "draft" => "draft#destroy"
+
+  get "cdn_asset/:site/*path" => "static#cdn_asset", format: false
 
   get "robots.txt" => "robots_txt#index"
 

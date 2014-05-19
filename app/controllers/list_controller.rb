@@ -252,11 +252,10 @@ class ListController < ApplicationController
     end
 
     @category = Category.query_category(slug_or_id, parent_category_id)
+    raise Discourse::NotFound.new if !@category
+
     @description_meta = @category.description
-
     guardian.ensure_can_see!(@category)
-
-    raise Discourse::NotFound.new if @category.blank?
   end
 
   def build_topic_list_options
@@ -315,7 +314,7 @@ class ListController < ApplicationController
     topic_query = TopicQuery.new(current_user, options)
 
     if current_user.present?
-      periods = [ListController.best_period_for(current_user.previous_visit_at)]
+      periods = [ListController.best_period_for(current_user.previous_visit_at, options[:category])]
     else
       periods = TopTopic.periods
     end
@@ -325,9 +324,13 @@ class ListController < ApplicationController
     top
   end
 
-  def self.best_period_for(previous_visit_at)
-    ListController.best_periods_for(previous_visit_at).each do |period|
-      return period if TopTopic.where("#{period}_score > 0").count >= SiteSetting.topics_per_period_in_top_page
+  def self.best_period_for(previous_visit_at, category_id=nil)
+    best_periods_for(previous_visit_at).each do |period|
+      top_topics = TopTopic.where("#{period}_score > 0")
+      if category_id
+        top_topics = top_topics.joins(:topic).where("topics.category_id = ?", category_id)
+      end
+      return period if top_topics.count >= SiteSetting.topics_per_period_in_top_page
     end
     # default period is yearly
     :yearly

@@ -8,8 +8,8 @@
   top: 0;
   left: 0;
   z-index: 1000;
-  box-shadow: 0 2px 4px -2px rgba($primary, .25);
-  background-color: $secondary;
+  box-shadow: 0 2px 4px -2px rgba($header_primary, .25);
+  background-color: $header_background;
   padding-top: 3px;
   .docked & {
     position: fixed;
@@ -42,7 +42,7 @@
   .current-username {
     float: left;
     a {
-      color: $primary;
+      color: $header_primary;
       font-size: 14px;
       display:block;
       margin-top: 10px;
@@ -65,7 +65,7 @@
     .icon {
       display: block;
       padding: 3px;
-      color: scale-color($primary, $lightness: 50%);
+      color: scale-color($header_primary, $lightness: 50%);
       text-decoration: none;
       cursor: pointer;
       border-top: 1px solid transparent;
@@ -75,14 +75,14 @@
 
       &:hover {
         color: $primary;
-        background-color:  scale-color($primary, $lightness: 90%);
+        background-color:  scale-color-diff();
         border-top: 1px solid transparent;
         border-left: 1px solid transparent;
         border-right: 1px solid transparent;
       }
       &:active {
         color: $primary;
-        background-color: scale-color($primary, $lightness: 90%);
+        background-color: scale-color-diff();
       }
     }
     .active .icon {
@@ -90,9 +90,9 @@
       color: #7b7b7b;
       background-color: $secondary;
       cursor: default;
-      border-top: 1px solid scale-color($primary, $lightness: 90%);
-      border-left: 1px solid scale-color($primary, $lightness: 90%);
-      border-right: 1px solid scale-color($primary, $lightness: 90%);
+      border-top: 1px solid scale-color-diff();
+      border-left: 1px solid scale-color-diff();
+      border-right: 1px solid scale-color-diff();
       &:after {
         display: block;
         position: absolute;
@@ -130,13 +130,18 @@
     }
     .unread-private-messages {
       left: -4px;
-      background-color: $success;
     }
   }
   .flagged-posts {
     background-color: $danger;
   }
 }
+
+/* needs to be global, used in user-drop down and user page too */
+.unread-private-messages {
+  background-color: $success;
+}
+
 
 #main {
   position: relative;
@@ -158,7 +163,7 @@
   right: 0;
   z-index: 1100;
   overflow: auto;
-  border: 1px solid scale-color($primary, $lightness: 90%);
+  border: 1px solid scale-color-diff();
   background-color: $secondary;
   @include box-shadow(0 2px 2px rgba($primary, .4));
 
@@ -177,9 +182,9 @@
     }
   }
   .heading {
-    border-top: 1px solid scale-color($primary, $lightness: 90%);
+    border-top: 1px solid scale-color-diff();
 
-    border-bottom: 1px solid scale-color($primary, $lightness: 90%);
+    border-bottom: 1px solid scale-color-diff();
     color: darken($primary, 40%);
     font-weight: bold;
     font-size: 12px;
@@ -203,6 +208,13 @@
     }
     .none {
       padding: 5px;
+    }
+    .loading {
+      padding: 10px;
+      display: block;
+      color: scale-color($primary, $lightness: 50%);
+      font-size: 24px;
+      text-align: center;
     }
   }
 
