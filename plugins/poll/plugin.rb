@@ -144,18 +144,24 @@ end
 # Poll UI.
 register_asset "javascripts/controllers/poll.js.es6"
 register_asset "javascripts/discourse/templates/poll.js.handlebars"
-register_asset "javascripts/poll_ui.js"
+register_asset "javascripts/initializers/poll.js.es6"
 register_asset "javascripts/poll_bbcode.js", :server_side
 
 register_css <<CSS
 
 .poll-ui table {
   margin-bottom: 5px;
+  margin-left: 20px;
 }
 
 .poll-ui tr {
   cursor: pointer;
 }
+
+.poll-ui button:first-of-type {
+  margin-left: 20px;
+}
+
 
 .poll-ui td.radio input {
   margin-left: -10px !important;
@@ -178,12 +184,12 @@ register_css <<CSS
   background-color: #FFFFB3;
 }
 
-.poll-ui button {
-  border: none;
-}
-
 .poll-ui button i.fa {
   margin-right: 2px;
+}
+
+.poll-ui .radio {
+  margin-right: 0px;
 }
 
 CSS

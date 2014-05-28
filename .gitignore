@@ -12,6 +12,7 @@ dump.rdb
 
 .sass-cache/*
 public/plugins/*
+public/tombstone/*
 
 # Ignore bundler config
 /bin
@@ -22,6 +23,7 @@ public/plugins/*
 /coverage/*
 
 /public/assets/*
+/public/tombstone/*
 /bundle/*
 
 config/discourse.pill
@@ -40,9 +42,10 @@ config/discourse.conf
 log/
 
 # Ignore plugins except for the bundled ones.
-/plugins
-!/plugins/emoji
-!/plugins/poll
+/plugins/*
+!/plugins/emoji/
+!/plugins/poll/
+/plugins/*/auto_generated/
 
 /spec/fixtures/plugins/my_plugin/auto_generated
 

@@ -116,9 +116,6 @@ gem 'email_reply_parser-discourse', require: 'email_reply_parser'
 #
 # Sam: held back, getting weird errors in latest
 gem 'image_optim', '0.9.1'
-# note: for image_sorcery to correctly work you need
-# sudo apt-get install -y imagemagick
-gem 'image_sorcery'
 gem 'multi_json'
 gem 'mustache'
 gem 'nokogiri'
@@ -129,9 +126,11 @@ gem 'omniauth-facebook'
 gem 'omniauth-twitter'
 gem 'omniauth-github'
 gem 'omniauth-oauth2', require: false
+gem 'omniauth-google-oauth2'
 gem 'oj'
 # while resolving https://groups.google.com/forum/#!topic/ruby-pg/5_ylGmog1S4
 gem 'pg', '0.15.1'
+gem 'pry-rails', require: false
 gem 'rake'
 
 
@@ -176,7 +175,6 @@ group :test, :development do
   gem 'simplecov', require: false
   gem 'timecop'
   gem 'rspec-given'
-  gem 'pry-rails'
   gem 'pry-nav'
   gem 'spork-rails'
 end

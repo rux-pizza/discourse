@@ -70,7 +70,13 @@ module Tilt
       # resolve based API.
       if ENV['DISCOURSE_NO_CONSTANTS'].nil? && scope.logical_path =~ /discourse\/(controllers|components|views)\/(.*)/
         type = Regexp.last_match[1]
-        class_name = Regexp.last_match[2].gsub(/[\-\/]/, '_').classify
+        file_name = Regexp.last_match[2].gsub(/[\-\/]/, '_')
+        class_name = file_name.classify
+
+        # Rails removes pluralization when calling classify
+        if file_name.end_with?('s') && (!class_name.end_with?('s'))
+          class_name << "s"
+        end
         @output << "\n\nDiscourse.#{class_name}#{type.classify} = require('#{scope.logical_path}').default"
       end
 
@@ -86,8 +92,9 @@ module Tilt
     def module_name(root_path, logical_path)
       path = nil
 
+      root_base = File.basename(Rails.root)
       # If the resource is a plugin, use the plugin name as a prefix
-      if root_path =~ /(.*\/discourse\/plugins\/[^\/]+)\//
+      if root_path =~ /(.*\/#{root_base}\/plugins\/[^\/]+)\//
         plugin_path = "#{Regexp.last_match[1]}/plugin.rb"
 
         plugin = Discourse.plugins.find {|p| p.path == plugin_path }

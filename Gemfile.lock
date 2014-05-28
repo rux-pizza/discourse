@@ -138,7 +138,6 @@ GEM
       in_threads (~> 1.2.0)
       progress (~> 3.0.0)
     image_size (1.1.5)
-    image_sorcery (1.1.0)
     in_threads (1.2.0)
     jquery-rails (3.1.0)
       railties (>= 3.0, < 5.0)
@@ -152,7 +151,7 @@ GEM
       thor (~> 0.15)
     libv8 (3.16.14.3)
     listen (0.7.3)
-    logster (0.0.9)
+    logster (0.0.10)
     lru_redux (0.8.1)
     mail (2.5.4)
       mime-types (~> 1.16)
@@ -195,6 +194,9 @@ GEM
     omniauth-facebook (1.6.0)
       omniauth-oauth2 (~> 1.1)
     omniauth-github (1.1.1)
+      omniauth (~> 1.0)
+      omniauth-oauth2 (~> 1.1)
+    omniauth-google-oauth2 (0.2.4)
       omniauth (~> 1.0)
       omniauth-oauth2 (~> 1.1)
     omniauth-oauth (1.0.1)
@@ -419,7 +421,6 @@ DEPENDENCIES
   highline
   hiredis
   image_optim (= 0.9.1)
-  image_sorcery
   librarian (>= 0.0.25)
   listen (= 0.7.3)
   logster
@@ -436,6 +437,7 @@ DEPENDENCIES
   omniauth
   omniauth-facebook
   omniauth-github
+  omniauth-google-oauth2
   omniauth-oauth2
   omniauth-openid
   omniauth-twitter

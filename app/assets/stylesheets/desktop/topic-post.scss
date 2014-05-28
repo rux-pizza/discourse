@@ -51,14 +51,14 @@ h1 .topic-statuses .topic-status i {
 
 .reply-to-tab {
   position: absolute;
-  right: 330px;
+  right: 350px;
   z-index: 400;
   padding: 13px 6px 5px;
   border-top: 1px solid scale-color-diff();
   font-size: 12px;
   color: scale-color($primary, $lightness: 50%);
   @include medium-width {
-    right: 300px;
+    right: 320px;
   }
   @include small-width {
     right: 230px;
@@ -96,6 +96,10 @@ section.post-menu-area, .post-actions {
         opacity:1;
       }
     }
+}
+
+section.post-menu-area {
+  position: relative;
 }
 
 nav.post-controls {
@@ -244,7 +248,7 @@ nav.post-controls {
 
 .embedded-posts {
   h1, h2, h3 {margin: 10px 0;}
-  a.mention {background: scale-color-diff();}
+  a.mention {background: darken(scale-color-diff(), 10%);}
   &.bottom {
     &.hidden {display: block; opacity: 0; }
 
@@ -269,13 +273,13 @@ nav.post-controls {
     .topic-avatar {padding-left: 15px;}
     .post-date {color: scale-color($primary, $lightness: 50%);}
     .fa-arrow-up {margin-left: 5px;}
-    .row {border-top: 1px solid scale-color-diff(); padding-top: 7px;}
+    .row {border-top: 1px solid darken(scale-color-diff(), 10%); padding-top: 7px;}
     .reply:first-of-type .row {border-top: none;}
-
+    .quote {margin-top: 0 !important;}
   background: scale-color-diff();
   .quote .title, blockquote, .onebox, .onebox-result {
-    background: scale-color-diff();
-    border-left: 5px solid darken(scale-color-diff(), 10%);
+    background: darken(scale-color-diff(), 5%);
+    border-left: 5px solid darken(scale-color-diff(), 12%);
   }
 
   &.bottom { margin-top: -11px;}
@@ -467,10 +471,9 @@ a.star {
   clear: left;
   padding: 20px 0 15px 0;
   #topic-list > tbody > tr:nth-child(even) {
-    background-color: rgba($primary, .04);
+    background-color: darken($secondary, 3%);
   }
   #topic-list > tbody > tr:nth-child(odd) {
-    background-color: $secondary;
   }
   table {
     box-shadow: none;
@@ -567,7 +570,7 @@ iframe {
 
   .badge-category {
     vertical-align: top;
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
 }
@@ -632,7 +635,7 @@ iframe {
 }
 
 #share-link {
-  width: 265px;
+  width: 365px;
   margin-left: -4px;
 
     h3 {
@@ -674,30 +677,43 @@ iframe {
 
 
 blockquote { /* solo quotes */
-  margin: 14px 0;
+  margin: 0;
   padding: 12px;
 
-    a.mention {background: scale-color-diff();}
+    a.mention {background: darken(scale-color-diff(), 10%);}
     p:first-of-type {margin-top: 0;}
     p:last-of-type {margin-bottom: 0;}
 }
 
 .quote { /* quotes with attribution */
-  margin-top: 14px;
-  blockquote {margin-top: 0; padding-top: 0;
-  .onebox-result {background-color: scale-color-diff();}
-
-
+  &>blockquote {
+      margin-top: 0;
+      padding-top: 0;
+      p:first-of-type {margin:0;}
+    .onebox-result {
+      background-color: scale-color-diff();
+    }
   }
 
   .title {
-  border-left: 5px solid darken(scale-color-diff(), 10%);
-  background-color: scale-color-diff();
-  padding: 12px;
+    border-left: 5px solid darken(scale-color-diff(), 10%);
+    background-color: scale-color-diff();
+    padding: 12px;
   .avatar { margin-right: 7px; }
-  img {margin-top: -4px;}
+  img { margin-top: -4px; }
+  }
 
-}
+  aside {
+    .quote, .title, blockquote, .onebox, .onebox-result {
+      background: darken(scale-color-diff(), 5%);
+      border-left: 5px solid darken(scale-color-diff(), 12%);
+    }
+
+    aside.quote>blockquote, aside.quote>.title {
+      border-left: 0;
+    }
+  }
+
 }
 
 .quote-controls {
@@ -761,7 +777,7 @@ blockquote { /* solo quotes */
   &.highlighted {
     background-color: scale-color($tertiary, $lightness: 85%);
   }
-  img, svg {
+  img:not(.avatar), svg {
     max-width: 100%;
   }
 }
@@ -775,32 +791,46 @@ blockquote { /* solo quotes */
   }
 }
 
-.bottom-round.contents.regular {
-  -webkit-transition: background-color .25s linear;
-  transition: background-color .25s linear;
-}
-
 .posts-wrapper {
   position: relative;
 }
 
 //columns
 
-.span14 { width: 70%; } //main content
-.span2 {width: 6%; }
-.span11 {width: 86%; padding-left: 2%;}
-.span5 {width: 19%; padding-left: 1%; }
+.span14 {
+  width: 68%;
+  padding-left: 1%;
+  padding-right: 1%;
+  }
+
+.span2 { width: 5%; }
+
+.span11 {
+  width: 84%;
+  padding-left: 4%;
+}
+
+.span5 {
+  width: 19%;
+  padding-left: 1%;
+}
 
 
 @media screen and (max-width: 966px) {
   .gutter {display: none;}
-  .span14 { width: 80%; max-width: 720px; } //main content
+  .span14 {
+    width: 78%;
+    padding-left: 1%;
+    padding-right: 1%;
+    max-width: 720px;
+  } //main content
 }
 
-.row:before, .row:after {display: table; content: "";}
+.row:before, .row:after {
+  display: table;
+  content: "";
+}
 .row:after {clear: both;}
-
-
 
 .dropdown {
   position: relative;
@@ -1021,7 +1051,6 @@ a.attachment:before {
 }
 
 .topic-meta-data {
- margin-bottom: 10px;
 
  &:after {
     visibility: hidden;

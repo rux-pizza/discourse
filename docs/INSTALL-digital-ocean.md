@@ -86,9 +86,9 @@ We recommend Nano because it works like a typical GUI text editor, just use your
 
 After completing your edits, press <kbd>Ctrl</kbd><kbd>O</kbd> then <kbd>Enter</kbd> to save and <kbd>Ctrl</kbd><kbd>X</kbd> to exit.
 
-# Email
+# Email Is Important
 
-**Email is critical for account creation and notifications in Discourse. If you do not configure email before bootstrapping you will have a broken site!**
+**Email is CRITICAL for account creation and notifications in Discourse. If you do not properly configure email before bootstrapping YOU WILL HAVE A BROKEN SITE!**
 
 - Already have a mail server? Great. Use your existing mail server credentials.
 
@@ -146,6 +146,8 @@ Commands:
 # Other Awesome Stuff
 
 Do you want...
+
+- Users to log in via Google? (new Oauth2 authentication) [Configure Google logins](https://meta.discourse.org/t/configuring-google-login-for-discourse/15858).
 
 - Users to log in via Facebook? [Configure Facebook logins](https://meta.discourse.org/t/configuring-facebook-login-for-discourse/13394).
 

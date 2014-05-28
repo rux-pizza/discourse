@@ -9,15 +9,11 @@ body {
 }
 
 .container {
-  @extend .clearfix;
   max-width: $large-width;
-  margin-right: auto;
-  margin-left: auto;
 }
 
 .full-width {
   width: $large-width;
-  margin-left: 12px;
 }
 
 @include medium-width {
@@ -127,8 +123,6 @@ body {
 blockquote {
   /* 13px left is intentional here to properly align with post quotes */
   padding: 10px 4px 4px 13px;
-  background-color: scale-color-diff();
-  border-left: 5px solid darken(scale-color-diff(), 10%);
 }
 
 .topic-statuses {
@@ -327,6 +321,9 @@ body {
       background-color: transparent;
     }
   }
+  .controls-dropdown {
+    margin-bottom: 10px;
+  }
   .control-group {
     margin-bottom: 9px;
     &.warning {
@@ -497,27 +494,12 @@ body {
     margin-bottom: 18px;
     background-color: scale-color($danger, $lightness: 75%);
     color: #c09853;
-  }
-  .alert .close {
-    position: relative;
-    top: -2px;
-    right: -21px;
-    line-height: 18px;
-  }
-  .alert-success {
-    background-color:  scale-color($success, $lightness: 90%);
-    color: $success;
-  }
-  .alert-error {
-    background-color:  scale-color($danger, $lightness: 75%);
-    color: $danger;
-  }
-  .alert-info {
-    background-color: scale-color($tertiary, $lightness: 90%);
-    color: $primary;
-  }
-  .alert {
+
     .close {
+      position: relative;
+      top: -2px;
+      right: -21px;
+      line-height: 18px;
       float: right;
       font-size: 20px;
       font-weight: bold;
@@ -540,7 +522,20 @@ body {
       border: 0;
       -webkit-appearance: none;
     }
+    &.alert-success {
+      background-color:  scale-color($success, $lightness: 90%);
+      color: $success;
+    }
+    &.alert-error {
+      background-color:  scale-color($danger, $lightness: 75%);
+      color: $danger;
+    }
+    &.alert-info {
+      background-color: scale-color($tertiary, $lightness: 90%);
+      color: $primary;
+    }
   }
+
   .bootbox.modal {
     .modal-footer {
       a.btn-primary {
@@ -560,46 +555,56 @@ body {
 .row:after {
   clear: both;
 }
-[class*="span"] {
-  float: left;
-}
+
 .span24 {
   width: 1236px;
+  float: left;
 }
 .span15 {
   /* intentionally no width set here, do not add one */
   margin-left: 12px;
+  float: left;
 }
 .span14 {
   width: 716px;
+  float: left;
 }
 .span13 {
   width: 664px;
+  float: left;
 }
 .span11 {
   width: 560px;
+  float: left;
 }
 .span10 {
   width: 508px;
+  float: left;
 }
 .span8 {
   width: 404px;
+  float: left;
 }
 .span6 {
   width: 300px;
+  float: left;
 }
 .span5 {
   width: 248px;
+  float: left;
 }
 .span4 {
   width: 196px;
   margin-right: 12px;
+  float: left;
 }
 .span3 {
   width: 144px;
+  float: left;
 }
 .span2 {
   width: 92px;
+  float: left;
 }
 .offset2 {
   margin-left: 116px;

@@ -6,27 +6,13 @@ body {
   background-color: $secondary;
 }
 
-.container {
-  @extend .clearfix;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-.full-width {
-  margin-left: 12px;
-}
-
 body {
 
   .boxed {
     height: 100%;
     @include border-radius-all(5px);
     .contents {
-      float: left;
       padding: 10px 10px 10px 10px;
-      h3 {
-        float: left;
-      }
     }
     &.white {
       background-color: $secondary;
@@ -94,8 +80,6 @@ body {
 blockquote {
   /* 13px left is intentional here to properly align with post quotes */
   padding: 10px 8px 10px 13px;
-  background-color: scale-color($primary, $lightness: 95%);
-  border-left: 5px solid scale-color($primary, $lightness: 75%);
   p {
     margin: 0 0 10px 0;
   }

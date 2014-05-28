@@ -23,7 +23,7 @@ Discourse.TopicRoute = Discourse.Route.extend({
     composePrivateMessage: function(user) {
       var self = this;
       this.transitionTo('userActivity', user).then(function () {
-        self.controllerFor('userActivity').send('composePrivateMessage');
+        self.controllerFor('user-activity').send('composePrivateMessage');
       });
     },
 
@@ -69,7 +69,7 @@ Discourse.TopicRoute = Discourse.Route.extend({
     },
 
     splitTopic: function() {
-      Discourse.Route.showModal(this, 'splitTopic', this.modelFor('topic'));
+      Discourse.Route.showModal(this, 'split-topic', this.modelFor('topic'));
     },
 
     changeOwner: function() {

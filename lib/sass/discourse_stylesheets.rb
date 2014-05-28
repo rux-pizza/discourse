@@ -45,7 +45,8 @@ class DiscourseStylesheets
   end
 
   def ensure_digestless_file
-    unless File.exist?(stylesheet_fullpath_no_digest) && File.mtime(stylesheet_fullpath) == File.mtime(stylesheet_fullpath_no_digest)
+    # file without digest is only for auto-reloading css in dev env
+    unless Rails.env.production? || (File.exist?(stylesheet_fullpath_no_digest) && File.mtime(stylesheet_fullpath) == File.mtime(stylesheet_fullpath_no_digest))
       FileUtils.cp(stylesheet_fullpath, stylesheet_fullpath_no_digest)
     end
   end
@@ -83,7 +84,7 @@ class DiscourseStylesheets
         0
       else
         [ Dir.glob("#{Rails.root}/app/assets/stylesheets/**/*.*css").map {|x| File.mtime(x) }.max,
-          Dir.glob("#{Rails.root}/plugins/**/assets/stylesheets/**/*.*css").map {|x| File.mtime(x) }.max ].max.to_i
+          Dir.glob("#{Rails.root}/plugins/**/assets/stylesheets/**/*.*css").map {|x| File.mtime(x) }.max ].compact.max.to_i
       end
 
       theme = (cs = ColorScheme.enabled) ? "#{cs.id}-#{cs.version}" : 0
