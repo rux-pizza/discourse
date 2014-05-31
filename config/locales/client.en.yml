@@ -444,9 +444,9 @@ en:
     close: "Close"
     assets_changed_confirm: "Discourse has been updated, would you like to refresh to get the latest version?"
     read_only_mode:
-      enabled: "An administrator has enabled read-only mode. You can continue to browse the site but interactions won't work properly."
+      enabled: "An administrator enabled read-only mode. You can continue to browse the site but interactions may not work."
       login_disabled: "Login is disabled while the site is in read only mode."
-    too_few_topics_notice: "Create at least 5 public topics to get discussion started. New users won't be able to earn trust levels unless there's content for them to read."
+    too_few_topics_notice: "Create at least 5 public topics and 30 public posts to get discussion started. New users will not be able to earn trust levels unless there's content for them to read."
 
     learn_more: "learn more..."
 
@@ -1127,7 +1127,7 @@ en:
       delete_confirm: "Are you sure you want to delete this category?"
       delete_error: "There was an error deleting the category."
       list: "List Categories"
-      no_description: "There is no description for this category, edit the topic definition."
+      no_description: "Please add a description for this category."
       change_in_category_topic: "Edit Description"
       already_used: 'This color has been used by another category'
       security: "Security"
@@ -1142,6 +1142,21 @@ en:
       default_position: "Default Position"
       position_disabled: 'Categories will be displayed in order of activity. To control the order of categories in lists, enable the "fixed category positions" setting.'
       parent: "Parent Category"
+      notifications:
+        title: ''
+        reasons:
+        watching:
+          title: "Watching"
+          description: "You will automatically watch all new topics in these categories. You will be notified of all new posts and topics, plus the count of unread and new posts will also appear next to the topic's listing."
+        tracking:
+          title: "Tracking"
+          description: "You will automatically track all new topics in these categories. The count of unread and new posts will appear next to the topic's listing."
+        regular:
+          title: "Regular"
+          description: "You will be notified only if someone mentions your @name or replies to your post."
+        muted:
+          title: "Muted"
+          description: "You will not be notified of anything about new topics in these categories, and they will not appear on your unread tab."
 
     flagging:
       title: 'Why are you privately flagging this post?'
@@ -1804,6 +1819,7 @@ en:
         no_user_badges: "%{name} has not been granted any badges."
         no_badges: There are no badges that can be granted.
         allow_title: Allow badge to be used as a title
+        multiple_grant: Can be granted multiple times
 
     lightbox:
       download: "download"
@@ -1837,6 +1853,7 @@ en:
         share_post: '<b>s</b> Share post'
         reply_topic: '<b>shift r</b> Reply to topic'
         reply_post: '<b>r</b> Reply to post'
+        quote_post: '<b>q</b> Quote post'
         like: '<b>l</b> Give a fucking fuck'
         flag: '<b>!</b> Flag post'
         bookmark: '<b>b</b> Bookmark post'

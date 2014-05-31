@@ -212,8 +212,10 @@ Discourse::Application.routes.draw do
   delete "users/:username" => "users#destroy", constraints: {username: USERNAME_ROUTE_FORMAT}
 
   post "user_avatar/:username/refresh_gravatar" => "user_avatars#refresh_gravatar"
+  get "letter_avatar/:username/:size/:version.png" => "user_avatars#show_letter",
+      format: false, constraints: {hostname: /[\w\.-]+/}
   get "user_avatar/:hostname/:username/:size/:version.png" => "user_avatars#show",
-      format: false, constraints: {hostname: /[\w\.]+/}
+      format: false, constraints: {hostname: /[\w\.-]+/}
 
 
   get "uploads/:site/:id/:sha.:extension" => "uploads#show", constraints: {site: /\w+/, id: /\d+/, sha: /[a-z0-9]{15,16}/i, extension: /\w{2,}/}
@@ -278,6 +280,7 @@ Discourse::Application.routes.draw do
   get "category/:category" => "list#category_latest"
   get "category/:category/none" => "list#category_none_latest"
   get "category/:parent_category/:category" => "list#parent_category_category_latest"
+  post "category/:category_id/notifications" => "categories#set_notifications"
 
   get "top" => "list#top"
   get "category/:category/l/top" => "list#category_top", as: "category_top"

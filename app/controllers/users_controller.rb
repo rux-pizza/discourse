@@ -297,7 +297,7 @@ class UsersController < ApplicationController
 
     results = UserSearch.new(term, topic_id: topic_id, searching_user: current_user).search
 
-    user_fields = [:username, :use_uploaded_avatar, :upload_avatar_template, :uploaded_avatar_id]
+    user_fields = [:username, :upload_avatar_template, :uploaded_avatar_id]
     user_fields << :name if SiteSetting.enable_names?
 
     to_render = { users: results.as_json(only: user_fields, methods: :avatar_template) }
@@ -365,7 +365,6 @@ class UsersController < ApplicationController
   end
 
   def pick_avatar
-    params.require(:upload_id)
     user = fetch_user_from_params
     guardian.ensure_can_edit!(user)
     upload_id = params[:upload_id]
@@ -373,7 +372,7 @@ class UsersController < ApplicationController
     user.uploaded_avatar_id = upload_id
 
     # ensure we associate the custom avatar properly
-    unless user.user_avatar.contains_upload?(upload_id)
+    if upload_id && !user.user_avatar.contains_upload?(upload_id)
       user.user_avatar.custom_upload_id = upload_id
     end
     user.save!

@@ -232,7 +232,7 @@
 
     .desc {
       padding-top: 3px;
-      color: $primary;
+      color: scale-color($primary, $lightness: 50%);
       font-size: 80%;
       line-height: 1.4em;
     }
