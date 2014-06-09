@@ -74,10 +74,12 @@ Discourse.Composer = Discourse.Model.extend({
         username: this.get('post.username')
       });
 
-      var replyUsername = post.get('reply_to_user.username');
-      var replyAvatarTemplate = post.get('reply_to_user.avatar_template');
-      if (replyUsername && replyAvatarTemplate && this.get('action') === EDIT) {
-        postDescription += " " + I18n.t("post.in_reply_to") + " " + Discourse.Utilities.tinyAvatar(replyAvatarTemplate) + " " + replyUsername;
+      if (!Discourse.Mobile.mobileView) {
+        var replyUsername = post.get('reply_to_user.username');
+        var replyAvatarTemplate = post.get('reply_to_user.avatar_template');
+        if (replyUsername && replyAvatarTemplate && this.get('action') === EDIT) {
+          postDescription += " " + I18n.t("post.in_reply_to") + " " + Discourse.Utilities.tinyAvatar(replyAvatarTemplate) + " " + replyUsername;
+        }
       }
     }
 
@@ -292,7 +294,7 @@ Discourse.Composer = Discourse.Model.extend({
      opts:
        action   - The action we're performing: edit, reply or createTopic
        post     - The post we're replying to, if present
-       topic   - The topic we're replying to, if present
+       topic    - The topic we're replying to, if present
        quote    - If we're opening a reply from a quote, the quote we're making
   */
   open: function(opts) {
@@ -446,30 +448,41 @@ Discourse.Composer = Discourse.Model.extend({
       title: this.get('title'),
       category: this.get('categoryId'),
       topic_id: this.get('topic.id'),
-      reply_to_post_number: post ? post.get('post_number') : null,
       imageSizes: opts.imageSizes,
       cooked: this.getCookedHtml(),
       reply_count: 0,
       display_username: currentUser.get('name'),
       username: currentUser.get('username'),
       user_id: currentUser.get('id'),
-      avatar_template: currentUser.get('avatar_template'),
-      metaData: this.get('metaData'),
+      uploaded_avatar_id: currentUser.get('uploaded_avatar_id'),
+      user_custom_fields: currentUser.get('custom_fields'),
       archetype: this.get('archetypeId'),
       post_type: Discourse.Site.currentProp('post_types.regular'),
       target_usernames: this.get('targetUsernames'),
       actions_summary: Em.A(),
       moderator: currentUser.get('moderator'),
+      admin: currentUser.get('admin'),
       yours: true,
       newPost: true,
       auto_close_time: Discourse.Utilities.timestampFromAutocloseString(this.get('auto_close_time'))
     });
+
+    if(post) {
+      createdPost.setProperties({
+        reply_to_post_number: post.get('post_number'),
+        reply_to_user: {
+          username: post.get('username'),
+          uploaded_avatar_id: post.get('uploaded_avatar_id')
+        }
+      });
+    }
 
     // If we're in a topic, we can append the post instantly.
     if (postStream) {
       // If it's in reply to another post, increase the reply count
       if (post) {
         post.set('reply_count', (post.get('reply_count') || 0) + 1);
+        post.set('replies', []);
       }
       if (!postStream.stagePost(createdPost, currentUser)) {
 

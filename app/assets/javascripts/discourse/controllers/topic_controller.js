@@ -8,12 +8,30 @@
 **/
 Discourse.TopicController = Discourse.ObjectController.extend(Discourse.SelectedPostsCount, {
   multiSelect: false,
-  needs: ['header', 'modal', 'composer', 'quote-button'],
+  needs: ['header', 'modal', 'composer', 'quote-button', 'search'],
   allPostsSelected: false,
   editingTopic: false,
   selectedPosts: null,
   selectedReplies: null,
   queryParams: ['filter', 'username_filters'],
+
+  contextChanged: function(){
+    this.set('controllers.search.searchContext', this.get('model.searchContext'));
+  }.observes('topic'),
+
+  termChanged: function(){
+    var dropdown = this.get('controllers.header.visibleDropdown');
+    var term = this.get('controllers.search.term');
+
+    if(dropdown === 'search-dropdown' && term){
+      this.set('searchHighlight', term);
+    } else {
+      if(this.get('searchHighlight')){
+        this.set('searchHighlight', null);
+      }
+    }
+
+  }.observes('controllers.search.term', 'controllers.header.visibleDropdown'),
 
   filter: function(key, value) {
     if (arguments.length > 1) {
@@ -265,6 +283,12 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
     return (this.get('progressPosition') < 2);
   }.property('progressPosition'),
 
+  filteredPostCountChanged: function(){
+    if(this.get('postStream.filteredPostsCount') < this.get('progressPosition')){
+      this.set('progressPosition', this.get('postStream.filteredPostsCount'));
+    }
+  }.observes('postStream.filteredPostsCount'),
+
   jumpBottomDisabled: function() {
     return this.get('progressPosition') >= this.get('postStream.filteredPostsCount') ||
            this.get('progressPosition') >= this.get('highest_post_number');
@@ -410,6 +434,16 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
         return;
       }
 
+      if (data.type === "deleted"){
+        postStream.triggerDeletedPost(data.id, data.post_number);
+        return;
+      }
+
+      if (data.type === "recovered"){
+        postStream.triggerRecoveredPost(data.id, data.post_number);
+        return;
+      }
+
       // Add the new post into the stream
       postStream.triggerNewPostInStream(data.id);
     });
@@ -550,20 +584,22 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
     }
   }.observes('currentPost'),
 
-  sawObjects: function(posts) {
-    if (posts) {
-      var self = this,
-          lastReadPostNumber = this.get('last_read_post_number');
+  readPosts: function(topicId, postNumbers) {
+    var postStream = this.get('postStream');
 
-      posts.forEach(function(post) {
-        var postNumber = post.get('post_number');
-        if (postNumber > lastReadPostNumber) {
-          lastReadPostNumber = postNumber;
+    if(this.get('postStream.topic.id') === topicId){
+      _.each(postStream.get('posts'), function(post){
+        // optimise heavy loop
+        // TODO identity map for postNumber
+        if(_.include(postNumbers,post.post_number) && !post.read){
+          post.set("read", true);
         }
-        post.set('read', true);
       });
-      self.set('last_read_post_number', lastReadPostNumber);
 
+      var max = _.max(postNumbers);
+      if(max > this.get('last_read_post_number')){
+        this.set('last_read_post_number', max);
+      }
     }
   },
 
@@ -620,7 +656,4 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
     }
   }
 
-
 });
-
-

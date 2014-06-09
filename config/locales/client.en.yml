@@ -482,9 +482,7 @@ en:
     trust_level: 'Trust Level'
 
     create_account:
-      title: "Create Account"
-      action: "Create one now!"
-      invite: "Don't have an account yet?"
+      title: "Create New Account"
       failed: "Something went wrong, perhaps this email is already registered, try the forgot password link"
 
     forgot_password:
@@ -617,7 +615,7 @@ en:
       private_message: "<i class='fa fa-envelope-o' title='private message'></i> {{username}} {{link}}"
       invited_to_private_message: "<i class='fa fa-envelope-o' title='private message'></i> {{username}} {{link}}"
       invitee_accepted: "<i title='accepted your invitation' class='fa fa-sign-in'></i> {{username}} accepted your invitation"
-      moved_post: "<i title='moved post' class='fa fa-arrow-right'></i> {{username}} moved {{link}}"
+      moved_post: "<i title='moved post' class='fa fa-sign-out'></i> {{username}} moved {{link}}"
       total_flagged: "total flagged posts"
       linked: "<i title='linked post' class='fa fa-arrow-left'></i> {{username}} {{link}}"
       granted_badge: "<i title='badge granted' class='fa fa-certificate'></i> You were granted {{link}}"
@@ -781,13 +779,15 @@ en:
           "3_2": 'You will receive notifications because you are watching this topic.'
           "3_1": 'You will receive notifications because you created this topic.'
           "3": 'You will receive notifications because you are watching this topic.'
+          "2_8": 'You will receive notifications because you are tracking this category.'
           "2_4": 'You will receive notifications because you posted a reply to this topic.'
           "2_2": 'You will receive notifications because you are tracking this topic.'
           "2": 'You will receive notifications because you <a href="/users/{{username}}/preferences">read this topic</a>.'
-          "1": 'You will be notified only if someone mentions your @name or replies to your post.'
           "1_2": 'You will be notified only if someone mentions your @name or replies to your post.'
-          "0": 'You are ignoring all notifications on this topic.'
+          "1": 'You will be notified only if someone mentions your @name or replies to your post.'
+          "0_7": 'You are ignoring all notifications in this category.'
           "0_2": 'You are ignoring all notifications on this topic.'
+          "0": 'You are ignoring all notifications on this topic.'
         watching_pm:
           title: "Watching"
           description: "You will be notified of every new post in this private message. The count of unread and new posts will also appear next to the topic's listing."
@@ -938,6 +938,7 @@ en:
         other: "{{count}} posts hidden"
       more_links: "{{count}} more..."
 
+      unread: "Post is unread"
       has_replies:
         one: "Reply"
         other: "Replies"
@@ -1166,6 +1167,8 @@ en:
       delete_spammer: "Delete Spammer"
       delete_confirm: "You are about to delete <b>%{posts}</b> posts and <b>%{topics}</b> topics from this user, remove their account, block signups from their IP address <b>%{ip_address}</b>, and add their email address <b>%{email}</b> to a permanent block list. Are you sure this user is really a spammer?"
       yes_delete_spammer: "Yes, Delete Spammer"
+      submit_tooltip: "Submit the private flag"
+      take_action_tooltip: "Cause the flagging threshold to occur"
       cant: "Sorry, you can't flag this post at this time."
       custom_placeholder_notify_user: "Why does this post require you to speak to this user directly and privately? Be specific, be constructive, and always be kind."
       custom_placeholder_notify_moderators: "Why does this post require moderator attention? Let us know specifically what you are concerned about, and provide relevant links where possible."
@@ -1610,6 +1613,8 @@ en:
           title: "Screened Emails"
           description: "When someone tries to create a new account, the following email addresses will be checked and the registration will be blocked, or some other action performed."
           email: "Email Address"
+          actions:
+            allow: "Allow"
         screened_urls:
           title: "Screened URLs"
           description: "The URLs listed here were used in posts by users who have been identified as spammers."
@@ -1697,6 +1702,8 @@ en:
         refresh_browsers: "Force browser refresh"
         show_public_profile: "Show Public Profile"
         impersonate: 'Impersonate'
+        log_out: "Log Out"
+        logged_out: "User was logged out on all devices"
         revoke_admin: 'Revoke Admin'
         grant_admin: 'Grant Admin'
         revoke_moderation: 'Revoke Moderation'

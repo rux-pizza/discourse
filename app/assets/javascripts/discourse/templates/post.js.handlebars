@@ -17,7 +17,7 @@
         {{/if}}
       </a>
     {{/if}}
-    <div class='topic-avatar span2'>
+    <div class='topic-avatar'>
       {{#unless userDeleted}}
         <div {{bind-attr class=":contents byTopicCreator:topic-creator :trigger-expansion"}}>
           <a class="main-avatar" href='{{unbound usernameUrl}}' {{action showPosterExpansion this}}>{{avatar this imageSize="large"}}</a>
@@ -36,7 +36,7 @@
       {{/if}}
     </div>
 
-    <div class='topic-body span14'>
+    <div class='topic-body'>
       <div class='topic-meta-data'>
         {{poster-name post=this expandAction="showPosterExpansion"}}
         <div class='post-info'>
@@ -57,6 +57,7 @@
             {{/if}}
           </div>
         {{/if}}
+        <div {{bind-attr class=":read-state read"}} title="{{i18n post.unread}}"><i class='fa fa-circle'></i></div>
       </div>
 
       <div {{bind-attr class=":select-posts controller.multiSelect::hidden"}}>
@@ -77,7 +78,7 @@
       </div>
       {{view Discourse.RepliesView content=replies postView=view}}
       {{discourse-action-history post=this}}
-      {{view Discourse.TopicMapContainerView post=this topic=controller.model}}
+      {{view 'topic-map-container' post=this topic=controller.model}}
     </div>
 
     {{post-gutter post=this

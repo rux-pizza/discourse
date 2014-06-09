@@ -183,6 +183,7 @@ class TopicView
   end
 
   def read?(post_number)
+    return true unless @user
     read_posts_set.include?(post_number)
   end
 
@@ -206,7 +207,7 @@ class TopicView
   end
 
   def all_post_actions
-    @all_post_actions ||= PostAction.counts_for(posts, @user)
+    @all_post_actions ||= PostAction.counts_for(@posts, @user)
   end
 
   def links

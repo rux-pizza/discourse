@@ -5,7 +5,7 @@ require_dependency 'plugin/auth_provider'
 
 class Plugin::Instance
 
-  attr_reader :auth_providers, :assets, :styles
+  attr_reader :auth_providers, :assets, :styles, :color_schemes
   attr_accessor :path, :metadata
 
   def self.find_all(parent_path)
@@ -23,6 +23,17 @@ class Plugin::Instance
     @metadata = metadata
     @path = path
     @assets = []
+    @color_schemes = []
+
+    # Automatically include all ES6 JS files
+    if @path
+      dir = File.dirname(@path)
+      Dir.glob("#{dir}/assets/javascripts/**/*.js.es6") do |f|
+        relative = f.sub("#{dir}/assets/", "")
+        register_asset(relative)
+      end
+    end
+
   end
 
   def name
@@ -76,6 +87,10 @@ class Plugin::Instance
   end
 
   def notify_after_initialize
+    color_schemes.each do |c|
+      ColorScheme.create_from_base(name: c[:name], colors: c[:colors]) unless ColorScheme.where(name: c[:name]).exists?
+    end
+
     if @after_initialize
       @after_initialize.each do |callback|
         callback.call
@@ -93,10 +108,19 @@ class Plugin::Instance
     @javascripts << js
   end
 
+  def register_custom_html(hash)
+    DiscoursePluginRegistry.custom_html ||= {}
+    DiscoursePluginRegistry.custom_html.merge!(hash)
+  end
+
   def register_asset(file, opts=nil)
     full_path = File.dirname(path) << "/assets/" << file
     assets << [full_path, opts]
   end
+
+  def register_color_scheme(name, colors)
+    color_schemes << {name: name, colors: colors}
+   end
 
   def automatic_assets
     css = ""

@@ -32,7 +32,7 @@
               {{/if}}
               {{boundCategoryLink category}}
               {{#if details.loaded}}
-                {{topicStatus topic=model}}
+                {{topic-status topic=model}}
                 <a href='{{unbound url}}' {{action jumpTop}}>
                   {{#if topicSaving}}
                     {{fancy_title}}
@@ -48,6 +48,7 @@
               {{/if}}
             </h1>
           {{/if}}
+          {{plugin-outlet "topic-title"}}
         </div>
       </div>
     </div>
@@ -56,9 +57,11 @@
   <div class="container posts">
 
     {{view Discourse.SelectedPostsView}}
+
     <div class="row">
       <section class="topic-area" id='topic' data-topic-id='{{unbound id}}'>
         <div class='posts-wrapper'>
+
           <div id='topic-progress-wrapper' {{bind-attr class="dockedCounter:docked"}}>
             <nav id='topic-progress' title="{{i18n topic.progress.title}}" {{bind-attr class="hideProgress:hidden"}}>
               <button id='jump-top' title="{{i18n topic.progress.jump_top}}" {{bind-attr disabled="jumpTopDisabled"}} {{action jumpTop}}><i class="fa fa-arrow-circle-up"></i></button>
@@ -83,7 +86,8 @@
                                  loadingHTML=controller.loadingHTML
                                  preservesContext="true"
                                  uncloakDefault="true"
-                                 offsetFixed="header"}}
+                                 offsetFixedTop="header"
+                                 offsetFixedBottom="#reply-control"}}
           {{/unless}}
 
           {{#if postStream.loadingBelow}}
@@ -146,11 +150,9 @@
 {{render "posterExpansion"}}
 
 {{#if currentUser.enable_quoting}}
-  {{render "quoteButton"}}
+  {{render "quote-button"}}
 {{/if}}
 
 {{#if currentUser.canManageTopic}}
   {{render "topicAdminMenu" content}}
 {{/if}}
-
-{{customHTML "bottom"}}

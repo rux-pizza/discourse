@@ -146,6 +146,8 @@
     z-index: 1100;
     overflow: auto;
     border: 1px solid scale-color-diff();
+    padding: 5px;
+
     @include box-shadow(0 2px 2px rgba($primary, .4));
 
   ul {
@@ -153,26 +155,39 @@
     list-style: none;
   }
   li {
-    padding: 5px;
     font-size: 13px;
     line-height: 16px;
     .fa {
       margin-right: 3px;
     }
+    a {display: block;
+      padding: 5px;
+
+    }
+
+    &:hover a:not(.badge-notification) {background: scale-color-diff();}
+    button {margin-left: 5px;}
+
   }
 
   .selected {
     background-color: scale-color($tertiary, $lightness: 90%);
   }
 
-  // Notifications
 
+  // Notifications
   &#notifications-dropdown {
     .fa {
       color: scale-color($primary, $lightness: 50%);
     }
     li {
       background-color: scale-color($tertiary, $lightness: 90%);
+      padding: 5px;
+      &:hover a {background: transparent;}
+    a {
+      display: inline;
+      padding: 1px;
+      }
     }
     .read {
       background-color: $secondary;
@@ -189,7 +204,31 @@
     }
   }
 
+  .category-links li:not(.heading) a {
+    display: inline-block;
+  }
+
+
+  // Site map
+
+  &#site-map-dropdown {
+    .flagged-posts {
+      display: inline-block;
+      position: absolute;
+      padding: 3px;
+      margin-top: -22px;
+      margin-left: 60px;
+    }
+
+  }
+
   // Search
+
+  &#search-dropdown {
+    .heading {
+      padding: 5px;
+     }
+  }
 
   input[type='text'] {
     width: 298px;
@@ -200,16 +239,22 @@
   .searching {
     display: block;
     position: absolute;
-    top: 13px;
-    right: 13px;
+    top: 17px;
+    // keep the height here, otherwise
+    // crazy positioning will happen due
+    // to the spinner animation
+    height: 100%;
+    right: 15px;
     color: scale-color($primary, $lightness: 50%);
     font-size: 18px;
   }
   .no-results {
-    padding: 0 5px 5px;
+    padding: 5px;
   }
   .filter {
     float: right;
+    padding: 0;
+    &:hover {background: transparent;}
   }
 
   // Categories
@@ -218,14 +263,11 @@
     float: left;
     background-color: transparent;
     line-height: 20px;
+    margin: 5px 5px 0 5px;
   }
 
   &#user-dropdown {
     width: 118px;
-    .user-dropdown-links {
-    text-align: right;
-
-    }
   }
 
   .btn {

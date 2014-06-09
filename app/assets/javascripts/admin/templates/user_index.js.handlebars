@@ -4,7 +4,7 @@
     <div class='field'>{{i18n user.username.title}}</div>
     <div class='value'>{{username}}</div>
     <div class='controls'>
-      {{#link-to 'userActivity' model class="btn"}}
+      {{#link-to 'user' model class="btn"}}
         <i class='fa fa-user'></i>
         {{i18n admin.user.show_public_profile}}
       {{/link-to}}
@@ -13,6 +13,12 @@
             <i class='fa fa-crosshairs'></i>
             {{i18n admin.user.impersonate}}
           </button>
+      {{/if}}
+      {{#if currentUser.admin}}
+      <button class='btn' {{action log_out target="content"}}>
+        <i class='fa fa-power-off'></i>
+        {{i18n admin.user.log_out}}
+      </button>
       {{/if}}
     </div>
   </div>

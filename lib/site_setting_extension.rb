@@ -42,12 +42,20 @@ module SiteSettingExtension
     @lists ||= []
   end
 
+  def choices
+    @choices ||= {}
+  end
+
   def hidden_settings
     @hidden_settings ||= []
   end
 
   def refresh_settings
     @refresh_settings ||= []
+  end
+
+  def validators
+    @validators ||= {}
   end
 
   def setting(name_arg, default = nil, opts = {})
@@ -60,6 +68,11 @@ module SiteSettingExtension
         enum = opts[:enum]
         enums[name] = enum.is_a?(String) ? enum.constantize : enum
       end
+      if opts[:choices]
+        choices.has_key?(name) ?
+          choices[name].concat(opts[:choices]) :
+          choices[name] = opts[:choices]
+      end
       if opts[:list]
         lists << name
       end
@@ -68,6 +81,9 @@ module SiteSettingExtension
       end
       if opts[:refresh]
         refresh_settings << name
+      end
+      if v = opts[:validator]
+        validators[name] = v.is_a?(String) ? v.constantize : v
       end
 
       current[name] = current_value
@@ -111,12 +127,17 @@ module SiteSettingExtension
       .map do |s, v|
         value = send(s)
         type = types[get_data_type(s, value)]
-        {setting: s,
-         description: description(s),
-         default: v,
-         type: type.to_s,
-         value: value.to_s,
-         category: categories[s]}.merge( type == :enum ? {valid_values: enum_class(s).values, translate_names: enum_class(s).translate_names?} : {})
+        opts = {
+          setting: s,
+          description: description(s),
+          default: v,
+          type: type.to_s,
+          value: value.to_s,
+          category: categories[s]
+        }
+        opts.merge!({valid_values: enum_class(s).values, translate_names: enum_class(s).translate_names?}) if type == :enum
+        opts[:choices] = choices[s] if choices.has_key? s
+        opts
       end
   end
 
@@ -216,6 +237,10 @@ module SiteSettingExtension
 
     if type == types[:enum]
       raise Discourse::InvalidParameters.new(:value) unless enum_class(name).valid_value?(val)
+    end
+
+    if v = validators[name] and !v.valid_value?(val)
+      raise Discourse::InvalidParameters.new(v.error_message(val))
     end
 
     provider.save(name, val, type)

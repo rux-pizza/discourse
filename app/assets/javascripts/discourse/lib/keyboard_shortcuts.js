@@ -36,7 +36,7 @@ Discourse.KeyboardShortcuts = Ember.Object.createWithMixins({
     'r': '.topic-post.selected button.create',                        // reply to selected post
     'shift+s': '#topic-footer-buttons button.share',                    // share topic
     's': '.topic-post.selected button.share',                         // share selected post
-    '!': '.topic-post.selected button.flag'                           // flag selected post
+    '!': '.topic-post.selected button.flag'                         // flag selected post
   },
 
   FUNCTION_BINDINGS: {
@@ -48,6 +48,8 @@ Discourse.KeyboardShortcuts = Ember.Object.createWithMixins({
     '`': 'nextSection',
     '~': 'prevSection',
     '/': 'showSearch',
+    'ctrl+f': 'showBuiltinSearch',
+    'command+f': 'showBuiltinSearch',
     '?': 'showHelpModal',                                          // open keyboard shortcut help
     'q': 'quoteReply'
   },
@@ -99,6 +101,30 @@ Discourse.KeyboardShortcuts = Ember.Object.createWithMixins({
 
   prevSection: function() {
     this._changeSection(-1);
+  },
+
+  showBuiltinSearch: function() {
+    var routeName = _.map(Discourse.Router.router.currentHandlerInfos, "name").join("_");
+    var blacklist = [
+      /^application_discovery_discovery.categories/
+    ];
+
+    var whitelist = [
+      /^application_topic_/,
+      /^application_discovery_discovery/,
+      /^application_user_userActivity/
+    ];
+
+    var check = function(regex){return routeName.match(regex);};
+
+    var whitelisted = _.any(whitelist, check);
+    var blacklisted = _.any(blacklist, check);
+
+    if(whitelisted && !blacklisted){
+      return this.showSearch();
+    } else {
+      return true;
+    }
   },
 
   showSearch: function() {

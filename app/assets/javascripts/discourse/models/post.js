@@ -65,19 +65,14 @@ Discourse.Post = Discourse.Model.extend({
   postElementId: Discourse.computed.fmt('post_number', 'post_%@'),
 
   bookmarkedChanged: function() {
-    Discourse.ajax("/posts/" + this.get('id') + "/bookmark", {
-      type: 'PUT',
-      data: {
-        bookmarked: this.get('bookmarked') ? true : false
-      }
-    }).then(null, function (error) {
-      if (error && error.responseText) {
-        bootbox.alert($.parseJSON(error.responseText).errors[0]);
-      } else {
-        bootbox.alert(I18n.t('generic_error'));
-      }
-    });
-
+    Discourse.Post.bookmark(this.get('id'), this.get('bookmarked'))
+             .then(null, function (error) {
+               if (error && error.responseText) {
+                 bootbox.alert($.parseJSON(error.responseText).errors[0]);
+               } else {
+                 bootbox.alert(I18n.t('generic_error'));
+               }
+             });
   }.observes('bookmarked'),
 
   wikiChanged: function() {
@@ -303,7 +298,8 @@ Discourse.Post = Discourse.Model.extend({
     var post = this;
     Object.keys(otherPost).forEach(function (key) {
       var value = otherPost[key];
-      var oldValue = post.get(key);
+      // optimisation
+      var oldValue = post[key];
 
       if(!value) {
         value = null;
@@ -318,8 +314,8 @@ Discourse.Post = Discourse.Model.extend({
       if (typeof value !== "function" && oldValue !== value) {
 
         // wishing for an identity map
-        if(key === "reply_to_user") {
-          skip = Em.get(value, "username") === Em.get(oldValue, "username");
+        if(key === "reply_to_user" && value && oldValue) {
+          skip = value.username === oldValue.username || Em.get(value, "username") === Em.get(oldValue, "username");
         }
 
         if(!skip) {
@@ -455,6 +451,10 @@ Discourse.Post.reopenClass({
     return Discourse.ajax("/posts/" + postId + ".json").then(function (result) {
       return Discourse.Post.create(result);
     });
+  },
+
+  bookmark: function(postId, bookmarked) {
+    return Discourse.ajax("/posts/" + postId + "/bookmark", { type: 'PUT', data: { bookmarked: bookmarked } });
   }
 
 });

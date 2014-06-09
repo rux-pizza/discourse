@@ -3,8 +3,12 @@ required:
     client: true
     default: 'Discourse'
   site_description: ''
-  contact_email: ''
-  notification_email: 'info@discourse.org'
+  contact_email:
+    default: ''
+    validator: 'EmailSettingValidator'
+  notification_email:
+    default: 'info@discourse.org'
+    validator: 'EmailSettingValidator'
   site_contact_username: ''
   logo_url:
     client: true
@@ -34,6 +38,9 @@ basic:
   suggested_topics:
     client: true
     default: 5
+  limit_suggested_to_category:
+    client: false
+    default: false
   default_external_links_in_new_tab: false
   track_external_right_clicks:
     client: true
@@ -55,14 +62,37 @@ basic:
     refresh: true
     list: true
     default: 'latest|new|unread|starred|top|categories'
+    choices:
+     - latest
+     - new
+     - unread
+     - starred
+     - top
+     - categories
+     - read
+     - posted
   post_menu:
     client: true
     list: true
     default: 'like|edit|flag|delete|share|bookmark|admin|reply'
+    choices:
+     - like
+     - edit
+     - flag
+     - delete
+     - share
+     - bookmark
+     - admin
+     - reply
   share_links:
     client: true
     list: true
     default: 'twitter|facebook|google+|email'
+    choices:
+     - twitter
+     - facebook
+     - google+
+     - email
   category_colors:
     client: true
     list: true
@@ -124,20 +154,20 @@ users:
 
   enable_google_oauth2_logins:
     client: true
-    default: true
+    default: false
   google_oauth2_client_id: ''
   google_oauth2_client_secret: ''
   enable_yahoo_logins:
     client: true
-    default: true
+    default: false
   enable_twitter_logins:
     client: true
-    default: true
+    default: false
   twitter_consumer_key: ''
   twitter_consumer_secret: ''
   enable_facebook_logins:
     client: true
-    default: true
+    default: false
   facebook_app_id: ''
   facebook_app_secret: ''
   enable_github_logins:
@@ -281,7 +311,9 @@ email:
   email_in:
     default: false
     client: true
-  email_in_address: ''
+  email_in_address:
+    default: ''
+    validator: 'EmailSettingValidator'
   email_in_min_trust:
     default: 3
     enum: 'MinTrustToCreateTopicSetting'
@@ -347,7 +379,7 @@ trust:
     default: 0
     enum: 'MinTrustToCreateTopicSetting'
   min_trust_to_edit_wiki_post:
-    default: 0
+    default: 1
     enum: 'MinTrustToCreateTopicSetting'
   basic_requires_topics_entered: 5
   basic_requires_read_posts: 30
@@ -491,7 +523,7 @@ uncategorized:
     default: true
 
   # Search
-  min_posts_for_search_in_topic: 10
+  min_posts_for_search_in_topic: 0
   min_search_term_length:
     client: true
     default: 3

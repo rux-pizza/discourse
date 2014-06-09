@@ -46,6 +46,10 @@ You will be asked for permission to connect, type `yes`, then enter the root pas
 
 <img src="https://meta-discourse.r.worldssl.net/uploads/default/4445/35af9b94d045c691.png" width="586" height="452"> 
 
+FOR THIS WEEK ONLY, temporarily revert to Docker 0.11.1 due to [severe Docker 0.12 bug](https://github.com/dotcloud/docker/issues/6245):
+
+    apt-get install lxc-docker-0.11.1
+
 # Install Discourse
 
 Create a `/var/docker` folder:
@@ -98,7 +102,7 @@ After completing your edits, press <kbd>Ctrl</kbd><kbd>O</kbd> then <kbd>Enter</
 
 # Bootstrap Discourse
 
-Be sure to save the `app.yml` file, and begin bootstrapping Discourse:
+Save the `app.yml` file, and begin bootstrapping Discourse:
 
     ./launcher bootstrap app
 
@@ -118,11 +122,14 @@ It should be accessible via the domain name `discourse.example.com` you entered 
 
 # Register New Account and Become Admin
 
-There is a reminder at the top about `DISCOURSE_DEVELOPER_EMAILS`; be sure you register a new account via one of those email addresses, and your account will automatically be made an Admin.
+There is a reminder at the top about `DISCOURSE_DEVELOPER_EMAILS`; register a new account via one of those email addresses, and your account will automatically be made an Admin.
+
+(If you *don't* get any email from your install, and are unable to register a new admin account, please see our [Email Troubleshooting checklist](https://meta.discourse.org/t/troubleshooting-email-on-a-new-discourse-install/16326).)
 
 <img src="https://meta-discourse.r.worldssl.net/uploads/default/4513/459a7df42fb9ee83.png" width="690" height="350"> 
 
-You should see Staff topics and the Admin Quick Start Guide. Please read it!
+You should see Staff topics and the [Admin Quick Start Guide](https://github.com/discourse/discourse/blob/master/docs/ADMIN-QUICK-START-GUIDE.md). It contains the next steps for further configuring and customizing your Discourse install.
+
 
 # Post-Install Maintenance
 

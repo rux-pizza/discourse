@@ -1,5 +1,5 @@
 /**
-  If we request /user/eviltrout without a sub route.
+  If we request /users/eviltrout without a sub route.
 
   @class UserIndexRoute
   @extends Discourse.Route
@@ -8,6 +8,6 @@
 **/
 Discourse.UserIndexRoute = Discourse.UserActivityRoute.extend({
   redirect: function() {
-    this.transitionTo('userActivity', this.modelFor('user'));
+    this.replaceWith('userActivity', this.modelFor('user'));
   }
 });

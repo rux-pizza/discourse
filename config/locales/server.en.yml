@@ -744,7 +744,7 @@ en:
     github_client_id: "Client id for Github authentication, registered at https://github.com/settings/applications"
     github_client_secret: "Client secret for Github authentication, registered at https://github.com/settings/applications"
 
-    allow_restore: "Allow restore, which can replace ALL site data! Leave false unless you plan to do restore a backup"
+    allow_restore: "Allow restore, which can replace ALL site data! Leave false unless you plan to restore a backup"
     maximum_backups: "The maximum amount of backups to keep on disk. Older backups are automatically deleted"
     backup_daily: "Automatically create a site backup once a day"
     enable_s3_backups: "Upload backups to S3 when complete. Make sure you have filled in your s3 credentials."
@@ -765,6 +765,7 @@ en:
     max_private_messages_per_day: "The maximum amount of private messages users can create per day"
 
     suggested_topics: "Number of suggested topics shown at the bottom of a topic"
+    limit_suggested_to_category: "Only show topics from the current category in suggested topics"
 
     clean_up_uploads: "Remove orphaned uploads to prevent illegal hosting. WARNING: you might want to make a backup of your /uploads directory before enabled this setting."
     clean_orphan_uploads_grace_period_hours: "Grace period (in hours) before an orphan upload is removed."
@@ -907,6 +908,9 @@ en:
     notify_about_flags_after: "If there are flags that haven't been handled after this many hours, send an email to the contact_email. Set to 0 to disable."
     enable_cdn_js_debugging: "Allow /logs to display proper errors by adding crossorigin permissions on all js includes"
     show_create_topics_notice: "If the site has fewer than 5 public topics, show a notice asking admins to create some topics."
+
+    errors:
+      invalid_email: "Invalid email address."
 
   notification_types:
     mentioned: "%{display_username} mentioned you in %{link}"
@@ -1251,11 +1255,11 @@ en:
     email_error_notification:
       subject_template: "Error parsing email"
       text_body_template: |
-        This is an automated message to inform you that parsing the following incoming email failed.
+        This is an automated message.
 
-        Please review the following message.
+        Parsing an incoming email failed. Please review the following Error:
 
-        Error - %{error}
+        `%{error}`
 
         %{source}
 
@@ -1287,18 +1291,22 @@ en:
         For additional guidance, please refer to our [FAQ](%{base_url}/faq).
 
     user_automatically_blocked:
-      subject_template: "New user %{username} blocked via flags"
+      subject_template: "New user %{username} blocked due to community flags"
       text_body_template: |
-        This is an automated message to inform you that the new user [%{username}](%{base_url}%{user_url}) was automatically blocked because multiple users flagged %{username}'s post(s).
+        This is an automated message.
+
+        The new user [%{username}](%{base_url}%{user_url}) was automatically blocked because multiple users flagged %{username}'s post(s).
 
         Please [review the flags](%{base_url}/admin/flags). If %{username} was incorrectly blocked from posting, click the unblock button on [the admin page for this user](%{base_url}%{user_url}).
 
         This threshold can be changed via the `block_new_user` site settings.
 
     spam_post_blocked:
-      subject_template: "New user %{username} posts blocked for repeated links"
+      subject_template: "New user %{username} posts blocked due to repeated links"
       text_body_template: |
-        This is an automated message to inform you that the new user [%{username}](%{base_url}%{user_url}) tried to create multiple posts with links to %{domains}, but those posts were blocked to avoid spam. The user is still able to create new posts that do not link to %{domains}.
+        This is an automated message.
+
+        The new user [%{username}](%{base_url}%{user_url}) tried to create multiple posts with links to %{domains}, but those posts were blocked to avoid spam. The user is still able to create new posts that do not link to %{domains}.
 
         Please [review the user](%{base_url}%{user_url}).
 

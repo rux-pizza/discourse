@@ -144,7 +144,6 @@
     margin-top: 8px;
     color: scale-color($primary, $lightness: 50%);
     word-break: break-word;
-    padding-right: 50px;
     line-height: 1.4;
   }
 
@@ -234,10 +233,10 @@
   th.posts {
     position: relative;
   }
-  tbody tr:nth-child(odd) {
+  > tbody > tr:nth-child(odd) {
     background-color: darken($secondary, 3%);
   }
-  tbody tr:nth-child(even) {
+  > tbody > tr:nth-child(even) {
     background-color: $secondary;
   }
   th .toggle-admin {
@@ -484,7 +483,7 @@ ol.category-breadcrumb {
 
 .category-dropdown-menu {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   position: absolute;
   border: 1px solid scale-color-diff();
   background-color: $secondary;

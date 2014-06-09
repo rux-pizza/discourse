@@ -232,7 +232,7 @@ Discourse.PostView = Discourse.GroupedView.extend(Ember.Evented, {
     // If we're meant to highlight a post
     if ((highlightNumber > 1) && (highlightNumber === postNumber)) {
       this.set('controller.highlightOnInsert', null);
-      var $contents = $('.topic-body', $post),
+      var $contents = $('#post_' + postNumber +' .topic-body', $post),
           origColor = $contents.data('orig-color') || $contents.css('backgroundColor');
 
       $contents.data("orig-color", origColor);
@@ -257,5 +257,26 @@ Discourse.PostView = Discourse.GroupedView.extend(Ember.Evented, {
 
     // Find all the quotes
     Em.run.scheduleOnce('afterRender', this, 'insertQuoteControls');
-  }
+
+    this.applySearchHighlight();
+  },
+
+  applySearchHighlight: function(){
+    var highlight = this.get('controller.searchHighlight');
+    var cooked = this.$('.cooked');
+
+    if(!cooked){ return; }
+
+    if(highlight && highlight.length > 2){
+      if(this._highlighted){
+         cooked.unhighlight();
+      }
+      cooked.highlight(highlight);
+      this._highlighted = true;
+
+    } else if(this._highlighted){
+      cooked.unhighlight();
+      this._highlighted = false;
+    }
+  }.observes('controller.searchHighlight', 'cooked')
 });

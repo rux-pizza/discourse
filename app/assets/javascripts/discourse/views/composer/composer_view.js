@@ -26,14 +26,8 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
   content: Em.computed.alias('model'),
 
   composeState: function() {
-    var state = this.get('model.composeState');
-    if (state) return state;
-    return Discourse.Composer.CLOSED;
+    return this.get('model.composeState') || Discourse.Composer.CLOSED;
   }.property('model.composeState'),
-
-  draftStatus: function() {
-    $('#draft-status').text(this.get('model.draftStatus') || "");
-  }.observes('model.draftStatus'),
 
   // Disable fields when we're loading
   loadingChanged: function() {
@@ -48,7 +42,6 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
     return this.present('controller.createdPost') ? 'created-post' : null;
   }.property('model.createdPost'),
 
-
   refreshPreview: Discourse.debounce(function() {
     if (this.editor) {
       this.editor.refreshPreview();
@@ -60,23 +53,25 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
     Ember.run.scheduleOnce('afterRender', this, 'refreshPreview');
   }.observes('model.reply', 'model.hidePreview'),
 
-  movePanels: function(sizePx) {
-    $('.composer-popup').css('bottom', sizePx);
-  },
-
   focusIn: function() {
     var controller = this.get('controller');
     if (controller) controller.updateDraftStatus();
   },
 
+  movePanels: function(sizePx) {
+    $('#main-outlet').css('padding-bottom', sizePx);
+    $('.composer-popup').css('bottom', sizePx);
+    // signal the progress bar it should move!
+    this.appEvents.trigger("composer:resized");
+  },
+
   resize: function() {
-    // this still needs to wait on animations, need a clean way to do that
-    return Em.run.schedule('afterRender', function() {
-      var replyControl = $('#reply-control');
-      var h = replyControl.height() || 0;
-      var sizePx = "" + h + "px";
-      $('#main-outlet').css('padding-bottom', sizePx);
-      $('.composer-popup').css('bottom', sizePx);
+    var self = this;
+    Em.run.scheduleOnce('afterRender', function() {
+      if (self.movePanels) {
+        var h = $('#reply-control').height() || 0;
+        self.movePanels.apply(self, [h + "px"]);
+      }
     });
   }.observes('model.composeState'),
 
@@ -101,7 +96,7 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
   keyDown: function(e) {
     if (e.which === 27) {
       // ESC
-      this.get('controller').hitEsc();
+      this.get('controller').send('hitEsc');
       return false;
     } else if (e.which === 13 && (e.ctrlKey || e.metaKey)) {
       // CTRL+ENTER or CMD+ENTER
@@ -110,12 +105,21 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
     }
   },
 
-  didInsertElement: function() {
-    var $replyControl = $('#reply-control');
-    $replyControl.DivResizer({ resize: this.resize, onDrag: this.movePanels });
+  _enableResizing: function() {
+    var $replyControl = $('#reply-control'),
+        self = this;
+    $replyControl.DivResizer({
+      resize: this.resize,
+      onDrag: function (sizePx) { self.movePanels.apply(self, [sizePx]); }
+    });
     Discourse.TransitionHelper.after($replyControl, this.resize);
     this.ensureMaximumDimensionForImagesInPreview();
-  },
+    this.set('controller.view', this);
+  }.on('didInsertElement'),
+
+  _unlinkView: function() {
+    this.set('controller.view', null);
+  }.on('willDestroyElement'),
 
   ensureMaximumDimensionForImagesInPreview: function() {
     // This enforce maximum dimensions of images in the preview according
@@ -132,7 +136,7 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
   },
 
   click: function() {
-    this.get('controller').openIfDraft();
+    this.get('controller').send('openIfDraft');
   },
 
   // Called after the preview renders. Debounced for performance
@@ -205,6 +209,13 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
         }
       }
     });
+
+    // HACK to change the upload icon of the composer's toolbar
+    if (!Discourse.Utilities.allowsAttachments()) {
+      Em.run.scheduleOnce("afterRender", function() {
+        $("#wmd-image-button").addClass("image-only");
+      });
+    }
 
     this.editor.hooks.insertImageDialog = function(callback) {
       callback(null);
@@ -399,13 +410,18 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
       });
     }
 
-    // I hate to use Em.run.later, but I don't think there's a way of waiting for a CSS transition
-    // to finish.
-    return Em.run.later(jQuery, (function() {
-      var replyTitle = $('#reply-title');
+    // need to wait a bit for the "slide up" transition of the composer
+    // we could use .on("transitionend") but it's not firing when the transition isn't completed :(
+    Em.run.later(function() {
       self.resize();
-      return replyTitle.length ? replyTitle.putCursorAtEnd() : $wmdInput.putCursorAtEnd();
-    }), 300);
+      self.refreshPreview();
+      if ($replyTitle.length) {
+        $replyTitle.putCursorAtEnd();
+      } else {
+        $wmdInput.putCursorAtEnd();
+      }
+      self.appEvents.trigger("composer:opened");
+    }, 400);
   },
 
   addMarkdown: function(text) {
@@ -438,8 +454,17 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
   },
 
   childWillDestroyElement: function() {
-    $('#main-outlet').css('padding-bottom', 0);
+    var self = this;
+
     this._unbindUploadTarget();
+
+    Em.run.next(function() {
+      $('#main-outlet').css('padding-bottom', 0);
+      // need to wait a bit for the "slide down" transition of the composer
+      Em.run.later(function() {
+        self.appEvents.trigger("composer:closed");
+      }, 400);
+    });
   },
 
   titleValidation: function() {
@@ -484,21 +509,6 @@ Discourse.ComposerView = Discourse.View.extend(Ember.Evented, {
     var $uploadTarget = $('#reply-control');
     $uploadTarget.fileupload('destroy');
     $uploadTarget.off();
-  }
-});
-
-// not sure if this is the right way, keeping here for now, we could use a mixin perhaps
-Discourse.NotifyingTextArea = Ember.TextArea.extend({
-  placeholder: function() {
-    return I18n.t(this.get('placeholderKey'));
-  }.property('placeholderKey'),
-
-  didInsertElement: function() {
-    return this.get('parent').childDidInsertElement(this);
-  },
-
-  willDestroyElement: function() {
-    return this.get('parent').childWillDestroyElement(this);
   }
 });
 

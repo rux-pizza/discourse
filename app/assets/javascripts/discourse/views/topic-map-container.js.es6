@@ -7,7 +7,11 @@
   @namespace Discourse
   @module Discourse
 **/
-Discourse.TopicMapContainerView = Discourse.ContainerView.extend({
+import PrivateMessageMapComponent from 'discourse/components/private-message-map';
+import TopicMapComponent from 'discourse/components/topic-map';
+import ToggleSummaryComponent from 'discourse/components/toggle-summary';
+
+export default Discourse.ContainerView.extend({
   classNameBindings: ['hidden', ':topic-map'],
   shouldRerender: Discourse.View.renderIfChanged('topic.posts_count'),
 
@@ -24,7 +28,7 @@ Discourse.TopicMapContainerView = Discourse.ContainerView.extend({
     this._super();
     if (this.get('hidden')) return;
 
-    this.attachViewWithArgs({ topic: this.get('topic') }, Discourse.TopicMapComponent);
+    this.attachViewWithArgs({ topic: this.get('topic') }, TopicMapComponent);
     this.trigger('appendMapInformation', this);
   },
 
@@ -36,12 +40,12 @@ Discourse.TopicMapContainerView = Discourse.ContainerView.extend({
       container.attachViewWithArgs({
         topic: topic,
         filterBinding: 'controller.filter'
-      }, Discourse.ToggleSummaryComponent);
+      }, ToggleSummaryComponent);
     }
 
     // If we have a private message
     if (this.get('topic.isPrivateMessage')) {
-      container.attachViewWithArgs({ topic: topic, showPrivateInviteAction: 'showPrivateInvite' }, Discourse.PrivateMessageMapComponent);
+      container.attachViewWithArgs({ topic: topic, showPrivateInviteAction: 'showPrivateInvite' }, PrivateMessageMapComponent);
     }
   }
 });

@@ -22,14 +22,15 @@ display: none;
     right: 5px;
     margin-top: 0;
   }
-  .toggle-preview, .mobile-file-upload {
+  .toggle-preview { display:none; }
+  .mobile-file-upload {
     text-decoration: underline;
   }
-  .toggle-preview, #draft-status, #file-uploading, .mobile-file-upload {
+  #draft-status, #file-uploading, .mobile-file-upload {
     float: right;
     margin-right: 8px;
   }
-  .toggle-preview, .mobile-file-upload {
+  .mobile-file-upload {
     text-decoration: underline;
   }
   #file-uploading {
@@ -198,6 +199,17 @@ display: none;
           @include medium-width { width: 233px; }
           @include small-width { width: 168px; }
         }
+      }
+    }
+    .edit-reason-input, .display-edit-reason {
+      display: none;
+    }
+    .edit-reason-input {
+      display: inline-block;
+      margin-left: 2px;
+      #edit-reason {
+        margin: 0;
+        padding: 2px;
       }
     }
     #reply-title {
