@@ -1,5 +1,5 @@
 <div class='container'>
-  {{customHTML "top"}}
+  {{custom-html "top"}}
   {{Discourse.globalNotice}}
 </div>
 
@@ -20,7 +20,7 @@
             {{else}}
               {{categoryChooser valueAttribute="id" value=newCategoryId source=category_id}}
             {{/if}}
-            {{textField id='edit-title' value=newTitle}}
+            {{text-field id='edit-title' value=newTitle}}
 
             <button class='btn btn-primary btn-small no-text' {{action finishedEditingTopic}}><i class='fa fa-check'></i></button>
             <button class='btn btn-small no-text' {{action cancelEditingTopic}}><i class='fa fa-times'></i></button>
@@ -28,9 +28,9 @@
             <h1>
               <span class="private-message-glyph"><i class='fa fa-envelope'></i></span>
               {{#if category.parentCategory}}
-                {{boundCategoryLink category.parentCategory}}
+                {{bound-category-link category.parentCategory}}
               {{/if}}
-              {{boundCategoryLink category}}
+              {{bound-category-link category}}
               {{#if details.loaded}}
                 {{topic-status topic=model}}
                 <a href='{{unbound url}}' {{action jumpTop}}>
@@ -82,7 +82,7 @@
                                  idProperty="post_number"
                                  defaultHeight="200"
                                  content=postStream.posts
-                                 slackRatio=slackRatio
+                                 slackRatio="15"
                                  loadingHTML=controller.loadingHTML
                                  preservesContext="true"
                                  uncloakDefault="true"

@@ -6,7 +6,7 @@
       <tr class="input">
           <td style="width:80px" class="label"><label for='new-account-name'>{{i18n user.name.title}}</label></td>
           <td style="width:496px">
-          {{textField value=accountName id="new-account-name" autofocus="autofocus"}}
+          {{text-field value=accountName id="new-account-name" autofocus="autofocus"}}
           &nbsp;{{input-tip validation=nameValidation}}
           </td>
       </tr>
@@ -30,7 +30,7 @@
       <tr class="input">
             <td class="label"><label for='new-account-username'>{{i18n user.username.title}}</label></td>
             <td>
-            {{input value=accountUsername id="new-account-username" maxlength="20"}}
+            {{input value=accountUsername id="new-account-username" maxlength=Discourse.SiteSettings.max_username_length}}
             &nbsp;{{input-tip validation=usernameValidation}}
             </td>
       </tr>
@@ -70,7 +70,7 @@
     {{#if tosAcceptRequired}}
       <div class="tos-agree">
         {{input type="checkbox" checked=tosAccepted}}
-        {{customHTML "tos_signup_form_message"}}
+        {{custom-html "tos_signup_form_message"}}
       </div>
     {{/if}}
     <button class='btn btn-large btn-primary' {{bind-attr disabled="submitDisabled"}} {{action createAccount}}>{{i18n create_account.title}}</button>

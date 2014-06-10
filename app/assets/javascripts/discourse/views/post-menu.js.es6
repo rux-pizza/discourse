@@ -6,7 +6,35 @@
   @namespace Discourse
   @module Discourse
 **/
-Discourse.PostMenuView = Discourse.View.extend({
+
+/* Create and memoize our list of buttons, both open and collapsed */
+var _allButtons, _collapsedButtons;
+function postButtons(collapsed) {
+  if (!_allButtons) {
+    _allButtons = [];
+    _collapsedButtons = [];
+
+    var hidden = [];
+    if (!Em.isEmpty(Discourse.SiteSettings.post_menu_hidden_items)) {
+      hidden = Discourse.SiteSettings.post_menu_hidden_items.split('|');
+    }
+    Discourse.SiteSettings.post_menu.split("|").forEach(function(i) {
+      var buttonName = i.replace(/\+/, '').capitalize();
+      _allButtons.push(buttonName);
+      if (hidden.indexOf(i) === -1) {
+        _collapsedButtons.push(buttonName);
+      }
+    });
+
+    // Add ellipsis to collapsed
+    if (_allButtons.length !== _collapsedButtons.length) {
+      _collapsedButtons.splice(_collapsedButtons.length - 1, 0, 'ShowMoreActions');
+    }
+  }
+  return collapsed ? _collapsedButtons : _allButtons;
+}
+
+export default Discourse.View.extend({
   tagName: 'section',
   classNames: ['post-menu-area', 'clearfix'],
 
@@ -20,25 +48,28 @@ Discourse.PostMenuView = Discourse.View.extend({
     'post.shareUrl',
     'post.topic.deleted_at',
     'post.replies.length',
-    'post.wiki'),
+    'post.wiki',
+    'collapsed'),
+
+  _collapsedByDefault: function() {
+    this.set('collapsed', true);
+  }.on('init'),
 
   render: function(buffer) {
     var post = this.get('post');
 
     buffer.push("<nav class='post-controls'>");
-
     this.renderReplies(post, buffer);
     this.renderButtons(post, buffer);
-
     buffer.push("</nav>");
   },
 
   // Delegate click actions
   click: function(e) {
-    var $target = $(e.target);
-    var action = $target.data('action') || $target.parent().data('action');
-    if (!action) return;
+    var $target = $(e.target),
+        action = $target.data('action') || $target.parent().data('action');
 
+    if (!action) return;
     var handler = this["click" + action.capitalize()];
     if (!handler) return;
 
@@ -60,10 +91,12 @@ Discourse.PostMenuView = Discourse.View.extend({
 
   renderButtons: function(post, buffer) {
     var self = this;
-    Discourse.get('postButtons').toArray().reverse().forEach(function(button) {
+    buffer.push('<div class="actions">');
+    postButtons(this.get('collapsed')).forEach(function(button) {
       var renderer = "render" + button;
       if(self[renderer]) self[renderer](post, buffer);
     });
+    buffer.push("</div>");
   },
 
   clickReplies: function() {
@@ -78,9 +111,7 @@ Discourse.PostMenuView = Discourse.View.extend({
   renderDelete: function(post, buffer) {
     var label, action, icon;
 
-
     if (post.get('post_number') === 1) {
-
       // If it's the first post, the delete/undo actions are related to the topic
       var topic = post.get('topic');
       if (topic.get('deleted_at')) {
@@ -96,7 +127,6 @@ Discourse.PostMenuView = Discourse.View.extend({
       }
 
     } else {
-
       // The delete actions target the post iteself
       if (post.get('deleted_at') || post.get('user_deleted')) {
         if (!post.get('can_recover')) { return; }
@@ -240,6 +270,16 @@ Discourse.PostMenuView = Discourse.View.extend({
 
   clickToggleWiki: function() {
     this.get('controller').send('toggleWiki', this.get('post'));
+  },
+
+  renderShowMoreActions: function(post, buffer) {
+    buffer.push("<button title=\"" +
+                I18n.t("show_more") +
+                "\" data-action=\"showMoreActions\"><i class=\"fa fa-ellipsis-h\"></i></button>");
+  },
+
+  clickShowMoreActions: function() {
+    this.set('collapsed', false);
   }
 
 });

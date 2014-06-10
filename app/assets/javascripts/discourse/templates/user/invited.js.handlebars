@@ -2,13 +2,18 @@
 
   <h2>{{i18n user.invited.title}}</h2>
 
-  {{#if canInviteToForum}}
-    <button {{action showInvite}} class='btn right'>{{i18n user.invited.create}}</button>
-  {{/if}}
+  <div class="pull-right">
+    {{#if canInviteToForum}}
+      <button {{action showInvite}} class='btn'>{{i18n user.invited.create}}</button>
+    {{/if}}
+    {{#if canBulkInvite}}
+      {{resumable-upload target="/invites/upload" success="uploadSuccess" error="uploadError" uploadText=uploadText}}
+    {{/if}}
+  </div>
 
   {{#if showSearch}}
   <form>
-    {{textField value=searchTerm placeholderKey="user.invited.search"}}
+    {{text-field value=searchTerm placeholderKey="user.invited.search"}}
   </form>
   {{/if}}
 
@@ -32,9 +37,9 @@
               {{#link-to 'user' invite.user}}{{avatar invite.user imageSize="tiny"}}{{/link-to}}
               {{#link-to 'user' invite.user}}{{invite.user.username}}{{/link-to}}
             </td>
-            <td>{{unboundDate invite.redeemed_at}}</td>
+            <td>{{date invite.redeemed_at}}</td>
             {{#if can_see_invite_details}}
-              <td>{{unboundDate invite.user.last_seen_at}}</td>
+              <td>{{date invite.user.last_seen_at}}</td>
               <td>{{number invite.user.topics_entered}}</td>
               <td>{{number invite.user.posts_read_count}}</td>
               <td>{{{unbound invite.user.time_read}}}</td>

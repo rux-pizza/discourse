@@ -74,7 +74,20 @@ basic:
   post_menu:
     client: true
     list: true
-    default: 'like|edit|flag|delete|share|bookmark|admin|reply'
+    default: 'like|share|flag|edit|bookmark|delete|admin|reply'
+    choices:
+     - like
+     - edit
+     - flag
+     - delete
+     - share
+     - bookmark
+     - admin
+     - reply
+  post_menu_hidden_items:
+    client: true
+    list: true
+    default: 'edit|bookmark|delete|admin'
     choices:
      - like
      - edit
@@ -115,9 +128,6 @@ basic:
   posts_per_page:
     client: true
     default: 20
-  desktop_post_slack_ratio:
-    default: 2
-    client: true
   enable_badges:
     client: true
     default: false
@@ -523,7 +533,6 @@ uncategorized:
     default: true
 
   # Search
-  min_posts_for_search_in_topic: 0
   min_search_term_length:
     client: true
     default: 3
