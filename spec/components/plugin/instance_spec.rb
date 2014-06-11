@@ -11,6 +11,7 @@ describe Plugin::Instance do
     DiscoursePluginRegistry.mobile_stylesheets.clear
     DiscoursePluginRegistry.desktop_stylesheets.clear
     DiscoursePluginRegistry.sass_variables.clear
+    DiscoursePluginRegistry.serialized_current_user_fields
   end
 
   context "find_all" do
@@ -158,6 +159,18 @@ describe Plugin::Instance do
       DiscoursePluginRegistry.sass_variables.count.should == 2
       DiscoursePluginRegistry.stylesheets.count.should == 2
       DiscoursePluginRegistry.mobile_stylesheets.count.should == 1
+    end
+  end
+
+  context "serialized_current_user_fields" do
+    it "correctly serializes custom user fields" do
+      DiscoursePluginRegistry.serialized_current_user_fields << "has_car"
+      user = Fabricate(:user)
+      user.custom_fields["has_car"] = "true"
+      user.save!
+
+      payload = JSON.parse(CurrentUserSerializer.new(user, scope: Guardian.new(user)).to_json)
+      payload["current_user"]["custom_fields"]["has_car"].should == "true"
     end
   end
 
