@@ -1,4 +1,10 @@
-var helpers = ['input-tip', 'pagedown-editor', 'text-field', 'user-selector'];
+var helpers = ['input-tip',
+               'pagedown-editor',
+               'text-field',
+               'user-selector',
+               'category-chooser',
+               'combo-box',
+               'choose-topic'];
 
 /**
   Creates view helpers for some views. Many of these should probably be converted

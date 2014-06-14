@@ -15,6 +15,7 @@ Discourse.TopicFromParamsRoute = Discourse.Route.extend({
         postStream = topic.get('postStream');
 
     var topicController = this.controllerFor('topic'),
+        topicProgressController = this.controllerFor('topic-progress'),
         composerController = this.controllerFor('composer');
 
     // I sincerely hope no topic gets this many posts
@@ -26,11 +27,14 @@ Discourse.TopicFromParamsRoute = Discourse.Route.extend({
 
       topicController.setProperties({
         currentPost: closest,
-        progressPosition: closest,
         enteredAt: new Date().getTime().toString(),
         highlightOnInsert: closest
       });
 
+      topicProgressController.setProperties({
+        progressPosition: closest,
+        expanded: false
+      });
       Discourse.TopicView.jumpToPost(closest);
 
       if (topic.present('draft')) {

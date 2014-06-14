@@ -11,6 +11,7 @@ Discourse.User = Discourse.Model.extend({
   hasPMs: Em.computed.gt("private_messages_stats.all", 0),
   hasStartedPMs: Em.computed.gt("private_messages_stats.mine", 0),
   hasUnreadPMs: Em.computed.gt("private_messages_stats.unread", 0),
+  hasBookmark: Em.computed.gt('bookmarks_count', 0),
 
   /**
     The user's stream
@@ -204,7 +205,8 @@ Discourse.User = Discourse.Model.extend({
                                'external_links_in_new_tab',
                                'mailing_list_mode',
                                'enable_quoting',
-                               'disable_jump_reply');
+                               'disable_jump_reply',
+                               'custom_fields');
 
     _.each(['muted','watched','tracked'], function(s){
       var cats = user.get(s + 'Categories').map(function(c){ return c.get('id')});
@@ -286,7 +288,6 @@ Discourse.User = Discourse.Model.extend({
     if (this.blank('stats')) return [];
     return this.get('stats').rejectProperty('isPM');
   }.property('stats.@each.isPM'),
-
 
   findDetails: function() {
     var user = this;

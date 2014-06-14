@@ -79,7 +79,7 @@ Discourse.TopicRoute = Discourse.Route.extend({
     // Use replaceState to update the URL once it changes
     postChangedRoute: Discourse.debounce(function(currentPost) {
       // do nothing if we are transitioning to another route
-      if (this.get("isTransitioning")) { return; }
+      if (this.get("isTransitioning") || Discourse.TopicRoute.disableReplaceState) { return; }
 
       var topic = this.modelFor('topic');
       if (topic && currentPost) {
@@ -182,6 +182,7 @@ Discourse.TopicRoute = Discourse.Route.extend({
     Discourse.TopicTrackingState.current().trackIncoming('all');
     controller.subscribe();
 
+    this.controllerFor('topic-progress').set('model', model);
     // We reset screen tracking every time a topic is entered
     Discourse.ScreenTrack.current().start(model.get('id'), controller);
   }

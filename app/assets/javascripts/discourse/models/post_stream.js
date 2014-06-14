@@ -470,7 +470,10 @@ Discourse.PostStream = Em.Object.extend({
     @returns {Discourse.Post} the post that was inserted.
   **/
   appendPost: function(post) {
-    this.get('posts').addObject(this.storePost(post));
+    var stored = this.storePost(post);
+    if (stored) {
+      this.get('posts').addObject(stored);
+    }
     return post;
   },
 
@@ -683,7 +686,10 @@ Discourse.PostStream = Em.Object.extend({
     @returns {Discourse.Post} the post from the identity map
   **/
   storePost: function(post) {
-    var postId = post.get('id');
+    // Calling `Em.get(undefined` raises an error
+    if (!post) { return; }
+
+    var postId = Em.get(post, 'id');
     if (postId) {
       var postIdentityMap = this.get('postIdentityMap'),
           existing = postIdentityMap.get(post.get('id'));
@@ -742,7 +748,7 @@ Discourse.PostStream = Em.Object.extend({
     return this.loadIntoIdentityMap(unloaded).then(function() {
       return postIds.map(function (p) {
         return postIdentityMap.get(p);
-      });
+      }).compact();
     });
   },
 

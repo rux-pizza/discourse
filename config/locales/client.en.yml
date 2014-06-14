@@ -249,6 +249,7 @@ en:
       private_messages: "Messages"
       activity_stream: "Activity"
       preferences: "Preferences"
+      bookmarks: "Bookmarks"
       bio: "About me"
       invited_by: "Invited By"
       trust_level: "Trust Level"
@@ -260,6 +261,8 @@ en:
       change: "change"
       moderator: "{{user}} is a moderator"
       admin: "{{user}} is an admin"
+      moderator_tooltip: "This user is a moderator"
+      admin_tooltip: "This user is an admin"
       deleted: "(deleted)"
       suspended_notice: "This user is suspended until {{date}}."
       suspended_reason: "Reason: "
@@ -400,7 +403,7 @@ en:
         search: "type to search invites..."
         title: "Invites"
         user: "Invited User"
-        none: "No invites were found."
+        none: "You haven't invited anyone here yet. You can send individual invites, or invite a bunch of people at once by <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>uploading a bulk invite file</a>."
         truncated: "Showing the first {{count}} invites."
         redeemed: "Redeemed Invites"
         redeemed_at: "Redeemed"
@@ -415,10 +418,10 @@ en:
         account_age_days: "Account age in days"
         create: "Send an Invite"
         bulk_invite:
-          text: "Batch Invite from File"
+          text: "Bulk Invite from File"
           uploading: "UPLOADING"
-          success: "File has been uploaded successfully, you will be notified shortly with progress."
-          error: "There has been an error while uploading '{{filename}}': {{message}}"
+          success: "File uploaded successfully, you will be notified shortly with progress."
+          error: "There was an error uploading '{{filename}}': {{message}}"
 
       password:
         title: "Password"
@@ -470,8 +473,8 @@ en:
 
     summary:
       enabled_description: "You're viewing a summary of this topic. To see all posts again, click below."
-      description: "There are <b>{{count}}</b> replies. Save reading time by displaying only the most relevant replies?"
-      description_time: "There are <b>{{count}}</b> replies with an estimated read time of <b>{{readingTime}} minutes</b>. Save reading time by displaying only the most relevant replies?"
+      description: "There are <b>{{count}}</b> replies."
+      description_time: "There are <b>{{count}}</b> replies with an estimated read time of <b>{{readingTime}} minutes</b>."
       enable: 'Summarize This Topic'
       disable: 'Show All Posts'
 
@@ -504,6 +507,7 @@ en:
       password: "Password"
       email_placeholder: "email or username"
       error: "Unknown error"
+      blank_username_or_password: "Please enter your email or username, and password."
       reset_password: 'Reset Password'
       logging_in: "Signing In..."
       or: "Or"
@@ -770,8 +774,9 @@ en:
 
       progress:
         title: topic progress
-        jump_top: jump to first post (home key)
-        jump_bottom: jump to last post (end key)
+        go_top: "top"
+        go_bottom: "bottom"
+        go: "go"
         jump_bottom_with_number: "jump to post %{post_number}"
         total: total posts
         current: current post
@@ -1848,6 +1853,7 @@ en:
         categories: '<b>g</b> then <b>c</b> Categories'
       navigation:
         title: 'Navigation'
+        jump: '<b>#</b> Go to post number'
         back: '<b>u</b> Back'
         up_down: '<b>k</b>/<b>j</b> Move selection up/down'
         open: '<b>o</b> or <b>Enter</b> Open selected topic'
