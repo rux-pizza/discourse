@@ -208,10 +208,13 @@ class ApplicationController < ActionController::Base
   end
 
   def fetch_user_from_params
-    username_lower = params[:username].downcase
-    username_lower.gsub!(/\.json$/, '')
-
-    user = User.find_by(username_lower: username_lower)
+    user = if params[:username]
+      username_lower = params[:username].downcase
+      username_lower.gsub!(/\.json$/, '')
+      User.find_by(username_lower: username_lower)
+    elsif params[:external_id]
+      SingleSignOnRecord.find_by(external_id: params[:external_id]).try(:user)
+    end
     raise Discourse::NotFound.new if user.blank?
 
     guardian.ensure_can_see!(user)
@@ -234,6 +237,7 @@ class ApplicationController < ActionController::Base
       store_preloaded("site", Site.json_for(guardian))
       store_preloaded("siteSettings", SiteSetting.client_settings_json)
       store_preloaded("customHTML", custom_html_json)
+      store_preloaded("banner", banner_json)
     end
 
     def preload_current_user_data
@@ -259,16 +263,23 @@ class ApplicationController < ActionController::Base
       MultiJson.dump(data)
     end
 
+    def banner_json
+      topic = Topic.where(archetype: Archetype.banner).limit(1).first
+      banner = topic.present? ? topic.banner : {}
+
+      MultiJson.dump(banner)
+    end
+
     def render_json_error(obj)
       render json: MultiJson.dump(create_errors_json(obj)), status: 422
     end
 
     def success_json
-      {success: 'OK'}
+      { success: 'OK' }
     end
 
     def failed_json
-      {failed: 'FAILED'}
+      { failed: 'FAILED' }
     end
 
     def json_result(obj, opts={})

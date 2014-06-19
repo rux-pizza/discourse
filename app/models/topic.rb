@@ -626,6 +626,36 @@ class Topic < ActiveRecord::Base
     end
   end
 
+  def make_banner!(user)
+    # only one banner at the same time
+    previous_banner = Topic.where(archetype: Archetype.banner).first
+    previous_banner.remove_banner!(user) if previous_banner.present?
+
+    self.archetype = Archetype.banner
+    self.add_moderator_post(user, I18n.t("archetypes.banner.message.make"))
+    self.save
+
+    MessageBus.publish('/site/banner', banner)
+  end
+
+  def remove_banner!(user)
+    self.archetype = Archetype.default
+    self.add_moderator_post(user, I18n.t("archetypes.banner.message.remove"))
+    self.save
+
+    MessageBus.publish('/site/banner', nil)
+  end
+
+  def banner
+    post = self.posts.order(:post_number).limit(1).first
+
+    {
+      html: post.cooked,
+      url: self.url,
+      key: self.id
+    }
+  end
+
   def self.starred_counts_per_day(sinceDaysAgo=30)
     TopicUser.starred_since(sinceDaysAgo).by_date_starred.count
   end

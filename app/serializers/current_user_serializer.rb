@@ -22,7 +22,9 @@ class CurrentUserSerializer < BasicUserSerializer
              :should_be_redirected_to_top,
              :redirected_to_top_reason,
              :disable_jump_reply,
-             :custom_fields
+             :custom_fields,
+             :muted_category_ids,
+             :dismissed_banner_key
 
   def include_site_flagged_posts_count?
     object.staff?
@@ -91,6 +93,16 @@ class CurrentUserSerializer < BasicUserSerializer
     else
       {}
     end
+  end
+
+  def muted_category_ids
+    @muted_category_ids ||= CategoryUser.where(user_id: object.id,
+                                               notification_level: TopicUser.notification_levels[:muted])
+                                         .pluck(:category_id)
+  end
+
+  def dismissed_banner_key
+    object.user_profile.dismissed_banner_key
   end
 
 end

@@ -423,6 +423,10 @@ en:
   archetypes:
     regular:
       title: "Regular Topic"
+    banner:
+      message:
+        make: "This topic is now a banner topic. It will appear at the top of every page until it is dismissed by the user."
+        remove: "This topic is not a banner topic anymore. It will no longer appear at the top of every page."
 
   unsubscribed:
     title: 'Unsubscribed'
@@ -639,6 +643,7 @@ en:
     digest_logo_url: "The logo used in your site's email digest. If left blank `logo_url` will be used. eg: http://example.com/logo.png"
     logo_small_url: "The small logo for your site used when scrolling down on topics eg: http://example.com/logo-small.png"
     favicon_url: "A favicon for your site, see http://en.wikipedia.org/wiki/Favicon"
+    mobile_logo_url: "The logo used for mobile browsers. If left blank, `logo_url` will be used. eg: http://example.com/uploads/default/logo.png"
     apple_touch_icon_url: "Icon used for Apple touch devices. Recommended size is 144px by 144px."
 
     notification_email: "The return email address used when sending system emails such as notifying users of lost passwords, new accounts etc"
@@ -848,6 +853,7 @@ en:
     reply_by_email_address: "Template for reply by email incoming email address, for example: %{reply_key}@reply.example.com or replies+%{reply_key}@example.com"
 
     pop3s_polling_enabled: "Poll via POP3S for email replies"
+    pop3s_polling_insecure: "Poll using plain text POP3 without SSL"
     pop3s_polling_port: "The port to poll a POP3S account on"
     pop3s_polling_host: "The host to poll for email via POP3S"
     pop3s_polling_username: "The username for the POP3S account to poll for email"
@@ -903,6 +909,7 @@ en:
     feed_polling_enabled: "Whether to import a RSS/ATOM feed as posts"
     feed_polling_url: "URL of RSS/ATOM feed to import"
     embed_by_username: "Discourse username of the user who creates the topics"
+    embed_username_key_from_feed: "Key to pull discourse username from feed"
     embed_truncate: "Truncate the imported posts"
     embed_category: "Category of created topics"
     embed_post_limit: "Maximum number of posts to embed"
@@ -920,6 +927,11 @@ en:
       invalid_integer_min: "Value must be %{min} or greater."
       invalid_integer_max: "Value cannot be higher than %{max}."
       invalid_integer: "Value must be an integer."
+      regex_mismatch: "Value doesn't match the required format."
+      invalid_string: "Invalid value."
+      invalid_string_min_max: "Must be between %{min} and %{max} characters."
+      invalid_string_min: "Must be at least %{min} characters."
+      invalid_string_max: "Must be no more than %{max} characters."
 
   notification_types:
     mentioned: "%{display_username} mentioned you in %{link}"
@@ -982,7 +994,6 @@ en:
     autoclosed_disabled: "This topic is now opened. New replies are allowed."
     pinned_enabled: "This topic is now pinned. It will appear at the top of its category until it is unpinned by staff for everyone, or by individual users for themselves."
     pinned_disabled: "This topic is now unpinned. It will no longer appear at the top of its category."
-
     pinned_globally_enabled: "This topic is now pinned globally. It will appear at the top of its category and all topic lists until it is unpinned by staff for everyone, or by individual users for themselves."
     pinned_globally_disabled: "This topic is now unpinned. It will no longer appear at the top of its category."
     visible_enabled: "This topic is now visible. It will be displayed in topic lists."
@@ -1018,30 +1029,38 @@ en:
       blocked: "is blocked."
 
   invite_mailer:
-    subject_template: "[%{site_name}] %{invitee_name} invited you to join a discussion on %{site_name}"
+    subject_template: "[%{site_name}] %{invitee_name} invited you to join a discussion"
     text_body_template: |
-      %{invitee_name} invited you to the topic "%{topic_title}" at %{site_name}.
+      %{invitee_name} invited you to a discussion
 
-      If you're interested, click the link below to visit the discussion:
+      > %{topic_title}
 
-      [Visit %{site_name}][1]
+      at
 
-      You were invited by a trusted user, so you'll be able to post a reply immediately, without needing to log in.
+      > **%{site_title}**
+      >
+      > %{site_description}
 
-      [1]: %{invite_link}
+      If you're interested, click the link below:
+
+      %{invite_link}
+
+      This is an invitation from a trusted user, so you can reply to the discussion immediately.
 
   invite_forum_mailer:
-    subject_template: "[%{site_name}] %{invitee_name} invited you to join %{site_name}"
+    subject_template: "[%{site_name}] %{invitee_name} invited you to join"
     text_body_template: |
-      %{invitee_name} invited you to %{site_name}.
+      %{invitee_name} invited you to join
 
-      If you're interested, click the link below to join:
+      > **%{site_title}**
+      >
+      > %{site_description}
 
-      [Visit %{site_name}][1]
+      If you're interested, click the link below:
 
-      You were invited by a trusted user, so you'll be able to join immediately, without needing to log in.
+      %{invite_link}
 
-      [1]: %{invite_link}
+      This invitation is from a trusted user, so you won't need to log in.
 
   test_mailer:
     subject_template: "[%{site_name}] Email Deliverability Test"

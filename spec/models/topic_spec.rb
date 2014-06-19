@@ -638,6 +638,47 @@ describe Topic do
     end
   end
 
+  describe "banner" do
+
+    let(:topic) { Fabricate(:topic) }
+    let(:user) { topic.user }
+    let(:banner) { { html: "<p>BANNER</p>", url: topic.url, key: topic.id } }
+
+    before { topic.stubs(:banner).returns(banner) }
+
+    describe "make_banner!" do
+
+      it "changes the topic archetype to 'banner'" do
+        topic.expects(:add_moderator_post)
+        MessageBus.expects(:publish).with("/site/banner", banner)
+        topic.make_banner!(user)
+        topic.archetype.should == Archetype.banner
+      end
+
+      it "ensures only one banner topic at all time" do
+        banner_topic = Fabricate(:banner_topic)
+        Topic.where(archetype: Archetype.banner).count.should == 1
+
+        topic.make_banner!(user)
+        Topic.where(archetype: Archetype.banner).count.should == 1
+      end
+
+    end
+
+    describe "remove_banner!" do
+
+      it "resets the topic archetype" do
+        topic.expects(:add_moderator_post)
+        MessageBus.expects(:publish).with("/site/banner", nil)
+        topic.remove_banner!(user)
+        topic.archetype.should == Archetype.default
+      end
+
+    end
+
+
+  end
+
   context 'last_poster info' do
 
     before do

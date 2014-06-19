@@ -185,7 +185,7 @@ Discourse::Application.routes.draw do
   get "users/activate-account/:token" => "users#activate_account"
   get "users/authorize-email/:token" => "users#authorize_email"
   get "users/hp" => "users#get_honeypot_value"
-  get "my/:path", to: 'users#my_redirect'
+  get "my/*path", to: 'users#my_redirect'
 
   get "user_preferences" => "users#user_preferences_redirect"
   get "users/:username/private-messages" => "user_actions#private_messages", constraints: {username: USERNAME_ROUTE_FORMAT}
@@ -211,6 +211,7 @@ Discourse::Application.routes.draw do
   get "users/:username/activity/:filter" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/badges" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   delete "users/:username" => "users#destroy", constraints: {username: USERNAME_ROUTE_FORMAT}
+  get "users/by-external/:external_id" => "users#show"
 
   post "user_avatar/:username/refresh_gravatar" => "user_avatars#refresh_gravatar"
   get "letter_avatar/:username/:size/:version.png" => "user_avatars#show_letter",
@@ -340,6 +341,8 @@ Discourse::Application.routes.draw do
   put "t/:topic_id/mute" => "topics#mute", constraints: {topic_id: /\d+/}
   put "t/:topic_id/unmute" => "topics#unmute", constraints: {topic_id: /\d+/}
   put "t/:topic_id/autoclose" => "topics#autoclose", constraints: {topic_id: /\d+/}
+  put "t/:topic_id/make-banner" => "topics#make_banner", constraints: {topic_id: /\d+/}
+  put "t/:topic_id/remove-banner" => "topics#remove_banner", constraints: {topic_id: /\d+/}
   put "t/:topic_id/remove-allowed-user" => "topics#remove_allowed_user", constraints: {topic_id: /\d+/}
   put "t/:topic_id/recover" => "topics#recover", constraints: {topic_id: /\d+/}
   get "t/:topic_id/:post_number" => "topics#show", constraints: {topic_id: /\d+/, post_number: /\d+/}

@@ -7,7 +7,7 @@
   @module Discourse
 **/
 export default Discourse.Controller.extend({
-  needs: ['modal', 'topic', 'composerMessages'],
+  needs: ['modal', 'topic', 'composer-messages'],
 
   replyAsNewTopicDraft: Em.computed.equal('model.draftKey', Discourse.Composer.REPLY_AS_NEW_TOPIC_KEY),
   checkedMessages: false,
@@ -70,6 +70,11 @@ export default Discourse.Controller.extend({
     if (c) { c.appendText(text); }
   },
 
+  appendBlockAtCursor: function(text) {
+    var c = this.get('model');
+    if (c) { c.appendText(text, $('#wmd-input').caret(), {block: true}); }
+  },
+
   categories: function() {
     return Discourse.Category.list();
   }.property(),
@@ -93,6 +98,10 @@ export default Discourse.Controller.extend({
     }
     return false;
   },
+
+  disableSubmit: function() {
+    return this.get('model.loading');
+  }.property('model.loading'),
 
   save: function(force) {
     var composer = this.get('model'),
@@ -188,7 +197,7 @@ export default Discourse.Controller.extend({
     if (this.present('model.reply')) {
       // Notify the composer messages controller that a reply has been typed. Some
       // messages only appear after typing.
-      this.get('controllers.composerMessages').typedReply();
+      this.get('controllers.composer-messages').typedReply();
     }
   },
 
@@ -210,7 +219,7 @@ export default Discourse.Controller.extend({
     if (body.length < Discourse.SiteSettings.min_body_similar_length ||
         title.length < Discourse.SiteSettings.min_title_similar_length) { return; }
 
-    var messageController = this.get('controllers.composerMessages'),
+    var messageController = this.get('controllers.composer-messages'),
         similarTopics = this.get('similarTopics');
 
     Discourse.Topic.findSimilarTo(title, body).then(function (newTopics) {
@@ -251,7 +260,7 @@ export default Discourse.Controller.extend({
       throw "composer opened without a proper draft key";
     }
 
-    var composerMessages = this.get('controllers.composerMessages'),
+    var composerMessages = this.get('controllers.composer-messages'),
         self = this,
         composerModel = this.get('model');
 
@@ -318,7 +327,7 @@ export default Discourse.Controller.extend({
     this.set('model', composerModel);
     composerModel.set('composeState', Discourse.Composer.OPEN);
 
-    var composerMessages = this.get('controllers.composerMessages');
+    var composerMessages = this.get('controllers.composer-messages');
     composerMessages.queryFor(composerModel);
   },
 
