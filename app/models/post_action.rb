@@ -131,13 +131,19 @@ class PostAction < ActiveRecord::Base
       post.topic.posts_count != 1
     end
 
-    create( post_id: post.id,
-            user_id: user.id,
-            post_action_type_id: post_action_type_id,
-            message: opts[:message],
-            staff_took_action: opts[:take_action] || false,
-            related_post_id: related_post_id,
-            targets_topic: !!targets_topic )
+    post_action = create( post_id: post.id,
+                          user_id: user.id,
+                          post_action_type_id: post_action_type_id,
+                          message: opts[:message],
+                          staff_took_action: opts[:take_action] || false,
+                          related_post_id: related_post_id,
+                          targets_topic: !!targets_topic )
+
+    if post_action && post_action.is_like?
+      BadgeGranter.update_badges(action: :post_like, post_id: post.id)
+    end
+
+    post_action
 
   rescue ActiveRecord::RecordNotUnique
     # can happen despite being .create
@@ -301,9 +307,9 @@ class PostAction < ActiveRecord::Base
       reason = guess_hide_reason(old_flags)
     end
 
-    Post.where(id: post.id).update_all(["hidden = true, hidden_reason_id = COALESCE(hidden_reason_id, ?)", reason])
+    Post.where(id: post.id).update_all(["hidden = true, hidden_at = CURRENT_TIMESTAMP, hidden_reason_id = COALESCE(hidden_reason_id, ?)", reason])
     Topic.where(["id = :topic_id AND NOT EXISTS(SELECT 1 FROM POSTS WHERE topic_id = :topic_id AND NOT hidden)",
-                      topic_id: post.topic_id]).update_all({ visible: false })
+                      topic_id: post.topic_id]).update_all(visible: false)
 
     # inform user
     if post.user
