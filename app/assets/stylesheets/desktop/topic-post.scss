@@ -600,12 +600,7 @@ iframe {
   position: relative;
 }
 
-.contents .cooked a {
-  word-wrap: break-word;
-}
-
 .contents .cooked {
-  word-wrap: break-word;
   h1, h2, h3, h4, h5, h6 { margin: 30px 0 10px; }
 }
 
@@ -641,21 +636,6 @@ iframe {
 #share-link {
   width: 365px;
   margin-left: -4px;
-
-  h3 {
-    margin: 5px 0;
-    float: left;
-  }
-
-  .date {
-    float: right;
-    margin: 5px;
-  }
-
-  input[type=text] {
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
 }
 
 .post-select {
@@ -863,9 +843,9 @@ blockquote { /* solo quotes */
 .dropdown-menu li > a:hover,
 .dropdown-menu .active > a,
 .dropdown-menu .active > a:hover {
-  color: $secondary;
+  color: $tertiary;
   text-decoration: none;
-  background-color: scale-color($tertiary, $lightness: 50%);
+  background-color: scale-color($tertiary, $lightness: 90%);
 }
 
 .dropdown-menu .disabled > a,

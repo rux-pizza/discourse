@@ -343,12 +343,12 @@ en:
 
       name:
         title: "Name"
-        instructions: "The long version of your name; publicly visible."
+        instructions: "The long version of your name."
         too_short: "Your name is too short."
         ok: "Your name looks good."
       username:
         title: "Username"
-        instructions: "Must be unique, no spaces, short. People can mention you as @username."
+        instructions: "Your @username must be unique, no spaces, short."
         short_instructions: "People can mention you as @{{username}}."
         available: "Your username is available."
         global_match: "Email matches the registered username."
@@ -581,7 +581,7 @@ en:
       title: "Or press Ctrl+Enter"
 
       users_placeholder: "Add a user"
-      title_placeholder: "Type your title here. What is this discussion about in one brief sentence?"
+      title_placeholder: "What is this discussion about in one brief sentence?"
       edit_reason_placeholder: "why are you editing?"
       show_edit_reason: "(add edit reason)"
       reply_placeholder: "Type here. Use Markdown or BBCode to format. Drag or paste an image to upload it."
@@ -605,7 +605,7 @@ en:
       quote_title: "Blockquote"
       quote_text: "Blockquote"
       code_title: "Preformatted text"
-      code_text: "enter preformatted text here"
+      code_text: "indent preformatted text by 4 spaces"
       upload_title: "Upload"
       upload_description: "enter upload description here"
       olist_title: "Numbered List"
@@ -953,6 +953,7 @@ en:
       continue_discussion: "Continuing the discussion from {{postLink}}:"
       follow_quote: "go to the quoted post"
       show_full: "Show Full Post"
+      show_hidden: 'View hidden content.'
       deleted_by_author:
         one: "(post withdrawn by author, will be automatically deleted in %{count} hour unless flagged)"
         other: "(post withdrawn by author, will be automatically deleted in %{count} hours unless flagged)"
@@ -1193,7 +1194,7 @@ en:
       delete_confirm: "You are about to delete <b>%{posts}</b> posts and <b>%{topics}</b> topics from this user, remove their account, block signups from their IP address <b>%{ip_address}</b>, and add their email address <b>%{email}</b> to a permanent block list. Are you sure this user is really a spammer?"
       yes_delete_spammer: "Yes, Delete Spammer"
       submit_tooltip: "Submit the private flag"
-      take_action_tooltip: "Cause the flagging threshold to occur"
+      take_action_tooltip: "Reach the flag threshold immediately, rather than waiting for more community flags"
       cant: "Sorry, you can't flag this post at this time."
       custom_placeholder_notify_user: "Why does this post require you to speak to this user directly and privately? Be specific, be constructive, and always be kind."
       custom_placeholder_notify_moderators: "Why does this post require moderator attention? Let us know specifically what you are concerned about, and provide relevant links where possible."
@@ -1386,6 +1387,7 @@ en:
         clear_topic_flags_title: "The topic has been investigated and issues have been resolved. Click Done to remove the flags."
 
         flagged_by: "Flagged by"
+        resolved_by: "Resolved by"
         system: "System"
         error: "Something went wrong"
         view_message: "Reply"

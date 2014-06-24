@@ -282,6 +282,10 @@ test("links with full urls", function() {
 
 test("Code Blocks", function() {
 
+  cooked("<pre>\nhello\n</pre>\n",
+         "<p><pre>\nhello</pre></p>",
+         "pre blocks don't include extra lines");
+
   cooked("```\na\nb\nc\n\nd\n```",
          "<p><pre><code class=\"lang-auto\">a\nb\nc\n\nd</code></pre></p>",
          "it treats new lines properly");
@@ -361,6 +365,8 @@ test("sanitize", function() {
   equal(sanitize("<textarea>hullo</textarea>"), "hullo");
   equal(sanitize("<button>press me!</button>"), "press me!");
   equal(sanitize("<canvas>draw me!</canvas>"), "draw me!");
+  equal(sanitize("<progress>hello"), "hello");
+  equal(sanitize("<mark>highlight</mark>"), "highlight");
 
   cooked("[the answer](javascript:alert(42))", "<p><a>the answer</a></p>", "it prevents XSS");
 
