@@ -607,6 +607,7 @@ en:
     min_private_message_title_length: "Minimum title length for a private message in characters"
     min_search_term_length: "Minimum search term length in characters"
     allow_uncategorized_topics: "Allow topics to be created without a category."
+    uncategorized_description: "The description of the uncategorized category. Leave blank if you don't want a description."
     allow_duplicate_topic_titles: "Allow topics with identical titles"
     unique_posts_mins: "How many minutes before a user can make a post with the same content again"
     enforce_global_nicknames: "Enforce global username uniqueness (WARNING: only change this during initial setup)"
@@ -1076,7 +1077,7 @@ en:
 
       - **IMPORTANT:** Does your ISP have a reverse DNS record entered to associate the domain names and IP addresses you send mail from? [Test your Reverse PTR record][2] here. If your ISP does not enter the proper reverse DNS pointer record, it's very unlikely any of your email will be delivered.
 
-      - Is your domain's SPF record correct? [Test your SPF record][1] here.
+      - Is your domain's SPF record correct? [Test your SPF record][1] here. Note that you need to enter both SPF and TXT versions of this record for maximum compatibility.
 
       - Check to make sure the IPs of your mail server are [not on any email blacklists][4].
 
@@ -1290,7 +1291,7 @@ en:
     bulk_invite_failed:
       subject_template: "Bulk Invite processed with some errors!"
       text_body_template: |
-        The bulk invite has been processed, %{sent} invites sent and %{failed} invites failed.
+        The bulk invite has been processed, %{sent} invites sent with %{failed} error(s).
 
         Here's the log:
 
@@ -1298,23 +1299,47 @@ en:
         %{logs}
         ```
 
-    email_error_notification:
-      subject_template: "Error parsing email"
-      text_body_template: |
-        This is an automated message.
-
-        Parsing an incoming email failed. Please review the following Error:
-
-        `%{error}`
-
-        %{source}
-
     email_reject_trust_level:
-      subject_template: "Message rejected"
+      subject_template: "Email issue -- Insufficient Trust Level"
       text_body_template: |
-        The message you've send to %{to} was rejected by the system.
+        We're sorry, but your email message to %{destination} didn't work.
 
-        You do not have the required trust to post new topics to this email address.
+        Your account does not have the required trust level to post new topics to this email address. If you believe this is in error, contact a staff member.
+
+    email_reject_no_account:
+      subject_template: "Email issue -- No Account"
+      text_body_template: |
+        We're sorry, but your email message to %{destination} didn't work.
+
+        There is no known account with this email address. Try sending from a different email address, or contact a staff member.
+
+    email_reject_empty:
+      subject_template: "Email issue -- No Content"
+      text_body_template: |
+        We're sorry, but your email message to %{destination} didn't work.
+
+        We couldn't find any content in the email.
+
+    email_reject_parsing:
+      subject_template: "Email issue -- Content unrecognized"
+      text_body_template: |
+        We're sorry, but your email message to %{destination} didn't work.
+
+        The email encoding was unknown or not supported. Try again with UTF-8 plain text.
+
+    email_reject_post_error:
+      subject_template: "Email issue -- posting error"
+      text_body_template: |
+        We're sorry, but your email message to %{destination} didn't work.
+
+        There was a problem with the formatting. Try again with less formatting, or no formatting.
+
+    email_reject_reply_key:
+      subject_template: "Email issue -- Bad Reply Key"
+      text_body_template: |
+        We're sorry, but your email message to %{destination} didn't work.
+
+        The provided reply key is invalid or unknown, so we don't know what this email is in reply to. Contact a staff member.
 
     too_many_spam_flags:
       subject_template: "New account blocked"
@@ -1527,10 +1552,10 @@ en:
 
   page_not_found:
     title: "The page you requested doesn't exist or is private."
-    popular_topics: "Popular topics"
-    recent_topics: "Recent topics"
-    see_more: "See More"
-    search_title: "Search for this topic"
+    popular_topics: "Popular"
+    recent_topics: "Recent"
+    see_more: "More"
+    search_title: "Search this site"
     search_google: "Search Google"
 
   login_required:

@@ -342,10 +342,6 @@ a.star {
     &:hover {border: 1px solid $primary !important;}
   }
 
-  .topic-links li {
-    word-wrap: break-word;
-  }
-
   h3 {
     margin-bottom: 4px;
     color: $primary;
@@ -376,8 +372,6 @@ a.star {
     color: scale-color($primary, $lightness: 50%);
   }
 
-
-
   .avatars {
     > div {
       float: left;
@@ -392,7 +386,11 @@ a.star {
       font-weight: normal;
       font-size: 11px;
       line-height: 14px;
-          }
+    }
+
+    /* limit to one line of avatars for now */
+    height:30px;
+    overflow:hidden;
   }
 
   .avatar {
@@ -421,25 +419,27 @@ a.star {
   .avatars,
   .links,
   .information {
-    padding: 7px 14px;
+    padding: 7px 10px;
     color: $primary;
   }
   .information {
     border-top: 2px solid scale-color-diff();
   }
 
-.participants { // PMs //
-  .user {float: left; margin: 7px 20px 7px 0;}
-}
+  .participants { // PMs //
+    .user {float: left; margin: 7px 20px 7px 0;}
+  }
 
   .topic-links {
-    li > a {
-      margin-left: 5px;
-    }
     .badge-notification {
-      margin: 0 0 4px;
+      margin: 1px 5px 2px 0;
     }
   }
+
+  td {
+    vertical-align: top;
+  }
+
   .buttons {
     float: right;
     .btn {
