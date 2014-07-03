@@ -1,4 +1,7 @@
-{{bread-crumbs categories=categories category=category noSubcategories=noSubcategories}}
+{{bread-crumbs categories=categories
+               category=category
+               noSubcategories=noSubcategories
+               hideSubcategories=showingSubcategoryList}}
 
 <ul class="nav nav-pills" id='navigation-bar'>
   {{#each navItem in navItems}}
@@ -18,3 +21,9 @@
 {{#if canEditCategory}}
   <button class='btn btn-default' {{action editCategory category}}><i class="fa fa-wrench"></i> {{i18n category.edit_long}}</button>
 {{/if}}
+
+<section class='category-heading'>
+  {{#if category.logo_url}}
+    <img {{bind-attr src=category.logo_url}} class="category-logo">
+  {{/if}}
+</section>

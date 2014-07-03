@@ -43,12 +43,14 @@ class Search
 
   def self.rebuild_problem_posts(limit = 10000)
     posts = Post.joins(:topic)
-            .where('posts.id NOT IN (
-               SELECT post_id from post_search_data
-                WHERE locale = ?
+            .where('posts.id IN (
+               SELECT p2.id FROM posts p2
+               LEFT JOIN post_search_data pd ON locale = ? AND p2.id = pd.post_id
+               WHERE pd.post_id IS NULL
               )', SiteSetting.default_locale).limit(10000)
 
     posts.each do |post|
+      # force indexing
       post.cooked += " "
       SearchObserver.index(post)
     end
@@ -232,8 +234,18 @@ class Search
       posts.limit(limit)
     end
 
-    def query_locale
+    def self.query_locale
       @query_locale ||= Post.sanitize(Search.long_locale)
+    end
+
+    def query_locale
+      self.class.query_locale
+    end
+
+    def self.ts_query(term)
+      all_terms = term.gsub(/[:()&!'"]/,'').split
+      query = Post.sanitize(all_terms.map {|t| "#{PG::Connection.escape_string(t)}:*"}.join(" & "))
+      "TO_TSQUERY(#{query_locale}, #{query})"
     end
 
     def ts_query

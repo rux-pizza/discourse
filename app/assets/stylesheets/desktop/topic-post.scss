@@ -32,6 +32,7 @@
 
 h1 .topic-statuses .topic-status i {
   font-size: 20px;
+  vertical-align: middle;
 }
 
 .logo-small {
@@ -349,7 +350,7 @@ a.star {
   }
 
   h4 {
-    margin: 0 0 3px 0;
+    margin: 1px 0 2px 0;
     color: scale-color($primary, $lightness: 50%);
     font-weight: normal;
     font-size: 12px;
@@ -399,12 +400,14 @@ a.star {
   }
 
   .map {
+    .secondary {text-align: center;}
     li {
       float: left;
       padding: 7px 11px;
       &:last-of-type {
         border-right: 0;
       }
+      &:nth-child(3) { text-align:center; }
     }
     a, .number {
       line-height: 20px;
@@ -535,8 +538,7 @@ iframe {
 
 .extra-info-wrapper {
   float: left;
-  width: 78%;
-  max-width: 800px;
+  max-width: 875px;
   .topic-statuses {
     i         { color: $header_primary; }
     .unpinned { color: $header_primary; }
@@ -547,22 +549,22 @@ iframe {
 
 @include medium-width {
   .extra-info-wrapper {
-  max-width: 740px;
+  max-width: 770px;
 }
 }
 
 
 @include small-width {
     .extra-info-wrapper {
-  max-width: 680px;
+  max-width: 720px;
 }
 }
 
 .extra-info {
   h1 {
     margin: 5px 0 0 0;
-    font-size: 1.8em;
-    line-height: 1.2em;
+    font-size: 1.6em;
+    line-height: 1.3em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -591,17 +593,12 @@ iframe {
 }
 
 .btn-group {
-  margin-top: 25px;
   position: relative;
 }
 
 .dropdown-toggle {
   float: left;
   position: relative;
-}
-
-.contents .cooked {
-  h1, h2, h3, h4, h5, h6 { margin: 30px 0 10px; }
 }
 
   a.mention {
@@ -665,20 +662,30 @@ iframe {
 }
 
 
-blockquote { /* solo quotes */
-  margin: 0;
+/* solo quotes */
+blockquote {
+  /* leave browser defaults for top and bottom here */
+  margin-left: 0;
+  margin-right: 0;
   padding: 12px;
-
-    a.mention {background: darken(scale-color-diff(), 10%);}
-    p:first-of-type {margin-top: 0;}
-    p:last-of-type {margin-bottom: 0;}
+  a.mention {background: darken(scale-color-diff(), 10%);}
 }
 
-.quote { /* quotes with attribution */
+// we assume blockquotes have their own margins, so all blockquotes
+// will remove margins from first (top) and last (bottom) child elements
+blockquote > *:first-child {
+  margin-top: 0 !important;
+}
+blockquote > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+
+/* quotes with attribution */
+.quote {
   &>blockquote {
-      margin-top: 0;
-      padding-top: 0;
-      p:first-of-type {margin:0;}
+    margin-top: 0;
+    padding-top: 0;
     .onebox-result {
       background-color: scale-color-diff();
     }
@@ -688,8 +695,8 @@ blockquote { /* solo quotes */
     border-left: 5px solid darken(scale-color-diff(), 10%);
     background-color: scale-color-diff();
     padding: 12px;
-  .avatar { margin-right: 7px; }
-  img { margin-top: -4px; }
+    .avatar { margin-right: 7px; }
+    img { margin-top: -4px; }
   }
 
   aside {
@@ -998,7 +1005,7 @@ a.attachment:before {
 .private_message .gutter:before, .deleted-topic .gutter:before, .read_restricted .gutter:before {
     display: block;
     position: absolute;
-    top: 0;
+    top: -10px;
     left: 10px;
     color: scale-color-diff();
     font: 90px/1 FontAwesome;

@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   skip_before_filter :authorize_mini_profiler, only: [:avatar]
   skip_before_filter :check_xhr, only: [:show, :password_reset, :update, :activate_account, :authorize_email, :user_preferences_redirect, :avatar, :my_redirect]
 
-  before_filter :ensure_logged_in, only: [:username, :update, :change_email, :user_preferences_redirect, :upload_user_image, :pick_avatar, :clear_profile_background, :destroy]
+  before_filter :ensure_logged_in, only: [:username, :update, :change_email, :user_preferences_redirect, :upload_user_image, :pick_avatar, :destroy_user_image, :destroy]
   before_filter :respond_to_suspicious_request, only: [:create]
 
   # we need to allow account creation with bad CSRF tokens, if people are caching, the CSRF token on the
@@ -200,7 +200,15 @@ class UsersController < ApplicationController
     expires_now()
 
     @user = EmailToken.confirm(params[:token])
-    if @user.blank?
+
+    if @user
+      session[params[:token]] = @user.id
+    else
+      user_id = session[params[:token]]
+      @user = User.find(user_id) if user_id
+    end
+
+    if !@user
       flash[:error] = I18n.t('password_reset.no_token')
     elsif request.put?
       raise Discourse::InvalidParameters.new(:password) unless params[:password].present?
@@ -225,7 +233,7 @@ class UsersController < ApplicationController
               end
 
     flash[:success] = I18n.t(message)
-   end
+  end
 
   def change_email
     params.require(:email)
@@ -333,12 +341,12 @@ class UsersController < ApplicationController
 
   # LEGACY: used by the API
   def upload_avatar
-    params[:user_image_type] = "avatar"
+    params[:image_type] = "avatar"
     upload_user_image
   end
 
   def upload_user_image
-    params.require(:user_image_type)
+    params.require(:image_type)
     user = fetch_user_from_params
     guardian.ensure_can_edit!(user)
 
@@ -353,7 +361,7 @@ class UsersController < ApplicationController
     upload = Upload.create_for(user.id, image.file, image.filename, image.filesize)
 
     if upload.errors.empty?
-      case params[:user_image_type]
+      case params[:image_type]
       when "avatar"
         upload_avatar_for(user, upload)
       when "profile_background"
@@ -380,11 +388,16 @@ class UsersController < ApplicationController
     render nothing: true
   end
 
-  def clear_profile_background
+  def destroy_user_image
     user = fetch_user_from_params
     guardian.ensure_can_edit!(user)
 
-    user.user_profile.clear_profile_background
+    image_type = params.require(:image_type)
+    if image_type == 'profile_background'
+      user.user_profile.clear_profile_background
+    else
+      raise Discourse::InvalidParameters.new(:image_type)
+    end
 
     render nothing: true
   end

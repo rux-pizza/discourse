@@ -2,6 +2,11 @@ var PosterNameComponent = Em.Component.extend({
   classNames: ['names'],
   displayNameOnPosts: Discourse.computed.setting('display_name_on_posts'),
 
+  // sanitize name for comparison
+  sanitizeName: function(name){
+    return name.toLowerCase().replace(/[\s_-]/g,'');
+  },
+
   render: function(buffer) {
     var post = this.get('post');
 
@@ -27,8 +32,10 @@ var PosterNameComponent = Em.Component.extend({
       }
       buffer.push("</span>");
 
+
+
       // Are we showing full names?
-      if (name && (name !== username) && this.get('displayNameOnPosts')) {
+      if (name && this.get('displayNameOnPosts') && (this.sanitizeName(name) !== this.sanitizeName(username))) {
         name = Handlebars.Utils.escapeExpression(name);
         buffer.push("<span class='full-name'><a href='#'>" + name + "</a></span>");
       }
@@ -37,6 +44,7 @@ var PosterNameComponent = Em.Component.extend({
       var title = post.get('user_title');
       if (!Em.isEmpty(title)) {
 
+        title = Handlebars.Utils.escapeExpression(title);
         buffer.push('<span class="user-title">');
         if (Em.isEmpty(primaryGroupName)) {
           buffer.push(title);

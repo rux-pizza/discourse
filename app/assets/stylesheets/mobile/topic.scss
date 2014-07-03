@@ -20,8 +20,15 @@
   h1 {
     font-size: 1.5em;
     margin:0;
-    a.edit-topic {font-size: 15px;}
-    a {color: $primary;}
+    a.edit-topic {
+      // let's not even bother with inline title and category edits on mobile
+      // use the full editor instead
+      visibility: hidden;
+    }
+    a {
+      color: $primary;
+      vertical-align: middle;
+    }
   }
   .private-message-glyph { display: none; }
 }
@@ -83,6 +90,7 @@
       width: 45px;
       height: 20px;
       text-align: center;
+      font-size: 16px;
     }
     button.btn {
       float: right !important;
@@ -135,6 +143,22 @@
     width: 0;
     border-right: 1px solid scale-color($success, $lightness: 50%);
     background-color: scale-color($success, $lightness: 50%);
+  }
+}
+
+.topic-error {
+  padding: 18px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 24px;
+  line-height: 1.1em;
+
+  .topic-retry {
+    display: block;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 

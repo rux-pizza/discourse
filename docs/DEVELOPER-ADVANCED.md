@@ -57,7 +57,7 @@ Vagrant version 1.1.2. With this Vagrantfile:
     ln -sf /usr/share/zoneinfo/Canada/Eastern /etc/localtime
     apt-get -yqq update
     apt-get -yqq install python-software-properties
-    apt-get -yqq install vim curl expect debconf-utils git-core build-essential zlib1g-dev libssl-dev openssl libcurl4-openssl-dev libreadline6-dev libpcre3 libpcre3-dev
+    apt-get -yqq install vim curl expect debconf-utils git-core build-essential zlib1g-dev libssl-dev openssl libcurl4-openssl-dev libreadline6-dev libpcre3 libpcre3-dev imagemagick
 
 ## Unicode
 
@@ -131,6 +131,12 @@ config.action_mailer.smtp_settings = { address: "localhost", port: 1025 }
 
 Set up [MailCatcher](https://github.com/sj26/mailcatcher) so the app can intercept
 outbound email and you can verify what is being sent.
+
+Note also that mail is sent asynchronously by Sidekiq, so you'll need to have it running to process jobs. Run it with this command:
+
+```
+bundle exec sidekiq
+```
 
 ## Phantomjs
 

@@ -154,13 +154,16 @@ basic:
   topics_per_page:
     default: 30
     min: 1
+  show_subcategory_list:
+    default: false
+    client: true
   posts_per_page:
     client: true
     default: 20
     min: 1
   enable_badges:
     client: true
-    default: false
+    default: true
 
 users:
   invite_only:
@@ -247,7 +250,8 @@ users:
   enable_names:
     client: true
     default: true
-  invite_expiry_days: 4
+  invite_expiry_days: 1
+  invite_passthrough_hours: 0
   invites_shown:
     client: true
     default: 30
@@ -258,6 +262,9 @@ users:
     client: true
     default: 15
   redirect_users_to_top_page: true
+
+  email_token_valid_hours: 24
+  email_token_grace_period_hours: 0
 
 posting:
   min_post_length:
@@ -467,6 +474,12 @@ trust:
     default: 25
     min: 0
     max: 100
+  leader_requires_topics_viewed_all_time:
+    default: 200
+    min: 0
+  leader_requires_posts_read_all_time:
+    default: 500
+    min: 0
   leader_requires_max_flagged:
     default: 5
     min: 0

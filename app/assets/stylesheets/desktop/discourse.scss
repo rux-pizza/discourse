@@ -115,11 +115,6 @@ body {
   }
 }
 
-blockquote {
-  /* 13px left is intentional here to properly align with post quotes */
-  padding: 10px 4px 4px 13px;
-}
-
 .topic-statuses {
   float: left;
   margin: 0 3px 0 0;
@@ -148,15 +143,11 @@ body {
 
   h1, h2, h3, h4, h5, h6 {
     margin: 0;
-    font-family: inherit;
-    font-weight: bold;
-    color: inherit;
     text-rendering: optimizelegibility;
   }
 
   .page-not-found {
     margin: 20px 0 40px 0;
-
   }
 
   .page-not-found-search {

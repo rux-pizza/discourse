@@ -203,8 +203,8 @@ Discourse::Application.routes.draw do
   get "users/:username/avatar(/:size)" => "users#avatar", constraints: {username: USERNAME_ROUTE_FORMAT} # LEGACY ROUTE
   post "users/:username/preferences/avatar" => "users#upload_avatar", constraints: {username: USERNAME_ROUTE_FORMAT} # LEGACY ROUTE
   post "users/:username/preferences/user_image" => "users#upload_user_image", constraints: {username: USERNAME_ROUTE_FORMAT}
+  delete "users/:username/preferences/user_image" => "users#destroy_user_image", constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username/preferences/avatar/pick" => "users#pick_avatar", constraints: {username: USERNAME_ROUTE_FORMAT}
-  put "users/:username/preferences/profile_background/clear" => "users#clear_profile_background", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/invited" => "users#invited", constraints: {username: USERNAME_ROUTE_FORMAT}
   post "users/:username/send_activation_email" => "users#send_activation_email", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/activity" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
@@ -275,6 +275,7 @@ Discourse::Application.routes.draw do
 
   resources :categories, :except => :show
   get "category/:id/show" => "categories#show"
+  post "category/uploads" => "categories#upload"
   post "category/:category_id/move" => "categories#move"
   get "category/:category.rss" => "list#category_feed", format: :rss
   get "category/:parent_category/:category.rss" => "list#category_feed", format: :rss
@@ -376,6 +377,7 @@ Discourse::Application.routes.draw do
   get "onebox" => "onebox#show"
 
   get "error" => "forums#error"
+  get "exception" => "list#latest"
 
   get "message-bus/poll" => "message_bus#poll"
 

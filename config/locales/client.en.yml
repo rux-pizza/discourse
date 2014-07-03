@@ -291,6 +291,12 @@ en:
       delete_yourself_not_allowed: "You cannot delete your account right now. Contact an admin to do delete your account for you."
       unread_message_count: "Messages"
 
+      staff_counters:
+        flags_given: "helpful flags cast"
+        flagged_posts: "flagged posts"
+        deleted_posts: "deleted posts"
+        suspensions: "suspensions"
+
       messages:
         all: "All"
         mine: "Mine"
@@ -462,8 +468,23 @@ en:
         the_topic: "the topic"
 
     loading: "Loading..."
+    errors:
+      prev_page: "while trying to load"
+      reasons:
+        network: "Network Error"
+        server: "Server Error: {{code}}"
+        unknown: "Error"
+      desc:
+        network: "Please check your connection."
+        network_fixed: "Looks like it's back."
+        server: "Something went wrong."
+        unknown: "Something went wrong."
+      buttons:
+        back: "Go Back"
+        again: "Try Again"
+        fixed: "Load Page"
     close: "Close"
-    assets_changed_confirm: "Discourse has been updated, would you like to refresh to get the latest version?"
+    assets_changed_confirm: "This site was just updated. Refresh now for the latest version?"
     read_only_mode:
       enabled: "An administrator enabled read-only mode. You can continue to browse the site but interactions may not work."
       login_disabled: "Login is disabled while the site is in read only mode."
@@ -820,10 +841,10 @@ en:
           description: "You will be notified of every new post in this topic. The count of unread and new posts will also appear next to the topic's listing."
         tracking_pm:
           title: "Tracking"
-          description: "You will be notified only if someone mentions your @name or replies to your post. The count of unread and new posts will also appear next to the topic's listing."
+          description: "The count of unread and new posts will appear next to the private message. You will be notified only if someone mentions your @name or replies to your post."
         tracking:
           title: "Tracking"
-          description: "You will be notified only if someone mentions your @name or replies to your post. The count of unread and new posts will also appear next to the topic's listing."
+          description: "The count of unread and new posts will appear next to the topic's listing. You will be notified only if someone mentions your @name or replies to your post. "
         regular:
           title: "Regular"
           description: "You will be notified only if someone mentions your @name or replies to your post."
@@ -877,7 +898,7 @@ en:
         email_or_username: "Invitee's Email or Username"
         email_or_username_placeholder: "email address or username"
         action: "Invite"
-        success: "Thanks! We've invited that user to participate in this private message."
+        success: "We've invited that user to participate in this private message."
         error: "Sorry, there was an error inviting that user."
         group_name: "group name"
 
@@ -889,7 +910,7 @@ en:
         to_forum: "We'll send a brief email allowing your friend to join by clicking a link, no login required."
 
         email_placeholder: 'name@example.com'
-        success: "Thanks! We mailed out an invitation to <b>{{email}}</b>. We'll let you know when they redeem your invitation. Check the invitations tab on your user page to keep track of who you've invited."
+        success: "We mailed out an invitation to <b>{{email}}</b>. We'll let you know when they redeem your invitation. Check the invitations tab on your user page to keep track of who you've invited."
         error: "Sorry, we couldn't invite that person. Perhaps they are already a user?"
 
       login_reply: 'Sign In to Reply'
@@ -1028,9 +1049,9 @@ en:
           like: "Take your fuck back"
           vote: "Undo vote"
         people:
-          off_topic: "{{icons}} marked this as off-topic"
-          spam: "{{icons}} marked this as spam"
-          inappropriate: "{{icons}} marked this as inappropriate"
+          off_topic: "{{icons}} flagged this as off-topic"
+          spam: "{{icons}} flagged this as spam"
+          inappropriate: "{{icons}} flagged this as inappropriate"
           notify_moderators: "{{icons}} notified moderators"
           notify_moderators_with_url: "{{icons}} <a href='{{postUrl}}'>notified moderators</a>"
           notify_user: "{{icons}} sent a private message"
@@ -1146,6 +1167,8 @@ en:
       name: "Category Name"
       description: "Description"
       topic: "category topic"
+      logo: "Category Logo Image"
+      background_image: "Category Background Image"
       badge_colors: "Badge colors"
       background_color: "Background color"
       foreground_color: "Foreground color"
@@ -1158,6 +1181,7 @@ en:
       change_in_category_topic: "Edit Description"
       already_used: 'This color has been used by another category'
       security: "Security"
+      images: "Images"
       auto_close_label: "Auto-close topics after:"
       auto_close_units: "hours"
       email_in: "Custom incoming email address:"
@@ -1798,7 +1822,9 @@ en:
           days: "days"
           topics_replied_to: "Topics Replied To"
           topics_viewed: "Topics Viewed"
+          topics_viewed_all_time: "Topics Viewed (all time)"
           posts_read: "Posts Read"
+          posts_read_all_time: "Posts Read (all time)"
           flagged_posts: "Flagged Posts"
           flagged_by_users: "Users Who Flagged"
           qualifies: "Qualifies for trust level 3."
@@ -1862,6 +1888,7 @@ en:
         no_badges: There are no badges that can be granted.
         allow_title: Allow badge to be used as a title
         multiple_grant: Can be granted multiple times
+        listable: Show badge on the public badges page
         icon: Icon
 
     lightbox:
@@ -1936,6 +1963,9 @@ en:
         welcome:
           name: Welcome
           description: Received a like.
+        autobiographer:
+          name: Autobiographer
+          description: Filled user profile information.
         nice_post:
           name: Nice Post
           description: Received 10 likes on a post. This badge can be granted multiple times.
@@ -1944,4 +1974,4 @@ en:
           description: Received 25 likes on a post. This badge can be granted multiple times.
         great_post:
           name: Great Post
-          description: Received 100 likes on a post. This badge can be granted multiple times.
+          description: Received 50 likes on a post. This badge can be granted multiple times.

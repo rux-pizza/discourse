@@ -210,7 +210,7 @@ a.star {
 
     /* limit to one line of avatars for now */
     height:30px;
-    overflow:hidden;
+    overflow:hidden !important; // otherwise parent mobile styles conflict
   }
 
   .avatar {
@@ -259,7 +259,7 @@ a.star {
 
   .topic-links {
     .badge-notification {
-      margin-right: 1px 5px 2px 0;
+      margin: 1px 5px 2px 0;
     }
   }
 
@@ -386,6 +386,11 @@ iframe {
 
 .dropdown-menu li  {
   margin: 5px 0;
+  .fa {
+    float: left;
+    margin-right: 5px;
+    padding-top: 1px;
+  }
 }
 
 .btn-group {
@@ -396,10 +401,6 @@ iframe {
 .dropdown-toggle {
   float: left;
   position: relative;
-}
-
-.contents .cooked a {
-  word-wrap: break-word;
 }
 
 .wiki {
@@ -478,7 +479,18 @@ span.btn-text {display: none;}
 
 blockquote {
   clear:both;
-  margin: 0;
+  /* leave browser defaults for top and bottom here */
+  margin-left: 0;
+  margin-right: 0;
+}
+
+// we assume blockquotes have their own margins, so all blockquotes
+// will remove margins from first (top) and last (bottom) child elements
+blockquote > *:first-child {
+  margin-top: 0 !important;
+}
+blockquote > *:last-child {
+  margin-bottom: 0 !important;
 }
 
 .quote-controls {

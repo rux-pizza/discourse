@@ -55,4 +55,36 @@ class BadgeGranter
     Jobs.enqueue(:update_badges, args)
   end
 
+  def self.backfill(badge)
+    return unless badge.query.present?
+
+    post_clause = badge.target_posts ? "AND q.post_id = ub.post_id" : ""
+    post_id_field = badge.target_posts ? "q.post_id" : "NULL"
+
+    sql = "DELETE FROM user_badges
+           WHERE id in (
+             SELECT ub.id
+             FROM user_badges ub
+             LEFT JOIN ( #{badge.query} ) q
+             ON q.user_id = ub.user_id
+              #{post_clause}
+             WHERE ub.id = :id AND q.user_id IS NULL
+           )"
+
+    Badge.exec_sql(sql, id: badge.id)
+
+    sql = "INSERT INTO user_badges(badge_id, user_id, granted_at, granted_by_id, post_id)
+            SELECT :id, q.user_id, q.granted_at, -1, #{post_id_field}
+            FROM ( #{badge.query} ) q
+            LEFT JOIN user_badges ub ON
+              ub.id = :id AND ub.user_id = q.user_id
+              #{post_clause}
+            WHERE ub.id IS NULL"
+
+    Badge.exec_sql(sql, id: badge.id)
+
+    badge.reset_grant_count!
+
+  end
+
 end

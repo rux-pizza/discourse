@@ -11,8 +11,9 @@ class CategoriesController < ApplicationController
 
     options = {}
     options[:latest_posts] = params[:latest_posts] || SiteSetting.category_featured_topics
+    options[:parent_category_id] = params[:parent_category_id]
 
-    @list = CategoryList.new(guardian,options)
+    @list = CategoryList.new(guardian, options)
     @list.draft_key = Draft::NEW_TOPIC
     @list.draft_sequence = DraftSequence.current(current_user, Draft::NEW_TOPIC)
     @list.draft = Draft.get(current_user, @list.draft_key, @list.draft_sequence) if current_user
@@ -23,6 +24,19 @@ class CategoriesController < ApplicationController
     respond_to do |format|
       format.html { render }
       format.json { render_serialized(@list, CategoryListSerializer) }
+    end
+  end
+
+  def upload
+    params.require(:image_type)
+    guardian.ensure_can_create!(Category)
+
+    file = params[:file] || params[:files].first
+    upload = Upload.create_for(current_user.id, file.tempfile, file.original_filename, File.size(file.tempfile))
+    if upload.errors.blank?
+      render json: { url: upload.url, width: upload.width, height: upload.height }
+    else
+      render status: 422, text: upload.errors.full_messages
     end
   end
 
@@ -105,7 +119,7 @@ class CategoriesController < ApplicationController
           end
         end
 
-        params.permit(*required_param_keys, :position, :email_in, :email_in_allow_strangers, :parent_category_id, :auto_close_hours, :permissions => [*p.try(:keys)])
+        params.permit(*required_param_keys, :position, :email_in, :email_in_allow_strangers, :parent_category_id, :auto_close_hours, :logo_url, :background_url, :permissions => [*p.try(:keys)])
       end
     end
 

@@ -43,19 +43,6 @@
     display: none;
   }
 
-  #profile-background-preview {
-    height: 270px;
-
-    background-position: center center;
-    background-size: cover;
-
-    background-color: $primary;
-  }
-
-  #profile-background-controls {
-    padding: 10px;
-  }
-
   .static {
     color: $primary;
     display: inline-block;
@@ -203,9 +190,9 @@
       }
 
       .primary {
-        margin-top: 20px;
+        position: relative;
         float: left;
-        width: 65%;
+        width: 71%;
         color: $secondary;
         text-shadow: rgba(0, 0, 0, 0.5) 0 1px 1px;
 
@@ -214,12 +201,17 @@
         .bio {
           color: $secondary;
           text-shadow: rgba(0, 0, 0, 0.5) 0 1px 1px;
+          max-height: 300px;
+          overflow: auto;
 
           a[href] {
             color: $secondary;
             text-decoration: underline;
             text-shadow: rgba(0, 0, 0, 0.5) 0 1px 1px;
+          }
 
+          img {
+            max-width: 100%;
           }
         }
 
@@ -259,6 +251,10 @@
   .about.collapsed-info {
     .controls {
       margin-top: 0;
+    }
+
+    .staff-counters {
+      display: none;
     }
 
     .details {
@@ -344,5 +340,35 @@
       float: right;
       margin-top: -4px;
     }
+  }
+
+  .staff-counters {
+    text-align: left;
+    position: absolute;
+    > div {
+      margin-bottom: 10px;
+    }
+  }
+
+  .pill {
+    border-radius: 15px;
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 30px;
+  }
+  .helpful-flags {
+    background-color: green;
+  }
+  .flagged-posts {
+    background-color: #E49735;
+  }
+  .deleted-posts {
+    background-color: #EC441B;
+  }
+  .suspensions {
+    background-color: #c22020;
   }
 }

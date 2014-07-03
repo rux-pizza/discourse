@@ -68,6 +68,9 @@ class Category < ActiveRecord::Base
   # we may consider wrapping this in another spot
   attr_accessor :displayable_topics, :permission, :subcategory_ids, :notification_level
 
+  def self.last_updated_at
+    order('updated_at desc').limit(1).pluck(:updated_at).first.to_i
+  end
 
   def self.scoped_to_permissions(guardian, permission_types)
     if guardian && guardian.is_staff?
@@ -356,10 +359,12 @@ end
 #  email_in_allow_strangers :boolean          default(FALSE)
 #  topics_day               :integer          default(0)
 #  posts_day                :integer          default(0)
+#  logo_url                 :string(255)
+#  background_url           :string(255)
 #
 # Indexes
 #
-#  index_categories_on_email_in                     (email_in) UNIQUE
-#  index_categories_on_parent_category_id_and_name  (parent_category_id,name) UNIQUE
-#  index_categories_on_topic_count                  (topic_count)
+#  index_categories_on_email_in     (email_in) UNIQUE
+#  index_categories_on_topic_count  (topic_count)
+#  unique_index_categories_on_name  (name) UNIQUE
 #

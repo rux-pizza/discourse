@@ -268,12 +268,10 @@ sv:
         frequency: "Vi kommer bara maila dig om vi inte har sett dig nyligen och du inte redan sett det vi mailar dig om."
       name:
         title: "Namn"
-        instructions: "Den långa versionen av ditt namn; Synligt för allmänheten."
         too_short: "Ditt namn är för kort."
         ok: "Ditt namn ser bra ut."
       username:
         title: "Användarnamn"
-        instructions: "Måste vara unikt. Personer kan omnämna dig som @username."
         short_instructions: "Personer kan omnämna dig som @{{username}}."
         available: "Ditt användarnamn är tillgängligt."
         global_match: "E-posten matchar det registrerade användarnamnet."
@@ -355,7 +353,6 @@ sv:
         the_topic: "tråden"
     loading: "Laddar..."
     close: "Stäng"
-    assets_changed_confirm: "Discourse har uppdaterats, vill du ladda om för att få den senaste versionen?"
     learn_more: "lär dig mer..."
     year: 'år'
     month: 'månad'
@@ -432,7 +429,6 @@ sv:
       create_pm: "Skapa Privat Meddelande"
       title: "eller tryck Ctrl+Enter"
       users_placeholder: "Lägg till en användare"
-      title_placeholder: "Skriv din titel här. Vad handlar denna diskussion om i en kort mening?"
       edit_reason_placeholder: "varför redigerar du?"
       show_edit_reason: "(lägg till anledningar för redigering)"
       reply_placeholder: "Skriv ditt svar här. Använd Markdown eller BBCode för formatering. Dra eller klista in en bild här för att ladda upp den."
@@ -455,7 +451,6 @@ sv:
       quote_title: "Citat"
       quote_text: "Citat"
       code_title: "Förformaterad text"
-      code_text: "skriv in förformaterad text här"
       upload_title: "Bild"
       upload_description: "skriv en bildbeskrivning här"
       olist_title: "Numrerad Lista"
@@ -612,10 +607,8 @@ sv:
           description: "Du kommer att få notfieringar om varje nytt inlägg i denna tråd. Antalet olästa och nya inlägg kommer även att visas vid sidan av trådens namn."
         tracking_pm:
           title: "bevakade"
-          description: "Du kommer endast att få notifieringar om någon nämner ditt @namn eller svarar på ditt inlägg. Antalet olästa och nya inlägg kommer även att visas vid sidan av trådens namn."
         tracking:
           title: "Följer"
-          description: "Du kommer endast att få notifieringar om någon nämner ditt @namn eller svarar på ditt inlägg. Antalet olästa och nya inlägg kommer även att visas vid sidan av trådens namn."
         regular:
           title: "Vanlig"
           description: "Du kommer endast att få notifieringar om någon nämner ditt @namn eller svarar på ditt inlägg."
@@ -768,9 +761,6 @@ sv:
           like: "Ångra gillning"
           vote: "Ångra röstning"
         people:
-          off_topic: "{{icons}} markerade detta som off-topic"
-          spam: "{{icons}} markerade detta som spam"
-          inappropriate: "{{icons}} markerade detta som olämpligt"
           notify_moderators: "{{icons}} notifierade moderatorer"
           notify_moderators_with_url: "{{icons}} <a href='{{postUrl}}'>notifierade moderatorer</a>"
           notify_user: "{{icons}} skicka ett privat meddelande"
@@ -1065,7 +1055,6 @@ sv:
         view_message: "Svara"
         no_results: "Det finns inga flaggor."
         topic_flagged: "Denna <strong>tråd</strong> har blivit flaggad."
-        visit_topic: "Besök tråden för att undersöka och vidta åtgärder."
         summary:
           action_type_3:
             one: "off-topic"
@@ -1150,7 +1139,6 @@ sv:
         override_default: "Skriv över standard?"
         enabled: "Aktiverad?"
         preview: "förhandsgranska"
-        undo_preview: "ångra förhandsgranskning"
         save: "Spara"
         new: "Ny"
         new_style: "Ny Stil"
@@ -1368,9 +1356,7 @@ sv:
           requirement_heading: "krav"
           visits: "besök"
           days: "dagar"
-          topics_with_replies: "Trådar med svar"
           topics_replied_to: "Trådar svarade på"
-          quality_content: "Kvalitetsinnehåll"
           flagged_posts: "flaggade inlägg"
       site_content:
         none: "Välj typ av innehåll för att börja ändra."

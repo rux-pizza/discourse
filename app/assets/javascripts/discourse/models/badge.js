@@ -117,6 +117,7 @@ Discourse.Badge = Discourse.Model.extend({
         badge_type_id: this.get('badge_type_id'),
         allow_title: !!this.get('allow_title'),
         multiple_grant: !!this.get('multiple_grant'),
+        listable: !!this.get('listable'),
         icon: this.get('icon')
       }
     }).then(function(json) {
@@ -183,8 +184,12 @@ Discourse.Badge.reopenClass({
     @method findAll
     @returns {Promise} a promise that resolves to an array of `Discourse.Badge`
   **/
-  findAll: function() {
-    return Discourse.ajax('/badges.json').then(function(badgesJson) {
+  findAll: function(opts) {
+    var listable = "";
+    if(opts && opts.onlyListable){
+      listable = "?only_listable=true";
+    }
+    return Discourse.ajax('/badges.json' + listable).then(function(badgesJson) {
       return Discourse.Badge.createFromJson(badgesJson);
     });
   },

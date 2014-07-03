@@ -14,15 +14,15 @@ describe PrettyText do
       end
 
       it "produces a quote even with new lines in it" do
-        PrettyText.cook("[quote=\"EvilTrout, post:123, topic:456, full:true\"]ddd\n[/quote]").should match_html "<p><aside class=\"quote\" data-post=\"123\" data-topic=\"456\" data-full=\"true\"><div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img width=\"20\" height=\"20\" src=\"http://test.localhost/uploads/default/avatars/42d/57c/46ce7ee487/40.png\" class=\"avatar\">EvilTrout said:</div>\n<blockquote><p>ddd</p></blockquote></aside></p>"
+        PrettyText.cook("[quote=\"EvilTrout, post:123, topic:456, full:true\"]ddd\n[/quote]").should match_html "<aside class=\"quote\" data-post=\"123\" data-topic=\"456\" data-full=\"true\"><div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img width=\"20\" height=\"20\" src=\"http://test.localhost/uploads/default/avatars/42d/57c/46ce7ee487/40.png\" class=\"avatar\">EvilTrout said:</div>\n<blockquote><p>ddd</p></blockquote></aside>"
       end
 
       it "should produce a quote" do
-        PrettyText.cook("[quote=\"EvilTrout, post:123, topic:456, full:true\"]ddd[/quote]").should match_html "<p><aside class=\"quote\" data-post=\"123\" data-topic=\"456\" data-full=\"true\"><div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img width=\"20\" height=\"20\" src=\"http://test.localhost/uploads/default/avatars/42d/57c/46ce7ee487/40.png\" class=\"avatar\">EvilTrout said:</div>\n<blockquote><p>ddd</p></blockquote></aside></p>"
+        PrettyText.cook("[quote=\"EvilTrout, post:123, topic:456, full:true\"]ddd[/quote]").should match_html "<aside class=\"quote\" data-post=\"123\" data-topic=\"456\" data-full=\"true\"><div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img width=\"20\" height=\"20\" src=\"http://test.localhost/uploads/default/avatars/42d/57c/46ce7ee487/40.png\" class=\"avatar\">EvilTrout said:</div>\n<blockquote><p>ddd</p></blockquote></aside>"
       end
 
       it "trims spaces on quote params" do
-        PrettyText.cook("[quote=\"EvilTrout, post:555, topic: 666\"]ddd[/quote]").should match_html "<p><aside class=\"quote\" data-post=\"555\" data-topic=\"666\"><div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img width=\"20\" height=\"20\" src=\"http://test.localhost/uploads/default/avatars/42d/57c/46ce7ee487/40.png\" class=\"avatar\">EvilTrout said:</div>\n<blockquote><p>ddd</p></blockquote></aside></p>"
+        PrettyText.cook("[quote=\"EvilTrout, post:555, topic: 666\"]ddd[/quote]").should match_html "<aside class=\"quote\" data-post=\"555\" data-topic=\"666\"><div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img width=\"20\" height=\"20\" src=\"http://test.localhost/uploads/default/avatars/42d/57c/46ce7ee487/40.png\" class=\"avatar\">EvilTrout said:</div>\n<blockquote><p>ddd</p></blockquote></aside>"
       end
 
     end
@@ -254,8 +254,30 @@ describe PrettyText do
       PrettyText.cook("**hello**\n**world**").should match_html "<p><strong>hello</strong><br /><strong>world</strong></p>"
     end
 
-    pending "allows does not bold chinese intra word" do
+    it "allows for * and _  in bold" do
+      PrettyText.cook("**a*_b**").should match_html "<p><strong>a*_b</strong></p>"
+    end
+
+    pending "small links" do
+      PrettyText.cook("<small>\nhttp://a.com\n<small>").should match_html "<p><small><br><a href=\"http://a.com\" rel=\"nofollow\">http://a.com</a><br></small></p>"
+    end
+
+
+    it "does not apply italics when there is a space inside" do
+      PrettyText.cook("** hello**").should match_html "<p>** hello**</p>"
+      PrettyText.cook("**hello **").should match_html "<p>**hello **</p>"
+    end
+
+    pending "allows comments through" do
+      PrettyText.cook("boom <!--comment-->").should match_html "<p>boom <!--comment--></p>"
+    end
+
+    it "allows does not bold chinese intra word" do
       PrettyText.cook("你**hello**").should match_html "<p>你**hello**</p>"
+    end
+
+    it "allows bold chinese" do
+      PrettyText.cook("**你hello**").should match_html "<p><strong>你hello</strong></p>"
     end
 
     pending "does not break a streak for mentions" do
