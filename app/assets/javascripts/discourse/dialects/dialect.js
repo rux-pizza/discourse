@@ -1,3 +1,4 @@
+/*global md5:true */
 /**
 
   Discourse uses the Markdown.js as its main parser. `Discourse.Dialect` is the framework
@@ -9,7 +10,8 @@ var parser = window.BetterMarkdown,
     DialectHelpers = parser.DialectHelpers,
     dialect = MD.dialects.Discourse = DialectHelpers.subclassDialect( MD.dialects.Gruber ),
     initialized = false,
-    emitters = [];
+    emitters = [],
+    hoisted;
 
 /**
   Initialize our dialects for processing.
@@ -35,23 +37,18 @@ function processTextNodes(node, event, emitter) {
   if (node.length < 2) { return; }
 
   if (node[0] === '__RAW') {
+    var hash = md5(node[1]);
+    hoisted[hash] = node[1];
+    node[1] = hash;
     return;
   }
 
-  var skipSanitize = [];
   for (var j=1; j<node.length; j++) {
     var textContent = node[j];
     if (typeof textContent === "string") {
-      if (dialect.options.sanitize && !skipSanitize[textContent]) {
-        textContent = Discourse.Markdown.sanitize(textContent);
-      }
-
       var result = emitter(textContent, event);
       if (result) {
         if (result instanceof Array) {
-          for (var i=0; i<result.length; i++) {
-            skipSanitize[result[i]] = true;
-          }
           node.splice.apply(node, [j, 1].concat(result));
         } else {
           node[j] = result;
@@ -104,6 +101,14 @@ function parseTree(tree, path, insideCounts) {
 
       insideCounts[tagName] = insideCounts[tagName] - 1;
     }
+
+    // If raw nodes are in paragraphs, pull them up
+    if (tree.length === 2 && tree[0] === 'p' && tree[1] instanceof Array && tree[1][0] === "__RAW") {
+      var text = tree[1][1];
+      tree[0] = "__RAW";
+      tree[1] = text;
+    }
+
     path.pop();
   }
   return tree;
@@ -118,13 +123,14 @@ function parseTree(tree, path, insideCounts) {
   @returns {Boolean} whether there is an invalid word boundary
 **/
 function invalidBoundary(args, prev) {
-  if (!args.wordBoundary && !args.spaceBoundary) { return false; }
+  if (!(args.wordBoundary || args.spaceBoundary || args.spaceOrTagBoundary)) { return false; }
 
   var last = prev[prev.length - 1];
   if (typeof last !== "string") { return false; }
 
   if (args.wordBoundary && (last.match(/(\w|\/)$/))) { return true; }
   if (args.spaceBoundary && (!last.match(/\s$/))) { return true; }
+  if (args.spaceOrTagBoundary && (!last.match(/(\s|\>)$/))) { return true; }
 }
 
 /**
@@ -146,10 +152,27 @@ Discourse.Dialect = {
   **/
   cook: function(text, opts) {
     if (!initialized) { initializeDialects(); }
+    hoisted = {};
     dialect.options = opts;
-    var tree = parser.toHTMLTree(text, 'Discourse');
+    var tree = parser.toHTMLTree(text, 'Discourse'),
+        result = parser.renderJsonML(parseTree(tree));
 
-    return parser.renderJsonML(parseTree(tree));
+    if (opts.sanitize) {
+      result = Discourse.Markdown.sanitize(result);
+    } else if (opts.sanitizerFunction) {
+      result = opts.sanitizerFunction(result);
+    }
+
+    // If we hoisted out anything, put it back
+    var keys = Object.keys(hoisted);
+    if (keys.length) {
+      keys.forEach(function(k) {
+        result = result.replace(k, hoisted[k]);
+      });
+    }
+
+    hoisted = {};
+    return result.trim();
   },
 
   /**

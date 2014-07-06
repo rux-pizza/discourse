@@ -117,6 +117,10 @@
         font-size: 20px;
         margin-bottom: 6px;
         font-weight: normal;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       a[href] {
@@ -138,7 +142,7 @@
           margin: 0 0 7px 0;
         }
         dt {
-          color: $primary;
+          color: scale-color($primary, $lightness: 75%);
           margin: 0;
         }
       }

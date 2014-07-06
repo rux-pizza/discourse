@@ -13,7 +13,13 @@ class BadgeGranter
   def grant
     return if @granted_by and !Guardian.new(@granted_by).can_grant_badges?(@user)
 
-    user_badge = UserBadge.find_by(badge_id: @badge.id, user_id: @user.id, post_id: @post_id)
+    find_by = { badge_id: @badge.id, user_id: @user.id }
+
+    if @badge.multiple_grant?
+      find_by[:post_id] = @post_id
+    end
+
+    user_badge = UserBadge.find_by(find_by)
 
     if user_badge.nil? || (@badge.multiple_grant? && @post_id.nil?)
       UserBadge.transaction do
@@ -68,7 +74,7 @@ class BadgeGranter
              LEFT JOIN ( #{badge.query} ) q
              ON q.user_id = ub.user_id
               #{post_clause}
-             WHERE ub.id = :id AND q.user_id IS NULL
+             WHERE ub.badge_id = :id AND q.user_id IS NULL
            )"
 
     Badge.exec_sql(sql, id: badge.id)
@@ -77,9 +83,9 @@ class BadgeGranter
             SELECT :id, q.user_id, q.granted_at, -1, #{post_id_field}
             FROM ( #{badge.query} ) q
             LEFT JOIN user_badges ub ON
-              ub.id = :id AND ub.user_id = q.user_id
+              ub.badge_id = :id AND ub.user_id = q.user_id
               #{post_clause}
-            WHERE ub.id IS NULL"
+            WHERE ub.badge_id IS NULL"
 
     Badge.exec_sql(sql, id: badge.id)
 

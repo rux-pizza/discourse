@@ -134,14 +134,16 @@ To **upgrade Discourse to the latest version**, visit `/admin/docker` and follow
 The `launcher` command in the `/var/docker` folder can be used for various kinds of maintenance:
 
 ```
-Usage: launcher COMMAND CONFIG
+Usage: launcher COMMAND CONFIG [--skip-prereqs]
 Commands:
     start:      Start/initialize a container
     stop:       Stop a running container
     restart:    Restart a container
     destroy:    Stop and remove a container
+    enter:      Use nsenter to enter a container
     ssh:        Start a bash shell in a running container
     logs:       Docker logs for container
+    mailtest:   Test the mail settings in a container
     bootstrap:  Bootstrap a container for the config based on a template
     rebuild:    Rebuild a container (destroy old, bootstrap, start new)
 ```
@@ -149,6 +151,8 @@ Commands:
 # Other Awesome Stuff
 
 Do you want...
+
+* Users to log in *only* via your pre-existing website's registration system? [Configure Single-Sign-On](https://meta.discourse.org/t/official-single-sign-on-for-discourse/13045).
 
 - Users to log in via Google? (new Oauth2 authentication) [Configure Google logins](https://meta.discourse.org/t/configuring-google-login-for-discourse/15858).
 

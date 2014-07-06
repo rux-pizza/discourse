@@ -36,6 +36,8 @@ en:
   is_reserved: "is reserved"
 
   errors:
+    messages:
+      too_long_validation: "is limited to %{max} characters; you entered %{length}."
     embed:
       load_from_remote: "There was an error loading that post."
 
@@ -731,14 +733,14 @@ en:
     min_password_length: "Minimum password length."
     block_common_passwords: "Don't allow passwords that are in the 10000 most common passwords."
 
-    enable_sso: "Enable single sign on via an external site"
+    enable_sso: "Enable single sign on via an external site (Note: Disables invites)"
     sso_url: "URL of single sign on endpoint"
     sso_secret: "Secret string used to encrypt/decrypt SSO information, be sure it is 10 chars or longer"
     sso_overrides_email: "Overrides local email with external site email from SSO payload (WARNING: discrepancies can occur due to normalization of local emails)"
     sso_overrides_username: "Overrides local username with external site username from SSO payload (WARNING: discrepancies can occur due to differences in username length/requirements)"
     sso_overrides_name: "Overrides local name with external site name from SSO payload (WARNING: discrepancies can occur due to normalization of local names)"
 
-    enable_local_logins: "Enable traditional, local username and password authentication"
+    enable_local_logins: "Enable traditional, local username and password authentication. (Note: Required for invites)"
     enable_google_logins: "(deprecated) Enable Google authentication. This is the OpenID method of authentication which Google has deprecated. New installs will NOT work with this. Use Google Oauth2 instead. Existing installs must move to Google Oauth2 by April 20, 2015."
     enable_yahoo_logins: "Enable Yahoo authentication"
 
@@ -1060,7 +1062,7 @@ en:
 
       %{invite_link}
 
-      This is an invitation from a trusted user, so you can reply to the discussion immediately.
+      This invitation is from a trusted user, so you can reply to the discussion immediately.
 
   invite_forum_mailer:
     subject_template: "[%{site_name}] %{invitee_name} invited you to join"
@@ -1125,7 +1127,7 @@ en:
   new_version_mailer:
     subject_template: "[%{site_name}] New Discourse version, update available"
     text_body_template: |
-      A new version of Discourse is available.
+      A new version of [Discourse](http://www.discourse.org) is available.
 
       Your version: %{installed_version}
       New version: **%{new_version}**
@@ -1141,7 +1143,7 @@ en:
   new_version_mailer_with_notes:
     subject_template: "[%{site_name}] update available"
     text_body_template: |
-      A new version of Discourse is available.
+      A new version of [Discourse](http://www.discourse.org) is available.
 
       Your version: %{installed_version}
       New version: **%{new_version}**
@@ -1505,7 +1507,7 @@ en:
       new_activity: "New activity on your topics and posts:"
       top_topics: "Popular posts"
       other_new_topics: "Popular topics"
-      unsubscribe: "This summary email is sent as a courtesy notification from %{site_link} when we haven't seen you in a while. To unsubscribe %{unsubscribe_link}."
+      unsubscribe: "This digest is sent as a courtesy notification from %{site_link} when we haven't seen you in a while. To unsubscribe %{unsubscribe_link}."
       click_here: "click here"
       from: "%{site_name} digest"
       read_more: "Read More"

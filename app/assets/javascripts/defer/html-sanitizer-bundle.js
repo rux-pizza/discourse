@@ -852,15 +852,10 @@ html4.ATTRIBS = {
   'iframe::marginwidth': 0,
   'iframe::width': 0,
   'iframe::src': 1,
-  'img::align': 0,
   'img::alt': 0,
-  'img::border': 0,
   'img::height': 0,
-  'img::hspace': 0,
-  'img::ismap': 0,
   'img::name': 7,
   'img::src': 1,
-  'img::vspace': 0,
   'img::width': 0,
   'ins::cite': 1,
   'ins::datetime': 0,
@@ -2060,6 +2055,10 @@ var html = (function(html4) {
            html4.ATTRIBS.hasOwnProperty(attribKey))) {
         atype = html4.ATTRIBS[attribKey];
       }
+
+      // Discourse modification: give us more flexibility with whitelists
+      if (opt_nmTokenPolicy && opt_nmTokenPolicy(tagName, attribName, value)) { continue; }
+
       if (atype !== null) {
         switch (atype) {
           case html4.atype['NONE']: break;
@@ -2108,17 +2107,6 @@ var html = (function(html4) {
               log(opt_logger, tagName, attribName, oldValue, value);
             }
             break;
-          case html4.atype['ID']:
-          case html4.atype['IDREF']:
-          case html4.atype['IDREFS']:
-          case html4.atype['GLOBAL_NAME']:
-          case html4.atype['LOCAL_NAME']:
-          case html4.atype['CLASSES']:
-            value = opt_nmTokenPolicy ? opt_nmTokenPolicy(value) : value;
-            if (opt_logger) {
-              log(opt_logger, tagName, attribName, oldValue, value);
-            }
-            break;
           case html4.atype['URI']:
             value = safeUri(value,
               getUriEffect(tagName, attribName),
@@ -2135,7 +2123,6 @@ var html = (function(html4) {
           case html4.atype['URI_FRAGMENT']:
             if (value && '#' === value.charAt(0)) {
               value = value.substring(1);  // remove the leading '#'
-              value = opt_nmTokenPolicy ? opt_nmTokenPolicy(value) : value;
               if (value !== null && value !== void 0) {
                 value = '#' + value;  // restore the leading '#'
               }
