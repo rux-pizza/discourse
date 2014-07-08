@@ -13,8 +13,6 @@ display: none;
 display: none;
 }
 
-
-
 #reply-control {
   .composer-bottom-right {
     position: absolute;
@@ -86,6 +84,7 @@ display: none;
   }
   // The various states
   &.open {
+    max-height: 100%; // ensure no overflow e.g. on small Android
     height: 270px;
   }
   &.closed {
@@ -146,7 +145,6 @@ display: none;
   }
   .reply-area {
     max-width: 1500px;
-    margin-left: auto;
     margin-right: auto;
     float: none;
   }
@@ -155,6 +153,7 @@ display: none;
   // a small screen mobile device
   &.edit-title {
     &.open {
+      max-height: 100%; // ensure no overflow e.g. on small Android
       height: 250px;
     }
     .contents {
@@ -193,11 +192,6 @@ display: none;
           width: 428px;
           @include medium-width { width: 283px; }
           @include small-width { width: 218px; }
-        }
-        .select2-search input {
-          width: 378px;
-          @include medium-width { width: 233px; }
-          @include small-width { width: 168px; }
         }
       }
     }
@@ -354,4 +348,11 @@ display: none;
   #wmd-button-bar {
     display: none;
   }
+}
+
+// make sure the category selector *NEVER* gets focus by default on mobile anywhere
+.select2-hidden,
+.select2-search,
+.select2-focusser {
+  display:none !important;
 }
