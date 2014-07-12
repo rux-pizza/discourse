@@ -20,6 +20,9 @@ class StaticController < ApplicationController
       return redirect_to(url) unless url.blank?
     end
 
+    # The /guidelines route ALWAYS shows our FAQ, ignoring the faq_url site setting.
+    page = 'faq' if page == 'guidelines'
+
     # Don't allow paths like ".." or "/" or anything hacky like that
     page.gsub!(/[^a-z0-9\_\-]/, '')
 
@@ -35,6 +38,7 @@ class StaticController < ApplicationController
     end
 
     if lookup_context.find_all("#{file}.html").any?
+      @faq_overriden = !SiteSetting.faq_url.blank?
       render file, layout: !request.xhr?, formats: [:html]
       return
     end
@@ -60,8 +64,13 @@ class StaticController < ApplicationController
 
   skip_before_filter :verify_authenticity_token, only: [:cdn_asset]
   def cdn_asset
-    path = params[:path].gsub(/[^a-zA-Z0-9_\-\.]/, "")
-    path = (Rails.root + "public/assets/" + path).to_s
+    path = File.expand_path(Rails.root + "public/assets/" + params[:path])
+
+    # SECURITY what if path has /../
+    unless path.start_with?(Rails.root.to_s + "/public/assets")
+      raise Discourse::NotFound
+    end
+
     expires_in 1.year, public: true
     response.headers["Access-Control-Allow-Origin"] = params[:origin]
     begin
@@ -73,6 +82,10 @@ class StaticController < ApplicationController
       disposition: nil
     }
     opts[:type] = "application/x-javascript" if path =~ /\.js$/
+
+    # we must disable acceleration otherwise NGINX strips
+    # access control headers
+    request.env['sendfile.type'] = ''
     send_file(path, opts)
   end
 end

@@ -12,16 +12,64 @@ trust_level_badges.each do |spec|
     b.name = spec[:name]
     b.badge_type_id = spec[:type]
     b.query = Badge::Queries.trust_level(spec[:id])
+
+    # allow title for leader and elder
+    b.allow_title = spec[:id] > 2
   end
 end
 
 Badge.seed do |b|
-  b.id = Badge::PayingItForward
-  b.name = "Paying It Forward"
+  b.id = Badge::ReadFaq
+  b.name = "Read Faq"
+  b.badge_type_id = BadgeType::Bronze
+  b.multiple_grant = false
+  b.target_posts = false
+  b.query = Badge::Queries::ReadFaq
+end
+
+Badge.seed do |b|
+  b.id = Badge::FirstLink
+  b.name = "First Link"
   b.badge_type_id = BadgeType::Bronze
   b.multiple_grant = false
   b.target_posts = true
-  b.query = Badge::Queries::PayingItForward
+  b.query = Badge::Queries::FirstLink
+end
+
+Badge.seed do |b|
+  b.id = Badge::FirstQuote
+  b.name = "First Quote"
+  b.badge_type_id = BadgeType::Bronze
+  b.multiple_grant = false
+  b.target_posts = true
+  b.query = Badge::Queries::FirstQuote
+end
+
+Badge.seed do |b|
+  b.id = Badge::FirstLike
+  b.name = "First Like"
+  b.badge_type_id = BadgeType::Bronze
+  b.multiple_grant = false
+  b.target_posts = true
+  b.query = Badge::Queries::FirstLike
+end
+
+Badge.seed do |b|
+  b.id = Badge::FirstFlag
+  b.name = "First Flag"
+  b.badge_type_id = BadgeType::Bronze
+  b.multiple_grant = false
+  b.target_posts = false
+  b.query = Badge::Queries::FirstFlag
+end
+
+Badge.seed do |b|
+  b.id = Badge::FirstShare
+  b.name = "First Share"
+  b.badge_type_id = BadgeType::Bronze
+  b.multiple_grant = false
+  b.target_posts = true
+  b.query = Badge::Queries::FirstShare
 end
 
 Badge.seed do |b|

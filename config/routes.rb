@@ -176,11 +176,12 @@ Discourse::Application.routes.draw do
   post "login" => "static#enter"
   get "login" => "static#show", id: "login"
   get "faq" => "static#show", id: "faq"
-  get "guidelines" => "static#show", id: "faq"
+  get "guidelines" => "static#show", id: "guidelines"
   get "tos" => "static#show", id: "tos"
   get "privacy" => "static#show", id: "privacy"
   get "signup" => "list#latest"
 
+  post "users/read-faq" => "users#read_faq"
   get "users/search/users" => "users#search_users"
   get "users/password-reset/:token" => "users#password_reset"
   put "users/password-reset/:token" => "users#password_reset"
@@ -244,8 +245,6 @@ Discourse::Application.routes.draw do
       delete "destroy_many"
     end
   end
-
-  get "p/:post_id/:user_id" => "posts#short_link"
 
   resources :notifications
 
@@ -364,9 +363,11 @@ Discourse::Application.routes.draw do
 
   post "t/:topic_id/notifications" => "topics#set_notifications" , constraints: {topic_id: /\d+/}
 
+  get "p/:post_id(/:user_id)" => "posts#short_link"
   get "/posts/:id/cooked" => "posts#cooked"
   get "/posts/:id/expand-embed" => "posts#expand_embed"
-  get "raw/:topic_id(/:post_number)" => "posts#markdown"
+  get "/posts/:id/raw" => "posts#markdown_id"
+  get "raw/:topic_id(/:post_number)" => "posts#markdown_num"
 
   resources :invites do
     collection do

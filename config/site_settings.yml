@@ -381,10 +381,11 @@ email:
     default: ''
     type: email
   email_in_min_trust:
-    default: 3
-    enum: 'MinTrustToCreateTopicSetting'
+    default: 2
+    enum: 'TrustLevelSetting'
   email_in_category: -1
   email_prefix: ''
+  email_site_title: ''
 
 files:
   max_image_size_kb:
@@ -441,14 +442,18 @@ files:
     default: false
 
 trust:
-  default_trust_level: 0
-  default_invitee_trust_level: 1
+  default_trust_level:
+    default: 0
+    enum: 'TrustLevelSetting'
+  default_invitee_trust_level:
+    default: 1
+    enum: 'TrustLevelSetting'
   min_trust_to_create_topic:
     default: 0
-    enum: 'MinTrustToCreateTopicSetting'
+    enum: 'TrustLevelSetting'
   min_trust_to_edit_wiki_post:
     default: 1
-    enum: 'MinTrustToCreateTopicSetting'
+    enum: 'TrustLevelSetting'
   basic_requires_topics_entered: 5
   basic_requires_read_posts: 30
   basic_requires_time_spent_mins: 10
@@ -482,6 +487,9 @@ trust:
     min: 0
   leader_requires_max_flagged:
     default: 5
+    min: 0
+  leader_promotion_min_duration:
+    default: 14
     min: 0
 
 security:
@@ -519,6 +527,10 @@ spam:
   white_listed_spam_host_domains:
     default: ''
     type: list
+  levenshtein_distance_spammer_emails:
+      default: 2
+      min: 0
+      max: 3
 
 rate_limits:
   unique_posts_mins:

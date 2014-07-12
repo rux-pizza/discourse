@@ -1,4 +1,4 @@
-/*global Markdown:true BetterMarkdown:true */
+/*global Markdown:true, hljs:true */
 
 /**
   Contains methods to help us with markdown formatting.
@@ -226,6 +226,7 @@ Discourse.Markdown = {
   }
 
 };
+
 RSVP.EventTarget.mixin(Discourse.Markdown);
 
 Discourse.Markdown.whiteListTag('a', 'class', 'attachment');
@@ -237,7 +238,15 @@ Discourse.Markdown.whiteListTag('a', 'data-bbcode');
 
 Discourse.Markdown.whiteListTag('div', 'class', 'title');
 Discourse.Markdown.whiteListTag('div', 'class', 'quote-controls');
-Discourse.Markdown.whiteListTag('code', 'class', '*');
+
+// explicitly whitelist classes we need allowed through for
+// syntax highlighting, grabbed from highlight.js
+hljs.listLanguages().forEach(function (language) {
+  Discourse.Markdown.whiteListTag('code', 'class', language);
+});
+Discourse.Markdown.whiteListTag('code', 'class', 'text');
+Discourse.Markdown.whiteListTag('code', 'class', 'lang-auto');
+
 Discourse.Markdown.whiteListTag('span', 'class', 'mention');
 Discourse.Markdown.whiteListTag('span', 'class', 'spoiler');
 Discourse.Markdown.whiteListTag('div', 'class', 'spoiler');
@@ -249,6 +258,6 @@ Discourse.Markdown.whiteListTag('span', 'bbcode-i');
 Discourse.Markdown.whiteListTag('span', 'bbcode-u');
 Discourse.Markdown.whiteListTag('span', 'bbcode-s');
 
-Discourse.Markdown.whiteListTag('span', 'class', /bbcode-size-\d+/);
+Discourse.Markdown.whiteListTag('span', 'class', /^bbcode-size-\d+$/);
 
 Discourse.Markdown.whiteListIframe(/^(https?:)?\/\/www\.google\.com\/maps\/embed\?.+/i);

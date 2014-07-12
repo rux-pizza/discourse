@@ -69,6 +69,7 @@
 table.badges-listing {
   margin: 20px 0;
   border-bottom: 1px solid scale-color-diff();
+  width: 90%;
 
   .user-badge {
     font-size: $base-font-size;
@@ -79,13 +80,19 @@ table.badges-listing {
   }
 
   td.grant-count {
-    font-size: 0.8em;
-    color: $primary;
     text-align: right;
   }
 
   td.badge, td.grant-count {
     white-space: nowrap;
+  }
+
+  td.info {
+    font-size: 0.9em;
+    text-align: right;
+  }
+
+  td.description {
   }
 
   tr {
@@ -117,8 +124,10 @@ table.badges-listing {
 }
 
 .show-badge .user-badge-with-posts .badge-user {
-  width: 400px;
-
+  width: 45%;
+  padding: 0 0 0 4%;
+  margin-bottom: 20px;
+  
   .badge-info {
     width: 100px;
     display: block;
@@ -129,7 +138,6 @@ table.badges-listing {
     width: 250px;
     display: block;
     float: left;
-    margin-top: 67px;
     margin-left: 18px;
     text-align: left;
   }

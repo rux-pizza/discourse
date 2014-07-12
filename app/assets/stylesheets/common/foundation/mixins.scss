@@ -5,32 +5,15 @@
 // Media queries
 // --------------------------------------------------
 
-@mixin small-height {
-  @media screen and (max-height: 444px) {
-    @content;
-  }
-}
-
-@mixin regular-height {
-  @media screen and (min-height: 445px) {
-    @content;
-  }
-}
-
-@mixin not-small-width {
-  @media screen and (min-width: 967px) {
-    @content;
-  }
-}
 
 @mixin small-width {
-  @media screen and (max-width: 966px) {
+  @media screen and (max-width: 850px) {
     @content;
   }
 }
 
 @mixin medium-width {
-  @media screen and (min-width: 967px) and (max-width: 1139px) {
+  @media screen and (min-width: 1000px) and (max-width: 1139px) {
     @content;
   }
 }

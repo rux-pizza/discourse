@@ -52,18 +52,12 @@ h1 .topic-statuses .topic-status i {
 
 .reply-to-tab {
   position: absolute;
-  right: 430px;
+  right: 40%;
   z-index: 400;
   padding: 13px 6px 5px;
-  border-top: 1px solid scale-color-diff();
   font-size: 12px;
   color: scale-color($primary, $lightness: 50%);
-  @include medium-width {
-    right: 320px;
-  }
-  @include small-width {
-    right: 280px;
-  }
+
 }
 
 .gutter {
@@ -258,34 +252,40 @@ nav.post-controls {
   h1, h2, h3 {margin: 10px 0;}
   a.mention {background: darken(scale-color-diff(), 10%);}
 
-  .topic-body { width: 610px; border: none; }
+  .topic-body {
+     width: 84%;
+     padding-left: 1%;
+     padding-right: 1%;
+     }
+
+  .topic-avatar {
+     width: 45px;
+     margin: 0 10px;
+
+  }
+
+
 
   // bottom means "reply expansion" below a post
   &.bottom {
     &.hidden {display: block; opacity: 0; }
   }
   &.bottom .arrow {float: right; margin: 0 0 0 0;}
-  &.bottom { margin-top: -11px;}
+  &.bottom {
+  margin-top: -11px;
+}
 
   // top means "in reply to expansion" above a post
   &.top {
-    margin-left: 66px;
-    max-width: 713px;
-    @include medium-width {
-    margin-left: 59px;
-    }
-    @include small-width {
-    margin-left: 57px;
-    max-width: 720px;
-    }
+    margin-left: 5.4594229%;
+    width: 62.6690712%;
+
   }
   &.top.topic-body {padding-left: 0;}
-    .topic-avatar {border: none; padding-left: 15px;}
     .post-date {color: scale-color($primary, $lightness: 50%);}
     .fa-arrow-up {margin-left: 5px;}
     .row {border-top: 1px solid darken(scale-color-diff(), 10%); padding-top: 7px;}
     .reply:first-of-type .row {border-top: none;}
-    .quote {margin-top: 0 !important;}
   background: scale-color-diff();
 
   .quote .title, blockquote, .onebox, .onebox-result {
@@ -327,10 +327,6 @@ nav.post-controls {
 a.star {
   display: inline-block;
   float: left;
-}
-
-#main a.star.starred {
-  text-shadow: none !important;
 }
 
 .topic-map {
@@ -433,7 +429,7 @@ a.star {
 
   .topic-links {
     .badge-notification {
-      margin: 1px 5px 2px 0;
+      margin: 1px 5px 5px 0;
     }
   }
 
@@ -536,10 +532,7 @@ iframe {
 
 .extra-info-wrapper {
   float: left;
-  width: 76%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: 46%;
 
   .topic-statuses {
     i         { color: $header_primary; }
@@ -554,25 +547,12 @@ text-overflow: ellipsis;
   }
 }
 
-
-@include medium-width {
-  .extra-info-wrapper {
-  width: 73%;
-}
-}
-
-
-@include small-width {
-    .extra-info-wrapper {
-  width: 70%;
-}
-}
-
 .extra-info {
   h1 {
     margin: 5px 0 0 0;
     font-size: 1.6em;
     line-height: 1.3em;
+    width: 820px;
 
   }
 
@@ -744,9 +724,9 @@ blockquote > *:last-child {
 
 .gutter {
   float: left;
-  width: 19%;
   margin-top: 15px;
-  padding-left: 15px;
+  padding-left: 01.3525699%;
+  width: 28%;
 
   ul {margin: 0;}
   li {margin-bottom: 10px;}
@@ -775,22 +755,24 @@ blockquote > *:last-child {
 }
 
 .topic-body {
-  width: 695px;
+  width: 62.6690712%;
   float: left;
   position: relative;
   border-top: 1px solid scale-color-diff();
-  padding: 12px 0 15px 0;
+  padding: 12px .5% 15px .5%;
   &.highlighted {
     background-color: scale-color($tertiary, $lightness: 85%);
   }
-  img:not(.avatar), svg {
+  .cooked p img, .cooked p svg {
     max-width: 100%;
+    height: auto;
   }
 }
 .topic-avatar {
  border-top: 1px solid scale-color-diff();
  padding-top: 16px;
- width: 55px;
+ width: 04.9594229%;
+ min-width: 45px;
  float: left;
 
  .wiki {
@@ -1012,7 +994,6 @@ a.attachment:before {
 .private_message .gutter:before, .deleted-topic .gutter:before, .read_restricted .gutter:before {
     display: block;
     position: absolute;
-    top: -10px;
     left: 10px;
     color: scale-color-diff();
     font: 90px/1 FontAwesome;
@@ -1069,4 +1050,68 @@ span.highlighted {
   opacity: 0;
   -webkit-transition: opacity 1s ease-out;
   transition: opacity 1s ease-out;
+}
+
+
+/* Tablet (portrait) ----------- */
+
+@media only screen
+and (max-width : 1150px) {
+  .extra-info {
+    h1 {
+      width: 720px;
+    }
+  }
+}
+
+
+@media only screen
+and (max-width : 975px) {
+  .extra-info {
+    h1 {
+      width: 650px;
+    }
+  }
+}
+
+@media only screen
+and (max-width : 870px) {
+  .extra-info {
+    h1 {
+      width: 520px;
+    }
+  }
+}
+
+@media only screen
+and (max-width : 850px) {
+
+  .gutter {
+    display: none;
+    }
+  #topic-progress, #topic-progress-expanded {
+    left: 210px;
+  }
+
+  .topic-avatar {
+    width: 5%;
+  }
+
+  .post-cloak .reply-to-tab {
+      right: 15%;
+    }
+
+  .topic-body {
+      width: 92%;
+      padding-left: 1%;
+    }
+
+  .embedded-posts {
+    // top means "in reply to expansion" above a post
+    &.top {
+      margin-left: 6%;
+      width: 93%;
+
+    }
+  }
 }

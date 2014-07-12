@@ -4,18 +4,6 @@
 
 html {font-size: 14px/19px;}
 
-body {
-  min-width: $large-width;
-}
-
-.container {
-  max-width: $large-width;
-}
-
-.full-width {
-  width: $large-width;
-}
-
 @include medium-width {
   body {
     min-width: $medium-width;
@@ -26,14 +14,13 @@ body {
   }
 }
 
-
 @include small-width {
   body {
-    min-width: $small-width;
+    min-width: 760px;
   }
   .container,
   .full-width {
-    width: $small-width;
+    min-width: 760px;
   }
 }
 
@@ -146,6 +133,8 @@ body {
     text-rendering: optimizelegibility;
   }
 
+  /* page not found styles */
+
   .page-not-found {
     margin: 20px 0 40px 0;
   }
@@ -154,7 +143,13 @@ body {
     margin-top: 20px;
   }
 
-  .popular-topics-title, .recent-topics-title {margin-bottom: 10px;}
+  .popular-topics-title, .recent-topics-title {
+    margin-bottom: 10px;
+  }
+
+  .page-not-found-topics .span8 {
+    line-height: 1.5em;
+  }
 
   // this removes the unwanted top margin on a paragraph under a heading
   h1+p, h2+p, h3+p, h4+p, h5+p, h6+p {
@@ -484,7 +479,7 @@ body {
   }
 }
 
-/* bootstrap colums */
+/* bootstrap columns */
 
 .row:before,
 .row:after {
@@ -505,7 +500,7 @@ body {
   float: left;
 }
 .span13 {
-  width: 664px;
+  width: 59.8198%;
   float: left;
 }
 .span10 {
@@ -517,7 +512,7 @@ body {
   float: left;
 }
 .span6 {
-  width: 300px;
+  width: 27.027%;
   float: left;
 }
 .span4 {
