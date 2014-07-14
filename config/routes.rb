@@ -93,6 +93,8 @@ Discourse::Application.routes.draw do
       resources :screened_urls,         only: [:index]
     end
 
+    get "/logs" => "staff_action_logs#index"
+
     get "customize" => "color_schemes#index", constraints: AdminConstraint.new
     get "customize/css_html" => "site_customizations#index", constraints: AdminConstraint.new
     get "customize/colors" => "color_schemes#index", constraints: AdminConstraint.new
@@ -186,6 +188,7 @@ Discourse::Application.routes.draw do
   get "users/password-reset/:token" => "users#password_reset"
   put "users/password-reset/:token" => "users#password_reset"
   get "users/activate-account/:token" => "users#activate_account"
+  put "users/activate-account/:token" => "users#perform_account_activation", as: 'perform_activate_account'
   get "users/authorize-email/:token" => "users#authorize_email"
   get "users/hp" => "users#get_honeypot_value"
   get "my/*path", to: 'users#my_redirect'
@@ -375,6 +378,8 @@ Discourse::Application.routes.draw do
       post "upload" => "invites#upload_csv_chunk"
     end
   end
+  post "invites/disposable" => "invites#create_disposable_invite"
+  get "invites/redeem/:token" => "invites#redeem_disposable_invite"
   delete "invites" => "invites#destroy"
 
   get "onebox" => "onebox#show"

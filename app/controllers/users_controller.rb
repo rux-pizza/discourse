@@ -5,7 +5,7 @@ require_dependency 'avatar_upload_service'
 class UsersController < ApplicationController
 
   skip_before_filter :authorize_mini_profiler, only: [:avatar]
-  skip_before_filter :check_xhr, only: [:show, :password_reset, :update, :activate_account, :authorize_email, :user_preferences_redirect, :avatar, :my_redirect]
+  skip_before_filter :check_xhr, only: [:show, :password_reset, :update, :activate_account, :perform_account_activation, :authorize_email, :user_preferences_redirect, :avatar, :my_redirect]
 
   before_filter :ensure_logged_in, only: [:username, :update, :change_email, :user_preferences_redirect, :upload_user_image, :pick_avatar, :destroy_user_image, :destroy]
   before_filter :respond_to_suspicious_request, only: [:create]
@@ -67,9 +67,12 @@ class UsersController < ApplicationController
     user = fetch_user_from_params
     guardian.ensure_can_edit!(user)
 
-    user_badge = UserBadge.find(params[:user_badge_id])
-    if user_badge.user == user && user_badge.badge.allow_title?
+    user_badge = UserBadge.find_by(id: params[:user_badge_id])
+    if user_badge && user_badge.user == user && user_badge.badge.allow_title?
       user.title = user_badge.badge.name
+      user.save!
+    else
+      user.title = ''
       user.save!
     end
 
@@ -270,6 +273,10 @@ class UsersController < ApplicationController
 
   def activate_account
     expires_now()
+    render layout: 'no_js'
+  end
+
+  def perform_account_activation
     if @user = EmailToken.confirm(params[:token])
 
       # Log in the user unless they need to be approved

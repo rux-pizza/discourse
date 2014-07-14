@@ -228,8 +228,8 @@ en:
       all_subcategories: "all"
       no_subcategory: "none"
       category: "Category"
-      posts: "New Posts"
-      topics: "New Topics"
+      posts: "Posts"
+      topics: "Topics"
       latest: "Latest"
       latest_by: "latest by"
       toggle_ordering: "toggle ordering control"
@@ -1863,8 +1863,9 @@ en:
           developer: 'Developer'
           embedding: "Embedding"
           legal: "Legal"
-          uncategorized: 'Uncategorized'
+          uncategorized: 'Other'
           backups: "Backups"
+          login: "Login"
 
       badges:
         title: Badges
@@ -1891,6 +1892,7 @@ en:
         allow_title: Allow badge to be used as a title
         multiple_grant: Can be granted multiple times
         listable: Show badge on the public badges page
+        enabled: Enable badge
         icon: Icon
 
     lightbox:
@@ -1951,6 +1953,7 @@ en:
         one:   "1 granted"
         other: "%{count} granted"
       select_badge_for_title: Select a badge to use as your title
+      no_title: "<no title>"
       badge:
         editor:
           name: Editor

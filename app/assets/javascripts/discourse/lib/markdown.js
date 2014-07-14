@@ -183,16 +183,6 @@ Discourse.Markdown = {
   },
 
   /**
-    Checks to see if a name, class or id is allowed in the cooked content
-
-    @method nameIdClassAllowed
-    @param {String} tagName to check
-    @param {String} attribName to check
-    @param {String} value to check
-  **/
-
-
-  /**
     Sanitize text using the sanitizer
 
     @method sanitize
@@ -257,7 +247,5 @@ Discourse.Markdown.whiteListTag('span', 'bbcode-b');
 Discourse.Markdown.whiteListTag('span', 'bbcode-i');
 Discourse.Markdown.whiteListTag('span', 'bbcode-u');
 Discourse.Markdown.whiteListTag('span', 'bbcode-s');
-
-Discourse.Markdown.whiteListTag('span', 'class', /^bbcode-size-\d+$/);
 
 Discourse.Markdown.whiteListIframe(/^(https?:)?\/\/www\.google\.com\/maps\/embed\?.+/i);
