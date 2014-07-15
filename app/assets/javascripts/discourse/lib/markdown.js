@@ -28,7 +28,7 @@ function validateAttribute(tagName, attribName, value) {
     // data-* attributes
     if (tag) {
       var allowed = tag[attribName] || tag['data-*'];
-      if (allowed === value || allowed.indexOf('*') !== -1) { return value; }
+      if (allowed && (allowed === value || allowed.indexOf('*') !== -1)) { return value; }
     }
   }
 
@@ -163,6 +163,9 @@ Discourse.Markdown = {
   **/
   urlAllowed: function (uri, effect, ltype, hints) {
     var url = typeof(uri) === "string" ? uri : uri.toString();
+
+    // escape single quotes
+    url = url.replace(/'/g, "&#39;");
 
     // whitelist some iframe only
     if (hints && hints.XML_TAG === "iframe" && hints.XML_ATTR === "src") {

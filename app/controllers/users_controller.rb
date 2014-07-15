@@ -18,6 +18,7 @@ class UsersController < ApplicationController
                                                             :create,
                                                             :get_honeypot_value,
                                                             :activate_account,
+                                                            :perform_account_activation,
                                                             :send_activation_email,
                                                             :authorize_email,
                                                             :password_reset]
@@ -277,11 +278,12 @@ class UsersController < ApplicationController
   end
 
   def activate_account
-    expires_now()
+    expires_now
     render layout: 'no_js'
   end
 
   def perform_account_activation
+    raise Discourse::InvalidAccess.new if honeypot_or_challenge_fails?(params)
     if @user = EmailToken.confirm(params[:token])
 
       # Log in the user unless they need to be approved

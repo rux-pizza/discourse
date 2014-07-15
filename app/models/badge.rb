@@ -13,12 +13,30 @@ class Badge < ActiveRecord::Base
   FirstLink = 14
   FirstQuote = 15
   ReadFaq = 16
+  Reader = 17
 
   # other consts
   AutobiographerMinBioLength = 10
 
 
   module Queries
+
+    Reader = <<SQL
+    SELECT id user_id, current_timestamp granted_at
+    FROM users
+    WHERE id IN
+    (
+      SELECT pt.user_id
+      FROM post_timings pt
+      JOIN badge_posts b ON b.post_number = pt.post_number AND
+                            b.topic_id = pt.topic_id
+      JOIN topics t ON t.id = pt.topic_id
+      LEFT JOIN user_badges ub ON ub.badge_id = 17 AND ub.user_id = pt.user_id
+      WHERE ub.id IS NULL AND t.posts_count > 50
+      GROUP BY pt.user_id, pt.topic_id, t.posts_count
+      HAVING count(*) = t.posts_count
+    )
+SQL
 
     ReadFaq = <<SQL
     SELECT user_id, read_faq granted_at
@@ -27,17 +45,16 @@ class Badge < ActiveRecord::Base
 SQL
 
     FirstQuote = <<SQL
-    SELECT l.user_id, l.post_id, l.created_at granted_at
+    SELECT ids.user_id, q.post_id, q.created_at granted_at
     FROM
     (
-      SELECT MIN(l1.id) id
-      FROM topic_links l1
-      JOIN badge_posts p1 ON p1.id = l1.post_id
-      JOIN badge_posts p2 ON p2.id = l1.link_post_id
-      WHERE NOT reflection AND quote
-      GROUP BY l1.user_id
+      SELECT p1.user_id, MIN(q1.id) id
+      FROM quoted_posts q1
+      JOIN badge_posts p1 ON p1.id = q1.post_id
+      JOIN badge_posts p2 ON p2.id = q1.quoted_post_id
+      GROUP BY p1.user_id
     ) ids
-    JOIN topic_links l ON l.id = ids.id
+    JOIN quoted_posts q ON q.id = ids.id
 SQL
 
     FirstLink = <<SQL
@@ -177,6 +194,7 @@ end
 #  listable       :boolean          default(TRUE)
 #  target_posts   :boolean          default(FALSE)
 #  query          :text
+#  enabled        :boolean          default(TRUE), not null
 #
 # Indexes
 #
