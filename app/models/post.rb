@@ -23,6 +23,7 @@ class Post < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :topic, counter_cache: :posts_count
+
   belongs_to :reply_to_user, class_name: "User"
 
   has_many :post_replies
@@ -39,6 +40,8 @@ class Post < ActiveRecord::Base
 
   has_many :post_revisions
   has_many :revisions, foreign_key: :post_id, class_name: 'PostRevision'
+
+  has_many :user_actions, foreign_key: :target_post_id
 
   validates_with ::Validators::PostValidator
 
@@ -316,14 +319,16 @@ class Post < ActiveRecord::Base
   end
 
   def self.rebake_old(limit)
+    problems = []
     Post.where('baked_version IS NULL OR baked_version < ?', BAKED_VERSION)
         .limit(limit).each do |p|
       begin
         p.rebake!
       rescue => e
-        Discourse.handle_exception(e)
+        problems << {post: p, ex: e}
       end
     end
+    problems
   end
 
   def rebake!(opts={})
@@ -599,5 +604,5 @@ end
 #  idx_posts_created_at_topic_id            (created_at,topic_id)
 #  idx_posts_user_id_deleted_at             (user_id)
 #  index_posts_on_reply_to_post_number      (reply_to_post_number)
-#  index_posts_on_topic_id_and_post_number  (topic_id,post_number)
+#  index_posts_on_topic_id_and_post_number  (topic_id,post_number) UNIQUE
 #

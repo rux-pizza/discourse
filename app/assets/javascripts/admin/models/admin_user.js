@@ -23,6 +23,25 @@ Discourse.AdminUser = Discourse.User.extend({
     });
   },
 
+  groupAdded: function(added){
+    var self = this;
+    return Discourse.ajax("/admin/users/" + this.get('id') + "/groups", {
+      type: 'POST',
+      data: {group_id: added.id}
+    }).then(function () {
+      self.get('groups').pushObject(added);
+    });
+  },
+
+  groupRemoved: function(removed){
+    var self = this;
+    return Discourse.ajax("/admin/users/" + this.get('id') + "/groups/" + removed.id, {
+      type: 'DELETE'
+    }).then(function () {
+      self.set('groups.[]', self.get('groups').rejectBy("id", removed.id));
+    });
+  },
+
   /**
     Revokes a user's current API key
 
@@ -294,11 +313,11 @@ Discourse.AdminUser = Discourse.User.extend({
         } else {
           bootbox.alert(I18n.t("admin.user.delete_failed"));
           if (data.user) {
-            user.mergeAttributes(data.user);
+            user.setProperties(data.user);
           }
         }
       }, function() {
-        Discourse.AdminUser.find( user.get('username') ).then(function(u){ user.mergeAttributes(u); });
+        Discourse.AdminUser.find( user.get('username') ).then(function(u){ user.setProperties(u); });
         bootbox.alert(I18n.t("admin.user.delete_failed"));
       });
     };

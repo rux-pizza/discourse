@@ -193,7 +193,7 @@ Discourse.Topic = Discourse.Model.extend({
 
     return Discourse.ajax(this.get('url'), {
       type: 'PUT',
-      data: { title: this.get('title'), category: this.get('category.name') }
+      data: { title: this.get('title'), category_id: this.get('category.id') }
     });
   },
 
@@ -396,6 +396,7 @@ Discourse.Topic.reopenClass({
       opts.userFilters.forEach(function(username) {
         data.username_filters.push(username);
       });
+      data.show_deleted = true;
     }
 
     // Add the summary of filter if we have it

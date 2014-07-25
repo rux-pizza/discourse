@@ -1,5 +1,4 @@
 class Badge < ActiveRecord::Base
-
   # badge ids
   Welcome = 5
   NicePost = 6
@@ -12,17 +11,32 @@ class Badge < ActiveRecord::Base
   FirstFlag = 13
   FirstLink = 14
   FirstQuote = 15
-  ReadFaq = 16
+  ReadGuidelines = 16
   Reader = 17
 
   # other consts
   AutobiographerMinBioLength = 10
 
+  def self.trigger_hash
+    Hash[*(
+      Badge::Trigger.constants.map{|k|
+        [k.to_s.underscore, Badge::Trigger.const_get(k)]
+      }.flatten
+    )]
+  end
+
+  module Trigger
+    None = 0
+    PostAction = 1
+    PostRevision = 2
+    TrustLevelChange = 4
+    UserChange = 8
+  end
 
   module Queries
 
     Reader = <<SQL
-    SELECT id user_id, current_timestamp granted_at
+    SELECT id user_id, current_timestamp granted_at, NULL post_id
     FROM users
     WHERE id IN
     (
@@ -32,14 +46,14 @@ class Badge < ActiveRecord::Base
                             b.topic_id = pt.topic_id
       JOIN topics t ON t.id = pt.topic_id
       LEFT JOIN user_badges ub ON ub.badge_id = 17 AND ub.user_id = pt.user_id
-      WHERE ub.id IS NULL AND t.posts_count > 50
+      WHERE ub.id IS NULL AND t.posts_count > 100
       GROUP BY pt.user_id, pt.topic_id, t.posts_count
       HAVING count(*) = t.posts_count
     )
 SQL
 
-    ReadFaq = <<SQL
-    SELECT user_id, read_faq granted_at
+    ReadGuidelines = <<SQL
+    SELECT user_id, read_faq granted_at, NULL post_id
     FROM user_stats
     WHERE read_faq IS NOT NULL
 SQL
@@ -87,21 +101,30 @@ SQL
 SQL
 
     FirstFlag = <<SQL
-    SELECT pa.user_id, min(pa.created_at) granted_at
-    FROM post_actions pa
-    JOIN badge_posts p on p.id = pa.post_id
-    WHERE post_action_type_id IN (#{PostActionType.flag_types.values.join(",")})
-    GROUP BY pa.user_id
+    SELECT pa1.user_id, pa1.created_at granted_at, pa1.post_id
+    FROM (
+      SELECT pa.user_id, min(pa.id) id
+      FROM post_actions pa
+      JOIN badge_posts p on p.id = pa.post_id
+      WHERE post_action_type_id IN (#{PostActionType.flag_types.values.join(",")})
+      GROUP BY pa.user_id
+    ) x
+    JOIN post_actions pa1 on pa1.id = x.id
 SQL
 
     FirstLike = <<SQL
-    SELECT pa.user_id, min(post_id) post_id, min(pa.created_at) granted_at
-    FROM post_actions pa
-    JOIN badge_posts p on p.id = pa.post_id
-    WHERE post_action_type_id = 2
-    GROUP BY pa.user_id
+    SELECT pa1.user_id, pa1.created_at granted_at, pa1.post_id
+    FROM (
+      SELECT pa.user_id, min(pa.id) id
+      FROM post_actions pa
+      JOIN badge_posts p on p.id = pa.post_id
+      WHERE post_action_type_id = 2
+      GROUP BY pa.user_id
+    ) x
+    JOIN post_actions pa1 on pa1.id = x.id
 SQL
 
+    # Incorrect, but good enough - (earlies post edited vs first edit)
     Editor = <<SQL
     SELECT p.user_id, min(p.id) post_id, min(p.created_at) granted_at
     FROM badge_posts p
@@ -118,7 +141,7 @@ SQL
 SQL
 
     Autobiographer = <<SQL
-    SELECT u.id user_id, current_timestamp granted_at
+    SELECT u.id user_id, current_timestamp granted_at, NULL post_id
     FROM users u
     JOIN user_profiles up on u.id = up.user_id
     WHERE bio_raw IS NOT NULL AND LENGTH(TRIM(bio_raw)) > #{Badge::AutobiographerMinBioLength} AND
@@ -137,13 +160,15 @@ SQL
     def self.trust_level(level)
       # we can do better with dates, but its hard work figuring this out historically
 "
-    SELECT u.id user_id, current_timestamp granted_at FROM users u
+    SELECT u.id user_id, current_timestamp granted_at, NULL post_id FROM users u
     WHERE trust_level >= #{level.to_i}
 "
     end
   end
 
   belongs_to :badge_type
+  belongs_to :badge_grouping
+
   has_many :user_badges, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
@@ -152,6 +177,11 @@ SQL
   validates :multiple_grant, inclusion: [true, false]
 
   scope :enabled, ->{ where(enabled: true) }
+
+  # fields that can not be edited on system badges
+  def self.protected_system_fields
+    [:badge_type_id, :multiple_grant, :target_posts, :show_posts, :query, :trigger, :auto_revoke, :listable]
+  end
 
 
   def self.trust_level_badge_ids
@@ -175,26 +205,44 @@ SQL
     !self.multiple_grant?
   end
 
+  def system?
+    id && id < 100
+  end
+
+  def default_name=(val)
+    self.name ||= val
+  end
+
+  def default_badge_grouping_id=(val)
+    # allow to correct orphans
+    if !self.badge_grouping_id || self.badge_grouping_id < 0
+      self.badge_grouping_id = val
+    end
+  end
 end
 
 # == Schema Information
 #
 # Table name: badges
 #
-#  id             :integer          not null, primary key
-#  name           :string(255)      not null
-#  description    :text
-#  badge_type_id  :integer          not null
-#  grant_count    :integer          default(0), not null
-#  created_at     :datetime
-#  updated_at     :datetime
-#  allow_title    :boolean          default(FALSE), not null
-#  multiple_grant :boolean          default(FALSE), not null
-#  icon           :string(255)      default("fa-certificate")
-#  listable       :boolean          default(TRUE)
-#  target_posts   :boolean          default(FALSE)
-#  query          :text
-#  enabled        :boolean          default(TRUE), not null
+#  id                :integer          not null, primary key
+#  name              :string(255)      not null
+#  description       :text
+#  badge_type_id     :integer          not null
+#  grant_count       :integer          default(0), not null
+#  created_at        :datetime
+#  updated_at        :datetime
+#  allow_title       :boolean          default(FALSE), not null
+#  multiple_grant    :boolean          default(FALSE), not null
+#  icon              :string(255)      default("fa-certificate")
+#  listable          :boolean          default(TRUE)
+#  target_posts      :boolean          default(FALSE)
+#  query             :text
+#  enabled           :boolean          default(TRUE), not null
+#  auto_revoke       :boolean          default(TRUE), not null
+#  badge_grouping_id :integer          default(5), not null
+#  trigger           :integer
+#  show_posts        :boolean          default(FALSE), not null
 #
 # Indexes
 #

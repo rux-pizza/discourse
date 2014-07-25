@@ -1,12 +1,6 @@
-/**
-  This view handles rendering of a combobox that can view a category
-
-  @class CategoryChooserView
-  @extends Discourse.ComboboxView
-  @namespace Discourse
-  @module Discourse
-**/
 import ComboboxView from 'discourse/views/combo-box';
+
+var badgeHtml = Discourse.HTML.categoryBadge;
 
 export default ComboboxView.extend({
   classNames: ['combobox category-combobox'],
@@ -14,17 +8,26 @@ export default ComboboxView.extend({
   dataAttributes: ['id', 'description_text'],
   valueBinding: Ember.Binding.oneWay('source'),
 
-  content: Em.computed.filter('categories', function(c) {
-    var uncategorized_id = Discourse.Site.currentProp("uncategorized_category_id");
-    return c.get('permission') === Discourse.PermissionType.FULL && c.get('id') !== uncategorized_id;
-  }),
+  content: function() {
+    var scopedCategoryId = this.get('scopedCategoryId');
 
-  init: function() {
-    this._super();
-    if (!this.get('categories')) {
-      this.set('categories', Discourse.Category.list());
+    // Always scope to the parent of a category, if present
+    if (scopedCategoryId) {
+      var scopedCat = Discourse.Category.findById(scopedCategoryId);
+      scopedCategoryId = scopedCat.get('parent_category_id') || scopedCat.get('id');
     }
-  },
+
+    return this.get('categories').filter(function(c) {
+      if (scopedCategoryId && (c.get('id') !== scopedCategoryId) && (c.get('parent_category_id') !== scopedCategoryId)) {
+        return false;
+      }
+      return c.get('permission') === Discourse.PermissionType.FULL && !c.get('isUncategorizedCategory');
+    });
+  }.property('scopedCategoryId', 'categories'),
+
+  _setCategories: function() {
+    this.set('categories', this.get('categories') || Discourse.Category.list());
+  }.on('init'),
 
   none: function() {
     if (Discourse.User.currentProp('staff') || Discourse.SiteSettings.allow_uncategorized_topics) {
@@ -42,7 +45,11 @@ export default ComboboxView.extend({
     var category = Discourse.Category.findById(parseInt(item.id,10));
     if (!category) return item.text;
 
-    var result = Discourse.HTML.categoryBadge(category, {showParent: true, link: false, allowUncategorized: true});
+    var result = badgeHtml(category, {showParent: false, link: false, allowUncategorized: true}),
+        parentCategoryId = category.get('parent_category_id');
+    if (parentCategoryId) {
+      result = badgeHtml(Discourse.Category.findById(parentCategoryId), {link: false}) + "&nbsp;" + result;
+    }
 
     result += " <span class='topic-count'>&times; " + category.get('topic_count') + "</span>";
 

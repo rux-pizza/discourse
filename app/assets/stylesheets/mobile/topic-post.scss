@@ -11,14 +11,6 @@
   padding: 6px 0 3px 0;
 }
 
-nav.post-controls {
-  background-color: $secondary;
-  padding: 0;
-  border-right: 1px solid scale-color-diff();
-  clear: both;
-  button {color: scale-color($primary, $lightness: 50%);
-}
-
 span.badge-posts {
   margin-right: 5px;
 }
@@ -30,19 +22,9 @@ span.badge-posts {
   }
 }
 
-
-
-button.create {
-  float: right !important;
-  margin-right: 0;
-  color: $primary;
-  padding-right: 7px;}
+nav.post-controls {
+  clear: both;
 }
-
-.create i {
-  margin-right: 5px;
-}
-
 
 button {
   border: none;
@@ -50,19 +32,18 @@ button {
   padding: 8px 10px;
   vertical-align: top;
   background: transparent;
-  float: left !important;
+  color: scale-color($primary, $lightness: 50%);
+  float: left;
   &.hidden {
     display: none;
   }
   &.admin {
     position: relative;
   }
-  &.like, &.edit, &.flag, &.delete, &.share, &.bookmark, &.create, &.admin {
-    float: right;
-  }
   &.expand-post {
     margin:10px 0 10px 0;
   }
+  &.has-like {color: $love;}
   .read-icon {
     &:before {
       font-family: "FontAwesome";
@@ -73,8 +54,6 @@ button {
         content: "\f097";
       }
     }
-    &.last-read {
-      color: $danger;}
     &.bookmarked {
       &:before {
         color: $tertiary;
@@ -83,9 +62,13 @@ button {
   }
 }
 
-nav.post-controls {
-  position: relative;
+
+/* shift post reply button to the right and make it black */
+.post-controls button.create {
+  float: right;
+  color: $primary;
 }
+
 
 .post-admin-menu {
   background-color: $secondary;

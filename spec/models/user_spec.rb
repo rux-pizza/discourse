@@ -143,7 +143,7 @@ describe User do
 
     describe 'allow custom minimum username length from site settings' do
       before do
-        @custom_min = User::GLOBAL_USERNAME_LENGTH_RANGE.begin - 1
+        @custom_min = 2
         SiteSetting.min_username_length = @custom_min
       end
 
@@ -160,11 +160,6 @@ describe User do
       it 'should not allow a longer username than limit' do
         result = user.change_username('a' * (User.username_length.end + 1))
         result.should be_false
-      end
-
-      it 'should use default length for validation if enforce_global_nicknames is true' do
-        SiteSetting.enforce_global_nicknames = true
-        User::username_length.should == User::GLOBAL_USERNAME_LENGTH_RANGE
       end
     end
   end
@@ -241,6 +236,12 @@ describe User do
       end
 
       its(:email_tokens) { should be_present }
+    end
+
+    it "downcases email addresses" do
+      user = Fabricate.build(:user, email: 'Fancy.Caps.4.U@gmail.com')
+      user.save
+      user.reload.email.should == 'fancy.caps.4.u@gmail.com'
     end
   end
 
@@ -755,12 +756,15 @@ describe User do
       expect(found_user).to eq bob
 
       found_user = User.find_by_username_or_email('Bob@Example.com')
-      expect(found_user).to be_nil
+      expect(found_user).to eq bob
 
       found_user = User.find_by_username_or_email('bob1')
       expect(found_user).to be_nil
 
       found_user = User.find_by_email('bob@Example.com')
+      expect(found_user).to eq bob
+
+      found_user = User.find_by_email('BOB@Example.com')
       expect(found_user).to eq bob
 
       found_user = User.find_by_email('bob')

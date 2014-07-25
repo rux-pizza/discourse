@@ -9,9 +9,12 @@
 Discourse.UserStream = Discourse.Model.extend({
   loaded: false,
 
-  init: function() {
-    this.setProperties({ itemsLoaded: 0, content: [] });
-  },
+  _initialize: function() {
+    this.setProperties({
+      itemsLoaded: 0,
+      content: []
+    });
+  }.on("init"),
 
   filterParam: function() {
     var filter = this.get('filter');
@@ -33,6 +36,7 @@ Discourse.UserStream = Discourse.Model.extend({
       itemsLoaded: 0,
       content: []
     });
+
     return this.findItems();
   },
 
@@ -61,16 +65,19 @@ Discourse.UserStream = Discourse.Model.extend({
   },
 
   findItems: function() {
-    var userStream = this;
-    if(this.get('loading')) { return Ember.RSVP.reject(); }
-
-    this.set('loading', true);
+    var self = this;
 
     var url = this.get('baseUrl');
     if (this.get('filterParam')) {
       url += "&filter=" + this.get('filterParam');
     }
 
+    // Don't load the same stream twice. We're probably at the end.
+    var lastLoadedUrl = this.get('lastLoadedUrl');
+    if (lastLoadedUrl === url) { return Ember.RSVP.resolve(); }
+
+    if (this.get('loading')) { return Ember.RSVP.resolve(); }
+    this.set('loading', true);
     return Discourse.ajax(url, {cache: 'false'}).then( function(result) {
       if (result && result.user_actions) {
         var copy = Em.A();
@@ -78,14 +85,15 @@ Discourse.UserStream = Discourse.Model.extend({
           copy.pushObject(Discourse.UserAction.create(action));
         });
 
-        userStream.get('content').pushObjects(Discourse.UserAction.collapseStream(copy));
-        userStream.setProperties({
+        self.get('content').pushObjects(Discourse.UserAction.collapseStream(copy));
+        self.setProperties({
           loaded: true,
-          itemsLoaded: userStream.get('itemsLoaded') + result.user_actions.length
+          itemsLoaded: self.get('itemsLoaded') + result.user_actions.length
         });
       }
     }).finally(function() {
-      userStream.set('loading', false);
+      self.set('loading', false);
+      self.set('lastLoadedUrl', url);
     });
   }
 

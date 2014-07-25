@@ -65,10 +65,12 @@ module Tilt
         @output = klass.v8.eval(generate_source(scope))
       end
 
+      source = @output.dup
+
       # For backwards compatibility with plugins, for now export the Global format too.
       # We should eventually have an upgrade system for plugins to use ES6 or some other
       # resolve based API.
-      if ENV['DISCOURSE_NO_CONSTANTS'].nil? && scope.logical_path =~ /discourse\/(controllers|components|views)\/(.*)/
+      if ENV['DISCOURSE_NO_CONSTANTS'].nil? && scope.logical_path =~ /discourse\/(controllers|components|views|routes)\/(.*)/
         type = Regexp.last_match[1]
         file_name = Regexp.last_match[2].gsub(/[\-\/]/, '_')
         class_name = file_name.classify
@@ -79,6 +81,12 @@ module Tilt
         end
         require_name = module_name(scope.root_path, scope.logical_path)
         @output << "\n\nDiscourse.#{class_name}#{type.classify} = require('#{require_name}').default"
+      end
+
+      # Include JS code for JSHint
+      unless Rails.env.production?
+        req_path = "/assets/#{scope.logical_path}.js"
+        @output << "\nwindow.__jshintSrc = window.__jshintSrc || {}; window.__jshintSrc['#{req_path}'] = #{source.to_json};\n"
       end
 
       @output

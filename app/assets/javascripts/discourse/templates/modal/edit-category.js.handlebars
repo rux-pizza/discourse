@@ -3,9 +3,9 @@
     {{edit-category-tab selectedTab=selectedTab tab="general"}}
     {{#unless isUncategorizedCategory}}
       {{edit-category-tab selectedTab=selectedTab tab="security"}}
-      {{edit-category-tab selectedTab=selectedTab tab="settings"}}
-      {{edit-category-tab selectedTab=selectedTab tab="images"}}
     {{/unless}}
+    {{edit-category-tab selectedTab=selectedTab tab="settings"}}
+    {{edit-category-tab selectedTab=selectedTab tab="images"}}
   </ul>
 
   <div class="modal-body">
@@ -18,6 +18,10 @@
     <button class='btn btn-primary' {{bind-attr disabled="disabled"}} {{action saveCategory}}>{{buttonTitle}}</button>
     {{#if can_delete}}
       <button class='btn btn-danger pull-right' {{bind-attr disabled="deleteDisabled"}} {{action deleteCategory}}><i class="fa fa-trash-o"></i>{{deleteButtonTitle}}</button>
+    {{else}}
+      <div class="cannot_delete_reason">
+        {{{cannot_delete_reason}}}
+      </div>
     {{/if}}
   </div>
 </div>

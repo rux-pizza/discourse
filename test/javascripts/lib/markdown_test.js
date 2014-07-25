@@ -161,6 +161,12 @@ test("simple quotes", function() {
   cooked("- hello\n\n  > world\n  > eviltrout",
          "<ul><li>hello</li></ul>\n\n<blockquote><p>world<br/>eviltrout</p></blockquote>",
          "it allows quotes within a list.");
+
+  cooked("- <p>eviltrout</p>",
+         "<ul><li><p>eviltrout</p></li></ul>",
+         "it allows paragraphs within a list.");
+
+
   cooked("  > indent 1\n  > indent 2", "<blockquote><p>indent 1<br/>indent 2</p></blockquote>", "allow multiple spaces to indent");
 
 });
@@ -422,4 +428,8 @@ test("images", function() {
   cooked("[![folksy logo](http://folksy.com/images/folksy-colour.png)](http://folksy.com/)",
          "<p><a href=\"http://folksy.com/\"><img src=\"http://folksy.com/images/folksy-colour.png\" alt=\"folksy logo\"/></a></p>",
          "It allows images with links around them");
+
+  cooked("<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==\" alt=\"Red dot\">",
+         "<p><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==\" alt=\"Red dot\"></p>",
+         "It allows data images");
 });

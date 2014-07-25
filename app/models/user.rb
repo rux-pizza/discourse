@@ -58,6 +58,8 @@ class User < ActiveRecord::Base
 
   delegate :last_sent_email_address, :to => :email_logs
 
+  before_validation :downcase_email
+
   validates_presence_of :username
   validate :username_validator
   validates :email, presence: true, uniqueness: true
@@ -79,6 +81,7 @@ class User < ActiveRecord::Base
   after_create :create_user_profile
   after_create :ensure_in_trust_level_group
   after_save :refresh_avatar
+  after_save :badge_grant
 
   before_destroy do
     # These tables don't have primary keys, so destroying them with activerecord is tricky:
@@ -104,14 +107,8 @@ class User < ActiveRecord::Base
     LAST_VISIT = -2
   end
 
-  GLOBAL_USERNAME_LENGTH_RANGE = 3..15
-
   def self.username_length
-    if SiteSetting.enforce_global_nicknames
-      GLOBAL_USERNAME_LENGTH_RANGE
-    else
-      SiteSetting.min_username_length.to_i..SiteSetting.max_username_length.to_i
-    end
+    SiteSetting.min_username_length.to_i..SiteSetting.max_username_length.to_i
   end
 
   def custom_groups
@@ -174,18 +171,13 @@ class User < ActiveRecord::Base
   def change_username(new_username)
     current_username = self.username
     self.username = new_username
-
-    if current_username.downcase != new_username.downcase && valid?
-      DiscourseHub.username_operation { DiscourseHub.change_username(current_username, new_username) }
-    end
-
     save
   end
 
   # Use a temporary key to find this user, store it in redis with an expiry
   def temporary_key
     key = SecureRandom.hex(32)
-    $redis.setex "temporary_key:#{key}", 1.week, id.to_s
+    $redis.setex "temporary_key:#{key}", 2.months, id.to_s
     key
   end
 
@@ -492,7 +484,7 @@ class User < ActiveRecord::Base
   end
 
   def badge_count
-    user_badges.count
+    user_badges.select('distinct badge_id').count
   end
 
   def featured_user_badges
@@ -612,24 +604,14 @@ class User < ActiveRecord::Base
 
     if !self.uploaded_avatar_id && gravatar_downloaded
       self.update_column(:uploaded_avatar_id, avatar.gravatar_upload_id)
-      grant_autobiographer
-    else
-      if uploaded_avatar_id_changed?
-        grant_autobiographer
-      end
-    end
-
-  end
-
-  def grant_autobiographer
-    if self.user_profile.bio_raw &&
-          self.user_profile.bio_raw.strip.length > Badge::AutobiographerMinBioLength &&
-          uploaded_avatar_id
-       BadgeGranter.grant(Badge.find(Badge::Autobiographer), self)
     end
   end
 
   protected
+
+  def badge_grant
+    BadgeGranter.queue_badge_grant(Badge::Trigger::UserChange, user: self)
+  end
 
   def update_tracked_topics
     return unless auto_track_topics_after_msecs_changed?
@@ -685,6 +667,10 @@ class User < ActiveRecord::Base
 
   def update_username_lower
     self.username_lower = username.downcase
+  end
+
+  def downcase_email
+    self.email = self.email.downcase if self.email
   end
 
   def username_validator
@@ -792,7 +778,6 @@ end
 # Indexes
 #
 #  index_users_on_auth_token      (auth_token)
-#  index_users_on_email           (email) UNIQUE
 #  index_users_on_last_posted_at  (last_posted_at)
 #  index_users_on_username        (username) UNIQUE
 #  index_users_on_username_lower  (username_lower) UNIQUE

@@ -1,16 +1,10 @@
-/**
-  A controller for expanding information about a poster.
-
-  @class PosterExpansion
-  @extends Discourse.ObjectController
-  @namespace Discourse
-  @module Discourse
-**/
 export default Discourse.ObjectController.extend({
   needs: ['topic'],
   visible: false,
   user: null,
+  username: null,
   participant: null,
+  avatar: null,
 
   postStream: Em.computed.alias('controllers.topic.postStream'),
   enoughPostsForFiltering: Em.computed.gte('participant.post_count', 2),
@@ -28,22 +22,31 @@ export default Discourse.ObjectController.extend({
 
   showMoreBadges: Em.computed.gt('moreBadgesCount', 0),
 
-  show: function(post) {
+  show: function(username, uploadedAvatarId) {
+    // XSS protection (should be encapsulated)
+    username = username.replace(/[^A-Za-z0-9_]/g, "");
+    var url = "/users/" + username;
 
     // Don't show on mobile
     if (Discourse.Mobile.mobileView) {
-      Discourse.URL.routeTo(post.get('usernameUrl'));
+      Discourse.URL.routeTo(url);
       return;
     }
 
-    var currentPostId = this.get('id'),
+    var currentUsername = this.get('username'),
         wasVisible = this.get('visible');
 
-    this.setProperties({model: post, visible: true});
+    if (uploadedAvatarId) {
+      this.set('avatar', {username: username, uploaded_avatar_id: uploadedAvatarId});
+    } else {
+      this.set('avatar', null);
+    }
+
+    this.setProperties({visible: true, username: username});
 
     // If we click the avatar again, close it.
-    if (post.get('id') === currentPostId && wasVisible) {
-      this.setProperties({ visible: false, model: null });
+    if (username === currentUsername && wasVisible) {
+      this.setProperties({ visible: false, username: null, avatar: null });
       return;
     }
 
@@ -52,13 +55,14 @@ export default Discourse.ObjectController.extend({
     // Retrieve their participants info
     var participants = this.get('topic.details.participants');
     if (participants) {
-      this.set('participant', participants.findBy('username', post.get('username')));
+      this.set('participant', participants.findBy('username', username));
     }
 
     var self = this;
     self.set('user', null);
-    Discourse.User.findByUsername(post.get('username')).then(function (user) {
+    Discourse.User.findByUsername(username).then(function (user) {
       self.set('user', user);
+      self.set('avatar', user);
     });
   },
 

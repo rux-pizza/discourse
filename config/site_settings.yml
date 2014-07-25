@@ -246,15 +246,19 @@ users:
     default: 8
     min: 1
   block_common_passwords: true
-  enforce_global_nicknames: false
-  discourse_org_access_key: ''
+  enforce_global_nicknames:
+    default: false
+    hidden: true
+  discourse_org_access_key:
+    default: ''
+    hidden: true
   username_change_period: 3
   auto_track_topics_after: 240000
   email_editable: true
   enable_names:
     client: true
     default: true
-  invite_expiry_days: 1
+  invite_expiry_days: 30
   invite_passthrough_hours: 0
   invites_shown:
     client: true
@@ -380,20 +384,16 @@ email:
   email_in:
     default: false
     client: true
-  email_in_address:
-    default: ''
-    type: email
   email_in_min_trust:
     default: 2
     enum: 'TrustLevelSetting'
-  email_in_category: -1
   email_prefix: ''
   email_site_title: ''
 
 files:
   max_image_size_kb:
     client: true
-    default: 2048
+    default: 3072
   max_attachment_size_kb:
     client: true
     default: 1024
@@ -694,7 +694,7 @@ uncategorized:
     type: list
     default: ''
 
-  enable_cdn_js_debugging: true
+  enable_cdn_js_debugging: false
 
   show_create_topics_notice:
     client: true

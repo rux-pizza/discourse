@@ -514,6 +514,12 @@ en:
       enable: 'Summarize This Topic'
       disable: 'Show All Posts'
 
+    deleted_filter:
+      enabled_description: "This topic contains deleted posts, which have been hidden. To see all posts again, click below."
+      disabled_description: "Deleted posts in the topic are shown. To hide them again, click below."
+      enable: "Hide Deleted Posts"
+      disable: "Unhide Deleted Posts"
+
     private_message_info:
       title: "Private Message"
       invite: "Invite Others..."
@@ -543,6 +549,7 @@ en:
       username: "User"
       password: "Password"
       email_placeholder: "email or username"
+      caps_lock_warning: "Caps Lock is on"
       error: "Unknown error"
       blank_username_or_password: "Please enter your email or username, and password."
       reset_password: 'Reset Password'
@@ -611,7 +618,7 @@ en:
       view_new_post: "View your new post."
       saving: "Saving..."
       saved: "Saved!"
-      saved_draft: "You have a post draft in progress. Click anywhere in this box to resume editing."
+      saved_draft: "You have a post draft in progress. Click anywhere in this bar to resume editing."
       uploading: "Uploading..."
       show_preview: 'show preview &raquo;'
       hide_preview: '&laquo; hide preview'
@@ -850,6 +857,9 @@ en:
         regular:
           title: "Regular"
           description: "You will be notified only if someone mentions your @name or replies to your post."
+        regular_pm:
+          title: "Regular"
+          description: "You will be notified only if someone mentions your @name or replies to your post in the private message."
         muted_pm:
           title: "Muted"
           description: "You will never be notified of anything about this private message."
@@ -893,7 +903,8 @@ en:
         success_message: 'You successfully flagged this topic.'
 
       inviting: "Inviting..."
-      automatically_add_to_groups: "This invite also includes access to these groups: (optional, admin only)"
+      automatically_add_to_groups_optional: "This invite also includes access to these groups: (optional, admin only)"
+      automatically_add_to_groups_required: "This invite also includes access to these groups: (<b>Required</b>, admin only)"
 
       invite_private:
         title: 'Invite to Private Message'
@@ -980,7 +991,6 @@ en:
       deleted_by_author:
         one: "(post withdrawn by author, will be automatically deleted in %{count} hour unless flagged)"
         other: "(post withdrawn by author, will be automatically deleted in %{count} hours unless flagged)"
-      deleted_by: "deleted by"
       expand_collapse: "expand/collapse"
       gap:
         one: "1 post hidden"
@@ -1014,6 +1024,8 @@ en:
       controls:
         reply: "begin composing a reply to this post"
         like: "like this post"
+        has_liked: "you've liked this post"
+        undo_like: "undo like"
         edit: "edit this post"
         flag: "privately flag this post for attention or send a private notification about it"
         delete: "delete this post"
@@ -1876,6 +1888,7 @@ en:
         display_name: Display Name
         description: Description
         badge_type: Badge Type
+        badge_grouping: Group
         granted_by: Granted By
         granted_at: Granted At
         save: Save
@@ -1894,6 +1907,18 @@ en:
         listable: Show badge on the public badges page
         enabled: Enable badge
         icon: Icon
+        query: Badge Query (SQL)
+        target_posts: Query targets posts
+        auto_revoke: Run revocation query daily
+        show_posts: Show post granting badge on badge page
+        preview: Preview badge
+        trigger: Trigger
+        trigger_type:
+          none: "Update daily"
+          post_action: "When a user acts on post"
+          post_revision: "When a user edits or creates a post"
+          trust_level_change: "When a user changes trust level"
+          user_change: "When a user is edited or created"
 
     lightbox:
       download: "download"
@@ -1954,37 +1979,48 @@ en:
         other: "%{count} granted"
       select_badge_for_title: Select a badge to use as your title
       no_title: "<no title>"
+      badge_grouping:
+        getting_started:
+          name: Getting Started
+        community:
+          name: Community
+        trust_level:
+          name: Trust Level
+        other:
+          name: Other
+        posting:
+          name: Posting
       badge:
         editor:
           name: Editor
-          description: First post edit.
+          description: First post edit
         basic_user:
           name: Basic
-          description: Granted all essential community functions.
+          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/4">Granted</a> all essential community functions
         regular_user:
           name: Regular
-          description: Granted invitations.
+          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/5">Granted</a> invitations
         leader:
           name: Leader
-          description: Granted recategorize, rename, followed links and lounge.
+          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/6">Granted</a> recategorize, rename, followed links and lounge
         elder:
           name: Elder
-          description: Granted global edit, pin, close, archive, split and merge.
+          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/7">Granted</a> global edit, pin, close, archive, split and merge
         welcome:
           name: Welcome
-          description: Received a like.
+          description: Received a like
         autobiographer:
           name: Autobiographer
-          description: Filled user profile information.
+          description: Filled user <a href="/my/preferences">profile</a> information
         nice_post:
           name: Nice Post
-          description: Received 10 likes on a post. This badge can be granted multiple times.
+          description: Received 10 likes on a post. This badge can be granted multiple times
         good_post:
           name: Good Post
-          description: Received 25 likes on a post. This badge can be granted multiple times.
+          description: Received 25 likes on a post. This badge can be granted multiple times
         great_post:
           name: Great Post
-          description: Received 50 likes on a post. This badge can be granted multiple times.
+          description: Received 50 likes on a post. This badge can be granted multiple times
         first_like:
           name: First Like
           description: Liked a post
@@ -2000,9 +2036,9 @@ en:
         first_quote:
           name: First Quote
           description: Quoted a user
-        read_faq:
-          name: Read Faq
-          description: Read the community guidelines
+        read_guidelines:
+          name: Read Guidelines
+          description: Read the <a href="/guidelines">community guidelines</a>
         reader:
           name: Reader
-          description: Read every post in a topic with more than 50 posts
+          description: Read every post in a topic with more than 100 posts

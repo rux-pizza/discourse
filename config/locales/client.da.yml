@@ -198,8 +198,6 @@ da:
       all_subcategories: "Alle"
       no_subcategory: "ingen"
       category: "Kategori"
-      posts: "Nye indlæg"
-      topics: "Nye emner"
       latest: "Seneste"
       latest_by: "seneste af"
       toggle_ordering: "vis/skjul rækkefølgeskifter"
@@ -712,6 +710,7 @@ da:
           title: "Følger"
         watching:
           title: "Overvåger"
+          description: "Du vil blive underrettet for hvert nyt indlæg i denne tråd. En optælling af nye indlæg vil blive vist ved siden af tråden."
         tracking_pm:
           title: "Følger"
         tracking:
@@ -828,7 +827,6 @@ da:
       deleted_by_author:
         one: "(indlæg trukket tilbage af forfatteren, slettes automatisk om %{count} time med mindre det bliver flaget)"
         other: "(indlæg trukket tilbage af forfatteren, slettes automatisk om %{count} timer med mindre det bliver flaget)"
-      deleted_by: "slettet af"
       expand_collapse: "fold ud/ind"
       gap:
         one: "1 indlæg udeladt"
@@ -1409,7 +1407,6 @@ da:
         email_type: "E-mail-type"
         to_address: "Modtager"
         test_email_address: "e-mail-adress der skal testes"
-        send_test: "send test-e-mail"
         sent_test: "sednt!"
         delivery_method: "Leveringsmetode"
         preview_digest: "Forhåndsvisning af sammendrag"
@@ -1659,7 +1656,6 @@ da:
           developer: 'Udvikler'
           embedding: "Indlejring"
           legal: "Jura"
-          uncategorized: 'Andet'
           backups: "Backups"
       badges:
         title: Badges
@@ -1743,24 +1739,17 @@ da:
       badge:
         basic_user:
           name: Basic
-          description: Givet alle essentielle fællesskabs funktioner.
         regular_user:
           name: Standard
-          description: Givet invitationer.
         leader:
           name: Leder
-          description: Givet omkategorisering, omdøbning, fulgte links og lounge.
         elder:
           name: advanceret bruger
-          description: Givet global redigering, hæftning, arkivering, deling sammensætning af emner.
         welcome:
           name: Velkommen
-          description: Modtog et like
         nice_post:
           name: Fint indlæg
-          description: Har modtaget 10 "likes" på et indlæg. Denne badge kan modtages flere gange.
         good_post:
           name: Godt indlæg
-          description: Har modtaget 25 "likes" på et indlæg. Denne badge kan modtages flere gange.
         great_post:
           name: Rigtig godt indlæg

@@ -75,16 +75,33 @@ table.badges-listing {
     font-size: $base-font-size;
   }
 
+  tr.title td {
+    padding-top: 30px;
+    padding-bottom: 15px;
+  }
+
+  tr.title {
+    border-top: 0px solid;
+  }
+
   td {
-    padding: 10px 20px;
+    padding: 10px 0px;
+  }
+
+  td.granted{
+   color: $success;
+   font-size: 120%;
   }
 
   td.grant-count {
-    text-align: right;
+    text-align: center;
+    color: scale-color($primary, $lightness: 40%);
+    font-size: 120%;
   }
 
   td.badge, td.grant-count {
     white-space: nowrap;
+    padding-right: 10px;
   }
 
   td.info {

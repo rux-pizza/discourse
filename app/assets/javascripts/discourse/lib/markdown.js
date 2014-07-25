@@ -229,6 +229,8 @@ Discourse.Markdown.whiteListTag('a', 'class', 'mention');
 
 Discourse.Markdown.whiteListTag('a', 'data-bbcode');
 
+Discourse.Markdown.whiteListTag('img', 'src', /^data:image.*/i);
+
 Discourse.Markdown.whiteListTag('div', 'class', 'title');
 Discourse.Markdown.whiteListTag('div', 'class', 'quote-controls');
 
@@ -250,5 +252,8 @@ Discourse.Markdown.whiteListTag('span', 'bbcode-b');
 Discourse.Markdown.whiteListTag('span', 'bbcode-i');
 Discourse.Markdown.whiteListTag('span', 'bbcode-u');
 Discourse.Markdown.whiteListTag('span', 'bbcode-s');
+
+// used for pinned topics
+Discourse.Markdown.whiteListTag('span', 'class', 'excerpt');
 
 Discourse.Markdown.whiteListIframe(/^(https?:)?\/\/www\.google\.com\/maps\/embed\?.+/i);

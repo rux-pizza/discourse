@@ -35,7 +35,7 @@ class TopicsController < ApplicationController
     # existing installs.
     return wordpress if params[:best].present?
 
-    opts = params.slice(:username_filters, :filter, :page, :post_number)
+    opts = params.slice(:username_filters, :filter, :page, :post_number, :show_deleted)
     username_filters = opts[:username_filters]
 
     opts[:username_filters] = username_filters.split(',') if username_filters.is_a?(String)
@@ -113,7 +113,7 @@ class TopicsController < ApplicationController
 
     success = false
     Topic.transaction do
-      success = topic.save && topic.change_category(params[:category])
+      success = topic.save && topic.change_category_to_id(params[:category_id].to_i)
     end
 
     # this is used to return the title to the client as it may have been changed by "TextCleaner"
@@ -385,7 +385,7 @@ class TopicsController < ApplicationController
     user_id = (current_user.id if current_user)
     track_visit = should_track_visit_to_topic?
 
-    Scheduler::Defer.later do
+    Scheduler::Defer.later "Track Visit" do
       View.create_for_parent(Topic, topic_id, ip, user_id)
       if track_visit
         TopicUser.track_visit! topic_id, user_id

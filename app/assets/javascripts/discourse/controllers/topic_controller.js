@@ -1,11 +1,3 @@
-/**
-  This controller supports all actions related to a topic
-
-  @class TopicController
-  @extends Discourse.ObjectController
-  @namespace Discourse
-  @module Discourse
-**/
 Discourse.TopicController = Discourse.ObjectController.extend(Discourse.SelectedPostsCount, {
   multiSelect: false,
   needs: ['header', 'modal', 'composer', 'quote-button', 'search', 'topic-progress'],
@@ -13,7 +5,9 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
   editingTopic: false,
   selectedPosts: null,
   selectedReplies: null,
-  queryParams: ['filter', 'username_filters'],
+  queryParams: ['filter', 'username_filters', 'show_deleted'],
+
+  maxTitleLength: Discourse.computed.setting('max_topic_title_length'),
 
   contextChanged: function(){
     this.set('controllers.search.searchContext', this.get('model.searchContext'));
@@ -84,10 +78,10 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
       return false;
     },
 
-    likePost: function(post) {
+    toggleLike: function(post) {
       var likeAction = post.get('actionByName.like');
-      if (likeAction && likeAction.get('can_act')) {
-        likeAction.act();
+      if (likeAction && likeAction.get('canToggle')) {
+        likeAction.toggle();
       }
     },
 
@@ -214,7 +208,6 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
     },
 
     finishedEditingTopic: function() {
-      var topicController = this;
       if (this.get('editingTopic')) {
 
         var topic = this.get('model');
@@ -223,25 +216,21 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
         this.set('topicSaving', true);
 
         // manually update the titles & category
-        topic.setProperties({
+        var backup = topic.setPropertiesBackup({
           title: this.get('newTitle'),
           category_id: parseInt(this.get('newCategoryId'), 10),
           fancy_title: this.get('newTitle')
         });
 
         // save the modifications
+        var self = this;
         topic.save().then(function(result){
           // update the title if it has been changed (cleaned up) server-side
-          var title       = result.basic_topic.title;
-          var fancy_title = result.basic_topic.fancy_title;
-          topic.setProperties({
-            title: title,
-            fancy_title: fancy_title
-          });
-          topicController.set('topicSaving', false);
+          topic.setProperties(Em.getProperties(result.basic_topic, 'title', 'fancy_title'));
+          self.set('topicSaving', false);
         }, function(error) {
-          topicController.set('editingTopic', true);
-          topicController.set('topicSaving', false);
+          self.setProperties({ editingTopic: true, topicSaving: false });
+          topic.setProperties(backup);
           if (error && error.responseText) {
             bootbox.alert($.parseJSON(error.responseText).errors[0]);
           } else {
@@ -250,7 +239,7 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
         });
 
         // close editing mode
-        topicController.set('editingTopic', false);
+        self.set('editingTopic', false);
       }
     },
 

@@ -10,7 +10,7 @@ InviteRedeemer = Struct.new(:invite, :username, :name) do
 
     # If `invite_passthrough_hours` is defined, allow them to re-use the invite link
     # to login again.
-    if invite.redeemed_at >= SiteSetting.invite_passthrough_hours.hours.ago
+    if invite.redeemed_at && invite.redeemed_at >= SiteSetting.invite_passthrough_hours.hours.ago
       return invited_user
     end
 
@@ -22,22 +22,15 @@ InviteRedeemer = Struct.new(:invite, :username, :name) do
     user_exists = User.find_by_email(invite.email)
     return user if user_exists
 
-    if username && User.username_available?(username)
+    if username && UsernameValidator.new(username).valid_format? && User.username_available?(username)
       available_username = username
     else
       available_username = UserNameSuggester.suggest(invite.email)
     end
     available_name = name || available_username
 
-    DiscourseHub.username_operation do
-      match, available, suggestion = DiscourseHub.username_match?(available_username, invite.email)
-      available_username = suggestion unless match || available
-    end
-
     user = User.new(email: invite.email, username: available_username, name: available_name, active: true, trust_level: SiteSetting.default_invitee_trust_level)
     user.save!
-
-    DiscourseHub.username_operation { DiscourseHub.register_username(username, invite.email) }
 
     user
   end

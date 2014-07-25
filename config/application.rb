@@ -2,6 +2,8 @@ require File.expand_path('../boot', __FILE__)
 require 'rails/all'
 
 # Plugin related stuff
+require_relative '../lib/discourse_event'
+require_relative '../lib/discourse_plugin'
 require_relative '../lib/discourse_plugin_registry'
 
 # Global config
@@ -93,8 +95,7 @@ module Discourse
         :s3_secret_access_key,
         :twitter_consumer_secret,
         :facebook_app_secret,
-        :github_client_secret,
-        :discourse_org_access_key,
+        :github_client_secret
     ]
 
     # Enable the asset pipeline

@@ -75,7 +75,17 @@ describe PrettyText do
 
   describe "Excerpt" do
 
+    it "sanitizes attempts to inject invalid attributes" do
+
+      spinner = "<a href=\"http://thedailywtf.com/\" data-bbcode=\"' class='fa fa-spin\">WTF</a>"
+      PrettyText.excerpt(spinner, 20).should match_html spinner
+
+      spinner = %q{<a href="http://thedailywtf.com/" title="' class=&quot;fa fa-spin&quot;&gt;&lt;img src='http://thedailywtf.com/Resources/Images/Primary/logo.gif"></a>}
+      PrettyText.excerpt(spinner, 20).should match_html spinner
+    end
+
     context "images" do
+
       it "should dump images" do
         PrettyText.excerpt("<img src='http://cnn.com/a.gif'>",100).should == "[image]"
       end
@@ -93,8 +103,8 @@ describe PrettyText do
       end
 
       it "should keep spoilers" do
-        PrettyText.excerpt("<div class='spoiler'><img src='http://cnn.com/a.gif'></div>", 100).should == "<span class='spoiler'>[image]</span>"
-        PrettyText.excerpt("<span class='spoiler'>spoiler</div>", 100).should == "<span class='spoiler'>spoiler</span>"
+        PrettyText.excerpt("<div class='spoiler'><img src='http://cnn.com/a.gif'></div>", 100).should match_html "<span class='spoiler'>[image]</span>"
+        PrettyText.excerpt("<span class='spoiler'>spoiler</div>", 100).should match_html "<span class='spoiler'>spoiler</span>"
       end
     end
 
@@ -103,7 +113,7 @@ describe PrettyText do
     end
 
     it "should preserve links" do
-      PrettyText.excerpt("<a href='http://cnn.com'>cnn</a>",100).should == "<a href='http://cnn.com'>cnn</a>"
+      PrettyText.excerpt("<a href='http://cnn.com'>cnn</a>",100).should match_html "<a href='http://cnn.com'>cnn</a>"
     end
 
     it "should deal with special keys properly" do
@@ -124,15 +134,15 @@ describe PrettyText do
     end
 
     it "should not count the surrounds of a link" do
-      PrettyText.excerpt("<a href='http://cnn.com'>cnn</a>",3).should == "<a href='http://cnn.com'>cnn</a>"
+      PrettyText.excerpt("<a href='http://cnn.com'>cnn</a>",3).should match_html "<a href='http://cnn.com'>cnn</a>"
     end
 
     it "uses an ellipsis instead of html entities if provided with the option" do
-      PrettyText.excerpt("<a href='http://cnn.com'>cnn</a>", 2, text_entities: true).should == "<a href='http://cnn.com'>cn...</a>"
+      PrettyText.excerpt("<a href='http://cnn.com'>cnn</a>", 2, text_entities: true).should match_html "<a href='http://cnn.com'>cn...</a>"
     end
 
     it "should truncate links" do
-      PrettyText.excerpt("<a href='http://cnn.com'>cnn</a>",2).should == "<a href='http://cnn.com'>cn&hellip;</a>"
+      PrettyText.excerpt("<a href='http://cnn.com'>cnn</a>",2).should match_html "<a href='http://cnn.com'>cn&hellip;</a>"
     end
 
     it "doesn't extract empty quotes as links" do
@@ -178,6 +188,12 @@ describe PrettyText do
 
     it "should handle nil" do
       PrettyText.excerpt(nil,100).should == ''
+    end
+
+    it "handles span excerpt" do
+      PrettyText.excerpt("<span class='excerpt'>hi</span> test",100).should == 'hi'
+      post = Fabricate(:post, raw: "<span class='excerpt'>hi</span> test")
+      post.excerpt.should == "hi"
     end
 
   end
@@ -286,6 +302,7 @@ describe PrettyText do
     it "allows bold chinese" do
       PrettyText.cook("**你hello**").should match_html "<p><strong>你hello</strong></p>"
     end
+
   end
 
 end

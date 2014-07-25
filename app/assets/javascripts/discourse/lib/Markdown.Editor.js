@@ -1365,17 +1365,6 @@
                     case "h":
                         doClick(buttons.heading);
                         break;
-                    case "y":
-                        doClick(buttons.redo);
-                        break;
-                    case "z":
-                        if (key.shiftKey) {
-                            doClick(buttons.redo);
-                        }
-                        else {
-                            doClick(buttons.undo);
-                        }
-                        break;
                     default:
                         return;
                 }
@@ -1420,7 +1409,7 @@
 
             inputBox.focus();
 
-            if (button.textOp) {
+            if (button && button.textOp) {
 
                 if (undoManager) {
                     undoManager.setCommandMode();

@@ -23,7 +23,7 @@
     <form class="form-horizontal">
       <div>
         <label for="name">{{i18n admin.badges.name}}</label>
-        {{input type="text" name="name" value=name disabled=readOnly}}
+        {{input type="text" name="name" value=name}}
       </div>
 
       {{#if showDisplayName}}
@@ -35,7 +35,7 @@
 
       <div>
         <label for="name">{{i18n admin.badges.icon}}</label>
-        {{input type="text" name="name" value=icon disabled=readOnly}}
+        {{input type="text" name="name" value=icon}}
       </div>
 
       <div>
@@ -48,6 +48,15 @@
       </div>
 
       <div>
+        <label for="badge_grouping_id">{{i18n admin.badges.badge_grouping}}</label>
+        {{view Ember.Select name="badge_grouping_id" value=badge_grouping_id
+                            content=controller.badgeGroupings
+                            optionValuePath="content.id"
+                            optionLabelPath="content.name"}}
+      </div>
+
+
+      <div>
         <label for="description">{{i18n admin.badges.description}}</label>
         {{#if controller.canEditDescription}}
           {{textarea name="description" value=description}}
@@ -55,6 +64,40 @@
           {{textarea name="description" value=displayDescription disabled=true}}
         {{/if}}
       </div>
+
+      <div>
+        <label for="query">{{i18n admin.badges.query}}</label>
+        {{textarea name="query" value=query disabled=readOnly}}
+      </div>
+
+      {{#if hasQuery}}
+
+      <a href="/admin/badges/preview" {{action preview this}}>{{i18n admin.badges.preview}}</a>
+
+      <div>
+        <span>
+          {{input type="checkbox" checked=auto_revoke disabled=readOnly}}
+          {{i18n admin.badges.auto_revoke}}
+        </span>
+      </div>
+
+      <div>
+        <span>
+          {{input type="checkbox" checked=target_posts disabled=readOnly}}
+          {{i18n admin.badges.target_posts}}
+        </span>
+      </div>
+
+      <div>
+        <label for="trigger">{{i18n admin.badges.trigger}}</label>
+        {{view Ember.Select name="trigger" value=trigger
+                            content=controller.badgeTriggers
+                            optionValuePath="content.id"
+                            optionLabelPath="content.name"
+                            disabled=readOnly}}
+      </div>
+
+      {{/if}}
 
       <div>
         <span>
@@ -79,6 +122,13 @@
 
       <div>
         <span>
+          {{input type="checkbox" checked=show_posts disabled=readOnly}}
+          {{i18n admin.badges.show_posts}}
+        </span>
+      </div>
+
+      <div>
+        <span>
           {{input type="checkbox" checked=enabled}}
           {{i18n admin.badges.enabled}}
         </span>
@@ -94,11 +144,13 @@
     </form>
   </div>
 
+  {{#if grant_count}}
   <div class="span13 current-badge-actions">
     <div>
-      {{#link-to 'badges.show' this classNames="btn btn-primary"}}{{i18n badges.granted count=grant_count}}{{/link-to}}
+      {{#link-to 'badges.show' this}}{{i18n badges.granted count=grant_count}}{{/link-to}}
     </div>
   </div>
+  {{/if}}
   {{/with}}
   {{/if}}
 

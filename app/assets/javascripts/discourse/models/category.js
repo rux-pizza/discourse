@@ -1,11 +1,3 @@
-/**
-  A data model that represents a category
-
-  @class Category
-  @extends Discourse.Model
-  @namespace Discourse
-  @module Discourse
-**/
 Discourse.Category = Discourse.Model.extend({
 
   init: function() {
@@ -135,11 +127,11 @@ Discourse.Category = Discourse.Model.extend({
   }.property(),
 
   unreadTopics: function(){
-    return this.get('topicTrackingState').countUnread(this.get('name'));
+    return this.get('topicTrackingState').countUnread(this.get('id'));
   }.property('topicTrackingState.messageCount'),
 
   newTopics: function(){
-    return this.get('topicTrackingState').countNew(this.get('name'));
+    return this.get('topicTrackingState').countNew(this.get('id'));
   }.property('topicTrackingState.messageCount'),
 
   topicStatsTitle: function() {
@@ -222,15 +214,18 @@ Discourse.Category.reopenClass({
     return Discourse.Site.currentProp('sortedCategories');
   },
 
+  idMap: function() {
+    return Discourse.Site.currentProp('categoriesById');
+  },
+
   findSingleBySlug: function(slug) {
     return Discourse.Category.list().find(function(c) {
       return Discourse.Category.slugFor(c) === slug;
     });
   },
 
-  // TODO: optimise, slow for no real reason
-  findById: function(id){
-    return Discourse.Category.list().findBy('id', id);
+  findById: function(id) {
+    return Discourse.Category.idMap()[id];
   },
 
   findByIds: function(ids){

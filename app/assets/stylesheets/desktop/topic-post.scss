@@ -1,24 +1,3 @@
-.gap {
-  background-color: scale-color-diff();
-  padding: 5px 0;
-  color: lighten($primary, 35%);
-  cursor: pointer;
-  text-align: center;
-  width: 80%;
-
-  &:hover {
-    background-color: scale-color-diff();
-  }
-
-  @include medium-width {
-    width: 795px;
-  }
-
-  @include small-width {
-    width: 815px;
-  }
-}
-
 .container {
   @extend .clearfix;
   max-width: $large-width;
@@ -52,7 +31,7 @@ h1 .topic-statuses .topic-status i {
 
 .reply-to-tab {
   position: absolute;
-  right: 40%;
+  right: 420px;
   z-index: 400;
   padding: 13px 6px 5px;
   font-size: 12px;
@@ -190,6 +169,11 @@ nav.post-controls {
           background: scale-color($love, $lightness: 75%);
         }
 
+        &.has-like {color: $love;}
+        &.has-like[disabled]:hover {
+          background: transparent;
+        }
+
         &.bookmark {padding: 8px 11px; }
 
         .read-icon {
@@ -201,9 +185,6 @@ nav.post-controls {
             &:before {
               content: "\f097";
             }
-          }
-          &.last-read {
-            color: $danger;
           }
           &.bookmarked {
             &:before {
@@ -252,19 +233,20 @@ nav.post-controls {
   h1, h2, h3 {margin: 10px 0;}
   a.mention {background: darken(scale-color-diff(), 10%);}
 
+  p img {
+    max-width: 579px;
+    }
   .topic-body {
-     width: 84%;
+     width: 86%;
      padding-left: 1%;
      padding-right: 1%;
      }
 
   .topic-avatar {
      width: 45px;
-     margin: 0 10px;
+     margin: 0 10px 0 15px;
 
   }
-
-
 
   // bottom means "reply expansion" below a post
   &.bottom {
@@ -277,11 +259,11 @@ nav.post-controls {
 
   // top means "in reply to expansion" above a post
   &.top {
-    margin-left: 5.4594229%;
-    width: 62.6690712%;
+    margin-left: 56px;
+    width: 701px;
 
   }
-  &.top.topic-body {padding-left: 0;}
+  &.top.topic-body {padding-left: 0; padding-right: 0;}
     .post-date {color: scale-color($primary, $lightness: 50%);}
     .fa-arrow-up {margin-left: 5px;}
     .row {border-top: 1px solid darken(scale-color-diff(), 10%); padding-top: 7px;}
@@ -397,7 +379,7 @@ a.star {
     .secondary {text-align: center;}
     li {
       float: left;
-      padding: 7px 11px;
+      padding: 7px 10px;
       &:last-of-type {
         border-right: 0;
       }
@@ -601,10 +583,6 @@ text-overflow: ellipsis;
   }
 }
 
-.post-hidden {
-  opacity: 0.5;
-}
-
 .moderator {
   .topic-body {
     background-color: scale-color($highlight, $lightness: 75%);
@@ -723,27 +701,31 @@ blockquote > *:last-child {
 }
 
 .gutter {
-  float: left;
-  margin-top: 15px;
-  padding-left: 01.3525699%;
-  width: 28%;
+  margin-top: 13px;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1;
 
   ul {margin: 0;}
   li {margin-bottom: 10px;}
   i {font-size: 12px;}
 
+  .reply-new, .track-link {
+    padding-left: 27px;
+    display: block;
+    overflow: hidden;
+    }
+
   .post-links {
     list-style-type: none;
-    padding-left: 19px;
     position: relative;
-    margin-left: 5px;
     line-height: 18px;
+    word-wrap: break-word;
     a i {
-      position: absolute;
-      left: 0;
-      margin-right: 15px;
-      margin-bottom: 20px;
-      margin-top: 2px;
+      position: relative;
+      margin-right: 7px;
+      margin-top: -2px;
+      margin-left: -17px;
     }
     a.track-link {color: scale-color($primary, $lightness: 50%);}
     a.toggle-more {
@@ -754,32 +736,43 @@ blockquote > *:last-child {
   }
 }
 
+// variables are used to calculate the width of .gap
+$topic-body-width: 690px;
+$topic-body-width-padding: 11px;
+$topic-avatar-width: 45px;
 .topic-body {
-  width: 62.6690712%;
+  width: $topic-body-width;
   float: left;
   position: relative;
+  z-index: 2;
   border-top: 1px solid scale-color-diff();
-  padding: 12px .5% 15px .5%;
+  padding: 12px $topic-body-width-padding 15px $topic-body-width-padding;
   &.highlighted {
     background-color: scale-color($tertiary, $lightness: 85%);
-  }
-  .cooked p img, .cooked p svg {
-    max-width: 100%;
-    height: auto;
   }
 }
 .topic-avatar {
  border-top: 1px solid scale-color-diff();
  padding-top: 16px;
- width: 04.9594229%;
- min-width: 45px;
+ width: $topic-avatar-width;
  float: left;
+ position: relative;
+ z-index: 2;
 
  .wiki {
    margin-top: 14px;
    color: scale-color($primary, $lightness: 60%);
    margin-left: 5px;
  }
+}
+
+.gap {
+  background-color: scale-color-diff();
+  padding: 5px 0;
+  color: lighten($primary, 30%);
+  cursor: pointer;
+  text-align: center;
+  width: calc(#{$topic-avatar-width} + #{$topic-body-width} + 2 * #{$topic-body-width-padding});
 }
 
 .posts-wrapper {
@@ -994,7 +987,7 @@ a.attachment:before {
 .private_message .gutter:before, .deleted-topic .gutter:before, .read_restricted .gutter:before {
     display: block;
     position: absolute;
-    left: 10px;
+    left: 767px;
     color: scale-color-diff();
     font: 90px/1 FontAwesome;
     content: "\f05c";
@@ -1055,43 +1048,48 @@ span.highlighted {
 
 /* Tablet (portrait) ----------- */
 
-@media only screen
-and (max-width : 1150px) {
+@media all
+and (max-width : 1140px) {
   .extra-info {
     h1 {
       width: 720px;
     }
   }
+  .post-cloak .reply-to-tab {
+    right: 320px;
+  }
 }
 
 
-@media only screen
+@media all
 and (max-width : 975px) {
   .extra-info {
     h1 {
       width: 650px;
     }
   }
+  .post-cloak .reply-to-tab {
+    right: 300px;
+  }
 }
 
-@media only screen
+@media all
+and (max-width : 940px) {
+  .post-cloak .reply-to-tab {
+    right: 250px;
+  }
+}
+
+@media all
 and (max-width : 870px) {
   .extra-info {
     h1 {
       width: 520px;
     }
   }
-}
-
-@media only screen
-and (max-width : 850px) {
-
   .gutter {
     display: none;
     }
-  #topic-progress, #topic-progress-expanded {
-    left: 210px;
-  }
 
   .topic-avatar {
     width: 5%;
@@ -1102,15 +1100,15 @@ and (max-width : 850px) {
     }
 
   .topic-body {
-      width: 92%;
-      padding-left: 1%;
+      width: 91%;
+      padding-left: 2%;
     }
 
   .embedded-posts {
     // top means "in reply to expansion" above a post
     &.top {
       margin-left: 6%;
-      width: 93%;
+      width: 91%;
 
     }
   }
