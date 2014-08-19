@@ -5,6 +5,14 @@ describe BadgeGranter do
   let(:badge) { Fabricate(:badge) }
   let(:user) { Fabricate(:user) }
 
+  describe 'preview' do
+    it 'can correctly preview' do
+      Fabricate(:user, email: 'sam@gmail.com')
+      result = BadgeGranter.preview('select id user_id, null post_id, created_at granted_at from users where email like \'%gmail.com\'')
+      result[:grant_count].should == 1
+    end
+  end
+
   describe 'backfill' do
 
     it 'has no broken badge queries' do
@@ -34,7 +42,7 @@ describe BadgeGranter do
     it 'should grant missing badges' do
       post = Fabricate(:post, like_count: 30)
       2.times {
-        BadgeGranter.backfill(Badge.find(Badge::NicePost))
+        BadgeGranter.backfill(Badge.find(Badge::NicePost), post_ids: [post.id])
         BadgeGranter.backfill(Badge.find(Badge::GoodPost))
       }
 
@@ -50,9 +58,13 @@ describe BadgeGranter do
 
   describe 'grant' do
 
-    it 'grants a badge' do
+    it 'grants multiple badges' do
+      badge = Fabricate(:badge, multiple_grant: true)
+      user_badge = BadgeGranter.grant(badge, user)
       user_badge = BadgeGranter.grant(badge, user)
       user_badge.should be_present
+
+      UserBadge.where(user_id: user.id).count.should == 2
     end
 
     it 'sets granted_at' do

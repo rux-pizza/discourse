@@ -211,7 +211,11 @@ describe Topic do
     end
 
     context 'with a similar topic' do
-      let!(:topic) { Fabricate(:topic, title: "Evil trout is the dude who posted this topic") }
+      let!(:topic) {
+        ActiveRecord::Base.observers.enable :search_observer
+        post = create_post(title: "Evil trout is the dude who posted this topic")
+        post.topic
+      }
 
       it 'returns the similar topic if the title is similar' do
         Topic.similar_to("has evil trout made any topics?", "i am wondering has evil trout made any topics?").should == [topic]
@@ -762,10 +766,6 @@ describe Topic do
       topic.should_not be_closed
       topic.should_not be_archived
       topic.moderator_posts_count.should == 0
-    end
-
-    it "its user has a topics_count of 1" do
-      topic.user.created_topic_count.should == 1
     end
 
     context 'post' do
@@ -1414,5 +1414,15 @@ describe Topic do
 
     topic = Topic.find(topic.id)
     topic.custom_fields.should == {"bob" => "marley", "jack" => "black"}
+  end
+
+  it "doesn't validate the title again if it isn't changing" do
+    SiteSetting.stubs(:min_topic_title_length).returns(5)
+    topic = Fabricate(:topic, title: "Short")
+    topic.should be_valid
+
+    SiteSetting.stubs(:min_topic_title_length).returns(15)
+    topic.last_posted_at = 1.minute.ago
+    topic.save.should == true
   end
 end

@@ -14,13 +14,15 @@ Discourse::Application.routes.draw do
   match "/404", to: "exceptions#not_found", via: [:get, :post]
   get "/404-body" => "exceptions#not_found_body"
 
-  if Rails.env == "development"
+  if Rails.env.development?
     mount Sidekiq::Web => "/sidekiq"
     mount Logster::Web => "/logs"
   else
     mount Sidekiq::Web => "/sidekiq", constraints: AdminConstraint.new
     mount Logster::Web => "/logs", constraints: AdminConstraint.new
   end
+
+  resources :about
 
   get "site" => "site#index"
 
@@ -143,10 +145,19 @@ Discourse::Application.routes.draw do
       end
     end
 
+    resources :export_csv, constraints: AdminConstraint.new do
+      member do
+        get "download" => "export_csv#download", constraints: { id: /[^\/]+/ }
+      end
+      collection do
+        get "users" => "export_csv#export_user_list"
+      end
+    end
+
     resources :badges, constraints: AdminConstraint.new do
       collection do
         get "types" => "badges#badge_types"
-        get "groupings" => "badges#badge_groupings"
+        post "badge_groupings" => "badges#save_badge_groupings"
         post "preview" => "badges#preview"
       end
     end
@@ -273,7 +284,7 @@ Discourse::Application.routes.draw do
   resources :post_actions do
     collection do
       get "users"
-      post "clear_flags"
+      post "defer_flags"
     end
   end
   resources :user_actions

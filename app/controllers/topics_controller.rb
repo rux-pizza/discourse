@@ -31,6 +31,8 @@ class TopicsController < ApplicationController
   skip_before_filter :check_xhr, only: [:show, :feed]
 
   def show
+    flash["referer"] ||= request.referer
+
     # We'd like to migrate the wordpress feed to another url. This keeps up backwards compatibility with
     # existing installs.
     return wordpress if params[:best].present?
@@ -45,12 +47,12 @@ class TopicsController < ApplicationController
     rescue Discourse::NotFound
       topic = Topic.find_by(slug: params[:id].downcase) if params[:id]
       raise Discourse::NotFound unless topic
-      return redirect_to(topic.relative_url)
+      redirect_to_correct_topic(topic, opts[:post_number]) && return
     end
 
     discourse_expires_in 1.minute
 
-    redirect_to_correct_topic && return if slugs_do_not_match
+    redirect_to_correct_topic(@topic_view.topic, opts[:post_number]) && return if slugs_do_not_match || (!request.xhr? && params[:slug].nil?)
 
     track_visit_to_topic
 
@@ -194,14 +196,20 @@ class TopicsController < ApplicationController
   def destroy
     topic = Topic.find_by(id: params[:id])
     guardian.ensure_can_delete!(topic)
-    topic.trash!(current_user)
+
+    first_post = topic.ordered_posts.first
+    PostDestroyer.new(current_user, first_post).destroy
+
     render nothing: true
   end
 
   def recover
     topic = Topic.where(id: params[:topic_id]).with_deleted.first
     guardian.ensure_can_recover_topic!(topic)
-    topic.recover!
+
+    first_post = topic.posts.with_deleted.order(:post_number).first
+    PostDestroyer.new(current_user, first_post).recover
+
     render nothing: true
   end
 
@@ -267,6 +275,8 @@ class TopicsController < ApplicationController
 
     dest_topic = move_posts_to_destination(topic)
     render_topic_changes(dest_topic)
+  rescue ActiveRecord::RecordInvalid => ex
+    render_json_error(ex)
   end
 
   def change_post_owners
@@ -370,13 +380,12 @@ class TopicsController < ApplicationController
     params[:slug] && @topic_view.topic.slug != params[:slug]
   end
 
-  def redirect_to_correct_topic
-    fullpath = request.fullpath
+  def redirect_to_correct_topic(topic, post_number=nil)
+    url = topic.relative_url
+    url << "/#{post_number}" if post_number.to_i > 0
+    url << ".json" if request.format.json?
 
-    split = fullpath.split('/')
-    split[2] = @topic_view.topic.slug
-
-    redirect_to split.join('/'), status: 301
+    redirect_to url, status: 301
   end
 
   def track_visit_to_topic
@@ -385,8 +394,20 @@ class TopicsController < ApplicationController
     user_id = (current_user.id if current_user)
     track_visit = should_track_visit_to_topic?
 
+    Scheduler::Defer.later "Track Link" do
+      IncomingLink.add(
+        referer: request.referer || flash[:referer],
+        host: request.host,
+        current_user: current_user,
+        topic_id: @topic_view.topic.id,
+        post_number: params[:post_number],
+        username: request['u'],
+        ip_address: request.remote_ip
+      )
+    end unless request.xhr?
+
     Scheduler::Defer.later "Track Visit" do
-      View.create_for_parent(Topic, topic_id, ip, user_id)
+      TopicViewItem.add(topic_id, ip, user_id)
       if track_visit
         TopicUser.track_visit! topic_id, user_id
       end

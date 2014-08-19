@@ -66,6 +66,7 @@ SQL
       FROM quoted_posts q1
       JOIN badge_posts p1 ON p1.id = q1.post_id
       JOIN badge_posts p2 ON p2.id = q1.quoted_post_id
+      WHERE (:backfill OR ( p1.id IN (:post_ids) ))
       GROUP BY p1.user_id
     ) ids
     JOIN quoted_posts q ON q.id = ids.id
@@ -79,25 +80,24 @@ SQL
       FROM topic_links l1
       JOIN badge_posts p1 ON p1.id = l1.post_id
       JOIN badge_posts p2 ON p2.id = l1.link_post_id
-      WHERE NOT reflection AND p1.topic_id <> p2.topic_id AND not quote
+      WHERE NOT reflection AND p1.topic_id <> p2.topic_id AND not quote AND
+        (:backfill OR ( p1.id in (:post_ids) ))
       GROUP BY l1.user_id
     ) ids
     JOIN topic_links l ON l.id = ids.id
 SQL
 
     FirstShare = <<SQL
-    SELECT views.user_id, p2.id post_id, i2.created_at granted_at
+    SELECT views.user_id, i2.post_id, i2.created_at granted_at
     FROM
     (
       SELECT i.user_id, MIN(i.id) i_id
       FROM incoming_links i
-      JOIN topics t on t.id = i.topic_id
-      JOIN badge_posts p on p.topic_id = t.id AND p.post_number = i.post_number
+      JOIN badge_posts p on p.id = i.post_id
       WHERE i.user_id IS NOT NULL
       GROUP BY i.user_id
     ) as views
     JOIN incoming_links i2 ON i2.id = views.i_id
-    JOIN posts p2 on p2.topic_id = i2.topic_id AND p2.post_number = i2.post_number
 SQL
 
     FirstFlag = <<SQL
@@ -106,7 +106,8 @@ SQL
       SELECT pa.user_id, min(pa.id) id
       FROM post_actions pa
       JOIN badge_posts p on p.id = pa.post_id
-      WHERE post_action_type_id IN (#{PostActionType.flag_types.values.join(",")})
+      WHERE post_action_type_id IN (#{PostActionType.flag_types.values.join(",")}) AND
+        (:backfill OR pa.post_id IN (:post_ids) )
       GROUP BY pa.user_id
     ) x
     JOIN post_actions pa1 on pa1.id = x.id
@@ -118,7 +119,8 @@ SQL
       SELECT pa.user_id, min(pa.id) id
       FROM post_actions pa
       JOIN badge_posts p on p.id = pa.post_id
-      WHERE post_action_type_id = 2
+      WHERE post_action_type_id = 2 AND
+        (:backfill OR pa.post_id IN (:post_ids) )
       GROUP BY pa.user_id
     ) x
     JOIN post_actions pa1 on pa1.id = x.id
@@ -128,7 +130,8 @@ SQL
     Editor = <<SQL
     SELECT p.user_id, min(p.id) post_id, min(p.created_at) granted_at
     FROM badge_posts p
-    WHERE p.self_edits > 0
+    WHERE p.self_edits > 0 AND
+        (:backfill OR p.id IN (:post_ids) )
     GROUP BY p.user_id
 SQL
 
@@ -136,7 +139,8 @@ SQL
     SELECT p.user_id, min(post_id) post_id, min(pa.created_at) granted_at
     FROM post_actions pa
     JOIN badge_posts p on p.id = pa.post_id
-    WHERE post_action_type_id = 2
+    WHERE post_action_type_id = 2 AND
+        (:backfill OR pa.post_id IN (:post_ids) )
     GROUP BY p.user_id
 SQL
 
@@ -145,7 +149,8 @@ SQL
     FROM users u
     JOIN user_profiles up on u.id = up.user_id
     WHERE bio_raw IS NOT NULL AND LENGTH(TRIM(bio_raw)) > #{Badge::AutobiographerMinBioLength} AND
-          uploaded_avatar_id IS NOT NULL
+          uploaded_avatar_id IS NOT NULL AND
+          (:backfill OR u.id IN (:user_ids) )
 SQL
 
     def self.like_badge(count)
@@ -153,7 +158,8 @@ SQL
 "
     SELECT p.user_id, p.id post_id, p.updated_at granted_at
     FROM badge_posts p
-    WHERE p.like_count >= #{count.to_i}
+    WHERE p.like_count >= #{count.to_i} AND
+      (:backfill OR p.id IN (:post_ids) )
 "
     end
 
@@ -161,7 +167,9 @@ SQL
       # we can do better with dates, but its hard work figuring this out historically
 "
     SELECT u.id user_id, current_timestamp granted_at, NULL post_id FROM users u
-    WHERE trust_level >= #{level.to_i}
+    WHERE trust_level >= #{level.to_i} AND (
+      :backfill OR u.id IN (:user_ids)
+    )
 "
     end
   end
@@ -177,6 +185,8 @@ SQL
   validates :multiple_grant, inclusion: [true, false]
 
   scope :enabled, ->{ where(enabled: true) }
+
+  before_create :ensure_not_system
 
   # fields that can not be edited on system badges
   def self.protected_system_fields
@@ -205,18 +215,25 @@ SQL
     !self.multiple_grant?
   end
 
-  def system?
-    id && id < 100
-  end
-
   def default_name=(val)
     self.name ||= val
+  end
+
+  def default_allow_title=(val)
+    self.allow_title ||= val
   end
 
   def default_badge_grouping_id=(val)
     # allow to correct orphans
     if !self.badge_grouping_id || self.badge_grouping_id < 0
       self.badge_grouping_id = val
+    end
+  end
+
+  protected
+  def ensure_not_system
+    unless id
+      self.id = [Badge.maximum(:id) + 1, 100].max
     end
   end
 end
@@ -243,6 +260,7 @@ end
 #  badge_grouping_id :integer          default(5), not null
 #  trigger           :integer
 #  show_posts        :boolean          default(FALSE), not null
+#  system            :boolean          default(FALSE), not null
 #
 # Indexes
 #

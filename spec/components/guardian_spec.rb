@@ -40,6 +40,11 @@ describe Guardian do
       Guardian.new(user).post_can_act?(post, :like).should be_false
     end
 
+    it "returns false when the post is deleted" do
+      post.deleted_at = Time.now
+      Guardian.new(user).post_can_act?(post, :like).should be_false
+    end
+
     it "always allows flagging" do
       post.topic.archived = true
       Guardian.new(user).post_can_act?(post, :spam).should be_true
@@ -81,25 +86,25 @@ describe Guardian do
   end
 
 
-  describe "can_clear_flags" do
+  describe "can_defer_flags" do
     let(:post) { Fabricate(:post) }
     let(:user) { post.user }
     let(:moderator) { Fabricate(:moderator) }
 
     it "returns false when the user is nil" do
-      Guardian.new(nil).can_clear_flags?(post).should be_false
+      Guardian.new(nil).can_defer_flags?(post).should be_false
     end
 
     it "returns false when the post is nil" do
-      Guardian.new(moderator).can_clear_flags?(nil).should be_false
+      Guardian.new(moderator).can_defer_flags?(nil).should be_false
     end
 
     it "returns false when the user is not a moderator" do
-      Guardian.new(user).can_clear_flags?(post).should be_false
+      Guardian.new(user).can_defer_flags?(post).should be_false
     end
 
     it "returns true when the user is a moderator" do
-      Guardian.new(moderator).can_clear_flags?(post).should be_true
+      Guardian.new(moderator).can_defer_flags?(post).should be_true
     end
 
   end
@@ -354,6 +359,15 @@ describe Guardian do
         Guardian.new(moderator).can_see?(private_topic).should be_false
         Guardian.new(admin).can_see?(private_topic).should be_true
       end
+
+      it "restricts static doc topics" do
+        tos_topic = Fabricate(:topic, user: Discourse.system_user)
+        SiteSetting.stubs(:tos_topic_id).returns(tos_topic.id)
+
+        Guardian.new(build(:user)).can_edit?(tos_topic).should be_false
+        Guardian.new(moderator).can_edit?(tos_topic).should be_false
+        Guardian.new(admin).can_edit?(tos_topic).should be_true
+      end
     end
 
     describe 'a Post' do
@@ -395,6 +409,12 @@ describe Guardian do
         it 'is true when logged in' do
           Guardian.new(Fabricate(:user)).can_see?(post_revision).should == true
         end
+
+        it 'is true if the author has public edit history' do
+          public_post_revision = Fabricate(:post_revision)
+          public_post_revision.post.user.edit_history_public = true
+          Guardian.new.can_see?(public_post_revision).should == true
+        end
       end
 
       context 'edit_history_visible_to_public is false' do
@@ -411,6 +431,12 @@ describe Guardian do
 
         it 'is false for trust level lower than 4' do
           Guardian.new(Fabricate(:leader)).can_see?(post_revision).should == false
+        end
+
+        it 'is true if the author has public edit history' do
+          public_post_revision = Fabricate(:post_revision)
+          public_post_revision.post.user.edit_history_public = true
+          Guardian.new.can_see?(public_post_revision).should == true
         end
       end
     end
@@ -524,7 +550,7 @@ describe Guardian do
             Guardian.new(coding_horror).can_create?(Post, topic).should be_false
           end
 
-          it 'allows editing of posts' do
+          it 'does not allow editing of posts' do
             Guardian.new(coding_horror).can_edit?(post).should be_false
           end
         end
@@ -784,6 +810,18 @@ describe Guardian do
           Guardian.new(post.user).can_edit?(post).should be_true
         end
       end
+
+      context "first post of a static page doc" do
+        let!(:tos_topic) { Fabricate(:topic, user: Discourse.system_user) }
+        let!(:tos_first_post) { build(:post, topic: tos_topic, user: tos_topic.user) }
+        before { SiteSetting.stubs(:tos_topic_id).returns(tos_topic.id) }
+
+        it "restricts static doc posts" do
+          Guardian.new(build(:user)).can_edit?(tos_first_post).should be_false
+          Guardian.new(moderator).can_edit?(tos_first_post).should be_false
+          Guardian.new(admin).can_edit?(tos_first_post).should be_true
+        end
+      end
     end
 
     describe 'a Topic' do
@@ -816,16 +854,20 @@ describe Guardian do
       end
 
       context 'archived' do
-        it 'returns false as a moderator' do
-          Guardian.new(moderator).can_edit?(build(:topic, user: user, archived: true)).should == false
+        it 'returns true as a moderator' do
+          Guardian.new(moderator).can_edit?(build(:topic, user: user, archived: true)).should == true
         end
 
-        it 'returns false as an admin' do
-          Guardian.new(admin).can_edit?(build(:topic, user: user, archived: true)).should == false
+        it 'returns true as an admin' do
+          Guardian.new(admin).can_edit?(build(:topic, user: user, archived: true)).should == true
         end
 
-        it 'returns false at trust level 3' do
-          Guardian.new(leader).can_edit?(build(:topic, user: user, archived: true)).should == false
+        it 'returns true at trust level 3' do
+          Guardian.new(leader).can_edit?(build(:topic, user: user, archived: true)).should == true
+        end
+
+        it 'returns false as a topic creator' do
+          Guardian.new(user).can_edit?(build(:topic, user: user, archived: true)).should == false
         end
       end
     end
@@ -986,6 +1028,12 @@ describe Guardian do
       it 'returns true when an admin' do
         Guardian.new(admin).can_delete?(topic).should be_true
       end
+
+      it 'returns false for static doc topics' do
+        tos_topic = Fabricate(:topic, user: Discourse.system_user)
+        SiteSetting.stubs(:tos_topic_id).returns(tos_topic.id)
+        Guardian.new(admin).can_delete?(tos_topic).should be_false
+      end
     end
 
     context 'a Post' do
@@ -1024,6 +1072,14 @@ describe Guardian do
 
       it 'returns true when an admin' do
         Guardian.new(admin).can_delete?(post).should be_true
+      end
+
+      it 'returns false when post is first in a static doc topic' do
+        tos_topic = Fabricate(:topic, user: Discourse.system_user)
+        SiteSetting.stubs(:tos_topic_id).returns(tos_topic.id)
+        post.update_attribute :post_number, 1
+        post.update_attribute :topic_id, tos_topic.id
+        Guardian.new(admin).can_delete?(post).should be_false
       end
 
       context 'post is older than post_edit_time_limit' do
@@ -1350,7 +1406,7 @@ describe Guardian do
     end
 
     context "delete myself" do
-      let(:myself) { Fabricate.build(:user, created_at: 6.months.ago) }
+      let(:myself) { Fabricate(:user, created_at: 6.months.ago) }
       subject      { Guardian.new(myself).can_delete_user?(myself) }
 
       it "is true to delete myself and I have never made a post" do
@@ -1375,7 +1431,7 @@ describe Guardian do
 
       it "is true if user is not an admin and first post is not too old" do
         user = Fabricate.build(:user, created_at: 100.days.ago)
-        user.stubs(:first_post).returns(Fabricate.build(:post, created_at: 9.days.ago))
+        user.stubs(:first_post_created_at).returns(9.days.ago)
         SiteSetting.stubs(:delete_user_max_post_age).returns(10)
         Guardian.new(actor).can_delete_user?(user).should == true
       end
@@ -1386,7 +1442,7 @@ describe Guardian do
 
       it "is false if user's first post is too old" do
         user = Fabricate.build(:user, created_at: 100.days.ago)
-        user.stubs(:first_post).returns(Fabricate.build(:post, created_at: 11.days.ago))
+        user.stubs(:first_post_created_at).returns(11.days.ago)
         SiteSetting.stubs(:delete_user_max_post_age).returns(10)
         Guardian.new(actor).can_delete_user?(user).should == false
       end
@@ -1419,19 +1475,19 @@ describe Guardian do
     shared_examples "can_delete_all_posts examples" do
       it "is true if user has no posts" do
         SiteSetting.stubs(:delete_user_max_post_age).returns(10)
-        Guardian.new(actor).can_delete_all_posts?(Fabricate.build(:user, created_at: 100.days.ago)).should be_true
+        Guardian.new(actor).can_delete_all_posts?(Fabricate(:user, created_at: 100.days.ago)).should be_true
       end
 
       it "is true if user's first post is newer than delete_user_max_post_age days old" do
-        user = Fabricate.build(:user, created_at: 100.days.ago)
-        user.stubs(:first_post).returns(Fabricate.build(:post, created_at: 9.days.ago))
+        user = Fabricate(:user, created_at: 100.days.ago)
+        user.stubs(:first_post_created_at).returns(9.days.ago)
         SiteSetting.stubs(:delete_user_max_post_age).returns(10)
         Guardian.new(actor).can_delete_all_posts?(user).should be_true
       end
 
       it "is false if user's first post is older than delete_user_max_post_age days old" do
-        user = Fabricate.build(:user, created_at: 100.days.ago)
-        user.stubs(:first_post).returns(Fabricate.build(:post, created_at: 11.days.ago))
+        user = Fabricate(:user, created_at: 100.days.ago)
+        user.stubs(:first_post_created_at).returns(11.days.ago)
         SiteSetting.stubs(:delete_user_max_post_age).returns(10)
         Guardian.new(actor).can_delete_all_posts?(user).should be_false
       end
@@ -1441,14 +1497,14 @@ describe Guardian do
       end
 
       it "is true if number of posts is small" do
-        u = Fabricate.build(:user, created_at: 1.day.ago)
+        u = Fabricate(:user, created_at: 1.day.ago)
         u.stubs(:post_count).returns(1)
         SiteSetting.stubs(:delete_all_posts_max).returns(10)
         Guardian.new(actor).can_delete_all_posts?(u).should be_true
       end
 
       it "is false if number of posts is not small" do
-        u = Fabricate.build(:user, created_at: 1.day.ago)
+        u = Fabricate(:user, created_at: 1.day.ago)
         u.stubs(:post_count).returns(11)
         SiteSetting.stubs(:delete_all_posts_max).returns(10)
         Guardian.new(actor).can_delete_all_posts?(u).should be_false
@@ -1528,7 +1584,7 @@ describe Guardian do
     end
 
     context 'for a new user' do
-      let(:target_user) { build(:user, created_at: 1.minute.ago) }
+      let(:target_user) { Fabricate(:user, created_at: 1.minute.ago) }
       include_examples "staff can always change usernames"
 
       it "is true for the user to change their own username" do
@@ -1541,7 +1597,7 @@ describe Guardian do
         SiteSetting.stubs(:username_change_period).returns(3)
       end
 
-      let(:target_user) { build(:user, created_at: 4.days.ago) }
+      let(:target_user) { Fabricate(:user, created_at: 4.days.ago) }
 
       context 'with no posts' do
         include_examples "staff can always change usernames"
@@ -1635,12 +1691,12 @@ describe Guardian do
         Guardian.new(user).can_edit_email?(user).should be_false
       end
 
-      it "is true for admins" do
-        Guardian.new(admin).can_edit_email?(user).should be_true
+      it "is false for admins" do
+        Guardian.new(admin).can_edit_email?(user).should be_false
       end
 
-      it "is true for moderators" do
-        Guardian.new(moderator).can_edit_email?(user).should be_true
+      it "is false for moderators" do
+        Guardian.new(moderator).can_edit_email?(user).should be_false
       end
     end
 

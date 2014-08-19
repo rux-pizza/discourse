@@ -11,7 +11,7 @@ class PostActionsController < ApplicationController
 
     args = {}
     args[:message] = params[:message] if params[:message].present?
-    args[:take_action] = true if guardian.is_staff? and params[:take_action] == 'true'
+    args[:take_action] = true if guardian.is_staff? && params[:take_action] == 'true'
     args[:flag_topic] = true if params[:flag_topic] == 'true'
 
     post_action = PostAction.act(current_user, @post, @post_action_type_id, args)
@@ -46,18 +46,12 @@ class PostActionsController < ApplicationController
     render nothing: true
   end
 
-  def clear_flags
-    guardian.ensure_can_clear_flags!(@post)
+  def defer_flags
+    guardian.ensure_can_defer_flags!(@post)
 
-    PostAction.clear_flags!(@post, current_user.id, @post_action_type_id)
-    @post.reload
+    PostAction.defer_flags!(@post, current_user)
 
-    if @post.is_flagged?
-      render json: {success: true, hidden: true}
-    else
-      @post.unhide!
-      render json: {success: true, hidden: false}
-    end
+    render json: { success: true }
   end
 
   private
@@ -80,8 +74,8 @@ class PostActionsController < ApplicationController
 
       finder = Post.where(id: post_id)
 
-      # Include deleted posts if the user is a moderator (to guardian ?)
-      finder = finder.with_deleted if current_user.try(:moderator?)
+      # Include deleted posts if the user is a staff
+      finder = finder.with_deleted if guardian.is_staff?
 
       @post = finder.first
       guardian.ensure_can_see!(@post)

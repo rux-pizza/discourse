@@ -5,7 +5,7 @@ Discourse.UserTopicListRoute = Discourse.Route.extend({
 
   setupController: function(controller, model) {
     this.controllerFor('user').set('indexStream', false);
-    this.controllerFor('user_activity').set('userActionType', this.get('userActionType'));
+    this.controllerFor('user-activity').set('userActionType', this.get('userActionType'));
     this.controllerFor('user_topics_list').setProperties({
       model: model,
       hideCategory: false,

@@ -50,7 +50,7 @@
 }
 
 .docked #topic-progress {
-  box-shadow: 0 0 3px rbga($primary, .5);
+  box-shadow: 0 0 3px rbga(0,0,0, .5);
 }
 
 #topic-progress-wrapper {
@@ -59,7 +59,7 @@
   right: 0;
   bottom: 0;
   z-index: 500;
-  margin-right: 140px;
+  margin-right: 145px;
   outline: 1px solid transparent;
 }
 
@@ -67,11 +67,11 @@
   border: 1px solid scale-color-diff();
   padding: 5px;
   background: $secondary;
-  @include box-shadow(0 0px 2px rgba($primary, .2));
+  @include box-shadow(0 0px 2px rgba(0,0,0, .2));
 
   position: absolute;
   bottom: 34px;
-  width: 118px;
+  width: 133px;
   padding: 5px;
 
   button.full {
@@ -104,7 +104,7 @@
 }
 
 #topic-progress {
-  box-shadow: 0 0 3px rbga($primary, .7);
+  box-shadow: 0 0 3px rbga(0,0,0, .7);
   position: relative;
   &.hidden {
     display: none;
@@ -112,7 +112,7 @@
   border: none;
   background-color: scale-color-diff();
   color: $primary;
-  width: 130px;
+  width: 145px;
   height: 34px;
 
   /* as a big ol' click target, don't let text inside be selected */

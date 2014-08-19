@@ -19,7 +19,7 @@ class Promotion
 
     trust_key = TrustLevel.levels[@user.trust_level]
 
-    review_method = :"review_#{trust_key.to_s}"
+    review_method = :"review_#{trust_key}"
     return send(review_method) if respond_to?(review_method)
 
     false
@@ -102,6 +102,10 @@ class Promotion
 
   def self.leader_met?(user)
     LeaderRequirements.new(user).requirements_met?
+  end
+
+  def self.leader_lost?(user)
+    LeaderRequirements.new(user).requirements_lost?
   end
 
 end

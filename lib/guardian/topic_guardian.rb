@@ -27,7 +27,10 @@ module TopicGuardian
 
   # Editing Method
   def can_edit_topic?(topic)
-    !topic.archived && (is_staff? || is_my_own?(topic) || user.has_trust_level?(:leader))
+    return false if Discourse.static_doc_topic_ids.include?(topic.id) && !is_admin?
+    return true if is_staff? || user.has_trust_level?(:leader)
+    return false if topic.archived
+    is_my_own?(topic)
   end
 
   # Recovery Method
@@ -38,7 +41,8 @@ module TopicGuardian
   def can_delete_topic?(topic)
     !topic.trashed? &&
     is_staff? &&
-    !(Category.exists?(topic_id: topic.id))
+    !(Category.exists?(topic_id: topic.id)) &&
+    !Discourse.static_doc_topic_ids.include?(topic.id)
   end
 
   def can_reply_as_new_topic?(topic)
@@ -56,10 +60,13 @@ module TopicGuardian
     # Deleted topics
     return false if topic.deleted_at && !can_see_deleted_topics?
 
+    if topic.private_message?
+      return authenticated? &&
+             topic.all_allowed_users.where(id: @user.id).exists?
+    end
+
     # not secure, or I can see it
-    (not(topic.read_restricted_category?) || can_see_category?(topic.category)) &&
-    # not private, or I am allowed (or is staff)
-    (not(topic.private_message?) || (authenticated? && (is_admin? || topic.all_allowed_users.where(id: @user.id).exists?)))
+    !topic.read_restricted_category? || can_see_category?(topic.category)
 
   end
 end

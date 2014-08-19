@@ -70,9 +70,9 @@ module Tilt
       # For backwards compatibility with plugins, for now export the Global format too.
       # We should eventually have an upgrade system for plugins to use ES6 or some other
       # resolve based API.
-      if ENV['DISCOURSE_NO_CONSTANTS'].nil? && scope.logical_path =~ /discourse\/(controllers|components|views|routes)\/(.*)/
-        type = Regexp.last_match[1]
-        file_name = Regexp.last_match[2].gsub(/[\-\/]/, '_')
+      if ENV['DISCOURSE_NO_CONSTANTS'].nil? && scope.logical_path =~ /(discourse|admin)\/(controllers|components|views|routes|mixins)\/(.*)/
+        type = Regexp.last_match[2]
+        file_name = Regexp.last_match[3].gsub(/[\-\/]/, '_')
         class_name = file_name.classify
 
         # Rails removes pluralization when calling classify
@@ -80,7 +80,16 @@ module Tilt
           class_name << "s"
         end
         require_name = module_name(scope.root_path, scope.logical_path)
-        @output << "\n\nDiscourse.#{class_name}#{type.classify} = require('#{require_name}').default"
+
+        if require_name !~ /\-test$/
+          result = "#{class_name}#{type.classify}"
+
+          # HAX
+          result = "Controller" if result == "ControllerController"
+          result.gsub!(/Mixin$/, '')
+
+          @output << "\n\nDiscourse.#{result} = require('#{require_name}').default;\n"
+        end
       end
 
       # Include JS code for JSHint

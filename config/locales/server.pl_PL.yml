@@ -20,7 +20,6 @@ pl_PL:
   posts: "wpisy"
   loading: "Ładowanie"
   powered_by_html: 'Zasilane przez <a href="http://www.discourse.org">Discourse</a>, najlepiej oglądać z włączonym JavaScriptem'
-  log_in: "Zaloguj się"
   via: "%{username} z %{site_name}"
   is_reserved: "jest zarezerwowana"
   embed:
@@ -63,7 +62,6 @@ pl_PL:
   next_page: "następna strona →"
   prev_page: "← poprzednia strona"
   page_num: "Strona %{num}"
-  by: "Od"
   topics_in_category: "Tematy w kategorii '%{category}'"
   rss_posts_in_topic: "Kanał RSS tematu '%{topic}'"
   rss_topics_in_category: "Kanał RSS tematów z kategorii '%{category}'"
@@ -281,11 +279,9 @@ pl_PL:
     continue: "Przejdź do %{site_name}"
   change_email:
     confirmed: "Twój email został zmieniony."
-    please_continue: "Przejdź do %{link}"
     error: "Podczas próby zmiany Twojego adresu email wystąpił błąd. Być może ten adres jest już używany?"
   activation:
     already_done: "Przepraszamy, ten link aktywujący konto jest już nieważny. Być może Twoje konto jest już aktywne ?"
-    please_continue: "Twoje nowe konto zostało aktywowane i zostałeś(-aś) zalogowany(-a). Przejdź do %{link}"
     welcome_to: "Witamy na forum %{site_name}!"
     approval_required: "Moderator musi zaakceptować Twoje nowe konto zanim uzyskasz dostęp do forum. O aktywacji zostaniesz poinformowanym mailem."
   post_action_types:
@@ -304,7 +300,6 @@ pl_PL:
       title: 'Powiadom {{username}}'
       description: 'Ten wpis zawiera coś o czym chciałbym porozmawiać z tą osobą bezpośrednio i prywatnie.'
       long_form: 'powiadomiono użytkownika'
-      email_title: 'W sprawie Twojego wpisu w "%{title}"'
       email_body: "%{link}\n\n%{message}"
     notify_moderators:
       title: 'Powiadom moderatorów'
@@ -333,7 +328,6 @@ pl_PL:
       email_body: "%{link}\n\n%{message}"
   flagging:
     you_must_edit: '<p>Twój wpis został oflagowany przez społeczność. <a href="/my/private-messages">Zobacz swoje prywatne wiadomości</a>.</p>'
-    user_must_edit: '<p>Oflagowana treść tymczasowo ukryta content temporarily hidden.</p>'
   archetypes:
     regular:
       title: "Zwykły temat"
@@ -451,30 +445,19 @@ pl_PL:
     education_new_topic:
       title: "Edukacja nowych użytkowników: Pierwsze tematy"
       description: "Okienko z wskazówkami automatycznie wyświetlane nad panelem pisania gdy nowi użytkownicy rozpoczynają swoje pierwsze 2 tematy."
-    usage_tips:
-      title: "Wskazówki dla nowych użytkowników"
-      description: "Wskazówki dotyczące użytkowania forum oraz inne niezbędne informacje skierowane do nowych użytkowników."
     welcome_user:
       title: "Przywitanie: Nowy użytkownik"
       description: "Prywatna wiadomość automatycznie wysyłana do wszystkich nowych użytkowników po ich rejestracji."
     welcome_invite:
       title: "Przywitanie: Zaproszony użytkownik"
       description: "Prywatna wiadomość automatycznie wysyłana do nowych użytkowników po zaakceptowaniu przez nich zaproszenia do udziału od innego użytkownika."
-    privacy_policy:
-      title: "Privacy Policy"
-      description: "Your site's privacy policy. Leave blank for default policy."
-    faq:
-      title: "FAQ"
-      description: "Your site's FAQ. Leave blank for the default FAQ."
     login_required_welcome_message:
       title: "Logowanie wymagane: Przywitanie"
       description: "Wiadomość witająca wyświetlana niezalogowanym użytkownikom gdy ustawienie 'login required' jest włączone."
     tos_user_content_license:
       title: "Warunki serwisu: Licencja treści"
-      description: "Treść sekcji Licencja treści warunków serwisu."
     tos_miscellaneous:
       title: "Warunki serwisu: Rozmaite"
-      description: "Treść sekcji Rozmaite warunków serwisu."
     login_required:
       title: "Login Required: Homepage"
       description: "The text displayed for unauthorized users when login is required on the site."
@@ -503,7 +486,6 @@ pl_PL:
     top_menu: "Determine which items appear in the homepage navigation, and in what order. Example latest|new|unread|starred|categories|top|read|posted"
     post_menu: "Determine which items appear on the post menu, and in what order. Example like|edit|flag|delete|share|bookmark|reply"
     track_external_right_clicks: "Track external links that are right clicked (eg: open in new tab) disabled by default because it rewrites URLs"
-    version_checks: "Ping the Discourse Hub for version updates and show version messages on the /admin dashboard"
     port: "DEVELOPER ONLY! WARNING! Use this HTTP port rather than the default of port 80. Leave blank for default of 80."
     force_hostname: "DEVELOPER ONLY! WARNING! Specify a hostname in the URL. Leave blank for default."
     invite_expiry_days: "How long user invitation keys are valid, in days"
@@ -609,47 +591,6 @@ pl_PL:
   system_messages:
     post_hidden:
       subject_template: "Wpis ukryty z powodu oflagowania przez społeczność"
-    usage_tips:
-      text_body_template: |
-        Ta wiadomość zawiera kilka szybkich porad na początek:
-
-        ### Przewijaj dalej
-
-        Nie ma przycisków do przejścia na następną stronę ani numerów stron - by przeczytać więcej, po prostu dalej przewijaj w dół!
-
-        Gdy ktoś napisze nową odpowiedź, pojawi się ona automatycznie na dole tematu.
-
-        ### Jak mam odpowiedzieć?
-
-        - By odpowiedzieć na konkretny wpis, użyj przycisku Odpowiedz przy tym wpisie.
-
-        - By odpowiedzieć na ogólny wątek tematu, zamiast do konkretnej osoby lub na konkretny wpis, użyj przycisku Odpowiedz na samym dole tematu.
-
-        - By poprowadzić rozmowę w innym kierunku, lecz utrzymać je powiązane, użyj przycisku Odpowiedz jako nowy temat wyświetlanego po prawej od wpisu.
-
-        ### Kto mówi do mnie?
-
-        Gdy ktoś odpowiada na Twój wpis, cytuje Cię lub wspomina Twoją @nazwę, liczba ➀ pojawi się przy przycisku rozmowy na górze strony. Użyj go by sprawdzić kto do Ciebie mówi, i gdzie.
-
-        - By wspomnieć czyjąś nazwę, wpisz `@` i pojawi się okienko automatycznego uzupełniania.
-
-        - By zacytować fragment wpisu, zaznacz go, a potem użyj przycisku Odpowiedz pojawiającego się nad Twoim zaznaczeniem..
-
-        - By zacytować cały post, użyj przycisku Importuj Cytat w pasku narzędzi edytora.
-
-        ### Spójrz na ten wpis!
-
-        By powiedzieć komuś, że podobał Ci się jego wpis, użyj przycisku polubienia ♥ na dole wpisu. Jeśli widzisz jakiś problem ze wpisem, użyj przycisku flagi by prywatnie powiadomić nasz zespół o nim.
-
-        ### Gdzie ja jestem?
-
-        - By powrócić do strony domowej w dowolnym momencie, **użyj loga w lewym, górnym rogu** lub przycisku wstecz ← w Twojej przeglądarce.
-
-        - Do wyszukiwania, Twojego profilu lub mapy strony, użyj **ikon w prawym, górnym rogu**.
-
-        - Podczas czytania tematu, przejdź na górę ↑ klikając jego tytuł na górze strony, lub naciśnij klawisz <kbd>home</kbd>. By przejść na dół ↓, użyj strzałki w dół we wskaźniku postępu tematu na dole strony, lub naciśnij klawisz <kbd>end</kbd>.
-
-        - Użyj czasów jako skrótów przy otwieraniu tematu. Możesz zawsze znaleźć się na górze tematu klikając datę pierwszego wpisu, i na dole - przez datę ostatniego.
     welcome_user:
       subject_template: "Witaj na forum %{site_name}!"
     welcome_invite:
@@ -777,10 +718,6 @@ pl_PL:
         Jeśli powyższy link nie jest klikalny, spróbuj skopiować i wkleić go do pasku adresu Twojej przeglądarki.
   page_not_found:
     title: "Strona, którą chciałeś odwiedzić, nie istnieje lub jest prywatna."
-  login_required:
-    welcome_message: |
-      #[Witaj na %{title}](#welcome)
-      To forum dyskusyjne wymaga konta by zobaczyć %{title}. Załóż konto lub zaloguj się by kontynuować.
   terms_of_service:
     user_content_license: |
       User contributions are licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US). Without limiting any of those representations or warranties, %{company_short_name} has the right (though not the obligation) to, in %{company_short_name}’s sole discretion (i) refuse or remove any content that, in %{company_short_name}’s reasonable opinion, violates any %{company_short_name} policy or is in any way harmful or objectionable, or (ii) terminate or deny access to and use of the Website to any individual or entity for any reason, in %{company_short_name}’s sole discretion. %{company_short_name} will have no obligation to provide a refund of any amounts previously paid.

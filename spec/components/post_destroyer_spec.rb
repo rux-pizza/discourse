@@ -119,24 +119,34 @@ describe PostDestroyer do
     end
 
     context "as a moderator" do
-      before do
-        PostDestroyer.new(moderator, post).destroy
-      end
-
       it "deletes the post" do
+        PostDestroyer.new(moderator, post).destroy
         post.deleted_at.should be_present
         post.deleted_by.should == moderator
+      end
+
+      it "updates the user's post_count" do
+        author = post.user
+        expect {
+          PostDestroyer.new(moderator, post).destroy
+          author.reload
+        }.to change { author.post_count }.by(-1)
       end
     end
 
     context "as an admin" do
-      before do
-        PostDestroyer.new(admin, post).destroy
-      end
-
       it "deletes the post" do
+        PostDestroyer.new(admin, post).destroy
         post.deleted_at.should be_present
         post.deleted_by.should == admin
+      end
+
+      it "updates the user's post_count" do
+        author = post.user
+        expect {
+          PostDestroyer.new(admin, post).destroy
+          author.reload
+        }.to change { author.post_count }.by(-1)
       end
     end
 
@@ -263,28 +273,24 @@ describe PostDestroyer do
   end
 
   describe "post actions" do
-    let(:codinghorror) { Fabricate(:coding_horror) }
-    let(:bookmark) { PostAction.new(user_id: post.user_id, post_action_type_id: PostActionType.types[:bookmark] , post_id: post.id) }
     let(:second_post) { Fabricate(:post, topic_id: post.topic_id) }
+    let!(:bookmark) { PostAction.act(moderator, second_post, PostActionType.types[:bookmark]) }
+    let!(:flag) { PostAction.act(moderator, second_post, PostActionType.types[:off_topic]) }
 
-    it "should reset counts when a post is deleted" do
-      PostAction.act(codinghorror, second_post, PostActionType.types[:off_topic])
-      expect { PostDestroyer.new(moderator, second_post).destroy }.to change(PostAction, :flagged_posts_count).by(-1)
-    end
+    it "should delete public post actions and agree with flags" do
+      second_post.expects(:update_flagged_posts_count)
 
-    it "should delete the post actions" do
-      flag = PostAction.act(codinghorror, second_post, PostActionType.types[:off_topic])
       PostDestroyer.new(moderator, second_post).destroy
-      expect(PostAction.find_by(id: flag.id)).to be_nil
-      expect(PostAction.find_by(id: bookmark.id)).to be_nil
-    end
 
-    it 'should update flag counts on the post' do
-      PostAction.act(codinghorror, second_post, PostActionType.types[:off_topic])
-      PostDestroyer.new(moderator, second_post.reload).destroy
+      PostAction.find_by(id: bookmark.id).should == nil
+
+      off_topic = PostAction.find_by(id: flag.id)
+      off_topic.should_not == nil
+      off_topic.agreed_at.should_not == nil
+
       second_post.reload
-      expect(second_post.off_topic_count).to eq(0)
-      expect(second_post.bookmark_count).to eq(0)
+      second_post.bookmark_count.should == 0
+      second_post.off_topic_count.should == 1
     end
   end
 

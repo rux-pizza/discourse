@@ -20,12 +20,15 @@ it:
   posts: "post"
   loading: "Caricamento"
   powered_by_html: 'Powered by <a href="http://www.discourse.org">Discourse</a>, è consigliato abilitare javascript'
-  log_in: "Accedi"
   via: "%{username} via %{site_name}"
   is_reserved: "è riservato"
   errors:
+    messages:
+      too_long_validation: "è limitato a %{max} caratteri; tu ne hai inseriti %{length}."
     embed:
       load_from_remote: "Si è verificato un errore nel caricamento del post."
+  bulk_invite:
+    file_should_be_csv: "Il file caricato deve essere in formato csv o txt."
   backup:
     operation_already_running: "Una %{operation} è in esecuzione. Non è possibile avviare una nuova %{operation} adesso."
     backup_file_should_be_tar_gz: "Il file di backup deve essere un archivio .tar.gz"
@@ -76,7 +79,6 @@ it:
   next_page: "successivo →"
   prev_page: "← pagina precedente"
   page_num: "Pagina %{num}"
-  by: "Da"
   topics_in_category: "Topic nella categoria '%{category}'"
   rss_posts_in_topic: "RSS feed per '%{topic}'"
   rss_topics_in_category: "RSS feed dei topic nella categoria '%{category}'"
@@ -153,14 +155,26 @@ it:
   user_profile:
     no_info_me: "<div class='missing-profile'>il campo About Me del tuo profilo è vuoto, <a href='/users/%{username_lower}/preferences/about-me'>vuoi compilarlo?</a></div>"
     no_info_other: "<div class='missing-profile'>%{name} non ha ancora compilato il campo About Me del suo profilo.</div>"
+  vip_category_name: "Lounge"
   vip_category_description: "Una categoria esclusiva per i membri di livello 3 o superiori."
-  meta_category_description: "Discussioni circa questo forum, la sua organizzazione, come funziona e come migliorarlo."
+  meta_category_name: "Meta"
+  staff_category_name: "Staff"
   staff_category_description: "Categoria privata per discussioni tra lo staff. I topic sono visibili solo agli amministratori e ai moderatori."
-  assets_topic_body: "Questo è un topic permanente, visibile solo allo staff, utilizzabile per salvare immagini e files utilizzati nel design del forum. Non eliminarlo!\n\n\nEcco come:\n\n\n1. Rispondi a questo topic.\n2. Carica tutte le immagini che desideri usare per loghi, favicon e così via. (Usa l'icona di upload nell'editor del post o trascina direttamente le immagini.)\n3. Invia la risposta per postarla.\n4. Fai click destro sulle immagini nel tuo nuovo post per ottenere il percorso delle immagini caricate o clicca l'icona di modifica post e ottieni il percorso alle immagini. Copia il percorso delle immagini.\n5. Incolla i percorsi nella sezione [impostazioni fondamentali](/admin/site_settings/category/required).\n\nInoltre, se hai bisogno di permettere upload di file di diverso tipo, modifica `authorized_extensions` nelle [impostazioni file](/admin/site_settings/category/files)."
+  lounge_welcome:
+    title: "Benvenuto nella Lounge"
   category:
     topic_prefix: "Definizione della categoria %{category}"
     replace_paragraph: "[Usa questo primo paragrafo per una breve descrizione della categoria. Cerca di stare sotto i 200 caratteri.]"
     post_template: "%{replace_paragraph}\n\nUsa lo spazio sottostante per una descrizione più estesa, ed anche per stabilire delle regole per la conversazione!"
+    errors:
+      self_parent: "La categoria-genitore di una sottocategoria non può essere se stessa."
+    cannot_delete:
+      uncategorized: "Non puoi eliminare la categoria \"Non categorizzato\""
+      has_subcategories: "Non puoi eliminare questa categoria perchè ha sotto-categorie."
+      topic_exists:
+        one: "Non puoi eliminare questa categoria perché ha 1 topic al suo interno. Il topic più vecchio è %{topic_link}."
+        other: "Non puoi eliminare questa categoria perché ha %{count} topic. Il topic più vecchio è %{topic_link}."
+      topic_exists_no_oldest: "Non puoi cancellare questa categoria perchè il numero dei topic è di %{count}."
   trust_levels:
     newuser:
       title: "Nuovo Utente"
@@ -267,11 +281,13 @@ it:
     continue: "Vai a %{site_name}"
   change_email:
     confirmed: "La tua email è stata aggiornata."
-    please_continue: "Per favore continua qui %{link}"
+    please_continue: "Procedi su %{site_name}."
     error: "Si è verificato un errore modificando il tuo indirizzo email. Forse l'indirizzo è già in uso?"
   activation:
+    action: "Attiva il tuo account"
     already_done: "Spiacenti, questo link di attivazione non è più valido. Forse il tuo account è già attivo?"
-    please_continue: "Il tuo account è attivo e sei stato loggato. Continua qui %{link}"
+    please_continue: "Il tuo nuovo account è confermato e hai effettuato il login."
+    continue_button: "Procedi su %{site_name}."
     welcome_to: "Benvenuto in %{site_name}!"
     approval_required: "Un moderatore deve approvare manualmente il tuo account prima che tu possa accedere al forum. Riceverai un'email quando il tuo account sarà approvato!"
   post_action_types:
@@ -290,7 +306,6 @@ it:
       title: 'Notifica {{username}}'
       description: 'Il post contiene qualcosa su cui vorrei discutere direttamente e privatamente con questa persona.'
       long_form: 'utente nofiticato'
-      email_title: 'Riguarda il tuo post "%{title}"'
       email_body: "%{link}\n\n%{message}"
     notify_moderators:
       title: 'Notifica moderatori'
@@ -324,7 +339,6 @@ it:
       email_body: "%{link}\n\n%{message}"
   flagging:
     you_must_edit: '<p>Il tuo postè stato segnalato dalla comunità. <a href="/my/private-messages">Controlla i tuoi messaggi privati</a>.</p>'
-    user_must_edit: '<p>Contenuto segnalato nascosto.</p>'
   archetypes:
     regular:
       title: "Topic Regolare"
@@ -445,30 +459,19 @@ it:
     education_new_topic:
       title: "Educatione Nuovi Utenti: Primi Topic"
       description: "Per i primi due topic dei nuovi utenti, durante la composizione del messaggio una pop-up verrà automaticamente visualizzata per mostrare dei consigli."
-    usage_tips:
-      title: "Suggerimenti per i Nuovi Utenti"
-      description: "Suggerimenti per l'uso comune, informazioni essenziali del forum e linee guida per i nuovi utenti."
     welcome_user:
       title: "Benvenuto: Nuovo Utente"
       description: "Un messaggio privato verrà automaticamente inviato a tutti i nuovi utenti dopo la registrazione."
     welcome_invite:
       title: "Benvenuto: Utente Invitato"
       description: "Un messaggio privato verrà automaticamente inviato a tutti gli utenti invitati dopo che loro accettano l'invito."
-    privacy_policy:
-      title: "Politiche di Privacy"
-      description: "Le politiche del tuo sito sulla privacy. Lascia vuoto per le impostazioni di default."
-    faq:
-      title: "FAQ"
-      description: "Le FAQ del tuo sito. Lascia vuoto per le impostazioni di default."
     login_required_welcome_message:
       title: "Accesso richiesto: messaggio di benvenuto"
       description: "Messaggio che viene mostrato agli utenti non collegati quando è richiesto il login."
     tos_user_content_license:
       title: "Termini di Servizio: Licenza del Contenuto"
-      description: "Il testo della sezione Licenza del Contenuto dei Termini di Servizio."
     tos_miscellaneous:
       title: "Termini di Servizio: Varie"
-      description: "Il testo della sezione Varie dei Termini di Servizio."
     login_required:
       title: "Login richiesto: Homepage"
       description: "Testo mostrato agli utenti non autorizzati quando il login è necessario."
@@ -508,9 +511,11 @@ it:
     auto_track_topics_after: "Valore globale in millisecondi prima dei quali un topic venga automaticamente tracciato, modificabile dagli utenti (0 sempre, -1 mai)"
     new_topic_duration_minutes: "Valore globale in minuti per i quali un topic è considerato come nuovo, modificabile dagli utenti (-1 sempre, -2 ultima visita)"
     flags_required_to_hide_post: "Numero di segnalazioni che rendono un topic automaticamente nascosto. L'utente riceve un messaggio privato. (0 mai)"
+    cooldown_minutes_after_hiding_posts: "Numero di minuti che l'utente deve attendere prima di modificare un post nascosto per segnalazione"
     max_topics_in_first_day: "Numero massimo di topic che l'utente può creare nel suo primo giorno di forum"
     max_replies_in_first_day: "Numero massimo di risposte che un utente può pubblicare nel suo primo giorno di forum"
     notify_mods_when_user_blocked: "Se un utente è bloccato automaticamente, manda un messaggio ai moderatori."
+    post_undo_action_window_mins: "Numero di minuti durante i quali gli utenti sono autorizzati ad annullare le loro azioni su un post (segnalazioni, like, etc)"
     ga_tracking_code: "Codice Google Analytics per il tracking, es: UA-12345678-9; per informazioni http://google.com/analytics"
     ga_domain_name: "Nome del Dominio Google analytics, esempio: miosito.com; see http://google.com/analytics"
     ga_universal_tracking_code: "Codice di tracking Google Universal Analytics (analytics.js), es: UA-12345678-9; leggi http://google.com/analytics"
@@ -521,7 +526,6 @@ it:
     post_menu: "Determina quali elementi vengono mostrati nel menù del post, ed in quale ordine. Esempio like|edit|flag|delete|share|bookmark|reply"
     track_external_right_clicks: "Traccia i link esterni sui quali viene fatto click destro (es: apri in una nuova tab). Disabilitato di default perché viene fatto il rewrite delle URL"
     enable_badges: "Attiva il sistema targhette (sperimentale)"
-    version_checks: "Pinga il Discourse Hub per aggiornamenti di versione e mostra i relativi messaggi sulla dashboard in /admin"
     port: "Usa questa porta HTTP al posto della default 80. Lasciare vuoto solo durante lo sviluppo"
     force_hostname: "Specifica un hostname nella URL. Lasciare vuoto solo durante lo sviluppo"
     invite_expiry_days: "Per quanti giorni le chiavi utente sono valide"
@@ -550,9 +554,11 @@ it:
     s3_backup_bucket: "Il bucket remoto che contiene i backup. ATTENZIONE: Assicurati che sia un bucket privato."
     active_user_rate_limit_secs: "Quanto frequentemente viene aggiornato il campo 'last_seen_at' field, in secondi"
     previous_visit_timeout_hours: "Durata di una visita prima che venga considerata la visita 'precedente', in ore"
+    max_flags_per_day: "Massimo numero di segnalazioni per utente al giorno."
     clean_orphan_uploads_grace_period_hours: "Quante ore prima che un upload \"orphan\" venga rimosso."
     purge_deleted_uploads_grace_period_days: "Giorni che devono trascorrere prima che un upload cancellato venga rimosso del tutto."
     s3_upload_bucket: "Il nome del bucket Amazon S3 sul quale verranno caricati i file. ATTENZIONE: deve essere in minuscolo.\\"
+    leader_requires_topics_replied_to: "Numero minimo di discussione che un utente deve aver risposto negli ultimi 100 giorni per qualificarsi a una promozione a leader (3) livello di affidabilità. (0 o più alto)"
     min_trust_to_create_topic: "Livello minimo richiesto per creare un nuovo topic."
     min_trust_to_edit_wiki_post: "Livello minimo richiesto per modificare un topic segnato come wiki."
     title_fancy_entities: "Converti caratteri ASCII comuni in HTML nei titoli del topic, tipo SmartyPants http://daringfireball.net/projects/smartypants/"
@@ -562,21 +568,32 @@ it:
     privacy_policy_url: "Se hai un documento sulle Politiche di Privacy ospitato da qualche altra parte che vuoi usare, fornisci l'URL qui."
     newuser_spam_host_threshold: "Il numero delle volte che un nuovo utente può postare un link verso lo stesso host compreso nel `newuser_spam_host_posts` post prima che venga considerato spam."
     reply_by_email_address: "Template di risposta via email, per esempio: %{reply_key}@risposta.esempio.com o risposte+%{reply_key}@esempio.com"
-    email_in_address: "L'indirizzo email al quale l'utente può inviare nuovi topic. Se vuoto gli utenti non potranno postare globalmente."
     delete_all_posts_max: "Massimo numero di post che possono essere eliminati contemporaneamente con il pulsante Cancella tutti i post. Se un utente ha più post attivi, questi non possono essere eliminati contemporaneamente e l'utente non può essere cancellato."
     username_change_period: "Numero di giorni (dall'iscrizione) dopo i quali è possibile modificare lo username. Digita 0 per non permettere cambi di username"
     email_editable: "Permetti agli utenti di cambiare l'indirizzo email dopo la registrazione"
     default_digest_email_frequency: "Quanto spesso gli utenti ricevono mail di riepilogo. Possono modificare questa impostazione nel loro pannello utente."
     default_external_links_in_new_tab: "Apri link esterni in una nuova scheda. Gli utenti possono modificare questa impostazione nelle loro preferenze."
     public_user_custom_fields: "Una whitelist di campi personalizzati di un utente che possono essere mostrati pubblicamente."
+    allow_profile_backgrounds: "Permetti agli utenti di caricare immagini di sfondo per il profilo."
     enable_mobile_theme: "I dispositivi mobile usano un tema apposito, con possibilità di passare alla visualizzazione desktop. Disabilita questa opzione se vuoi usare un foglio di stile custom e completamente responsive."
     global_notice: "Mostra un banner globale di EMERGENZA a tutti i visitatori, lascia vuoto per nasconderlo (HTML consentito)."
     short_progress_text_threshold: "Quando il numero di post (nello stesso topic) supera questo valore, la progress bar mostrerà solo il numero del post corrente. Se si modifica la lunghezza della progress bar, è preferibile cambiare anche questo valore."
     default_code_lang: "Default programming language syntax highlighting applied to GitHub code blocks (lang-auto, ruby, python etc.)"
-    warn_reviving_old_topic_age: "Quando qualcuno inizia a rispondere ad un topic più vecchio di questo numero di giorni, verrà mostrato un avviso che scoraggerà l'utente dal resuscitare una vecchia discussione. Disabilita impostando 0"
     tos_accept_required: "Se abilitato, gli utenti dovranno accettare i Termini del Servizio durante l'iscrizione. Modifica 'Signup Form: Terms of Service Message' nel tab dei contenuti per editare il messaggio."
     notify_about_flags_after: "Se ci sono segnalazioni che non sono state revisionate dopo molte ore, invia un'email all'email contact_email. Imposta 0 per disattivare."
     show_create_topics_notice: "Se il sito ha meno di 5 topic pubblici, mostra un avviso chiedendo agli admin di creare qualche topic."
+    errors:
+      invalid_email: "Indirizzo email non valido."
+      invalid_username: "Non c'è alcun utente con quel nome."
+      invalid_integer_min_max: "Il valore deve essere tra %{min} e %{max}."
+      invalid_integer_min: "Il valore deve essere %{min} o maggiore."
+      invalid_integer_max: "Il valore non può essere maggiore di %{max}."
+      invalid_integer: "Deve essere un valore intero."
+      regex_mismatch: "Il valore non rispetta il formato richiesto."
+      invalid_string: "Valore non valido."
+      invalid_string_min_max: "Deve essere tra %{min} e %{max} caratteri."
+      invalid_string_min: "Deve essere di almeno %{min} caratteri."
+      invalid_string_max: "Non deve essere più lungo di %{max} caratteri."
   notification_types:
     mentioned: "%{display_username} ti ha menzionato in %{link}"
     liked: "a %{display_username} è piaciuto il tuo post in %{link}"
@@ -650,8 +667,11 @@ it:
     something_already_taken: "Qualcosa è andato storto, forse lo username o l'email sono già registrati. Prova a recuperare la password."
     omniauth_error: "Spiacenti, si è verificato un errore nel verificare il tuo account %{strategy}. Forse non hai accettato l'autorizzazione?"
     omniauth_error_unknown: "Qualcosa è andato storto tentando di loggarti, riprova."
+    new_registrations_disabled: "Non sono permesse nuove registrazione in questo momento."
   user:
     username:
+      short: "deve essere almeno di %{min} caratteri"
+      long: "non deve essere più lungo di %{max} caratteri"
       characters: "deve includere solo lettere e numeri"
       unique: "dev'essere unico"
       blank: "dev'essere presente"
@@ -661,6 +681,8 @@ it:
       blocked: "non è permesso."
     ip_address:
       blocked: "è bloccato."
+  invite_mailer:
+    subject_template: "%{invitee_name} tu ha invitato a '%{topic_title}' su %{site_domain_name}"
   test_mailer:
     subject_template: "[%{site_name}] Test Invio Email"
   new_version_mailer:
@@ -679,52 +701,12 @@ it:
       other: "%{count} segnalazioni sono in attesa di essere revisionate"
   flag_reasons:
     off_topic: "Il tuo post è stato segnalato come **off-topic**: la community pensa non riguardi il topic, come definito dal titolo e dal contenuto del primo post."
+    inappropriate: "Il tuo post è stato segnalato come **inappropriato**: la community lo ritiene offensivo, abusivo o una violazione delle [linee guida della community](/guidelines)."
     spam: "Il tuo post è stato segnalato come **spam**: la community pensa questo sia una pubblicità, non utile o rilevante al topic, ma di natura promozionale."
     notify_moderators: "Il tuo post è stato segnalato **all'attenzione dei moderatori**: la community pensa che il tuo post contenga qualcosa che richieda l'intervento dei moderatori."
   system_messages:
     post_hidden:
       subject_template: "Post nascosto a causa di segnalazioni dalla community"
-    usage_tips:
-      text_body_template: |
-        Questo messaggio privato contiene alcuni consigli veloci per iniziare:
-
-        ### Continua a scorrere
-
-        Non c'è nessun pulsante Avanti o numero di pagina -- per continuare a leggere, semplicemente scorri, e verranno caricati più contenuti!
-
-        Non appena nuove risposte vengono postate, verranno automaticamente mostrate in fondo al topic. Non c'è bisogno di aggiornare la pagina per vedere i nuovi post.
-
-        ### Come rispondo?
-
-        - Per rispondere ad uno specifico post, usa il tasto Rispondi sotto a quel post
-
-        - Se vuoi rispondere all'argomento *generale* del topic, piuttosto che ad una persona specifica, utilizza il pulsante Rispondi proprio in fondo al topic.
-
-        - Se vuoi portare la conversazione in una direzione differente, ma mantenere una connessione con quella corrente, utilizza "Rispondi come nuovo Topic" alla destra del post.
-
-        ### Chi sta parlando con me?
-
-        Quando qualcuno risponde ad un tuo post o ti cita, o menziona il tuo @username, un numero ➀ apparirà sul tasto di conversazione nella barra in alto. Usalo per vedere chi ti sta parlando e dove.
-
-        - Per menzionare il nome di un utente, comincia a scrivere `@` ed un popup ti aiuterà con l'auto-completamento dell'username.
-
-        - Per citare solo una sezione del post, selezionala e utilizza il tasto che apparirà sopra la tua selezione.
-
-        - Per citare un intero post, utilizza il primo tasto a forma di nuvoletta nella barra dell'editor di testo.
-
-        ### Guarda quel Post!
-
-        Per far sapere a qualcuno che ti è piaciuto il suo post, utilizza il tasto mi piace ♥ in fondo al post. Se vedi un problema col post, non esitare ad utilizzare il tasto di segnalazione per allertare in modo privato il nostro staff.
-
-        ### Dove sono!?
-
-        - Per tornare alla home page in qualsiasi momento **usa il logo in alto a sinistra** oppure il tasto indietro ← del tuo browser.
-
-        - Per cercare, per andare alla tua pagina o per utilizzare la mappa del sito, usa i **tasti in alto a destra**.
-
-        - Mentre leggi un topic, spostati in cima  ↑ cliccando sul nome del topic nella barra in alto, o premi il tasto <kbd>↑</kbd> in basso. Per raggiungere il  *fondo* ↓, utilizza la freccia in basso sull'indicatore di progresso in basso o clicca "ultimo post" nel sommario del primo post.
-
-        - Utilizza il tempo di pubblicazione del post come link per rimandare direttamente a quel post. Chiunque utilizzi quel post, vedrà subito il post interessato.
     welcome_user:
       subject_template: "Benvenuto su %{site_name}!"
     welcome_invite:
@@ -755,10 +737,25 @@ it:
         ```
         %{logs}
         ```
+    bulk_invite_succeeded:
+      subject_template: "Invito di massa processato con successo"
+      text_body_template: "Il tuo invito di massa è stato processato, %{sent} inviti spediti."
+    bulk_invite_failed:
+      subject_template: "Invito di massa processato con errori"
     too_many_spam_flags:
       subject_template: "Nuovo account bloccato"
     blocked_by_staff:
       subject_template: "Account bloccato"
+    user_automatically_blocked:
+      subject_template: "Nuovo utente %{username} bloccato a causa delle segnalazioni"
+      text_body_template: |
+        (Questo è un messaggio automatico.)
+
+        Il nuovo utente [%{username}](%{base_url}%{user_url}) è stato bloccato in automatico perchè più utenti hanno contrassegnato i post di %{username}.
+
+        Per favore [controlla le segnalazioni](%{base_url}/admin/flags). Se %{username} è stato bloccato per errore, clicca sul tasto di sblocco nella [pagina di amministrazione di questo utente](%{base_url}%{user_url}).
+
+        La soglia può essere modificata tramite l'impostazione di blocco dei nuovi utenti.
     unblocked:
       subject_template: "Account sbloccato"
       text_body_template: |
@@ -840,6 +837,7 @@ it:
         ---
         %{respond_instructions}
     digest:
+      why: "Un breve resoconto di %{site_link} dall'ultima tua visita il %{last_seen_at}."
       subject_template: "[%{site_name}] Riepilogo per %{date}"
       new_activity: "Nuove attività nei tuoi topic e post:"
       top_topics: "Post Popolari"
@@ -872,6 +870,22 @@ it:
         %{base_url}/users/authorize-email/%{email_token}
     signup_after_approval:
       subject_template: "Puoi partecipare a %{site_name}!"
+      text_body_template: |+
+        Benvenuto su %{site_name}!
+
+        Un membro dello staff ha approvato il tuo account su %{site_name}.
+
+        Clicca sul link che segue per confermare e attivare il tuo nuovo account:
+        %{base_url}/users/activate-account/%{email_token}
+
+        Se il link qui sopra non è cliccabile, prova a copiarlo e a incollarlo nella barra degli indirizzi del tuo browser.
+
+        %{new_user_tips}
+
+        Noi crediamo in [civilized community behavior](%{base_url}/guidelines) da sempre.
+
+        Buona permanenza!
+
     signup:
       subject_template: "[%{site_name}] Attiva il tuo nuovo account"
       text_body_template: |
@@ -886,11 +900,10 @@ it:
     popular_topics: "Popolari"
     recent_topics: "Recenti"
     see_more: "Altro"
-  login_required:
-    welcome_message: |
-      #[Benvenuto a %{title}](#welcome)
-      Questo forum di discussione richiede un account per visualizzare %{title}. Crea un account o effettua il login per continuare.
+    search_title: "Cerca nel sito"
+    search_google: "Google"
   terms_of_service:
+    title: "Termini di Servizio"
     user_content_license: |
       User contributions are licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US). Without limiting any of those representations or warranties, %{company_short_name} has the right (though not the obligation) to, in %{company_short_name}’s sole discretion (i) refuse or remove any content that, in %{company_short_name}’s reasonable opinion, violates any %{company_short_name} policy or is in any way harmful or objectionable, or (ii) terminate or deny access to and use of the Website to any individual or entity for any reason, in %{company_short_name}’s sole discretion. %{company_short_name} will have no obligation to provide a refund of any amounts previously paid.
     miscellaneous: "This Agreement constitutes the entire agreement between %{company_short_name} and you concerning the subject matter hereof, and they may only be modified by a written amendment signed by an authorized executive of %{company_short_name}, or by the posting by %{company_short_name} of a revised version. Except to the extent applicable law, if any, provides otherwise, this Agreement, any access to or use of the Website will be governed by the laws of the state of California, U.S.A., excluding its conflict of law provisions, and the proper venue for any disputes arising out of or relating to any of the same will be the state and federal courts located in San Francisco County, California. Except for claims for injunctive or equitable relief or claims regarding intellectual property rights (which may be brought in any competent court without the posting of a bond), any dispute arising under this Agreement shall be finally settled in accordance with the Comprehensive Arbitration Rules of the Judicial Arbitration and Mediation Service, Inc. (“JAMS”) by three arbitrators appointed in accordance with such Rules. The arbitration shall take place in San Francisco, California, in the English language and the arbitral decision may be enforced in any court. The prevailing party in any action or proceeding to enforce this Agreement shall be entitled to costs and attorneys’ fees. If any part of this Agreement is held invalid or unenforceable, that part will be construed to reflect the parties’ original intent, and the remaining portions will remain in full force and effect. A waiver by either party of any term or condition of this Agreement or any breach thereof, in any one instance, will not waive such term or condition or any subsequent breach thereof. You may assign your rights under this Agreement to any party that consents to, and agrees to be bound by, its terms and conditions; %{company_short_name} may assign its rights under this Agreement without condition. This Agreement will be binding upon and will inure to the benefit of the parties, their successors and permitted assigns."
@@ -910,9 +923,9 @@ it:
       size_not_found: "Spiacente, ma non riusciamo a determinare la dimensione dell'immagine. Probabilmente l'immagine è corrotta?"
   flag_reason:
     sockpuppet: "Un nuovo utente ha creato un topic, e un altro nuovo utente ha risposto con lo stesso indirizzo IP. Controlla le impostazioni di flag_sockpuppets"
+    spam_hosts: "Questo nuovo utente ha tentato di creare post multipli con link allo stesso dominio. Guarda l'impostazione newuser_spam_host_threeshold."
   email_log:
     no_user: "Non trovo l'utente con l'id %{user_id}"
-    suspended_not_pm: "L'utente è sospeso e l'email non è un messaggio privato"
     seen_recently: "L'utente è stato visto di recente"
     post_not_found: "Non trovo post con id %{post_id}"
     notification_already_read: "La notifica per cui è stata inviata questa mail è già stata letta"
@@ -926,3 +939,6 @@ it:
     body_blank: "il corpo è vuoto"
   color_schemes:
     base_theme_name: "Base"
+  guidelines: "Linee Guida"
+  privacy: "Privacy"
+  edit_this_page: "Modifica questa pagina"

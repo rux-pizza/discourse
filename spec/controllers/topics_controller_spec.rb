@@ -501,7 +501,7 @@ describe TopicsController do
         end
 
         it 'succeeds' do
-          Topic.any_instance.expects(:recover!)
+          PostDestroyer.any_instance.expects(:recover)
           xhr :put, :recover, topic_id: topic.id
           response.should be_success
         end
@@ -516,31 +516,25 @@ describe TopicsController do
     end
 
     describe 'when logged in' do
-      before do
-        @topic = Fabricate(:topic, user: log_in)
-      end
+      let(:topic) { Fabricate(:topic, user: log_in) }
 
       describe 'without access' do
         it "raises an exception when the user doesn't have permission to delete the topic" do
-          Guardian.any_instance.expects(:can_delete?).with(@topic).returns(false)
-          xhr :delete, :destroy, id: @topic.id
+          Guardian.any_instance.expects(:can_delete?).with(topic).returns(false)
+          xhr :delete, :destroy, id: topic.id
           response.should be_forbidden
         end
       end
 
       describe 'with permission' do
         before do
-          Guardian.any_instance.expects(:can_delete?).with(@topic).returns(true)
+          Guardian.any_instance.expects(:can_delete?).with(topic).returns(true)
         end
 
         it 'succeeds' do
-          xhr :delete, :destroy, id: @topic.id
+          PostDestroyer.any_instance.expects(:destroy)
+          xhr :delete, :destroy, id: topic.id
           response.should be_success
-        end
-
-        it 'deletes the topic' do
-          xhr :delete, :destroy, id: @topic.id
-          Topic.exists?(id: @topic_id).should be_false
         end
 
       end
@@ -562,6 +556,11 @@ describe TopicsController do
     it 'can find a topic given a slug in the id param' do
       xhr :get, :show, id: topic.slug
       expect(response).to redirect_to(topic.relative_url)
+    end
+
+    it 'keeps the post_number parameter around when redirecting' do
+      xhr :get, :show, id: topic.slug, post_number: 42
+      expect(response).to redirect_to(topic.relative_url + "/42")
     end
 
     it 'returns 404 when an invalid slug is given and no id' do
@@ -587,7 +586,25 @@ describe TopicsController do
     end
 
     it 'records a view' do
-      lambda { xhr :get, :show, topic_id: topic.id, slug: topic.slug }.should change(View, :count).by(1)
+      lambda { xhr :get, :show, topic_id: topic.id, slug: topic.slug }.should change(TopicViewItem, :count).by(1)
+    end
+
+    it 'records incoming links' do
+      user = Fabricate(:user)
+      get :show, topic_id: topic.id, slug: topic.slug, u: user.username
+
+      IncomingLink.count.should == 1
+    end
+
+    it 'records redirects' do
+      @request.env['HTTP_REFERER'] = 'http://twitter.com'
+      get :show, { id: topic.id }
+
+      @request.env['HTTP_REFERER'] = nil
+      get :show, topic_id: topic.id, slug: topic.slug
+
+      link = IncomingLink.first
+      link.referer.should == 'http://twitter.com'
     end
 
     it 'tracks a visit for all html requests' do

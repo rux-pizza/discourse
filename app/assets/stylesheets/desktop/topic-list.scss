@@ -33,7 +33,6 @@
 
   .badge-category {
     font-weight: normal;
-    text-transform: capitalize;
   }
 
 }
@@ -42,7 +41,7 @@
 // Base list
 // --------------------------------------------------
 
-#topic-list {
+.topic-list {
   margin: 0 0 10px;
   .fa-thumb-tack {color: $primary;}
   .fa-thumb-tack.unpinned {color: $primary;}
@@ -62,7 +61,14 @@
     button i.fa {color: scale-color($primary, $lightness: 50%);}
   }
 
-
+  > tbody > tr {
+    &:nth-child(even) {
+        background-color: darken($secondary, 3%);
+    }
+    &:nth-child(odd) {
+        background-color: $secondary;
+    }
+  }
   button.bulk-select {
     padding: 0;
     background: transparent;
@@ -117,7 +123,7 @@
   .sortable {
     cursor: pointer;
     &:hover {
-      background-color: scale-color-diff();
+      background-color: dark-light-diff($primary, $secondary, 90%, -75%);
     }
     @include unselectable;
   }
@@ -132,6 +138,9 @@
   }
   .activity {
     width: 60px;
+    span {
+      cursor: pointer;
+    }
   }
   .age {
     width: 60px;
@@ -143,23 +152,28 @@
 
 #list-area .top-lists h2 { margin: 5px 0 10px; }
 
-#topic-list tbody tr.has-excerpt .star {
+.topic-list tbody tr.has-excerpt .star {
   vertical-align: top;
   margin-top: 3px;
 }
 
-#topic-list.categories {
-  a.title {color: $tertiary;}
+.topic-list.categories {
+  a.title {
+    color: $tertiary;
+    font-size: 13px;
+  }
   a.title:visited:not(.badge-notification) {color: scale-color($tertiary, $lightness: 35%);}
 
   th.posts {
     position: relative;
   }
-  > tbody > tr:nth-child(odd) {
-    background-color: darken($secondary, 3%);
-  }
-  > tbody > tr:nth-child(even) {
-    background-color: $secondary;
+  > tbody > tr {
+    &:nth-child(odd) {
+        background-color: darken($secondary, 3%);
+      }
+    &:nth-child(even) {
+      background-color: $secondary;
+      }
   }
   th .toggle-admin {
     position: absolute;
@@ -220,23 +234,29 @@
   }
 
   .featured-topic {
-    margin: 6px 0;
+    margin: 10px 0 0;
+    font-size: 13px;
     /* topic status glyphs */
     i {
       color: scale-color($primary, $lightness: 50%) !important;
+      font-size: 13px;
     }
     a.last-posted-at, a.last-posted-at:visited {
       color: scale-color($primary, $lightness: 50%);
     }
+    .badge {
+      font-size: 10px;
+      top: -1px;
+    }
   }
 
-  .badge-category {
+  .category .badge-category {
     display: inline-block;
     margin-top: 1px;
   }
 }
 
-#topic-list-bottom {
+.topic-list-bottom {
   margin: 20px 0;
 }
 
@@ -265,6 +285,7 @@
 button.dismiss-read {
   float: right;
   margin-bottom: 5px;
+  margin-left: 10px;
 }
 
 .category-notification-menu .dropdown-menu {
@@ -317,7 +338,7 @@ and (max-width : 850px) {
 
   }
 
-  #topic-list {
+  .topic-list {
     .categories td.category {
       padding-left: 10px;
       }

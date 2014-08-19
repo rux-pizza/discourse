@@ -19,6 +19,21 @@ Discourse.Route = Em.Route.extend({
   activate: function() {
     this._super();
     Em.run.scheduleOnce('afterRender', Discourse.Route, 'cleanDOM');
+  },
+
+  openTopicDraft: function(model){
+    // If there's a draft, open the create topic composer
+    if (model.draft) {
+      var composer = this.controllerFor('composer');
+      if (!composer.get('model.viewOpen')) {
+        composer.open({
+          action: Discourse.Composer.CREATE_TOPIC,
+          draft: model.draft,
+          draftKey: model.draft_key,
+          draftSequence: model.draft_sequence
+        });
+      }
+    }
   }
 
 });
@@ -62,6 +77,10 @@ Discourse.Route.reopenClass({
     $('#discourse-modal').modal('hide');
     var hideDropDownFunction = $('html').data('hide-dropdown');
     if (hideDropDownFunction) { hideDropDownFunction(); }
+
+    // TODO: Avoid container lookup here
+    var appEvents = Discourse.__container__.lookup('app-events:main');
+    appEvents.trigger('dom:clean');
   },
 
   /**

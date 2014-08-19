@@ -205,7 +205,6 @@ describe User do
 
     it { should be_valid }
     it { should_not be_admin }
-    it { should_not be_active }
     it { should_not be_approved }
     its(:approved_at) { should be_blank }
     its(:approved_by_id) { should be_blank }
@@ -1134,6 +1133,20 @@ describe User do
 
       user.reload
       user.uploaded_avatar_id.should == nil
+    end
+  end
+
+  describe "#purge_inactive" do
+    let!(:user) { Fabricate(:user) }
+    let!(:inactive) { Fabricate(:user, active: false) }
+    let!(:inactive_old) { Fabricate(:user, active: false, created_at: 1.month.ago) }
+
+    it 'should only remove old, inactive users' do
+      User.purge_inactive
+      all_users = User.all
+      all_users.include?(user).should be_true
+      all_users.include?(inactive).should be_true
+      all_users.include?(inactive_old).should be_false
     end
   end
 

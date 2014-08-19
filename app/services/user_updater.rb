@@ -15,7 +15,8 @@ class UserUpdater
       :enable_quoting,
       :dynamic_favicon,
       :mailing_list_mode,
-      :disable_jump_reply
+      :disable_jump_reply,
+      :edit_history_public
   ]
 
   PROFILE_ATTR = [
@@ -57,12 +58,12 @@ class UserUpdater
 
     USER_ATTR.each do |attribute|
       if attributes[attribute].present?
-        user.send("#{attribute.to_s}=", attributes[attribute] == 'true')
+        user.send("#{attribute}=", attributes[attribute] == 'true')
       end
     end
 
     PROFILE_ATTR.each do |attribute|
-      user_profile.send("#{attribute.to_s}=", attributes[attribute])
+      user_profile.send("#{attribute}=", attributes[attribute])
     end
 
     if fields = attributes[:custom_fields]

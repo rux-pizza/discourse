@@ -1,14 +1,12 @@
-export default Discourse.DiscoveryController.extend({
+import DiscoveryController from 'discourse/controllers/discovery';
+
+export default DiscoveryController.extend({
   needs: ['modal', 'discovery'],
 
   withLogo: Em.computed.filterBy('categories', 'logo_url'),
   showPostsColumn: Em.computed.empty('withLogo'),
 
   actions: {
-    toggleOrdering: function(){
-      this.set("ordering",!this.get("ordering"));
-    },
-
     refresh: function() {
       var self = this;
 
@@ -26,13 +24,6 @@ export default Discourse.DiscoveryController.extend({
   canEdit: function() {
     return Discourse.User.currentProp('staff');
   }.property(),
-
-  fixedCategoryPositions: Discourse.computed.setting('fixed_category_positions'),
-  canOrder: Em.computed.and('fixedCategoryPositions', 'canEdit'),
-
-  moveCategory: function(categoryId, position){
-    this.get('model.categories').moveCategory(categoryId, position);
-  },
 
   latestTopicOnly: function() {
     return this.get('categories').find(function(c) { return c.get('featuredTopics.length') > 1; }) === undefined;

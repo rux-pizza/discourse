@@ -1,12 +1,6 @@
-/**
-  This controller supports composing new posts and topics.
+import DiscourseController from 'discourse/controllers/controller';
 
-  @class ComposerController
-  @extends Discourse.Controller
-  @namespace Discourse
-  @module Discourse
-**/
-export default Discourse.Controller.extend({
+export default DiscourseController.extend({
   needs: ['modal', 'topic', 'composer-messages'],
 
   replyAsNewTopicDraft: Em.computed.equal('model.draftKey', Discourse.Composer.REPLY_AS_NEW_TOPIC_KEY),
@@ -215,11 +209,20 @@ export default Discourse.Controller.extend({
     if (!this.get('model.creatingTopic')) return;
 
     var body = this.get('model.reply'),
-        title = this.get('model.title');
+        title = this.get('model.title'),
+        self = this,
+        message;
 
     // Ensure the fields are of the minimum length
     if (body.length < Discourse.SiteSettings.min_body_similar_length ||
         title.length < Discourse.SiteSettings.min_title_similar_length) { return; }
+
+    // TODO pass the 200 in from somewhere
+    body = body.substr(0, 200);
+
+    // Done search over and over
+    if((title + body) === this.get('lastSimilaritySearch')) { return; }
+    this.set('lastSimilaritySearch', title + body);
 
     var messageController = this.get('controllers.composer-messages'),
         similarTopics = this.get('similarTopics');
@@ -229,11 +232,19 @@ export default Discourse.Controller.extend({
       similarTopics.pushObjects(newTopics);
 
       if (similarTopics.get('length') > 0) {
-        messageController.popup(Discourse.ComposerMessage.create({
+        message = Discourse.ComposerMessage.create({
           templateName: 'composer/similar_topics',
           similarTopics: similarTopics,
           extraClass: 'similar-topics'
-        }));
+        });
+
+        self.set('similarTopicsMessage', message);
+        messageController.popup(message);
+      } else {
+        message = self.get('similarTopicsMessage');
+        if (message) {
+          messageController.send('hideMessage', message);
+        }
       }
     });
 

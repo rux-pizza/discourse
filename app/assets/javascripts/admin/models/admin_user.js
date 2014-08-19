@@ -68,16 +68,12 @@ Discourse.AdminUser = Discourse.User.extend({
   }.property('can_delete_all_posts'),
 
   deleteAllPosts: function() {
-    this.set('can_delete_all_posts', false);
     var user = this;
     var message = I18n.t('admin.user.delete_all_posts_confirm', {posts: user.get('post_count'), topics: user.get('topic_count')});
     var buttons = [{
       "label": I18n.t("composer.cancel"),
       "class": "cancel-inline",
-      "link":  true,
-      "callback": function() {
-        user.set('can_delete_all_posts', true);
-      }
+      "link":  true
     }, {
       "label": '<i class="fa fa-exclamation-triangle"></i> ' + I18n.t("admin.user.delete_all_posts"),
       "class": "btn btn-danger",
@@ -122,7 +118,7 @@ Discourse.AdminUser = Discourse.User.extend({
 
   refreshBrowsers: function() {
     Discourse.ajax("/admin/users/" + (this.get('id')) + "/refresh_browsers", {type: 'POST'});
-    bootbox.alert("Message sent to all clients!");
+    bootbox.alert(I18n.t("admin.user.refresh_browsers_message"));
   },
 
   approve: function() {
@@ -155,7 +151,11 @@ Discourse.AdminUser = Discourse.User.extend({
       window.location.reload();
     }, function(e) {
       // failure
-      var error = I18n.t('admin.user.trust_level_change_failed', { error: "http: " + e.status + " - " + e.body });
+      var error;
+      if (e.responseJSON && e.responseJSON.errors) {
+        error = e.responseJSON.errors[0];
+      }
+      error = error || I18n.t('admin.user.trust_level_change_failed', { error: "http: " + e.status + " - " + e.body });
       bootbox.alert(error);
     });
   },
@@ -329,13 +329,13 @@ Discourse.AdminUser = Discourse.User.extend({
       "class": "cancel",
       "link":  true
     }, {
-      "label": '<i class="fa fa-exclamation-triangle"></i> ' + I18n.t('admin.user.delete_dont_block'),
+      "label": I18n.t('admin.user.delete_dont_block'),
       "class": "btn",
       "callback": function(){
         performDestroy(false);
       }
     }, {
-      "label": '<i class="fa fa-exclamation-triangle"></i> ' + I18n.t('admin.user.delete_and_block'),
+      "label": '<i class="fa fa-exclamation-triangle"></i>' + I18n.t('admin.user.delete_and_block'),
       "class": "btn btn-danger",
       "callback": function(){
         performDestroy(true);

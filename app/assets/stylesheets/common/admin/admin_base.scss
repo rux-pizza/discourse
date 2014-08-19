@@ -93,7 +93,7 @@ td.flaggers td {
     width: 460px;
     right: 0px;
     z-index: 990;
-    box-shadow: 0 2px 6px scale-color-diff();
+    box-shadow: 0 2px 6px rgba(0,0,0, .8);
     margin-top: -2px;
     background-color: $secondary;
     padding: 12px 12px 5px;
@@ -108,7 +108,7 @@ td.flaggers td {
 }
 
 .admin-controls {
-  background-color: darken($secondary, 5%);
+  background-color: dark-light-diff($primary, $secondary, 90%, -20%);
   padding: 10px 10px 3px 0;
   height: 35px;
   .nav.nav-pills {
@@ -272,7 +272,8 @@ td.flaggers td {
 
   .setting.overridden {
     input[type=text] {
-      background-color: scale-color($highlight, $lightness: 50%);
+      background-color: dark-light-diff($highlight, $secondary, 50%, -10%);
+
     }
 
     h3 {
@@ -494,34 +495,54 @@ section.details {
 
 .admin-flags {
 
-  tr.hidden-post td.excerpt { opacity: 0.4;  }
-  tr.deleted td.excerpt { opacity: 0.8; background-color: scale-color($danger, $lightness: 30%); }
-  td.message {
-    padding: 4px 8px;
-    background-color:  scale-color($highlight, $lightness: 30%);
-  }
+  .hidden-post td.excerpt, .hidden-post td.user { opacity: 0.5; }
+  .deleted td.excerpt, .deleted td.user { background-color: scale-color($danger, $lightness: 70%); }
+  .message { background-color: scale-color($highlight, $lightness: 70%); }
+  .message:hover { background-color: scale-color($highlight, $lightness: 30%); }
   td { vertical-align: top; }
   th { text-align: left; }
-  .user { width: 40px; padding-top: 12px; }
+  .user {
+    width: 20px;
+    padding: 8px 0 0 0;
+    text-align: center;
+  }
   .excerpt {
-    max-width: 740px;
-    width: 740px;
+    max-width: 700px;
+    width: 700px;
     padding: 8px;
     word-wrap: break-word;
-    .fa,h3 { display: inline-block; }
-
+    .fa { display: inline-block; }
+    h3 {
+      max-height: 1.2em;
+      overflow: hidden;
+    }
   }
   .flaggers {
     font-size: 11px;
+    padding: 8px 0 0 5px;
+    .avatar {
+      width: 25px;
+    }
+    table {
+      max-width: 145px;
+    }
+    tr {
+      height: 44px;
+    }
     td {
       vertical-align: middle;
       padding: 3px;
+      line-height: 1.4;
     }
   }
   .action {
      button { margin: 4px; }
      text-align: right;
      padding-bottom: 20px;
+  }
+  td p {
+    font-size: 13px;
+    margin: 0 0 5px 0;
   }
 }
 
@@ -672,7 +693,7 @@ table.api-keys {
     background-color: scale-color-diff();
     margin-bottom: 20px;
     margin-top: 10px;
-    box-shadow: inset 0 0 10px rgba($primary, .1);
+    box-shadow: inset 0 0 10px rgba(0,0,0, .1);
 
     .look-here {
       float: left;
@@ -834,7 +855,7 @@ table.api-keys {
 .content-list {
 
   h3 {
-    color: $primary;
+    color: dark-light-diff($primary, $secondary, 90%, -60%);
     font-size: 15px;
     padding-left: 5px;
     margin-bottom: 10px;
@@ -1135,6 +1156,14 @@ button.ru {
   visibility: hidden;
 }
 
+.delete-flag-modal, .agree-flag-modal {
+  button {
+    display: block;
+    margin: 10px 0 10px 10px;
+    padding: 10px 15px;
+  }
+}
+
 @media all
 and (max-width : 850px) {
   .nav-stacked {
@@ -1202,6 +1231,23 @@ and (max-width : 500px) {
 
   .customize .content-list, .customize .current-style {
     width: 100%;
+  }
+}
 
+.badge-groupings {
+  list-style: none;
+  margin: 0;
+  padding: 10px 3px;
+  li {
+    padding: 6px 0;
+    width: 600px;
+    border-bottom: 1px solid #dfdfdf;
+  }
+  .actions {
+    font-size: 17px;
+    float: right;
+    a {
+      margin-left: 5px;
+    }
   }
 }

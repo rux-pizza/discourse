@@ -36,6 +36,12 @@ shared_examples 'finding and showing post' do
       xhr :get, action, params
       response.should be_success
     end
+
+    it "can find posts as a admin" do
+      log_in(:admin)
+      xhr :get, action, params
+      response.should be_success
+    end
   end
 end
 
@@ -46,17 +52,6 @@ shared_examples 'action requires login' do |method, action, params|
 end
 
 describe PostsController do
-
-  describe 'short_link' do
-    let(:post) { Fabricate(:post) }
-    let(:user) { Fabricate(:user) }
-
-    it 'logs the incoming link once' do
-      IncomingLink.expects(:add).once.returns(true)
-      get :short_link, post_id: post.id, user_id: user.id
-      response.should be_redirect
-    end
-  end
 
   describe 'cooked' do
     before do

@@ -1,6 +1,4 @@
 export default Ember.ArrayController.extend(Discourse.HasCurrentUser, {
-  itemController: "site-map-category",
-
   showBadgesLink: function(){return Discourse.SiteSettings.enable_badges;}.property(),
   showAdminLinks: Em.computed.alias('currentUser.staff'),
   flaggedPostsCount: Em.computed.alias("currentUser.site_flagged_posts_count"),
@@ -11,7 +9,13 @@ export default Ember.ArrayController.extend(Discourse.HasCurrentUser, {
 
   badgesUrl: Discourse.getURL('/badges'),
 
-  showMobileToggle: Discourse.computed.setting('enable_mobile_theme'),
+  showKeyboardShortcuts: function(){
+    return !Discourse.Mobile.mobileView && !this.capabilities.touch;
+  }.property(),
+
+  showMobileToggle: function(){
+    return Discourse.Mobile.mobileView || (Discourse.SiteSettings.enable_mobile_theme && this.capabilities.touch);
+  }.property(),
 
   mobileViewLinkTextKey: function() {
     return Discourse.Mobile.mobileView ? "desktop_view" : "mobile_view";
@@ -29,6 +33,9 @@ export default Ember.ArrayController.extend(Discourse.HasCurrentUser, {
   }.property(),
 
   actions: {
+    keyboardShortcuts: function(){
+      Discourse.__container__.lookup('controller:application').send('showKeyboardShortcutsHelp');
+    },
     toggleMobileView: function() {
       Discourse.Mobile.toggleMobileView();
     }

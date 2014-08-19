@@ -17,7 +17,10 @@ class PostRevisor
   #  :skip_validation ask ActiveRecord to skip validations
   #
   def revise!(editor, new_raw, opts = {})
-    @editor, @new_raw, @opts = editor, new_raw, opts
+    @editor = editor
+    @opts = opts
+    @new_raw = TextCleaner.normalize_whitespaces(new_raw).strip
+
     return false unless should_revise?
     @post.acting_user = @editor
     revise_post
@@ -82,6 +85,7 @@ class PostRevisor
   def bump_topic
     unless Post.where('post_number > ? and topic_id = ?', @post.post_number, @post.topic_id).exists?
       @post.topic.update_column(:bumped_at, Time.now)
+      TopicTrackingState.publish_latest(@post.topic)
     end
   end
 
@@ -100,12 +104,8 @@ class PostRevisor
     @post.self_edits += 1 if @editor == @post.user
 
     if @editor == @post.user && @post.hidden && @post.hidden_reason_id == Post.hidden_reasons[:flag_threshold_reached]
-      @post.hidden = false
-      @post.hidden_reason_id = nil
-      @post.hidden_at = nil
-      @post.topic.update_attributes(visible: true)
-
-      PostAction.clear_flags!(@post, -1)
+      PostAction.clear_flags!(@post, Discourse.system_user)
+      @post.unhide!
     end
 
     @post.extract_quoted_post_numbers

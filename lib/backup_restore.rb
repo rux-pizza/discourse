@@ -34,7 +34,7 @@ module BackupRestore
 
   def self.mark_as_running!
     # TODO: for extra safety, it should acquire a lock and raise an exception if already running
-    $redis.set(running_key, "1")
+    $redis.setex(running_key, 60, "1")
     save_start_logs_message_id
     keep_it_running
   end
@@ -99,7 +99,7 @@ module BackupRestore
     SQL
   end
 
-  DatabaseConfiguration = Struct.new(:host, :username, :password, :database)
+  DatabaseConfiguration = Struct.new(:host, :port, :username, :password, :database)
 
   def self.database_configuration
     config = Rails.env.production? ? ActiveRecord::Base.connection_pool.spec.config : Rails.configuration.database_configuration[Rails.env]
@@ -107,6 +107,7 @@ module BackupRestore
 
     DatabaseConfiguration.new(
       config["host"],
+      config["port"],
       config["username"] || ENV["USER"] || "postgres",
       config["password"],
       config["database"]

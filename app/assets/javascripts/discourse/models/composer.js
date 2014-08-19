@@ -135,9 +135,10 @@ Discourse.Composer = Discourse.Model.extend({
     @property titleLengthValid
   **/
   titleLengthValid: function() {
+    if (Discourse.User.currentProp('admin') && this.get('post.static_doc') && this.get('titleLength') > 0) return true;
     if (this.get('titleLength') < this.get('minimumTitleLength')) return false;
     return (this.get('titleLength') <= Discourse.SiteSettings.max_topic_title_length);
-  }.property('minimumTitleLength', 'titleLength'),
+  }.property('minimumTitleLength', 'titleLength', 'post.static_doc'),
 
   // The text for the save button
   saveText: function() {
@@ -304,8 +305,25 @@ Discourse.Composer = Discourse.Model.extend({
   },
 
   importQuote: function() {
+    var postStream = this.get('topic.postStream'),
+        postId = this.get('post.id');
+
+    if (!postId && postStream) {
+      postId = postStream.get('firstPostId');
+    }
+
+    // If we're editing a post, fetch the reply when importing a quote
+    if (this.get('editingPost')) {
+      var replyToPostNumber = this.get('post.reply_to_post_number');
+      if (replyToPostNumber) {
+        var replyPost = postStream.get('posts').findBy('post_number', replyToPostNumber);
+        if (replyPost) {
+          postId = replyPost.get('id');
+        }
+      }
+    }
+
     // If there is no current post, use the post id from the stream
-    var postId = this.get('post.id') || this.get('topic.postStream.firstPostId');
     if (postId) {
       this.set('loading', true);
       var composer = this;

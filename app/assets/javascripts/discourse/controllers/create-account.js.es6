@@ -1,13 +1,10 @@
-/**
-  The modal for creating accounts
+import ModalFunctionality from 'discourse/mixins/modal-functionality';
 
-  @class CreateAccountController
-  @extends Discourse.Controller
-  @namespace Discourse
-  @uses Discourse.ModalFunctionality
-  @module Discourse
-**/
-export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
+import DiscourseController from 'discourse/controllers/controller';
+
+export default DiscourseController.extend(ModalFunctionality, {
+  needs: ['login'],
+
   uniqueUsernameValidation: null,
   globalNicknameExists: false,
   complete: false,
@@ -18,6 +15,10 @@ export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
   rejectedPasswords: Em.A([]),
   prefilledUsername: null,
   tosAccepted: false,
+
+  hasAuthOptions: Em.computed.notEmpty('authOptions'),
+  canCreateLocal: Discourse.computed.setting('enable_local_logins'),
+  showCreateForm: Em.computed.or('hasAuthOptions', 'canCreateLocal'),
 
   resetForm: function() {
     this.setProperties({
@@ -328,6 +329,10 @@ export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
   tosAcceptRequired: Discourse.computed.setting('tos_accept_required'),
 
   actions: {
+    externalLogin: function(provider) {
+      this.get('controllers.login').send('externalLogin', provider);
+    },
+
     createAccount: function() {
       var self = this;
       this.set('formSubmitted', true);

@@ -1,11 +1,3 @@
-/**
-  A data model representing a Topic
-
-  @class Topic
-  @extends Discourse.Model
-  @namespace Discourse
-  @module Discourse
-**/
 Discourse.Topic = Discourse.Model.extend({
 
   postStream: function() {
@@ -61,6 +53,11 @@ Discourse.Topic = Discourse.Model.extend({
     }
     return url;
   },
+
+  totalUnread: function() {
+    var count = (this.get('unread') || 0) + (this.get('new_posts') || 0);
+    return count > 0 ? count : null;
+  }.property('new_posts', 'unread'),
 
   lastReadUrl: function() {
     return this.urlForPostNumber(this.get('last_read_post_number'));
@@ -194,13 +191,6 @@ Discourse.Topic = Discourse.Model.extend({
     return Discourse.ajax(this.get('url'), {
       type: 'PUT',
       data: { title: this.get('title'), category_id: this.get('category.id') }
-    });
-  },
-
-  // Reset our read data for this topic
-  resetRead: function() {
-    return Discourse.ajax("/t/" + this.get('id') + "/timings", {
-      type: 'DELETE'
     });
   },
 

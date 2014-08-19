@@ -3,6 +3,7 @@
 /* @import "desktop/*"; TODO: get this working again */
 
 @import "desktop/alert";
+@import "desktop/banner";
 @import "desktop/compose";
 @import "desktop/discourse";
 @import "desktop/header";
@@ -14,6 +15,7 @@
 @import "desktop/topic";
 @import "desktop/upload";
 @import "desktop/user";
+@import "desktop/topic-entrance";
 
 /* These files doesn't actually exist, they are injected by DiscourseSassImporter. */
 

@@ -1,6 +1,10 @@
 var ApplicationRoute = Em.Route.extend({
 
   actions: {
+    showTopicEntrance: function(data) {
+      this.controllerFor('topic-entrance').send('show', data);
+    },
+
     error: function(err, transition) {
       if (err.status === 404) {
         // 404
@@ -8,14 +12,23 @@ var ApplicationRoute = Em.Route.extend({
         return;
       }
 
-      var exceptionController = this.controllerFor('exception');
-      Em.warn(err);
+      var exceptionController = this.controllerFor('exception'),
+          errorString = err.toString();
+      if (err.statusText) {
+        errorString = err.statusText;
+      }
+      var c = window.console;
+      if (c && c.error) {
+        c.error(errorString);
+      }
       exceptionController.setProperties({ lastTransition: transition, thrown: err });
 
       this.intermediateTransitionTo('exception');
     },
 
     showLogin: function() {
+      var self = this;
+
       if (Discourse.get("isReadOnly")) {
         bootbox.alert(I18n.t("read_only_mode.login_disabled"));
       } else {
@@ -23,14 +36,31 @@ var ApplicationRoute = Em.Route.extend({
           var returnPath = encodeURIComponent(window.location.pathname);
           window.location = Discourse.getURL('/session/sso?return_path=' + returnPath);
         } else {
-          Discourse.Route.showModal(this, 'login');
-          this.controllerFor('login').resetForm();
+          this.send('autoLogin', 'login', function(){
+            Discourse.Route.showModal(self, 'login');
+            self.controllerFor('login').resetForm();
+          });
         }
       }
     },
 
     showCreateAccount: function() {
-      Discourse.Route.showModal(this, 'createAccount');
+      var self = this;
+
+      self.send('autoLogin', 'createAccount', function(){
+        Discourse.Route.showModal(self, 'createAccount');
+      });
+    },
+
+    autoLogin: function(modal, onFail){
+      var methods = Em.get('Discourse.LoginMethod.all');
+      if (!Discourse.SiteSettings.enable_local_logins &&
+          methods.length === 1) {
+            Discourse.Route.showModal(this, modal);
+            this.controllerFor('login').send('externalLogin', methods[0]);
+      } else {
+        onFail();
+      }
     },
 
     showForgotPassword: function() {
@@ -88,7 +118,7 @@ var ApplicationRoute = Em.Route.extend({
         Discourse.Route.showModal(router, 'editCategory', category);
         router.controllerFor('editCategory').set('selectedTab', 'general');
       } else {
-        Discourse.Category.reloadBySlugOrId(category.get('slug') || category.get('id')).then(function (c) {
+        Discourse.Category.reloadById(category.get('id')).then(function (c) {
           Discourse.Site.current().updateCategory(c);
           Discourse.Route.showModal(router, 'editCategory', c);
           router.controllerFor('editCategory').set('selectedTab', 'general');

@@ -5,6 +5,8 @@ module Import
 
   class Importer
 
+    attr_reader :success
+
     def initialize(user_id, filename, publish_to_message_bus = false)
       @user_id, @filename, @publish_to_message_bus = user_id, filename, publish_to_message_bus
 
@@ -56,7 +58,7 @@ module Import
     rescue SystemExit
       log "Restore process was cancelled!"
       rollback
-    rescue Exception => ex
+    rescue => ex
       log "EXCEPTION: " + ex.message
       log ex.backtrace.join("\n")
       rollback
@@ -140,7 +142,7 @@ module Import
     end
 
     def sidekiq_has_running_jobs?
-      Sidekiq::Workers.new.each do |process_id, thread_id, worker|
+      Sidekiq::Workers.new.each do |_, _, worker|
         payload = worker.try(:payload)
         return true if payload.try(:all_sites)
         return true if payload.try(:current_site_id) == @current_db
@@ -218,6 +220,7 @@ module Import
 
       password_argument = "PGPASSWORD=#{db_conf.password}" if db_conf.password.present?
       host_argument     = "--host=#{db_conf.host}"         if db_conf.host.present?
+      port_argument     = "--port=#{db_conf.port}"         if db_conf.port.present?
       username_argument = "--username=#{db_conf.username}" if db_conf.username.present?
 
       [ password_argument,                # pass the password to psql (if any)
@@ -226,6 +229,7 @@ module Import
         "--file='#{@dump_filename}'",     # read the dump
         "--single-transaction",           # all or nothing (also runs COPY commands faster)
         host_argument,                    # the hostname to connect to (if any)
+        port_argument,                # the port to connect to (if any)
         username_argument                 # the username to connect as (if any)
       ].join(" ")
     end

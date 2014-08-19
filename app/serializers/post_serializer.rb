@@ -49,7 +49,8 @@ class PostSerializer < BasicPostSerializer
              :edit_reason,
              :can_view_edit_history,
              :wiki,
-             :user_custom_fields
+             :user_custom_fields,
+             :static_doc
 
   def moderator?
     !!(object.user && object.user.moderator?)
@@ -153,14 +154,23 @@ class PostSerializer < BasicPostSerializer
 
       count = object.send(count_col) if object.respond_to?(count_col)
       count ||= 0
-      action_summary = {id: id,
-                        count: count,
-                        hidden: (sym == :vote),
-                        can_act: scope.post_can_act?(object, sym, taken_actions: post_actions)}
+      action_summary = {
+        id: id,
+        count: count,
+        hidden: (sym == :vote),
+        can_act: scope.post_can_act?(object, sym, taken_actions: post_actions)
+      }
+
+      if sym == :notify_user && scope.current_user.present? && scope.current_user == object.user
+        action_summary[:can_act] = false # Don't send a pm to yourself about your own post, silly
+      end
 
       # The following only applies if you're logged in
       if action_summary[:can_act] && scope.current_user.present?
-        action_summary[:can_clear_flags] = scope.is_staff? && PostActionType.flag_types.values.include?(id)
+        action_summary[:can_defer_flags] = scope.is_staff? &&
+                                           PostActionType.flag_types.values.include?(id) &&
+                                           active_flags.present? && active_flags.has_key?(id) &&
+                                           active_flags[id].count > 0
       end
 
       if post_actions.present? && post_actions.has_key?(id)
@@ -202,7 +212,7 @@ class PostSerializer < BasicPostSerializer
   end
 
   def include_reply_to_user?
-    object.quoteless? && object.reply_to_user
+    !(SiteSetting.suppress_reply_when_quoting && object.reply_quoted?) && object.reply_to_user
   end
 
   def include_bookmarked?
@@ -227,9 +237,22 @@ class PostSerializer < BasicPostSerializer
     custom_fields && custom_fields[object.user_id]
   end
 
+  def static_doc
+    true
+  end
+
+  def include_static_doc?
+    object.post_number == 1 && Discourse.static_doc_topic_ids.include?(object.topic_id)
+  end
+
   private
 
-  def post_actions
-    @post_actions ||= (@topic_view.present? && @topic_view.all_post_actions.present?) ? @topic_view.all_post_actions[object.id] : nil
-  end
+    def post_actions
+      @post_actions ||= (@topic_view.present? && @topic_view.all_post_actions.present?) ? @topic_view.all_post_actions[object.id] : nil
+    end
+
+    def active_flags
+      @active_flags ||= (@topic_view.present? && @topic_view.all_active_flags.present?) ? @topic_view.all_active_flags[object.id] : nil
+    end
+
 end

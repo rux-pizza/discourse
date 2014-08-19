@@ -1,12 +1,14 @@
+import ObjectController from 'discourse/controllers/object';
+
 /**
   This controller supports actions related to updating one's preferences
 
   @class PreferencesController
-  @extends Discourse.ObjectController
+  @extends ObjectController
   @namespace Discourse
   @module Discourse
 **/
-export default Discourse.ObjectController.extend({
+export default ObjectController.extend({
 
   allowAvatarUpload: Discourse.computed.setting('allow_uploaded_avatars'),
   allowUserLocale: Discourse.computed.setting('allow_user_locale'),
@@ -34,6 +36,10 @@ export default Discourse.ObjectController.extend({
   canSelectTitle: function() {
     return Discourse.SiteSettings.enable_badges && this.get('model.has_title_badges');
   }.property('model.badge_count'),
+
+  canChangePassword: function() {
+    return !Discourse.SiteSettings.enable_sso && Discourse.SiteSettings.enable_local_logins;
+  }.property(),
 
   availableLocales: function() {
     return Discourse.SiteSettings.available_locales.split('|').map( function(s) {

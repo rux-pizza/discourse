@@ -35,6 +35,11 @@ class InvitesController < ApplicationController
 
     guardian.ensure_can_invite_to_forum!(group_ids)
 
+    invite_exists = Invite.where(email: params[:email], invited_by_id: current_user.id).first
+    if invite_exists
+      guardian.ensure_can_send_multiple_invites!(current_user)
+    end
+
     if Invite.invite_by_email(params[:email], current_user, topic=nil,  group_ids)
       render json: success_json
     else
@@ -58,6 +63,7 @@ class InvitesController < ApplicationController
   def redeem_disposable_invite
     params.require(:email)
     params.permit(:username, :name, :topic)
+    params[:email] = params[:email].split(' ').join('+')
 
     invite = Invite.find_by(invite_key: params[:token])
 

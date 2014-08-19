@@ -36,7 +36,6 @@ class ApplicationController < ActionController::Base
   before_filter :disable_customization
   before_filter :block_if_readonly_mode
   before_filter :authorize_mini_profiler
-  before_filter :store_incoming_links
   before_filter :preload_json
   before_filter :check_xhr
   before_filter :redirect_to_login_if_required
@@ -217,7 +216,7 @@ class ApplicationController < ActionController::Base
     user = if params[:username]
       username_lower = params[:username].downcase
       username_lower.gsub!(/\.json$/, '')
-      User.find_by(username_lower: username_lower)
+      User.find_by(username_lower: username_lower, active: true)
     elsif params[:external_id]
       SingleSignOnRecord.find_by(external_id: params[:external_id]).try(:user)
     end
@@ -311,10 +310,6 @@ class ApplicationController < ActionController::Base
     def authorize_mini_profiler
       return unless mini_profiler_enabled?
       Rack::MiniProfiler.authorize_request
-    end
-
-    def store_incoming_links
-      IncomingLink.add(request, current_user) unless request.xhr?
     end
 
     def check_xhr

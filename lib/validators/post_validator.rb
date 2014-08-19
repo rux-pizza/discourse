@@ -3,14 +3,16 @@ module Validators; end
 class Validators::PostValidator < ActiveModel::Validator
   def validate(record)
     presence(record)
-    stripped_length(record)
-    raw_quality(record)
-    max_posts_validator(record)
-    max_mention_validator(record)
-    max_images_validator(record)
-    max_attachments_validator(record)
-    max_links_validator(record)
-    unique_post_validator(record)
+    unless Discourse.static_doc_topic_ids.include?(record.topic_id) && record.acting_user.try(:admin?)
+      stripped_length(record)
+      raw_quality(record)
+      max_posts_validator(record)
+      max_mention_validator(record)
+      max_images_validator(record)
+      max_attachments_validator(record)
+      max_links_validator(record)
+      unique_post_validator(record)
+    end
   end
 
   def presence(post)
@@ -66,7 +68,7 @@ class Validators::PostValidator < ActiveModel::Validator
   def unique_post_validator(post)
     return if SiteSetting.unique_posts_mins == 0
     return if post.skip_unique_check
-    return if post.acting_user.admin? || post.acting_user.moderator?
+    return if post.acting_user.staff?
 
     # If the post is empty, default to the validates_presence_of
     return if post.raw.blank?

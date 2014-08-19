@@ -102,13 +102,12 @@ pl_PL:
     yes_value: "Tak"
     generic_error: "Przepraszamy, wystąpił błąd."
     generic_error_with_reason: "Wystąpił błąd: %{error}"
-    log_in: "Zaloguj się"
     age: "Wiek"
     joined: "Dołączył"
     admin_title: "Admin"
     flags_title: "Flagi"
     show_more: "pokaż więcej"
-    links: Odnośniki
+    links: "Odnośniki"
     faq: "FAQ"
     privacy_policy: "Polityka prywatności"
     mobile_view: "Wersja mobilna"
@@ -152,8 +151,6 @@ pl_PL:
       not_bookmarked: "wpis przeczytany - kliknij, aby dodać zakładkę"
       last_read: "to ostatni przeczytany wpis przez Ciebie - kliknij, aby dodać zakładkę"
       remove: "Usuń zakładkę"
-    new_topics_inserted: "{{count}} nowych postów."
-    show_new_topics: "Kliknij, aby zobaczyć."
     preview: "podgląd"
     cancel: "anuluj"
     save: "Zapisz zmiany"
@@ -342,7 +339,6 @@ pl_PL:
       last_emailed: "Ostatnio otrzymał email"
       last_seen: "Ostatnio widziany"
       created: "Dołączył"
-      log_out: "Wyloguj"
       location: "Położenie"
       website: "Strona internetowa"
       email_settings: "Email"
@@ -359,15 +355,6 @@ pl_PL:
       new_topic_duration:
         label: "Uznaj, że temat jest nowy, jeśli"
         not_viewed: "jeszcze ich nie widziałeś"
-        last_here: "zostały dodane od twojej ostatniej wizyty"
-        after_n_days:
-          one: "zostały dodane w ciągu ostatniego dnia"
-          few: "zostały dodane w ciągu ostatnich {{count}} dni"
-          other: "zostały dodane w ciągu ostatnich {{count}} dni"
-        after_n_weeks:
-          one: "zostały dodane w ciągu ostatniego tygodnia"
-          few: "zostały dodane w ciągu ostatnich {{count}} tygodni"
-          other: "zostały dodane w ciągu ostatnich {{count}} tygodni"
       auto_track_topics: "Automatycznie śledź tematy, które odwiedzam"
       auto_track_options:
         never: "nigdy"
@@ -466,7 +453,6 @@ pl_PL:
       complete_username: "Jeśli jakieś mamy konto o nazwie użytkownika <b>%{username}</b>, za chwilę zostanie wysłana wiadomość z instrukcją jak ustawić nowe hasło."
       complete_email: "Jeśli jakieś konto użytkownika posiada adres <b>%{email}</b>, za chwilę zostanie wysłana wiadomość z instrukcją jak ustawić nowe hasło."
     login:
-      title: "Zaloguj się"
       username: "Użytkownik"
       password: "Hasło"
       email_placeholder: "adres email lub nazwa użytkownika"
@@ -569,19 +555,7 @@ pl_PL:
       title: "powiadomienia dla wspomnień @name, odpowiedzi do twoich wpisów i tematów, prywatne wiadomości, itp"
       none: "Aktualnie nie masz żadnych powiadomień."
       more: "pokaż starsze powiadomienia"
-      mentioned: "<span title='mentioned' class='icon'>@</span> {{username}} {{link}}"
-      quoted: "<i title='quoted' class='fa fa-quote-right'></i> {{username}} {{link}}"
-      replied: "<i title='replied' class='fa fa-reply'></i> {{username}} {{link}}"
-      posted: "<i title='replied' class='fa fa-reply'></i> {{username}} {{link}}"
-      edited: "<i title='edited' class='fa fa-pencil'></i> {{username}} {{link}}"
-      liked: "<i title='liked' class='fa fa-heart'></i> {{username}} {{link}}"
-      private_message: "<i class='fa fa-envelope-o' title='private message'></i> {{username}} {{link}}"
-      invited_to_private_message: "<i class='fa fa-envelope-o' title='private message'></i> {{username}} {{link}}"
-      invitee_accepted: "<i title='accepted your invitation' class='fa fa-user'></i> twoje zaproszenie dla   {{username}} zostało przyjęte"
-      moved_post: "<i title='moved post' class='fa fa-sign-out'></i> {{username}} przesunął {{link}}"
       total_flagged: "wszystkie oflagowane wpisy"
-      linked: "<i title='Połączony wpis' class='fa fa-arrow-left'></i> {{username}} {{link}}"
-      granted_badge: "<i title='Przyznanie odznaki' class='fa fa-certificate'></i> Przyznano Ci {{link}}"
     upload_selector:
       title: "Dodaj obraz"
       title_with_attachments: "Dodaj obraz lub plik"
@@ -615,7 +589,6 @@ pl_PL:
     topics:
       bulk:
         reset_read: "Wyzeruj Przeczytane"
-        dismiss_read: "Zignoruj Nieprzeczytane"
         dismiss_new: "Zignoruj Nowe"
         toggle: "włącz grupowe zaznaczanie tematów"
         actions: "Operacje grupowe"
@@ -667,7 +640,6 @@ pl_PL:
       invalid_access:
         title: "Temat jest prywatny"
         description: "Przepraszamy, nie masz dostępu do tego tematu!"
-        login_required: "Musisz się zalogować by wyświetlić ten temat."
       server_error:
         title: "Wystąpił błąd przy wczytywaniu Tematu"
         description: "Przepraszamy, nie możliwe było wczytanie tematu, możliwe że wystąpił problem z połączeniem. Prosimy, spróbuj ponownie. Jeżeli problem wystąpi ponownie, powiadom administrację."
@@ -696,7 +668,6 @@ pl_PL:
       browse_all_categories: Przeglądaj wszystkie kategorie
       view_latest_topics: pokaż ostatnie tematy
       suggest_create_topic: Może rozpoczniesz temat?
-      read_position_reset: "Twoje miejsce czytania zostało zresetowane."
       jump_reply_up: przeskocz do wcześniejszej odpowiedzi
       jump_reply_down: przeskocz do późniejszej odpowiedzi
       deleted: "Temat został usunięty"
@@ -787,7 +758,6 @@ pl_PL:
         email_placeholder: 'nazwa@example.com'
         success: "Wysłaliśmy zaproszenie do <b>{{email}}</b>. Powiadomimy Ciebie jeśli zaproszenie zostanie przyjęte. Sprawdzaj zakładkę zaproszenia na Twoim profilu użytkownika by śledzić swoje zaproszenia."
         error: "Przepraszamy, nie mogliśmy zaprosić tej osoby. Być może jest już na forum?"
-      login_reply: 'Zaloguj się by odpowiedzieć'
       filters:
         n_posts:
           one: "1 wpis"
@@ -899,10 +869,6 @@ pl_PL:
         unwiki: "Zwykły wpis"
       actions:
         flag: 'Oflaguj'
-        clear_flags:
-          one: "Usuń flagę"
-          few: "Usuń flagi"
-          other: "Usuń flagi"
         it_too:
           off_topic: "Oflaguj też to"
           spam: "Oflaguj też to"
@@ -1137,8 +1103,6 @@ pl_PL:
     changed_by: "przez {{author}}"
     categories_list: "Lista Kategorii"
     filters:
-      with_topics: "%{filter} Tematy"
-      with_category: "%{filter} %{category} Tematy"
       latest:
         title: "Najnowsze"
         help: "tematy z ostatnimi wpisami"
@@ -1160,7 +1124,6 @@ pl_PL:
           zero: "Nieprzeczytane"
           one: "Nieprzeczytany (1)"
           other: "Nieprzeczytanych ({{count}})"
-        help: "wątki, które obserwujesz lub śledzisz z nieprzeczytanymi wpisami"
       new:
         lower_title_with_count:
           one: "1 nowy"
@@ -1170,7 +1133,6 @@ pl_PL:
           zero: "Nowe"
           one: "Nowy (1)"
           other: "Nowych ({{count}})"
-        help: "wątki utworzone od Twojej ostatniej wizyty"
       posted:
         title: "Moje wpisy"
         help: "tematy w których pisałeś"
@@ -1182,7 +1144,6 @@ pl_PL:
         help: "najnowsze tematy w kategorii {{categoryName}}"
       top:
         title: "Najpopularniejsze"
-        help: "wybór najpopularniejszych tematów w tym roku, miesiącu, tygodniu lub dniu"
         yearly:
           title: "Najpopularniejsze w tym roku"
         monthly:
@@ -1247,23 +1208,11 @@ pl_PL:
         title: "Flagi"
         old: "Stare"
         active: "Aktywność"
-        agree_hide: "Zgadzam się (ukryj wpis + wyślij PW)"
-        agree_hide_title: "Ukryj ten wpis i automatycznie wyślij użytkownikowi prywatną wiadomość wzywając go do jego edycji"
-        defer: "Odrocz"
-        defer_title: "Żadne działanie nie jest teraz potrzebne, odrocz działanie związane z tą flagę na później lub nigdy"
-        delete_post: "Usuń wpis"
-        delete_post_title: "Usuń wpis; jeżeli jest pierwszym wpisem, usuń temat"
-        disagree_unhide: "Nie zgadzam się (odkryj wpis)"
-        disagree_unhide_title: "Usuń flagi dotyczące tego wpisu i uczyń wpis ponownie widzialnym"
-        disagree: "Nie zgadzam się"
-        disagree_title: "Nie zgadzam się z flagą, usuń wszystkie flagi z tego wpisu"
-        delete_spammer_title: "Usuń użytkownika(-czkę) i wszystkie jego(-ej) wpisy i tematy."
         clear_topic_flags: "Wykonane"
         clear_topic_flags_title: "Ten temat został zbadany i problemy zostały rozwiązane. Kliknij Wykone by usunąć oflagowanie."
         flagged_by: "Oflagowany przez"
         system: "System"
         error: "Coś poszło nie tak"
-        view_message: "Odpowiedz"
         no_results: "Nie ma flag."
         topic_flagged: "Ten <strong>temat</strong> został oflagowany."
         summary:
@@ -1586,7 +1535,6 @@ pl_PL:
         refresh_browsers: "Wymuś odświeżenie przeglądarki"
         show_public_profile: "Pokaż profil publiczny"
         impersonate: 'Podszyj się'
-        log_out: "Wyloguj się"
         logged_out: "Użytkownik został wylogowany na wszystkich urządzeniach."
         revoke_admin: 'Odbierz status admina'
         grant_admin: 'Przyznaj status admina'
@@ -1623,9 +1571,6 @@ pl_PL:
           one: "Nie można usunąć wszystkich postów, ponieważ użytkownik ma więcej niż 1 post. (delete_all_posts_max)"
           few: "Nie można usunąć wszystkich postów, ponieważ użytkownik ma ich więcej niż %{count}. (delete_all_posts_max)"
           other: "Nie można usunąć wszystkich postów, ponieważ użytkownik ma ich więcej niż %{count}. (delete_all_posts_max)"
-        delete_confirm: "Czy jesteś PEWNY(-A), że chcesz usunąć tego użytkownika? To nieodwracalne!"
-        delete_and_block: "<b>Tak</b>, i <b>zablokuj</b> przyszłe rejestracje z tego adresu email i IP"
-        delete_dont_block: "<b>Tak</b>, po prostu usuń użytkownika"
         deleted: "Użytkownik został usunięty."
         delete_failed: "Wystąpił błąd podczas usuwania użytkownika. Upewnij się, że wszystkie wpisy zostały usunięte przed przystąpieniem do usuwania użytkownika."
         send_activation_email: "Wyślij Email Aktywacyjny"
@@ -1714,15 +1659,8 @@ pl_PL:
     lightbox:
       download: "pobierz"
     keyboard_shortcuts_help:
-      title: 'Skróty klawiszowe (eksperymentalne)'
       jump_to:
         title: 'Przeskocz do'
-        home: '<b>g</b> następnie <b>h</b> Home (Najnowsze)'
-        latest: '<b>g</b> następnie <b>l</b> Najnowsze'
-        new: '<b>g</b> następnie <b>n</b> Nowe'
-        unread: '<b>g</b> następnie <b>u</b> Nieprzeczytane '
-        starred: '<b>g</b> then <b>f</b> Gwiazdka'
-        categories: '<b>g</b> następnie <b>c</b> Kategorie'
       navigation:
         title: 'Nawigacja'
         jump: '<b>#</b> Idź to wpisu o numerze'
@@ -1749,10 +1687,6 @@ pl_PL:
         bookmark: '<b>b</b> Zakładka na wpisie'
         edit: '<b>e</b> Edytuj wpis'
         delete: '<b>d</b> Usuń wpis'
-        mark_muted: '<b>m</b> then <b>m</b> Oznacz temat jako wyciszony'
-        mark_regular: '<b>m</b> then <b>r</b> Oznacz temat jako normalny'
-        mark_tracking: '<b>m</b> then <b>t</b> Oznacz temat jako śledzony'
-        mark_watching: '<b>m</b> then <b>w</b> Oznacz temat jako obserowany'
     badges:
       title: Odznaki
       badge_count:

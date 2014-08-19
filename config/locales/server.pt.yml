@@ -48,7 +48,6 @@ pt:
   invalid_characters: "contém caracteres inválidos"
   is_invalid: "é inválido; tenta ser um bocado mais descritivo"
   next_page: "próxima página →"
-  by: "Por"
   topics_in_category: "Tópicos na categoria '%{category}'"
   rss_posts_in_topic: "RSS feed de '%{topic}'"
   rss_topics_in_category: "RSS feed dos tópicos da categoria '%{category}'"
@@ -218,11 +217,9 @@ pt:
     continue: "Continuar para %{site_name}"
   change_email:
     confirmed: "O seu email foi atualizado."
-    please_continue: "Por favor continue em %{link}"
     error: "Houve um erro ao alterar o seu endereço de email. Talvez o endereço já esteja sendo utilizado?"
   activation:
     already_done: "Desculpe, este link de confirmação não está mais válido. Talvez a sua conta já esteja ativa?"
-    please_continue: "A sua nova conta está confimada e você está conectado. Continue em %{link}"
     welcome_to: "Bem-vindo a %{site_name}!"
     approval_required: "Um moderador tem que aprovar a sua conta para que você possa acessar este fórum. Você receberá um email quando sua conta for aprovada!"
   post_action_types:
@@ -239,7 +236,6 @@ pt:
       title: 'Notificar {{username}}'
       description: 'Esta postagem contém algo sobre o que quero falar com esta pessoal diretamente e em particular.'
       long_form: 'usuário notificado'
-      email_title: 'Sobre a sua postagem "%{title}"'
       email_body: "%{link}\n\n%{message}"
     notify_moderators:
       title: 'Notificar moderadores'
@@ -258,8 +254,6 @@ pt:
       title: 'Vote'
       description: 'Votar nesta postagem'
       long_form: 'voto computado para esta postagem'
-  flagging:
-    user_must_edit: '<p>Conteúdo sinalizado escondido.</p>'
   archetypes:
     regular:
       title: "Tópico Regular"
@@ -370,30 +364,19 @@ pt:
     education_new_topic:
       title: "Educação do Usuário Novo: Primeiros Tópicos"
       description: "Pop up de orientação automaticamente exibido em cima do composer quando usuário novo começa a escrever os seus dois primeiros tópicos."
-    usage_tips:
-      title: "Dicas para Usuários Novos"
-      description: "Dicas de uso comuns, informações essenciais do fórum, e orientação básica para usuários novos."
     welcome_user:
       title: "Boas-vindas: Usuário Novo"
       description: "Uma mensagem particular enviada automaticamente para todos os usuários novos quando eles se registram."
     welcome_invite:
       title: "Boas-vindas: Usuário Convidado"
       description: "Uma mensagem particular enviada automaticamente para todos os usuários convidados quando eles aceitam o convite de outro usuário para participar."
-    privacy_policy:
-      title: "Política de Privacidade"
-      description: "A política de privacidade do seu site. Deixe em branco para usar a política padrão."
-    faq:
-      title: "FAQ"
-      description: "FAQ do seu site. Deixe em branco para usar a FAQ padrão."
     login_required_welcome_message:
       title: "Boas-vindas: Login Solicitado"
       description: "Mensagem de boas-vindas que é exibida para usuários que não estão logados quando a configuração de 'login requerido' está ativada."
     tos_user_content_license:
       title: "Termos do Serviço: Licença do Conteúdo"
-      description: "Texto da seção Licença do Conteúdo dos Termos do Serviço."
     tos_miscellaneous:
       title: "Termos do Serviço: Diversos"
-      description: "Texto para a seção de Diversos dos Termos de Serviço."
     login_required:
       title: "É requerido que você entre em sua conta: Página Inicial"
       description: "Texto exibido para usuários não autorizados quando é se exige entrar na conta para acessar o site."
@@ -422,7 +405,6 @@ pt:
     enable_noscript_support: "Ativar suporte a tag &lt;noscript&gt;"
     post_menu: "A ordem dos items no menu da postagem."
     track_external_right_clicks: "Rastrear cliques externos que são clicados com o botão direito (ex: abrir em nova aba) desativado por padrão, pois tem que reescrever urls, quebrando a usabilidade"
-    version_checks: "Pingar Discourse Hub para atualizações de versão e exibir mensagens de versão no Painel em /admin"
     port: "Se você quiser especificar a porta na URL. Útil no modo de desenvolvimento. Deixe em branco para nada."
     force_hostname: "Se você quiser especificar um hostname na URL. Útil no modo de desenvolvimento. Deixe em branco para nada."
     invite_expiry_days: "Quantos dias as chaves de convite são válidas."
@@ -616,10 +598,6 @@ pt:
         %{base_url}/users/activate-account/%{email_token}
 
         Se não conseguires clicar no link em cima, tenta copia-lo e cola-lo na barra de endereções do seu browser de internet.
-  login_required:
-    welcome_message: |
-      #[Welcome to %{title}](#welcome)
-      Este fórum de discussão requer uma conta para visualizar %{title}.  Para continuar a ler, por favor, crie uma nova conta ou entre na sua conta.
   terms_of_service:
     user_content_license: |
       As contribuições do usuário são licenciadas sob [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US). Sem limitação de nenhuma destas representações ou garantias, %{company_short_name} tem o direito (mas não a obrigação) de, segundo o próprio critério de %{company_short_name} (i) recusar ou remover qualquer conteúdo que, na avaliação de %{company_short_name} viole qualquer regra de %{company_short_name} ou seja de alguma forma prejudicial ou censurável, ou (ii) cancelar ou negar o acesso e a utilização do site para qualquer pessoa ou entidade, por qualquer motivo, segundo próprio e único critério de %{company_short_name}. %{company_short_name} não terá obrigação de fornecer qualquer reembolso de quaisquer valores já pagos. ⏎

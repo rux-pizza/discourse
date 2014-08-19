@@ -1,6 +1,10 @@
 // A helper function to create a category route with parameters
+import { queryParams, filterQueryParams } from 'discourse/routes/build-topic-route';
+
 export default function(filter, params) {
   return Discourse.Route.extend({
+    queryParams: queryParams,
+
     model: function(modelParams) {
       return Discourse.Category.findBySlug(modelParams.slug, modelParams.parentSlug);
     },
@@ -11,7 +15,6 @@ export default function(filter, params) {
         return;
       }
 
-      this.controllerFor('search').set('searchContext', model.get('searchContext'));
       this._setupNavigation(model);
       return Em.RSVP.all([this._createSubcategoryList(model),
                           this._retrieveTopicList(model, transaction)]);
@@ -25,7 +28,7 @@ export default function(filter, params) {
         category: model,
         filterMode: filterMode,
         noSubcategories: params && params.no_subcategories,
-        canEditCategory: Discourse.User.currentProp('staff'),
+        canEditCategory: model.get('can_edit'),
         canChangeCategoryNotificationLevel: Discourse.User.current()
       });
     },
@@ -44,23 +47,12 @@ export default function(filter, params) {
     },
 
     _retrieveTopicList: function(model, transaction) {
-      var queryParams = transaction.queryParams,
-          listFilter = "category/" + Discourse.Category.slugFor(model) + "/l/" + filter,
+      var listFilter = "category/" + Discourse.Category.slugFor(model) + "/l/" + filter,
           self = this;
 
-      params = params || {};
+      var findOpts = filterQueryParams(transaction.queryParams, params);
 
-      if (queryParams && queryParams.order) { params.order = queryParams.order; }
-      if (queryParams && queryParams.ascending) { params.ascending = queryParams.ascending; }
-      if (queryParams && queryParams.status) { params.status = queryParams.status; }
-
-      return Discourse.TopicList.list(listFilter, params).then(function(list) {
-        var tracking = Discourse.TopicTrackingState.current();
-        if (tracking) {
-          tracking.sync(list, listFilter);
-          tracking.trackIncoming(listFilter);
-        }
-
+      return Discourse.TopicList.list(listFilter, findOpts).then(function(list) {
         // If all the categories are the same, we can hide them
         var hideCategory = !list.get('topics').find(function (t) { return t.get('category') !== model; });
         list.set('hideCategory', hideCategory);
@@ -73,7 +65,7 @@ export default function(filter, params) {
           period = filter.indexOf('/') > 0 ? filter.split('/')[1] : '',
           filterText = I18n.t('filters.' + filter.replace('/', '.') + '.title', {count: 0});
 
-      Discourse.set('title', I18n.t('filters.with_category', { filter: filterText, category: model.get('name').capitalize() }));
+      Discourse.set('title', I18n.t('filters.with_category', { filter: filterText, category: model.get('name') }));
 
       this.controllerFor('navigation/category').set('canCreateTopic', topics.get('can_create_topic'));
       this.controllerFor('discovery/topics').setProperties({
@@ -84,7 +76,10 @@ export default function(filter, params) {
         noSubcategories: params && !!params.no_subcategories
       });
 
+      this.controllerFor('search').set('searchContext', model.get('searchContext'));
       this.set('topics', null);
+
+      this.openTopicDraft(topics);
     },
 
     renderTemplate: function() {

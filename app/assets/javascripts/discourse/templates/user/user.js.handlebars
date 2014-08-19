@@ -52,11 +52,6 @@
         </ul>
       {{/if}}
 
-      {{#if can_edit}}
-        <div style='margin-top: 10px'>
-          <button class='btn' data-not-implemented='true' disabled title="{{i18n not_implemented}}"><i class='fa fa-download'></i>{{i18n user.download_archive}}</button>
-        </div>
-      {{/if}}
     </section>
 
     <section class='user-main'>
@@ -71,8 +66,9 @@
               {{#if number_of_flagged_posts}}
                 <div>
                   {{#link-to 'user.flaggedPosts' this}}
-                    <span class="pill flagged-posts">{{number_of_flagged_posts}}</span>&nbsp;{{i18n user.staff_counters.flagged_posts}}</div>
+                    <span class="pill flagged-posts">{{number_of_flagged_posts}}</span>&nbsp;{{i18n user.staff_counters.flagged_posts}}
                   {{/link-to}}
+                </div>
               {{/if}}
               {{#if number_of_deleted_posts}}
                 <div>

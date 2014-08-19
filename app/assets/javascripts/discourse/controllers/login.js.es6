@@ -1,20 +1,19 @@
-/**
-  This controller supports actions related to flagging
+import ModalFunctionality from 'discourse/mixins/modal-functionality';
 
-  @class LoginController
-  @extends Discourse.Controller
-  @namespace Discourse
-  @uses Discourse.ModalFunctionality
-  @module Discourse
-**/
-export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
-  needs: ['modal', 'createAccount'],
+import DiscourseController from 'discourse/controllers/controller';
+
+export default DiscourseController.extend(ModalFunctionality, {
+  needs: ['modal', 'createAccount', 'application'],
   authenticate: null,
   loggingIn: false,
+  loggedIn: false,
+
+  canLoginLocal: Discourse.computed.setting('enable_local_logins'),
 
   resetForm: function() {
     this.set('authenticate', null);
     this.set('loggingIn', false);
+    this.set('loggedIn', false);
   },
 
   site: function() {
@@ -32,13 +31,10 @@ export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
     return this.get('loggingIn') ? I18n.t('login.logging_in') : I18n.t('login.title');
   }.property('loggingIn'),
 
-  loginDisabled: function() {
-    return this.get('loggingIn');
-  }.property('loggingIn'),
+  loginDisabled: Em.computed.or('loggingIn', 'loggedIn'),
 
   showSignupLink: function() {
-    return !Discourse.SiteSettings.invite_only &&
-           Discourse.SiteSettings.allow_new_registrations &&
+    return this.get('controllers.application.canSignUp') &&
            !this.get('loggingIn') &&
            this.blank('authenticate');
   }.property('loggingIn', 'authenticate'),
@@ -49,9 +45,15 @@ export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
 
   actions: {
     login: function() {
+      var self = this;
+
+      if(this.blank('loginName') || this.blank('loginPassword')){
+        self.flash(I18n.t('login.blank_username_or_password'), 'error');
+        return;
+      }
+
       this.set('loggingIn', true);
 
-      var self = this;
       Discourse.ajax("/session", {
         data: { login: this.get('loginName'), password: this.get('loginPassword') },
         type: 'POST'
@@ -68,6 +70,7 @@ export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
           }
           self.flash(result.error, 'error');
         } else {
+          self.set('loggedIn', true);
           // Trigger the browser's password manager using the hidden static login form:
           var $hidden_login_form = $('#hidden-login-form');
           $hidden_login_form.find('input[name=username]').val(self.get('loginName'));
@@ -78,11 +81,7 @@ export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
 
       }, function() {
         // Failed to login
-        if (self.blank('loginName') || self.blank('loginPassword')) {
-          self.flash(I18n.t('login.blank_username_or_password'), 'error');
-        } else {
-          self.flash(I18n.t('login.error'), 'error');
-        }
+        self.flash(I18n.t('login.error'), 'error');
         self.set('loggingIn', false);
       });
 
@@ -106,7 +105,7 @@ export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
             "menubar=no,status=no,height=" + height + ",width=" + width +  ",left=" + left + ",top=" + top);
         var self = this;
         var timer = setInterval(function() {
-          if(w.closed) {
+          if(!w || w.closed) {
             clearInterval(timer);
             self.set('authenticate', null);
           }
@@ -131,16 +130,19 @@ export default Discourse.Controller.extend(Discourse.ModalFunctionality, {
 
   authenticationComplete: function(options) {
     if (options.requires_invite) {
+      this.send('showLogin');
       this.flash(I18n.t('login.requires_invite'), 'success');
       this.set('authenticate', null);
       return;
     }
     if (options.awaiting_approval) {
+      this.send('showLogin');
       this.flash(I18n.t('login.awaiting_approval'), 'success');
       this.set('authenticate', null);
       return;
     }
     if (options.awaiting_activation) {
+      this.send('showLogin');
       this.flash(I18n.t('login.awaiting_confirmation'), 'success');
       this.set('authenticate', null);
       return;

@@ -21,7 +21,7 @@
   border: 1px solid rgba(0, 0, 0, 0.3);
 
   @include border-radius-all (6px);
-  box-shadow: 0 3px 7px rgba($primary, 0.3);
+  box-shadow: 0 3px 7px rgba(0,0,0, 0.3);
   background-clip: padding-box;
 }
 
@@ -148,5 +148,14 @@
   &.alert-success {
     background-color:  scale-color($success, $lightness: 90%);
     color: $success;
+  }
+}
+
+.delete-flag-modal, .agree-flag-modal {
+  .modal-inner-container {
+    width: 300px;
+  }
+  .btn {
+    float: none !important;
   }
 }

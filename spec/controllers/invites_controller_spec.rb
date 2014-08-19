@@ -53,12 +53,28 @@ describe InvitesController do
         response.should_not be_success
       end
 
+      it "fails for normal user if invite email already exists" do
+        user = log_in(:elder)
+        invite = Invite.invite_by_email("invite@example.com", user)
+        invite.reload
+        post :create, email: invite.email
+        response.should_not be_success
+      end
+
       it "allows admins to invite to groups" do
         group = Fabricate(:group)
         log_in(:admin)
         post :create, email: email, group_names: group.name
         response.should be_success
         Invite.find_by(email: email).invited_groups.count.should == 1
+      end
+
+      it "allows admin to send multiple invites to same email" do
+        user = log_in(:admin)
+        invite = Invite.invite_by_email("invite@example.com", user)
+        invite.reload
+        post :create, email: invite.email
+        response.should be_success
       end
     end
 
@@ -235,6 +251,11 @@ describe InvitesController do
       let(:topic) { Fabricate(:topic) }
       let(:invitee) { Fabricate(:user) }
       let(:invite) { Invite.create!(invited_by: invitee) }
+
+      it 'converts "space" to "+" in email parameter' do
+        Invite.expects(:redeem_from_token).with(invite.invite_key, "fname+lname@example.com", nil, nil, topic.id)
+        get :redeem_disposable_invite, email: "fname lname@example.com", token: invite.invite_key, topic: topic.id
+      end
 
       it 'redeems the invite' do
         Invite.expects(:redeem_from_token).with(invite.invite_key, "name@example.com", nil, nil, topic.id)

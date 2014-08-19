@@ -18,7 +18,7 @@ We'll wait.
 
 ### Customize Logos and Colors
 
-By default you get the same standard generic "penciled in" Discourse logo everyone gets. Look for the [**assets for the forum design**](/t/assets-for-the-forum-design/5) topic; follow the instructions there to upload your logos to that topic, and then paste the uploaded image paths into the required logo settings.
+By default you get the same standard generic "penciled in" Discourse logo everyone gets. Look for the [**assets for the site design**](/t/assets-for-the-site-design/5) topic; follow the instructions there to upload your logos to that topic, and then paste the uploaded image paths into the required logo settings.
 
 To quickly give your Discourse a distinctive look, without having to edit or understand CSS, create a new color scheme via [Customize, Colors](/admin/customize/colors).
 
@@ -80,14 +80,14 @@ Email deliverability can be hard. We strongly recommend using dedicated email se
 
 ### What and Who is this site for?
 
-One of the default topics is [Welcome to Discourse](/t/welcome/6). This topic is pinned globally, so it will appear on the homepage, right at the top of the topic list, for all new users. Your welcome topic is important because it is the first thing you visitors will see:
+One of the default topics is [Welcome to Discourse](/t/welcome-to-discourse). This topic is pinned globally, so it will appear on the homepage, right at the top of the topic list, for all new users. Your welcome topic is important because it is the first thing you visitors will see:
 
 - Where am I?
 - Who is this discussion area for?
 - What can I [find here](https://www.youtube.com/watch?v=d0VNHe5fq30)?
 - Why should I visit here?
 
-[Edit this welcome topic](/t/welcome/6) and write a **brief introduction to your community**. Think of it as your "elevator pitch" &ndash; how would you describe this site to a stranger on an elevator when you had about 1 minute to talk?
+[Edit this welcome topic](/t/welcome-to-discourse) and write a **brief introduction to your community**. Think of it as your "elevator pitch" &ndash; how would you describe this site to a stranger on an elevator when you had about 1 minute to talk?
 
 Note that pinning topics works a little differently in Discourse:
 
@@ -177,7 +177,18 @@ Out of the box, Discourse defaults to [Creative Commons licensing](https://creat
 
 Number 3 is the Discourse default &ndash; that's [Creative Commons BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US).
 
- If that's not what you want, please see our [admin User Content Licensing](/admin/site_contents/tos_user_content_license) page for a brief form that will let you cut and paste your decision into section #3 of the [Terms of Service](/tos#3). 
+ If that's not what you want, edit the [Terms of Service](/tos) to taste via the edit link at the top.
+
+### Building Your Community
+
+Be patient! Building communities is hard. Before launching, be sure to:
+
+1. Define your community's purpose in a pinned or banner topic.
+2. Seed the discussion with interesting topics.
+3. Commit to visiting and participating regularly.
+4. Link your community so people can find it.
+
+See more advice at: http://blog.discourse.org/2014/08/building-a-discourse-community/
 
 ### Maintenance
 
@@ -185,7 +196,7 @@ Number 3 is the Discourse default &ndash; that's [Creative Commons BY-NC-SA 3.0]
 
 - Hopefully you are running [in our Docker container install](https://github.com/discourse/discourse/blob/master/docs/INSTALL.md); it's the only one we officially support. It guarantees easy updates, and all recommended optimizations from the Discourse team.
 
-- You should get an email notification when new versions of Discourse are released. To upgrade your instance, visit [/admin/docker](/admin/docker) -- <kbd>upgrade</kbd> button will appear. Press it!
+- You should get an email notification when new versions of Discourse are released. To upgrade your instance, visit [/admin/upgrade](/admin/upgrade) -- <kbd>upgrade</kbd> button will appear. Press it!
 
 - Some other things you might eventually want to set up:
    - [Automatic daily backups](https://meta.discourse.org/t/configure-automatic-backups-for-discourse/14855)

@@ -1,13 +1,15 @@
+import ModalFunctionality from 'discourse/mixins/modal-functionality';
+
 /**
   Modal for performing bulk actions on topics
 
   @class TopicBulkActionsController
   @extends Ember.ArrayController
   @namespace Discourse
-  @uses Discourse.ModalFunctionality
+  @uses ModalFunctionality
   @module Discourse
 **/
-export default Ember.ArrayController.extend(Discourse.ModalFunctionality, {
+export default Ember.ArrayController.extend(ModalFunctionality, {
   needs: ['discovery/topics'],
 
   onShow: function() {
@@ -28,6 +30,7 @@ export default Ember.ArrayController.extend(Discourse.ModalFunctionality, {
       }
       return result;
     }).catch(function() {
+      bootbox.alert(I18n.t('generic_error'));
       self.set('loading', false);
     });
   },
@@ -58,6 +61,10 @@ export default Ember.ArrayController.extend(Discourse.ModalFunctionality, {
 
     showNotificationLevel: function() {
       this.send('changeBulkTemplate', 'modal/bulk_notification_level');
+    },
+
+    deleteTopics: function() {
+      this.performAndRefresh({type: 'delete'});
     },
 
     closeTopics: function() {

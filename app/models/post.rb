@@ -83,7 +83,7 @@ class Post < ActiveRecord::Base
 
   def limit_posts_per_day
     if user.created_at > 1.day.ago && post_number > 1
-      RateLimiter.new(user, "first-day-replies-per-day:#{Date.today.to_s}", SiteSetting.max_replies_in_first_day, 1.day.to_i)
+      RateLimiter.new(user, "first-day-replies-per-day:#{Date.today}", SiteSetting.max_replies_in_first_day, 1.day.to_i)
     end
   end
 
@@ -206,7 +206,7 @@ class Post < ActiveRecord::Base
   def has_host_spam?
     return false if acting_user.present? && acting_user.has_trust_level?(:basic)
 
-    total_hosts_usage.each do |host, count|
+    total_hosts_usage.each do |_, count|
       return true if count >= SiteSetting.newuser_spam_host_threshold
     end
 
@@ -252,10 +252,6 @@ class Post < ActiveRecord::Base
     "#{topic_id}/#{post_number}"
   end
 
-  def quoteless?
-    (quote_count == 0) && (reply_to_post_number.present?)
-  end
-
   def reply_to_post
     return if reply_to_post_number.blank?
     @reply_to_post ||= Post.find_by("topic_id = :topic_id AND post_number = :post_number", topic_id: topic_id, post_number: reply_to_post_number)
@@ -285,10 +281,9 @@ class Post < ActiveRecord::Base
   end
 
   def unhide!
-    self.hidden = false
-    self.hidden_reason_id = nil
+    self.update_attributes(hidden: false, hidden_at: nil, hidden_reason_id: nil)
     self.topic.update_attributes(visible: true)
-    save
+    save(validate: false)
   end
 
   def url
@@ -499,9 +494,9 @@ class Post < ActiveRecord::Base
 
   def parse_quote_into_arguments(quote)
     return {} unless quote.present?
-    args = {}
+    args = HashWithIndifferentAccess.new
     quote.first.scan(/([a-z]+)\:(\d+)/).each do |arg|
-      args[arg[0].to_sym] = arg[1].to_i
+      args[arg[0]] = arg[1].to_i
     end
     args
   end
@@ -598,6 +593,7 @@ end
 #  baked_version           :integer
 #  hidden_at               :datetime
 #  self_edits              :integer          default(0), not null
+#  reply_quoted            :boolean          default(FALSE), not null
 #
 # Indexes
 #

@@ -12,6 +12,13 @@ describe Category do
     should validate_uniqueness_of(:name).scoped_to(:parent_category_id)
   end
 
+  it 'validates uniqueness in case insensitive way' do
+    Fabricate(:category, name: "Cats")
+    c = Fabricate.build(:category, name: "cats")
+    c.should_not be_valid
+    c.errors[:name].should be_present
+  end
+
   it { should belong_to :topic }
   it { should belong_to :user }
 
@@ -141,6 +148,10 @@ describe Category do
     Fabricate(:category, name: "  blanks ").name.should == "blanks"
   end
 
+  it "sets name_lower" do
+    Fabricate(:category, name: "Not MySQL").name_lower.should == "not mysql"
+  end
+
   it "has custom fields" do
     category = Fabricate(:category, name: " music")
     category.custom_fields["a"].should == nil
@@ -226,16 +237,27 @@ describe Category do
       @topic.title.should =~ /Troutfishing/
     end
 
+    it "doesn't raise an error if there is no definition topic to rename (uncategorized)" do
+      -> { @category.update_attributes(name: 'Troutfishing', topic_id: nil) }.should_not raise_error
+    end
+
     it "should not set its description topic to auto-close" do
       category = Fabricate(:category, name: 'Closing Topics', auto_close_hours: 1)
       category.topic.auto_close_at.should be_nil
     end
 
     describe "creating a new category with the same slug" do
-      it "should have a blank slug" do
+      it "should have a blank slug if at the same level" do
         category = Fabricate(:category, name: "Amazing Categóry")
         category.slug.should be_blank
         category.slug_for_url.should == "#{category.id}-category"
+      end
+
+      it "doesn't have a blank slug if not at the same level" do
+        parent = Fabricate(:category, name: 'Other parent')
+        category = Fabricate(:category, name: "Amazing Categóry", parent_category_id: parent.id)
+        category.slug.should == 'amazing-category'
+        category.slug_for_url.should == "amazing-category"
       end
     end
 

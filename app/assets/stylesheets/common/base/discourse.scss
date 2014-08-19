@@ -48,23 +48,24 @@ body {
   }
 
   .coldmap-high {
-    color: scale-color($tertiary, $lightness: 40%) !important;
+    color: #91CDF5 !important;
   }
   .coldmap-med {
-    color: $tertiary !important;
+    color: #91CDF5 !important;
   }
   .coldmap-low {
-    color: scale-color($tertiary, $lightness: -10%) !important;
+    color: #91AFD2 !important;
   }
   .heatmap-high {
-    color: scale-color($danger, $lightness: 30%) !important;
+    color: #fe7a15 !important;
   }
   .heatmap-med {
-    color: $danger  !important;
+    color: #cf7721 !important;
   }
   .heatmap-low {
-    color: darken($danger, 10%) !important;
+    color: #9b764f !important;
   }
+
   #loading-message {
     position: absolute;
     font-size: 30px;
@@ -177,4 +178,10 @@ body {
 }
 
 
+}
+
+.unread-private-messages {
+  color: $secondary;
+  background: $success;
+  &.badge-notification[href] {color: $secondary;}
 }

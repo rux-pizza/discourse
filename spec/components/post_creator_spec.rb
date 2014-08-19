@@ -97,6 +97,8 @@ describe PostCreator do
                                                      "/users/#{admin.username}",
                                                      "/unread/#{admin.id}",
                                                      "/unread/#{admin.id}",
+                                                     "/latest",
+                                                     "/latest",
                                                      "/topic/#{created_post.topic_id}",
                                                      "/topic/#{created_post.topic_id}"
                                                    ].sort
@@ -112,6 +114,9 @@ describe PostCreator do
           p = creator.create
         end
 
+        latest = messages.find{|m| m.channel == "/latest"}
+        latest.should_not be_nil
+
         latest = messages.find{|m| m.channel == "/new"}
         latest.should_not be_nil
 
@@ -121,7 +126,7 @@ describe PostCreator do
         user_action = messages.find{|m| m.channel == "/users/#{p.user.username}"}
         user_action.should_not be_nil
 
-        messages.length.should == 4
+        messages.length.should == 5
       end
 
       it 'extracts links from the post' do
@@ -460,6 +465,17 @@ describe PostCreator do
 
       TopicUser.find_by(topic_id: post.topic_id,
                         user_id: post.user_id).last_read_post_number.should == 1
+    end
+  end
+
+
+  describe "suspended users" do
+    it "does not allow suspended users to create topics" do
+      user = Fabricate(:user, suspended_at: 1.month.ago, suspended_till: 1.month.from_now)
+
+      creator = PostCreator.new(user, {title: "my test title 123", raw: "I should not be allowed to post"} )
+      creator.create
+      creator.errors.count.should be > 0
     end
   end
 

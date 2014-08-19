@@ -27,17 +27,16 @@
 
     .active .icon {
       &:after { margin-top: -1px; }
+    }
   }
-}
+
+  button.sign-up-button {
+    display:none;
+  }
 }
 #main-outlet {
   padding-top: 60px;
 }
-
-.unread-private-messages {
-  background-color: $success;
-}
-
 
 // Dropdowns
 // --------------------------------------------------
@@ -58,7 +57,7 @@
   // Search
 
   input[type='text'] {
-    width: 267px;
+    width: 265px;
     font-size: 16px;
   }
 

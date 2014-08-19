@@ -1,22 +1,23 @@
-/**
-  This controller supports actions on the site header
+import DiscourseController from 'discourse/controllers/controller';
 
-  @class HeaderController
-  @extends Discourse.Controller
-  @namespace Discourse
-  @module Discourse
-**/
-export default Discourse.Controller.extend({
+export default DiscourseController.extend({
   topic: null,
   showExtraInfo: null,
   notifications: null,
-  loading_notifications: null,
+  loadingNotifications: false,
+  needs: ['application'],
+
+  canSignUp: Em.computed.alias('controllers.application.canSignUp'),
+
+  showSignUpButton: function() {
+    return this.get('canSignUp') && !this.get('showExtraInfo');
+  }.property('canSignUp', 'showExtraInfo'),
 
   showStarButton: function() {
     return Discourse.User.current() && !this.get('topic.isPrivateMessage');
   }.property('topic.isPrivateMessage'),
 
-  resetCachedNotifications: function(){
+  _resetCachedNotifications: function(){
     // a bit hacky, but if we have no focus, hide notifications first
     var visible = $("#notifications-dropdown").is(":visible");
 
@@ -36,18 +37,16 @@ export default Discourse.Controller.extend({
 
   refreshNotifications: function(){
     var self = this;
+    if (self.get("loadingNotifications")) { return; }
 
-    if(self.get("loading_notifications")){return;}
-
-    self.set("loading_notifications", true);
+    self.set("loadingNotifications", true);
     Discourse.ajax("/notifications").then(function(result) {
-      self.set('currentUser.unread_notifications', 0);
       self.setProperties({
-        notifications: result,
-        loading_notifications: false
+        'currentUser.unread_notifications': 0,
+        notifications: result
       });
-    }, function(){
-      self.set("loading_notifications", false);
+    }).finally(function(){
+      self.set("loadingNotifications", false);
     });
   },
 

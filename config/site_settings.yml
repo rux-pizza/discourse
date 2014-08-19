@@ -11,6 +11,9 @@
 # type: email    - Must be a valid email address.
 # type: username - Must match the username of an existing user.
 # type: list     - A list of values, chosen from a set of valid values defined in the choices option.
+#
+# A type:list setting with the word 'colors' in its name will make color values have a bold line of the corresponding color
+#
 required:
   title:
     client: true
@@ -42,9 +45,6 @@ required:
     client: true
     default: '/images/default-favicon.ico'
   apple_touch_icon_url: '/images/default-apple-touch-icon.png'
-  company_full_name: 'My Unconfigured Forum Ltd.'
-  company_short_name: 'Unconfigured Forum'
-  company_domain: 'www.example.com'
 
 basic:
   default_locale:
@@ -255,14 +255,17 @@ users:
   username_change_period: 3
   auto_track_topics_after: 240000
   email_editable: true
+  logout_redirect:
+    client: true
+    default: ''
   enable_names:
     client: true
     default: true
   invite_expiry_days: 30
   invite_passthrough_hours: 0
-  invites_shown:
+  invites_per_page:
     client: true
-    default: 30
+    default: 40
   delete_user_max_post_age:
     client: true
     default: 60
@@ -287,9 +290,7 @@ posting:
       default: 10
   max_post_length:
     client: true
-    default:
-      test: 4000
-      default: 32000
+    default: 32000
   body_min_entropy: 7
   min_topic_title_length:
     client: true
@@ -332,6 +333,8 @@ posting:
     default: true
   suppress_reply_directly_above:
     client: true
+    default: true
+  suppress_reply_when_quoting:
     default: true
   post_undo_action_window_mins: 10
   max_mentions_per_post: 10
@@ -425,6 +428,7 @@ files:
   clean_orphan_uploads_grace_period_hours: 1
   purge_deleted_uploads_grace_period_days: 30
   enable_s3_uploads: false
+  s3_use_iam_profile: false
   s3_access_key_id: ''
   s3_secret_access_key: ''
   s3_region:
@@ -458,7 +462,9 @@ trust:
     default: 1
     enum: 'TrustLevelSetting'
   basic_requires_topics_entered: 5
-  basic_requires_read_posts: 30
+  basic_requires_read_posts:
+    default: 30
+    client: true
   basic_requires_time_spent_mins: 10
   regular_requires_topics_entered: 20
   regular_requires_read_posts: 100
@@ -469,7 +475,7 @@ trust:
   regular_requires_topic_reply_count: 3
   leader_requires_days_visited:
     default: 50
-    min: 1
+    min: 0
     max: 100
   leader_requires_topics_replied_to:
     default: 10
@@ -665,6 +671,39 @@ uncategorized:
     client: true
     default: 5000
 
+  # Post/Like heat thresholds
+  topic_post_like_heat_low:
+    client: true
+    default: 0.5
+  topic_post_like_heat_medium:
+    client: true
+    default: 1.0
+  topic_post_like_heat_high:
+    client: true
+    default: 2.0
+
+  # History edit heat thresholds
+  history_hours_low:
+    client: true
+    default: 12
+  history_hours_medium:
+    client: true
+    default: 24
+  history_hours_high:
+    client: true
+    default: 48
+
+  # Cold map thresholds
+  cold_age_days_low:
+    client: true
+    default: 14
+  cold_age_days_medium:
+    client: true
+    default: 60
+  cold_age_days_high:
+    client: true
+    default: 120
+
   # Warnings
   educate_until_posts: 2
   sequential_replies_threshold: 2
@@ -705,3 +744,24 @@ uncategorized:
     default: true
 
   disable_edit_notifications: false
+  purge_inactive_users_grace_period_days: 7
+
+  company_full_name: 'My Unconfigured Forum Ltd.'
+  company_short_name: 'Unconfigured Forum'
+  company_domain: 'www.example.com'
+
+  vacuum_db_days: 90
+  last_vacuum:
+    default: 0
+    hidden: true
+
+  tos_topic_id:
+    default: -1
+    hidden: true
+  guidelines_topic_id:
+    default: -1
+    hidden: true
+  privacy_topic_id:
+    default: -1
+    hidden: true
+

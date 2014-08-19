@@ -17,9 +17,7 @@ Discourse.PostStream = Em.Object.extend({
 
   notLoading: Em.computed.not('loading'),
 
-  filteredPostsCount: function(){
-    return this.get("stream").length;
-  }.property("stream.@each"),
+  filteredPostsCount: Em.computed.alias("stream.length"),
 
   /**
     Have we loaded any posts?
@@ -281,7 +279,6 @@ Discourse.PostStream = Em.Object.extend({
     if (idx !== -1) {
       // Insert the gap at the appropriate place
       stream.splice.apply(stream, [idx, 0].concat(gap));
-      stream.enumerableContentDidChange();
 
       var postIdx = currentPosts.indexOf(post);
       if (postIdx !== -1) {
@@ -294,6 +291,7 @@ Discourse.PostStream = Em.Object.extend({
           });
 
           delete self.get('gaps.before')[postId];
+          self.get('stream').enumerableContentDidChange();
         });
       }
     }
@@ -311,11 +309,14 @@ Discourse.PostStream = Em.Object.extend({
   fillGapAfter: function(post, gap) {
     var postId = post.get('id'),
         stream = this.get('stream'),
-        idx = stream.indexOf(postId);
+        idx = stream.indexOf(postId),
+        self = this;
 
     if (idx !== -1) {
       stream.pushObjects(gap);
-      return this.appendMore();
+      return this.appendMore().then(function() {
+        self.get('stream').enumerableContentDidChange();
+      });
     }
     return Ember.RSVP.resolve();
   },
@@ -635,12 +636,60 @@ Discourse.PostStream = Em.Object.extend({
   },
 
   /**
+    Returns the closest post given a postNumber that may not exist in the stream.
+    For example, if the user asks for a post that's deleted or otherwise outside the range.
+    This allows us to set the progress bar with the correct number.
+
+    @method closestPostForPostNumber
+    @param {Number} postNumber the post number we're looking for
+    @return {Post} the closest post
+    @see PostStream.closestPostNumberFor
+  **/
+  closestPostForPostNumber: function(postNumber) {
+    if (!this.get('hasPosts')) { return; }
+
+    var closest = null;
+    this.get('posts').forEach(function (p) {
+      if (closest === postNumber) { return; }
+      if (!closest) { closest = p; }
+
+      if (Math.abs(postNumber - p.get('post_number')) < Math.abs(closest.get('post_number') - postNumber)) {
+        closest = p;
+      }
+    });
+
+    return closest;
+  },
+
+  /**
+    Get the index of a post in the stream. (Use this for the topic progress bar.)
+
+    @param post the post to get the index of
+    @returns {Number} 1-starting index of the post, or 0 if not found
+    @see PostStream.progressIndexOfPostId
+  **/
+  progressIndexOfPost: function(post) {
+    return this.progressIndexOfPostId(post.get('id'));
+  },
+
+  /**
+    Get the index in the stream of a post id. (Use this for the topic progress bar.)
+
+    @param post_id - post id to search for
+    @returns {Number} 1-starting index of the post, or 0 if not found
+  **/
+  progressIndexOfPostId: function(post_id) {
+    return this.get('stream').indexOf(post_id) + 1;
+  },
+
+  /**
     Returns the closest post number given a postNumber that may not exist in the stream.
     For example, if the user asks for a post that's deleted or otherwise outside the range.
     This allows us to set the progress bar with the correct number.
 
     @method closestPostNumberFor
-    @param {Integer} postNumber the post number we're looking for
+    @param {Number} postNumber the post number we're looking for
+    @return {Number} a close post number
   **/
   closestPostNumberFor: function(postNumber) {
     if (!this.get('hasPosts')) { return; }
@@ -826,7 +875,7 @@ Discourse.PostStream = Em.Object.extend({
     // If the result was 404 the post is not found
     if (status === 404) {
       topic.set('errorTitle', I18n.t('topic.not_found.title'));
-      topic.set('errorBodyHtml', result.responseText);
+      topic.set('notFoundHtml', result.responseText);
       return;
     }
 

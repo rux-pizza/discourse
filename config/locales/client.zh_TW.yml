@@ -70,13 +70,14 @@ zh_TW:
     yes_value: "是"
     generic_error: "抱歉，發生錯誤。"
     generic_error_with_reason: "發生錯誤: %{error}"
+    sign_up: "註冊"
     log_in: "登入"
     age: "已建立"
     joined: "加入時間"
     admin_title: "管理員"
     flags_title: "投訴"
     show_more: "顯示更多"
-    links: 連結
+    links: "連結"
     faq: "常見問答集"
     guidelines: "守則"
     privacy_policy: "隱私政策"
@@ -107,14 +108,16 @@ zh_TW:
       other: "在 {{count}} 天"
     suggested_topics:
       title: "推薦的討論話題"
+    about:
+      simple_title: "關於"
+      title: "關於%{title}"
     bookmarks:
       not_logged_in: "抱歉，你必須先登入才能將文章加上書籤"
       created: "你已將此文章加上書籤"
       not_bookmarked: "你已閱讀過這篇文章，按此加上書籤"
       last_read: "這是你最後閱讀的文章，按此加上書籤"
       remove: "移除書籤"
-    new_topics_inserted: "{{count}} 篇新文章。"
-    show_new_topics: "按此顯示。"
+    click_to_show: "點擊顯示"
     preview: "預覽"
     cancel: "取消"
     save: "儲存變更"
@@ -218,6 +221,7 @@ zh_TW:
       notifications: "通知"
       disable_jump_reply: "不要在回覆之後直接跳到你的新文章"
       dynamic_favicon: "在 favicon 顯示訊息通知"
+      edit_history_public: "讓其他用戶檢視我的文章修訂紀錄"
       external_links_in_new_tab: "以新分頁開啟所有外部連結"
       enable_quoting: "允許引用已標註的文字"
       change: "修改"
@@ -332,9 +336,9 @@ zh_TW:
         not_viewed: "你尚未看過它們"
         last_here: "建立於你上次到訪後"
         after_n_days:
-          other: "建立於最近 {{count}} 天內"
+          other: "建立於最近 {{count}} 天"
         after_n_weeks:
-          other: "建立於最近 {{count}} 週內"
+          other: "建立於最近 {{count}} 週"
       auto_track_topics: "自動追蹤你點進的討論話題"
       auto_track_options:
         never: "永不"
@@ -409,7 +413,6 @@ zh_TW:
     read_only_mode:
       enabled: "管理員開啟了唯讀模式。你可以繼續瀏覽網站，但一些互動功能可能無法使用。"
       login_disabled: "在唯讀模式下不能登入"
-    too_few_topics_notice: "請建立至少 5 個公開的討論話題和 30 篇公開文章讓討論得以開始進行。若沒有文章可閱讀，新用戶將無法提升信任等級。"
     learn_more: "進一步了解..."
     year: '年'
     year_desc: '最近 365 天內建立的討論話題'
@@ -428,6 +431,8 @@ zh_TW:
       description_time: "共有 <b>{{count}}</b> 個回覆，大約需要 <b>{{readingTime}} 分鐘</b>閱讀。"
       enable: '以摘要檢視此討論話題'
       disable: '顯示所有文章'
+    deleted_filter:
+      enable: "隱藏已刪除的文章"
     private_message_info:
       title: "私人訊息"
       invite: "邀請其他人..."
@@ -453,6 +458,7 @@ zh_TW:
       username: "用戶"
       password: "密碼"
       email_placeholder: "電子郵件地址或用戶名稱"
+      caps_lock_warning: "大寫鎖定中"
       error: "未知的錯誤"
       blank_username_or_password: "請輸入你的電子郵件或者用戶名稱，以及密碼。"
       reset_password: '重設密碼'
@@ -554,19 +560,7 @@ zh_TW:
       title: "以 @用戶名稱 提到、回覆您的文章與討論話題、私人訊息... 的通知。"
       none: "目前沒有任何通知。"
       more: "檢視較舊的通知"
-      mentioned: "<span title='mentioned' class='icon'>@</span> {{username}} {{link}}"
-      quoted: "<i title='quoted' class='fa fa-quote-right'></i> {{username}} {{link}}"
-      replied: "<i title='replied' class='fa fa-reply'></i> {{username}} {{link}}"
-      posted: "<i title='replied' class='fa fa-reply'></i> {{username}} {{link}}"
-      edited: "<i title='edited' class='fa fa-pencil'></i> {{username}} {{link}}"
-      liked: "<i title='liked' class='fa fa-heart'></i> {{username}} {{link}}"
-      private_message: "<i class='fa fa-envelope-o' title='private message'></i> {{username}} {{link}}"
-      invited_to_private_message: "<i class='fa fa-envelope-o' title='private message'></i> {{username}} {{link}}"
-      invitee_accepted: "<i title='accepted your invitation' class='fa fa-user'></i> {{username}} 已接受你的邀請"
-      moved_post: "<i title='移動的文章' class='fa fa-sign-out'></i> {{username}} 移動了 {{link}}"
       total_flagged: "所有被投訴的文章"
-      linked: "<i title='已連結的文章' class='fa fa-arrow-left'></i> {{username}} {{link}}"
-      granted_badge: "<i title='badge granted' class='fa fa-certificate'></i> 你已升級 {{link}}"
     upload_selector:
       title: "加入一張圖片"
       title_with_attachments: "加入一張圖片或一個檔案"
@@ -600,7 +594,7 @@ zh_TW:
     topics:
       bulk:
         reset_read: "重設閱讀"
-        dismiss_read: "設定未讀文章為已讀"
+        delete: "刪除討論話題"
         dismiss_new: "設定新文章為已讀"
         toggle: "批量切換選擇討論話題"
         actions: "批量操作"
@@ -646,7 +640,6 @@ zh_TW:
       invalid_access:
         title: "私人討論話題"
         description: "抱歉，你沒有進入此討論話題的權限！"
-        login_required: "你必須登入才能看見該討論話題。"
       server_error:
         title: "討論話題載入失敗"
         description: "抱歉，可能因為連線有問題而無法載入此討論話題，請再試一次，如果這個問題持續發生，請讓我們知道。"
@@ -669,7 +662,6 @@ zh_TW:
       browse_all_categories: 瀏覽所有分類
       view_latest_topics: 檢視最近的文章
       suggest_create_topic: 建立一個新討論話題吧？
-      read_position_reset: "你的閱讀位置已重設。"
       jump_reply_up: jump to earlier reply
       jump_reply_down: jump to later reply
       deleted: "此討論話題已被刪除"
@@ -717,6 +709,8 @@ zh_TW:
         regular:
           title: "普通"
           description: "只在有人以 @用戶名稱 提到你或回覆你的文章時通知你。"
+        regular_pm:
+          title: "一般"
         muted_pm:
           title: "靜音"
           description: "你將不會收到任何關於此私人訊息的通知，此討論話題也不會出現在你的未讀清單裡。"
@@ -771,7 +765,7 @@ zh_TW:
         email_placeholder: '電子郵件地址'
         success: "我們已將邀請寄至 <b>{{email}}</b>，當受邀者接受邀請時我們會再通知你，你也可以在你的用戶頁面的邀請清單查看邀請狀態。"
         error: "抱歉，我們無法邀請此人，他可能已經是此論壇的用戶?"
-      login_reply: '登入以發表回覆'
+      login_reply: '登入以發表回應'
       filters:
         n_posts:
           other: "{{count}} 則文章"
@@ -850,6 +844,8 @@ zh_TW:
       controls:
         reply: "開始編寫對此文章的回覆"
         like: "給此文章按讚"
+        has_liked: "你已對此文章按讚"
+        undo_like: "撤回讚"
         edit: "編輯此文章"
         flag: "投訴此文章或傳送私人通知"
         delete: "刪除此文章"
@@ -866,8 +862,6 @@ zh_TW:
         unwiki: "取消標記維基文章"
       actions:
         flag: '投訴'
-        clear_flags:
-          other: "取消投訴"
         it_too:
           off_topic: "一起投訴"
           spam: "一起投訴"
@@ -1000,13 +994,11 @@ zh_TW:
       auto_close_units: "小時"
       email_in: "自訂外來電郵地址:"
       email_in_allow_strangers: "接受非用戶的電郵"
-      allow_badges_label: "允許使用徽章"
       edit_permissions: "編輯權限"
       add_permission: "新增權限"
       this_year: "今年"
       position: "位置"
       default_position: "預設的位置"
-      position_disabled: '分類的顯示將會以活躍度為排序依據。請開啟 "fixed category positions" 來手動調整分類排序。'
       parent: "父分類"
       notifications:
         watching:
@@ -1078,8 +1070,6 @@ zh_TW:
     changed_by: "作者 {{author}}"
     categories_list: "分類清單"
     filters:
-      with_topics: "%{filter} 討論話題"
-      with_category: "%{filter} %{category} 討論話題"
       latest:
         title: "最近"
         help: "最近的討論話題"
@@ -1101,7 +1091,6 @@ zh_TW:
           zero: "未讀"
           one: "未讀 (1)"
           other: "未讀 ({{count}})"
-        help: "有未讀文章且正被你關注或追蹤的討論話題"
       new:
         lower_title_with_count:
           one: "1 個新話題"
@@ -1111,7 +1100,7 @@ zh_TW:
           zero: "新討論話題"
           one: "新討論話題 (1)"
           other: "新討論話題 ({{count}})"
-        help: "上次到訪後建立的討論話題"
+        help: "最近幾天建立的主題"
       posted:
         title: "我的文章"
         help: "你回覆過的討論話題"
@@ -1123,7 +1112,6 @@ zh_TW:
         help: "{{categoryName}} 分類最近的討論話題"
       top:
         title: "精選"
-        help: "在本年、月、週或日的精選討論話題"
         yearly:
           title: "本年精選"
         monthly:
@@ -1188,24 +1176,21 @@ zh_TW:
         title: "投訴"
         old: "舊的"
         active: "待處理"
-        agree_hide: "批准 (隱藏文章 + 送出私人訊息)"
-        agree_hide_title: "隱藏此文章，並自動向此用戶送出私人訊息，要求盡快修改文章"
-        defer: "延遲"
-        defer_title: "目前不需採取行動， 將此投訴的任何動作延期或永不採取行動"
-        delete_post: "刪除文章"
-        delete_post_title: "如果刪除的是討論話題的第一篇文章，討論話題也將一併刪除"
-        disagree_unhide: "否絕 (取消文章的隱藏狀態)"
-        disagree_unhide_title: "移除此文章的所有投訴，並使文章可以被看見"
-        disagree: "否絕"
-        disagree_title: "否絕投訴，從此文章移除所有投訴"
-        delete_spammer_title: "刪除此用戶與他的所有文章與討論話題"
+        delete: "刪除"
+        delete_spammer: "刪除垃圾文章發送者"
+        disagree_flag_unhide_post: "不同意 ( 取消文章的隱藏狀態 )"
+        disagree_flag: "不同意"
         clear_topic_flags: "完成"
         clear_topic_flags_title: "該討論話題已被調查，問題已經解決。點擊完成以移除投訴。"
+        more: "(更多...)"
+        dispositions:
+          agreed: "同意"
+          disagreed: "不同意"
         flagged_by: "投訴者"
         resolved_by: "處理為"
         system: "系統"
         error: "發生了某些錯誤"
-        view_message: "回覆"
+        reply_message: "回覆"
         no_results: "沒有投訴。"
         topic_flagged: "此 <strong>討論話題</strong> 已被投訴。"
         visit_topic: "瀏覽討論話題以採取行動"
@@ -1528,7 +1513,6 @@ zh_TW:
         show_public_profile: "顯示公開的基本資料"
         impersonate: '檢視角度'
         ip_lookup: "IP 反查"
-        log_out: "登出"
         logged_out: "用戶已從所有裝置中登出"
         revoke_admin: '撤銷管理員權限'
         grant_admin: '授予管理員權限'
@@ -1559,9 +1543,6 @@ zh_TW:
           other: "無法刪除所有的文章。有些文章時間早於 %{count} 天前。 ( 請見 delete_user_max_post_age 設定 )"
         cant_delete_all_too_many_posts:
           other: "無法刪除所有文章，因為此用戶擁有超過 %{count} 篇文章。( delete_all_posts_max )"
-        delete_confirm: "你確定要刪除此用戶嗎？此動作將不可復原！"
-        delete_and_block: "<b>是的</b>，並且<b>封鎖</b>使用此電子郵件地址與 IP 位址登入"
-        delete_dont_block: "<b>是的</b>，但<b>允許</b>使用此電子郵件地址與 IP 位址登入"
         deleted: "此用戶已刪除。"
         delete_failed: "刪除此用戶時發生錯誤，請先刪除此用戶的所有文章後再試一次。"
         send_activation_email: "送出啟用帳號的電子郵件"
@@ -1637,6 +1618,7 @@ zh_TW:
         display_name: 顯示名稱
         description: 簡述
         badge_type: 徽章類型
+        badge_grouping: 群組
         granted_by: 升級者為
         granted_at: 升級在
         save: 儲存
@@ -1655,18 +1637,15 @@ zh_TW:
         listable: 在徽章頁面上顯示徽章
         enabled: 啟用徽章
         icon: 圖示
+        preview: 預覽徽章
+        trigger_type:
+          none: "每日更新"
     lightbox:
       download: "下載"
     keyboard_shortcuts_help:
-      title: '鍵盤快捷鍵 (實驗性質)'
+      title: '快捷鍵'
       jump_to:
         title: '跳到'
-        home: '<b>g</b> 之後 <b>h</b> 主頁 ( 最近 )'
-        latest: '<b>g</b> 之後 <b>l</b> 最新'
-        new: '<b>g</b> 之後 <b>n</b> 新'
-        unread: '<b>g</b> 之後 <b>u</b> 未讀'
-        starred: '<b>g</b> 之後 <b>f</b> 已收藏'
-        categories: '<b>g</b> 之後 <b>c</b> 分類'
       navigation:
         title: '導航'
         jump: '<b>#</b> 前往文章編號'
@@ -1693,10 +1672,6 @@ zh_TW:
         bookmark: '<b>b</b> 將文章加上書籤'
         edit: '<b>e</b> 編輯文章'
         delete: '<b>d</b> 刪除文章'
-        mark_muted: '<b>m</b> 之後 <b>m</b> 標記討論話題為靜音'
-        mark_regular: '<b>m</b> 之後 <b>r</b> 標記討論話題回復正常'
-        mark_tracking: '<b>m</b> 之後 <b>t</b> 標記討論話題被追蹤'
-        mark_watching: '<b>m</b> 之後 <b>w</b> 標記討論話題為關注中'
     badges:
       title: 徽章
       allow_title: "允許徽章做為標題？"
@@ -1708,9 +1683,22 @@ zh_TW:
       granted:
         other: "%{count} 升級"
       select_badge_for_title: 選擇一枚徽章作為你的稱號
+      no_title: "<無主旨>"
+      badge_grouping:
+        getting_started:
+          name: 開始入門
+        community:
+          name: 社群
+        trust_level:
+          name: 信任等級
+        other:
+          name: 其他
+        posting:
+          name: 文章
       badge:
         editor:
           name: 編輯
+          description: 首篇文章編輯
         basic_user:
           name: 初級
         regular_user:
@@ -1721,14 +1709,18 @@ zh_TW:
           name: 長老
         welcome:
           name: 歡迎
+          description: 收到一個讚
         autobiographer:
           name: 自我介紹
         nice_post:
           name: 好文章
+          description: 一篇文章收到 10 個讚。此徽章可多次獲得。
         good_post:
           name: 棒文章
+          description: 一篇文章收到 25 個讚。此徽章可多次獲得。
         great_post:
           name: 神文章
+          description: 一篇文章收到 50 個讚。此徽章可多次獲得。
         first_like:
           name: 首次讚好
           description: 給此貼文按讚
@@ -1746,3 +1738,5 @@ zh_TW:
           description: 標記使用者
         read_guidelines:
           name: 觀看守則
+        reader:
+          name: 讀者

@@ -48,7 +48,6 @@ sv:
   invalid_characters: "innehåller otillåtna tecken"
   is_invalid: "är otillåtet; försök att vara lite mer beskrivande"
   next_page: "nästa sida →"
-  by: "Av"
   topics_in_category: "Trådar i kategorin '%{category}'"
   rss_posts_in_topic: "RSS-flöde för '%{topic}'"
   rss_topics_in_category: "RSS-flöde för trådar i kategorin '%{category}'"
@@ -200,11 +199,9 @@ sv:
     continue: "Continue to %{site_name}"
   change_email:
     confirmed: "Din e-post har uppdaterats."
-    please_continue: "Var god fortsätt till %{link}"
     error: "Det uppstod ett fel med ändringen av din e-postadress. Adressen kanske redan används?"
   activation:
     already_done: "Tyvärr, denna kontoaktiveringslänk är inte längre giltig. Kanske är ditt konto redan aktiverat?"
-    please_continue: "Ditt nya konto är aktiverat, och du är nu inloggad. Fortsätt till %{link}"
     welcome_to: "Välkommen till %{site_name}!"
     approval_required: "En moderator måste manuellt godkänna ditt nya konto innan du kan komma åt detta forum. Du kommer få ett mail när ditt konto har godkänts!"
   post_action_types:
@@ -221,7 +218,6 @@ sv:
       title: 'Notifiera {{username}}'
       description: 'Det här inlägget innehåller något som jag vill tala direkt och privat med den här personen om.'
       long_form: 'notifierad användare'
-      email_title: 'Angående din post i "%{title}"'
       email_body: "%{link}\n\n%{message}"
     notify_moderators:
       title: 'Notifiera moderatorer'
@@ -240,8 +236,6 @@ sv:
       title: 'Rösta'
       description: 'Rösta för detta inlägg'
       long_form: 'röstade för detta inlägg'
-  flagging:
-    user_must_edit: '<p>Flaggat innehåll dolt.</p>'
   archetypes:
     regular:
       title: "Vanlig Tråd"
@@ -347,30 +341,19 @@ sv:
     education_new_topic:
       title: "New User Education: First Topics"
       description: "Pop up just-in-time guidance automatically displayed above the composer when new users begin typing their first two new topics."
-    usage_tips:
-      title: "New User Tips"
-      description: "Common usage tips, essential forum information, and key guidance intended for new users."
     welcome_user:
       title: "Välkommen: Ny användare"
       description: "A private message automatically sent to all new users when they sign up."
     welcome_invite:
       title: "Välkommen: Inbjuden användare"
       description: "A private message automatically sent to all new invited users when they accept the invitation from another user to participate."
-    privacy_policy:
-      title: "Integritetspolicy"
-      description: "Din sidas integritetspolicy. Lämna tom för standardpolicyn."
-    faq:
-      title: "FAQ"
-      description: "Din sidas FAQ. Lämna tom för standard-FAQ."
     login_required_welcome_message:
       title: "Inloggning krävs: Välkomstmeddelande"
       description: "Välkomstmeddelande som visas för utloggade användare när inställningen för 'inloggning krävs' är aktiv. "
     tos_user_content_license:
       title: "Användarvillkor: Innehållslicens"
-      description: "Texten för sektionen Innehållslicens i användarvillkoren."
     tos_miscellaneous:
       title: "Användarvillkor: Diverse"
-      description: "Texten för sektionen Diverse i användarvillkoren."
     login_required:
       title: "Inloggning krävs: Huvudsida"
     top:
@@ -396,7 +379,6 @@ sv:
     notify_mods_when_user_blocked: "Om en användare blockeras automatiskt, skicka ett meddelande till alla moderatorer."
     post_menu: "Determine which items appear on the post menu, and in what order. Example like|edit|flag|delete|share|bookmark|reply"
     track_external_right_clicks: "Track external links that are right clicked (eg: open in new tab) disabled by default because it rewrites URLs"
-    version_checks: "Ping the Discourse Hub for version updates and show version messages on the /admin dashboard"
     port: "DEVELOPER ONLY! WARNING! Use this HTTP port rather than the default of port 80. Leave blank for default of 80."
     force_hostname: "DEVELOPER ONLY! WARNING! Specify a hostname in the URL. Leave blank for default."
     invite_expiry_days: "How long user invitation keys are valid, in days"

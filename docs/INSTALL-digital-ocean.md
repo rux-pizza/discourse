@@ -48,23 +48,14 @@ You will be asked for permission to connect, type `yes`, then enter the root pas
 
 # Install Discourse
 
-Create a `/var/docker` folder:
+Create a `/var/discourse` folder, clone the [Official Discourse Docker Image][dd] into it, and make a copy of the config file as `app.yml`:
 
-    mkdir /var/docker
-
-Clone the [Official Discourse Docker Image][dd] into this `/var/docker` folder:
-
-    git clone https://github.com/discourse/discourse_docker.git /var/docker
-
-Switch to your Docker folder:
-
-    cd /var/docker
-
-Copy the `samples/standalone.yml` file into the `containers` folder as `app.yml`:
-
+    mkdir /var/discourse
+    git clone https://github.com/discourse/discourse_docker.git /var/discourse
+    cd /var/discourse
     cp samples/standalone.yml containers/app.yml
 
-<img src="http://www.discourse.org/images/install/mkdir-var-docker.png" width="586" height="246">
+<img src="https://meta.discourse.org/uploads/default/33557/28f36eb5069e75c4.png" width="662" height="240">
 
 # Edit Discourse Configuration
 
@@ -104,11 +95,11 @@ Save the `app.yml` file, and begin bootstrapping Discourse:
 
 This command takes about 8 minutes. It is automagically configuring your Discourse environment.
 
-<img src="http://www.discourse.org/images/install/launcher-start-app.png" width="593" height="229">
-
 After that completes, start Discourse:
 
     ./launcher start app
+
+<img src="https://meta.discourse.org/uploads/default/33558/a988b9ec9ac5ff7a.png" width="669" height="233">
 
 Congratulations! You now have your own instance of Discourse!
 
@@ -131,9 +122,9 @@ You should see Staff topics and the [Admin Quick Start Guide](https://github.com
 
 # Post-Install Maintenance
 
-To **upgrade Discourse to the latest version**, visit `/admin/docker` and follow the instructions.
+To **upgrade Discourse to the latest version**, visit `/admin/upgrade` and follow the instructions.
 
-The `launcher` command in the `/var/docker` folder can be used for various kinds of maintenance:
+The `launcher` command in the `/var/discourse` folder can be used for various kinds of maintenance:
 
 ```
 Usage: launcher COMMAND CONFIG [--skip-prereqs]

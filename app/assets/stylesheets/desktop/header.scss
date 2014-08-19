@@ -19,12 +19,16 @@
   }
 }
 
-/* needs to be global, used in user-drop down and user page too */
-.unread-private-messages {
-  border-color: $success;
-  color: $success;
-  background: $secondary;
-  &.badge-notification[href] {color: $success;}
+@media all
+and (max-width : 570px) {
+  .d-header {
+    .current-username {
+      a {
+        display:none;
+      }
+    }
+  }
+  .extra-info-wrapper {display: none;}
 }
 
 #main {

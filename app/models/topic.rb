@@ -48,7 +48,8 @@ class Topic < ActiveRecord::Base
   rate_limit :limit_topics_per_day
   rate_limit :limit_private_messages_per_day
 
-  validates :title, :presence => true,
+  validates :title, :if => Proc.new { |t| t.new_record? || t.title_changed? },
+                    :presence => true,
                     :topic_title_length => true,
                     :quality_title => { :unless => :private_message? },
                     :unique_among  => { :unless => Proc.new { |t| (SiteSetting.allow_duplicate_topic_titles? || t.private_message?) },
@@ -76,6 +77,7 @@ class Topic < ActiveRecord::Base
 
   belongs_to :category
   has_many :posts
+  has_many :ordered_posts, -> { order(post_number: :asc) }, class_name: "Post"
   has_many :topic_allowed_users
   has_many :topic_allowed_groups
 
@@ -140,7 +142,7 @@ class Topic < ActiveRecord::Base
   # Helps us limit how many topics can be starred in a day
   class StarLimiter < RateLimiter
     def initialize(user)
-      super(user, "starred:#{Date.today.to_s}", SiteSetting.max_stars_per_day, 1.day.to_i)
+      super(user, "starred:#{Date.today}", SiteSetting.max_stars_per_day, 1.day.to_i)
     end
   end
 
@@ -356,25 +358,42 @@ class Topic < ActiveRecord::Base
     archetype == Archetype.private_message
   end
 
+  MAX_SIMILAR_BODY_LENGTH = 200
   # Search for similar topics
   def self.similar_to(title, raw, user=nil)
     return [] unless title.present?
     return [] unless raw.present?
 
-    similar = Topic.select(sanitize_sql_array(["topics.*, similarity(topics.title, :title) + similarity(p.raw, :raw) AS similarity", title: title, raw: raw]))
-                     .visible
-                     .where(closed: false, archived: false)
-                     .secured(Guardian.new(user))
-                     .listable_topics
-                     .joins("LEFT OUTER JOIN posts AS p ON p.topic_id = topics.id AND p.post_number = 1")
-                     .limit(SiteSetting.max_similar_results)
-                     .order('similarity desc')
+    filter_words = Search.prepare_data(title + " " + raw[0...MAX_SIMILAR_BODY_LENGTH]);
+    ts_query = Search.ts_query(filter_words, nil, "|")
 
     # Exclude category definitions from similar topic suggestions
+
+    candidates = Topic.visible
+       .secured(Guardian.new(user))
+       .listable_topics
+       .joins('JOIN topic_search_data s ON topics.id = s.topic_id')
+       .where("search_data @@ #{ts_query}")
+       .order("ts_rank(search_data, #{ts_query}) DESC")
+       .limit(SiteSetting.max_similar_results * 3)
+
     exclude_topic_ids = Category.pluck(:topic_id).compact!
     if exclude_topic_ids.present?
-      similar = similar.where("topics.id NOT IN (?)", exclude_topic_ids)
+      candidates = candidates.where("topics.id NOT IN (?)", exclude_topic_ids)
     end
+
+    candidate_ids = candidates.pluck(:id)
+
+
+    return [] unless candidate_ids.present?
+
+
+    similar = Topic.select(sanitize_sql_array(["topics.*, similarity(topics.title, :title) + similarity(topics.title, :raw) AS similarity", title: title, raw: raw]))
+                     .joins("JOIN posts AS p ON p.topic_id = topics.id AND p.post_number = 1")
+                     .limit(SiteSetting.max_similar_results)
+                     .where("topics.id IN (?)", candidate_ids)
+                     .where("similarity(topics.title, :title) + similarity(topics.title, :raw) > 0.2", raw: raw, title: title)
+                     .order('similarity desc')
 
     similar
   end
@@ -477,7 +496,6 @@ class Topic < ActiveRecord::Base
                                 topic_id: self.id)
       new_post = creator.create
       increment!(:moderator_posts_count)
-      new_post
     end
 
     if new_post.present?
@@ -816,7 +834,7 @@ class Topic < ActiveRecord::Base
   end
 
   def apply_per_day_rate_limit_for(key, method_name)
-    RateLimiter.new(user, "#{key}-per-day:#{Date.today.to_s}", SiteSetting.send(method_name), 1.day.to_i)
+    RateLimiter.new(user, "#{key}-per-day:#{Date.today}", SiteSetting.send(method_name), 1.day.to_i)
   end
 
 end

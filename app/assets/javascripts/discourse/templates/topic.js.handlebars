@@ -17,7 +17,7 @@
 
           {{#if editingTopic}}
             {{#if isPrivateMessage}}
-              <span class="private-message-glyph"><i class='fa fa-envelope'></i></span>
+              <span class="private-message-glyph">{{icon envelope}}</span>
             {{else}}
               {{category-chooser valueAttribute="id" value=newCategoryId source=category_id}}
             {{/if}}
@@ -28,10 +28,12 @@
           {{else}}
             <h1>
               <span class="private-message-glyph"><i class='fa fa-envelope'></i></span>
-              {{#if category.parentCategory}}
-                {{bound-category-link category.parentCategory}}
-              {{/if}}
-              {{bound-category-link category}}
+              {{#unless isPrivateMessage}}
+                {{#if category.parentCategory}}
+                  {{bound-category-link category.parentCategory}}
+                {{/if}}
+                {{bound-category-link category}}
+              {{/unless}}
               {{#if details.loaded}}
                 {{topic-status topic=model}}
                 <a href='{{unbound url}}' {{action jumpTop}}>
@@ -100,7 +102,7 @@
               <div id='suggested-topics'>
                 <h3>{{i18n suggested_topics.title}}</h3>
                 <div class='topics'>
-                  {{basic-topic-list topics=details.suggested_topics}}
+                  {{basic-topic-list topics=details.suggested_topics activityAction="showTopicEntrance"}}
                 </div>
                 <h3>{{{view.browseMoreMessage}}}</h3>
               </div>
@@ -117,12 +119,11 @@
 {{else}}
   {{#if hasError}}
     <div class='container'>
+    {{#if notFoundHtml}}
+      {{{notFoundHtml}}}
+    {{else}}
       <div class="topic-error">
-        {{{errorBodyHtml}}}
-
-        {{#if message}}
-          {{message}}
-        {{/if}}
+        {{message}}
         {{#if noRetry}}
           {{#unless currentUser}}
               <button {{action showLogin}} class='btn btn-primary topic-retry'><i class="fa fa-user"></i>{{i18n log_in}}</button>
@@ -134,6 +135,7 @@
       {{#if retrying}}
         <div class='spinner'>{{i18n loading}}</div>
       {{/if}}
+    {{/if}}
     </div>
   {{else}}
     <div class='container'>
