@@ -29,9 +29,6 @@
       vertical-align: top;
       margin-top: 2px;
     }
-    &.highlighted {
-      background-color: scale-color($tertiary, $lightness: 85%);
-    }
   }
 
   th,
@@ -259,4 +256,55 @@ ol.category-breadcrumb {
 
 .topic-statuses .fa {
   padding-right: 3px;
+}
+
+.period-chooser {
+
+  @include unselectable;
+
+  h2 {
+    float: left;
+  }
+
+  button {
+    outline: 0;
+    background: transparent;
+    border: 0;
+    font-size: 20px;
+    padding: 5px 10px 0 10px;
+  }
+
+  #period-popup {
+
+    @include unselectable;
+
+    border: 1px solid scale-color-diff();
+    padding: 5px;
+    background: $secondary;
+    position: absolute;
+    z-index: 1110;
+    @include box-shadow(0 2px 2px rgba(0,0,0, .4));
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        margin: 0;
+        padding: 0;
+        a {
+          display: block;
+          padding: 5px;
+        }
+        &:hover {
+          background-color: dark-light-diff($highlight, $secondary, 50%, -70%);
+        }
+      }
+    }
+  }
+}
+
+.top-title-buttons {
+  display: inline;
 }

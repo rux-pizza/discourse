@@ -249,9 +249,10 @@ class PostAction < ActiveRecord::Base
 
   def self.remove_act(user, post, post_action_type_id)
     finder = PostAction.where(post_id: post.id, user_id: user.id, post_action_type_id: post_action_type_id)
-    finder = finder.with_deleted if user.try(:staff?)
+    finder = finder.with_deleted.includes(:post) if user.try(:staff?)
     if action = finder.first
       action.remove_act!(user)
+      action.post.unhide! if action.staff_took_action
     end
   end
 
@@ -407,7 +408,7 @@ class PostAction < ActiveRecord::Base
     end
 
     Post.where(id: post.id).update_all(["hidden = true, hidden_at = CURRENT_TIMESTAMP, hidden_reason_id = COALESCE(hidden_reason_id, ?)", reason])
-    Topic.where(["id = :topic_id AND NOT EXISTS(SELECT 1 FROM POSTS WHERE topic_id = :topic_id AND NOT hidden)", topic_id: post.topic_id]).update_all(visible: false)
+    Topic.where("id = :topic_id AND NOT EXISTS(SELECT 1 FROM POSTS WHERE topic_id = :topic_id AND NOT hidden)", topic_id: post.topic_id).update_all(visible: false)
 
     # inform user
     if post.user
@@ -431,8 +432,6 @@ class PostAction < ActiveRecord::Base
     PostActionType.types[post_action.post_action_type_id]
   end
 
-  protected
-
   def self.target_moderators
     Group[:moderators].name
   end
@@ -453,16 +452,16 @@ end
 #  deleted_by_id       :integer
 #  related_post_id     :integer
 #  staff_took_action   :boolean          default(FALSE), not null
-#  deferred_by_id       :integer
-#  targets_topic       :boolean          default(FALSE)
+#  deferred_by_id      :integer
+#  targets_topic       :boolean          default(FALSE), not null
 #  agreed_at           :datetime
 #  agreed_by_id        :integer
-#  deferred_at          :datetime
+#  deferred_at         :datetime
 #  disagreed_at        :datetime
 #  disagreed_by_id     :integer
 #
 # Indexes
 #
-#  idx_unique_actions             (user_id,post_action_type_id,post_id,deleted_at,targets_topic) UNIQUE
+#  idx_unique_actions             (user_id,post_action_type_id,post_id,targets_topic) UNIQUE
 #  index_post_actions_on_post_id  (post_id)
 #

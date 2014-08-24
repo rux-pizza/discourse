@@ -67,6 +67,8 @@ class ImportScripts::Base
     SiteSetting.min_private_message_post_length = 1
     SiteSetting.min_private_message_title_length = 1
     SiteSetting.allow_duplicate_topic_titles = true
+    SiteSetting.default_digest_email_frequency = ''
+    SiteSetting.disable_emails = true
 
     RateLimiter.disable
 
@@ -451,8 +453,14 @@ class ImportScripts::Base
 
   def update_category_featured_topics
     puts "updating featured topics in categories"
+
+    total_count = Category.count
+    progress_count = 0
+
     Category.find_each do |category|
       CategoryFeaturedTopic.feature_topics_for(category)
+      progress_count += 1
+      print_status(progress_count, total_count)
     end
   end
 

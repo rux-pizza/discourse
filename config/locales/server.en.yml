@@ -771,6 +771,7 @@ en:
     sso_overrides_email: "Overrides local email with external site email from SSO payload (WARNING: discrepancies can occur due to normalization of local emails)"
     sso_overrides_username: "Overrides local username with external site username from SSO payload (WARNING: discrepancies can occur due to differences in username length/requirements)"
     sso_overrides_name: "Overrides local name with external site name from SSO payload (WARNING: discrepancies can occur due to normalization of local names)"
+    sso_overrides_avatar: "Overrides user avatar with external site avatar from SSO payload. If enabled, disabling allow_uploaded_avatars is highly recommended"
 
     enable_local_logins: "Enable local username and password login based accounts. (Note: this must be enabled for invites to work)"
     allow_new_registrations: "Allow new user registrations. Uncheck this to prevent anyone from creating a new account."
@@ -796,7 +797,7 @@ en:
     allow_restore: "Allow restore, which can replace ALL site data! Leave false unless you plan to restore a backup"
     maximum_backups: "The maximum amount of backups to keep on disk. Older backups are automatically deleted"
     backup_daily: "Automatically create a site backup once a day."
-    enable_s3_backups: "Upload backups to S3 when complete. Make sure you have filled in your s3 credentials."
+    enable_s3_backups: "Upload backups to S3 when complete. IMPORTANT: Requires valid S3 credentials entered in Files settings."
     s3_backup_bucket: "The remote bucket to hold backups. WARNING: Make sure it is a private bucket."
 
     active_user_rate_limit_secs: "How frequently we update the 'last_seen_at' field, in seconds"
@@ -854,6 +855,8 @@ en:
     leader_requires_posts_read_all_time: "The minimum total number of posts a user must have read to qualify for leader (3) trust level."
     leader_requires_max_flagged: "User must not have had more than x posts flagged by x different users in the last 100 days to qualify for promotion to leader (3) trust level, where x is this setting's value. (0 or higher)"
     leader_promotion_min_duration: "The minimum number of days that a promotion to leader lasts before a user can be demoted."
+    leader_requires_likes_given: "The minimum number of likes that must be given in the last 100 days to qualify for promotion to leader (3) trust level."
+    leader_requires_likes_received: "The minimum number of likes that must be received in the last 100 days to qualify for promotion to leader (3) trust level."
     leader_links_no_follow: "Whether links from leaders have the nofollow attribute."
 
     min_trust_to_create_topic: "The minimum trust level required to create a new topic."
@@ -919,6 +922,8 @@ en:
 
     reply_by_email_enabled: "Enable replying to topics via email."
     reply_by_email_address: "Template for reply by email incoming email address, for example: %{reply_key}@reply.example.com or replies+%{reply_key}@example.com"
+
+    disable_emails: "Prevent Discourse from sending any kind of emails"
 
     pop3s_polling_enabled: "Poll via POP3S for email replies."
     pop3s_polling_insecure: "Poll using plain text POP3 without SSL."
@@ -1031,8 +1036,8 @@ en:
   frequent_poster: "Frequent Poster"
 
   redirected_to_top_reasons:
-    new_user: "Welcome to our community! Here are our most popular recent topics."
-    not_seen_in_a_month: "Welcome back! We haven't seen you in a while. These are the top discussion topics since you've been away."
+    new_user: "Welcome to our community! These are the most popular recent topics."
+    not_seen_in_a_month: "Welcome back! We haven't seen you in a while. These are the most popular topics since you've been away."
 
   move_posts:
     new_topic_moderator_post:
@@ -1277,7 +1282,7 @@ en:
 
             <img src="http://www.discourse.org/images/welcome/progress-bar.png" width="190" height="52">
 
-        - The topic title will always take you to your last read post. Use times as entry shortcuts. Enter at the top via the first post date, and the bottom via the last post date.
+        - The topic title will always take you to your next unread post. Use the last activity time to quickly jump to the first or last post in a topic.
 
         ## How do I reply?
 
@@ -1285,7 +1290,7 @@ en:
 
         - To reply to a specific post, use the Reply button <img src="http://www.discourse.org/images/welcome/reply-post.png" width="29" height="25"> on that post.
 
-        - To take the conversation in a different direction, but keep them linked together, use Reply as New Topic <img src="http://www.discourse.org/images/welcome/reply-as-new-topic.png" width="33" height="25">   to the right of the post.
+        - To take the conversation in a different direction, but keep them linked together, use Reply as New Topic <img src="http://www.discourse.org/images/welcome/reply-as-new-topic.png" width="33" height="25"> to the right of the post.
 
         To quote someone in your reply, select the text you wish to quote, then press any Reply button.
 
@@ -1304,6 +1309,8 @@ en:
         To let someone know that you enjoyed their post, use the **like** button at the bottom of the post. If you see a problem with a post, don't hesitate to use the **flag** button and privately let them, or our staff, know about it.
 
         You can also share a link to a post, or bookmark a post for later reference on your user page.
+
+        For [standard Emoji](http://www.emoji-cheat-sheet.com/), just start typing `:` or the traditional smileys `:)` :smile:
 
         ## Who is talking to me?
 
@@ -1470,6 +1477,13 @@ en:
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
         The provided reply key is invalid or unknown, so we don't know what this email is in reply to. Contact a staff member.
+
+    email_reject_destination:
+      subject_template: "Email issue -- Bad Destination Address(es)"
+      text_body_template: |
+        We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
+
+        None of the destination addresses are recognized by the forum. Please make sure that the forum is in the To: line (not CC or BCC), and that you are sending to the email address provided by the forum administrators.
 
     email_error_notification:
       subject_template: "Email issue -- POP authentication error"

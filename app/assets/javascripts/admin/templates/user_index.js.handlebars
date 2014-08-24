@@ -320,7 +320,7 @@
   </div>
   <div class='display-row'>
     <div class='field'>{{i18n admin.user.like_count}}</div>
-    <div class='value'>{{like_count}}</div>
+    <div class='value'>{{like_given_count}} / {{like_count}}</div>
   </div>
   <div class='display-row'>
     <div class='field'>{{i18n admin.user.topics_entered}}</div>
@@ -345,12 +345,8 @@
     <div class='value'>{{posts_read_count}}</div>
   </div>
   <div class='display-row'>
-    <div class='field'>{{i18n admin.user.flags_given_count}}</div>
-    <div class='value'>{{flags_given_count}}</div>
-  </div>
-  <div class='display-row'>
-    <div class='field'>{{i18n admin.user.flags_received_count}}</div>
-    <div class='value'>{{flags_received_count}}</div>
+    <div class='field'>{{i18n admin.user.flags_given_received_count}}</div>
+    <div class='value'>{{flags_given_count}} / {{flags_received_count}}</div>
   </div>
   <div class='display-row'>
     <div class='field'>{{i18n admin.user.private_topics_count}}</div>
@@ -365,6 +361,35 @@
     <div class='value'>{{{days_visited}}}</div>
   </div>
 </section>
+
+{{#if single_sign_on_record}}
+<section class='details'>
+  <h1>{{i18n admin.user.sso.title}}</h1>
+
+  {{#with single_sign_on_record}}
+    <div class='display-row'>
+      <div class='field'>{{i18n admin.user.sso.external_id}}</div>
+      <div class='value'>{{external_id}}</div>
+    </div>
+    <div class='display-row'>
+      <div class='field'>{{i18n admin.user.sso.external_username}}</div>
+      <div class='value'>{{external_username}}</div>
+    </div>
+    <div class='display-row'>
+      <div class='field'>{{i18n admin.user.sso.external_name}}</div>
+      <div class='value'>{{external_name}}</div>
+    </div>
+    <div class='display-row'>
+      <div class='field'>{{i18n admin.user.sso.external_email}}</div>
+      <div class='value'>{{external_email}}</div>
+    </div>
+    <div class='display-row'>
+      <div class='field'>{{i18n admin.user.sso.external_avatar_url}}</div>
+      <div class='value'>{{external_avatar_url}}</div>
+    </div>
+  {{/with}}
+</section>
+{{/if}}
 
 <section>
   <hr/>

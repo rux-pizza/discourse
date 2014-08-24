@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
+# if there is a super emergency and rubygems is playing up, try
+#source 'http://production.cf.rubygems.org'
 
 module ::Kernel
   def rails_master?
@@ -154,6 +156,7 @@ gem 'rack-protection' # security
 group :assets do
   gem 'sass-rails', '~> 4.0.2'
   gem 'uglifier'
+  gem 'rtlit', require: false # for css rtling
 end
 
 group :test do

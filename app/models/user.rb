@@ -173,7 +173,6 @@ class User < ActiveRecord::Base
   end
 
   def change_username(new_username)
-    current_username = self.username
     self.username = new_username
     save
   end
@@ -374,6 +373,10 @@ class User < ActiveRecord::Base
   # They might need to be denormalized
   def like_count
     UserAction.where(user_id: id, action_type: UserAction::WAS_LIKED).count
+  end
+
+  def like_given_count
+    UserAction.where(user_id: id, action_type: UserAction::LIKE).count
   end
 
   def post_count
@@ -728,11 +731,16 @@ class User < ActiveRecord::Base
                      .joins('INNER JOIN user_stats AS us ON us.user_id = users.id')
                      .where("created_at < ?", SiteSetting.purge_inactive_users_grace_period_days.days.ago)
                      .where('us.post_count = 0')
+                     .where('NOT admin AND NOT moderator')
                      .limit(100)
 
     destroyer = UserDestroyer.new(Discourse.system_user)
     to_destroy.each do |u|
-      destroyer.destroy(u)
+      begin
+        destroyer.destroy(u)
+      rescue Discourse::InvalidAccess
+        # if for some reason the user can't be deleted, continue on to the next one
+      end
     end
   end
 
@@ -765,7 +773,7 @@ end
 #  email                         :string(256)      not null
 #  password_hash                 :string(64)
 #  salt                          :string(32)
-#  active                        :boolean
+#  active                        :boolean          default(FALSE), not null
 #  username_lower                :string(60)       not null
 #  auth_token                    :string(32)
 #  last_seen_at                  :datetime

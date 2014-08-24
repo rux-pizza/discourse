@@ -31,10 +31,10 @@ en:
             tb: TB
     dates:
       time: "h:mm a"
-      long_no_year: "MMM DD h:mm a"
-      long_no_year_no_time: "MMM DD"
-      long_with_year: "MMM DD, YYYY h:mm a"
-      long_with_year_no_time: "MMM DD, YYYY"
+      long_no_year: "MMM D h:mm a"
+      long_no_year_no_time: "MMM D"
+      long_with_year: "MMM D, YYYY h:mm a"
+      long_with_year_no_time: "MMM D, YYYY"
       tiny:
         half_a_minute: "< 1m"
         less_than_x_seconds:
@@ -653,7 +653,7 @@ en:
       view_new_post: "View your new post."
       saving: "Saving..."
       saved: "Saved!"
-      saved_draft: "You have a post draft in progress. Click anywhere in this bar to resume editing."
+      saved_draft: "You have a post draft in progress. Select this bar to resume editing."
       uploading: "Uploading..."
       show_preview: 'show preview &raquo;'
       hide_preview: '&laquo; hide preview'
@@ -1075,6 +1075,7 @@ en:
         has_liked: "you've given a fuck to this post"
         undo_like: "undo fuck"
         edit: "edit this post"
+        edit_anonymous: "Sorry, but you need to be logged in to edit this post."
         flag: "privately flag this post for attention or send a private notification about it"
         delete: "delete this post"
         undelete: "undelete this post"
@@ -1225,7 +1226,6 @@ en:
       save: 'Save Category'
       creation_error: There has been an error during the creation of the category.
       save_error: There was an error saving the category.
-      more_posts: "view all {{posts}}..."
       name: "Category Name"
       description: "Description"
       topic: "category topic"
@@ -1500,7 +1500,7 @@ en:
         disagree_flag_title: "Deny this flag as invalid or incorrect"
         clear_topic_flags: "Done"
         clear_topic_flags_title: "The topic has been investigated and issues have been resolved. Click Done to remove the flags."
-        more: "(more...)"
+        more: "(more replies...)"
 
         dispositions:
           agreed: "agreed"
@@ -1599,7 +1599,8 @@ en:
           backup:
             text: "Backup"
             title: "Create a backup"
-            confirm: "Are you sure you want to start a new backup?"
+            confirm: "Do you want to start a new backup?"
+            without_uploads: "Yes (without upload)"
           download:
             text: "Download"
             title: "Download the backup"
@@ -1792,6 +1793,8 @@ en:
             label: "New:"
             ip_address: "IP address"
             add: "Add"
+        logster:
+          title: "Error Logs"
 
       impersonate:
         title: "Impersonate User"
@@ -1876,13 +1879,15 @@ en:
         reputation: Reputation
         permissions: Permissions
         activity: Activity
-        like_count: Fucks Received
+        like_count: Fucks Given / Received
+        last_100_days: 'in the last 100 days'
         private_topics_count: Private Topics
         posts_read_count: Posts Read
         post_count: Posts Created
         topics_entered: Topics Viewed
         flags_given_count: Flags Given
         flags_received_count: Flags Received
+        flags_given_received_count: 'Flags Given / Received'
         approve: 'Approve'
         approved_by: "approved by"
         approve_success: "User approved and email sent with activation instructions."
@@ -1934,9 +1939,18 @@ en:
           posts_read_all_time: "Posts Read (all time)"
           flagged_posts: "Flagged Posts"
           flagged_by_users: "Users Who Flagged"
+          likes_given: "Likes Given"
+          likes_received: "Likes Received"
           qualifies: "Qualifies for trust level 3."
           will_be_promoted: "Will be promoted within 24 hours."
           does_not_qualify: "Doesn't qualify for trust level 3."
+        sso:
+          title: "Single Sign On"
+          external_id: "External ID"
+          external_username: "Username"
+          external_name: "Name"
+          external_email: "Email"
+          external_avatar_url: "Avatar URL"
 
       site_content:
         none: "Choose a type of content to begin editing."

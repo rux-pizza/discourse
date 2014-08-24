@@ -7,6 +7,7 @@ class AdminDetailedUserSerializer < AdminUserSerializer
              :can_revoke_moderation,
              :can_impersonate,
              :like_count,
+             :like_given_count,
              :post_count,
              :topic_count,
              :flags_given_count,
