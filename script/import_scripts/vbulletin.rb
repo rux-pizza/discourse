@@ -88,15 +88,12 @@ class ImportScripts::VBulletin < ImportScripts::Base
       puts "", "Loading groups from '#{@options.user_group}'..."
 
       data = File.read(@options.user_group)
-      @groups = CSV.parse(data, default_csv_options).map { |row| row.to_hash }
-      original_count = @groups.count
+      @all_groups = CSV.parse(data, default_csv_options).map { |row| row.to_hash }
 
       # reject unmapped groups
-      if @new_group_ids.try(:size) > 0
-        @groups.reject! { |group| !@new_group_ids.has_key?(group[:usergroupid]) }
-      end
+      @groups = @all_groups.reject { |group| !@new_group_ids.has_key?(group[:usergroupid]) }
 
-      puts "Loaded #{@groups.count} out of #{original_count} groups!"
+      puts "Loaded #{@groups.count} out of #{@all_groups.count} groups!"
     end
 
     def load_users
@@ -108,6 +105,13 @@ class ImportScripts::VBulletin < ImportScripts::Base
       original_count = @users.count
 
       if @mapped_groups.try(:size) > 0
+        # show some stats
+        group_ids = Set.new(@users.map { |user| user[:usergroupid].to_i })
+        group_ids.sort.each do |group_id|
+          count = @users.select { |user| user[:usergroupid].to_i == group_id }.count
+          group = @all_groups.select { |group| group[:usergroupid].to_i == group_id }.first.try(:[], :title)
+          puts "\t- #{count} users in usergroup ##{group_id} (#{group})"
+        end
         # reject users from unmapped groups
         @users.reject! { |user| !@mapped_groups.has_key?(user[:usergroupid]) }
         # change mapped groups
@@ -243,6 +247,9 @@ class ImportScripts::VBulletin < ImportScripts::Base
     def import_groups
       puts "", "Importing groups..."
 
+      # sort the groups
+      @groups.sort_by! { |group| group[:usergroupid].to_i }
+
       create_groups(@groups) do |group|
         {
           id: group[:usergroupid],
@@ -255,10 +262,13 @@ class ImportScripts::VBulletin < ImportScripts::Base
     def import_users
       puts "", "Importing users..."
 
+      # sort the users
+      @users.sort_by! { |user| user[:userid].to_i }
+
       @old_username_to_new_usernames = {}
 
       create_users(@users) do |user|
-        @old_username_to_new_usernames[user[:username]] = UserNameSuggester.suggest(user[:username])
+        @old_username_to_new_usernames[user[:username]] = UserNameSuggester.fix_username(user[:username])
 
         {
           id: user[:userid],
@@ -267,6 +277,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
           website: user[:homepage],
           title: user[:usertitle],
           primary_group_id: group_id_from_imported_group_id(user[:usergroupid]),
+          merge: true,
         }
       end
 
@@ -299,6 +310,9 @@ class ImportScripts::VBulletin < ImportScripts::Base
 
     def import_categories
       puts "", "Importing categories..."
+
+      # sort categories
+      @categories.sort_by! { |category| category[:forumid].to_i }
 
       create_categories(@categories) do |category|
         {
@@ -343,22 +357,18 @@ class ImportScripts::VBulletin < ImportScripts::Base
       raw = raw.gsub(/\[mention\](.+?)\[\/mention\]/i) do
         old_username = $1
         if @old_username_to_new_usernames.has_key?(old_username)
-          username = @old_username_to_new_usernames[old_username]
-          "@#{username}"
-        else
-          $&
+          old_username = @old_username_to_new_usernames[old_username]
         end
+        "@#{old_username}"
       end
 
-      # [MENTION=<user_id>]...[/MENTION]
-      raw = raw.gsub(/\[mention=(\d+)\].+?\[\/mention\]/i) do
-        user_id = $1
+      # [MENTION=<user_id>]<username>[/MENTION]
+      raw = raw.gsub(/\[mention=(\d+)\](.+?)\[\/mention\]/i) do
+        user_id, old_username = $1, $2
         if user = @users.select { |u| u[:userid] == user_id }.first
-          username = @old_username_to_new_usernames[user[:username]] || user[:username]
-          "@#{username}"
-        else
-          $&
+          old_username = @old_username_to_new_usernames[user[:username]] || user[:username]
         end
+        "@#{old_username}"
       end
 
       # [QUOTE]...[/QUOTE]
@@ -368,11 +378,9 @@ class ImportScripts::VBulletin < ImportScripts::Base
       raw = raw.gsub(/\[quote=([^;\]]+)\](.+?)\[\/quote\]/im) do
         old_username, quote = $1, $2
         if @old_username_to_new_usernames.has_key?(old_username)
-          username = @old_username_to_new_usernames[old_username]
-          "\n[quote=\"#{username}\"]\n#{quote}\n[/quote]\n"
-        else
-          $&
+          old_username = @old_username_to_new_usernames[old_username]
         end
+        "\n[quote=\"#{old_username}\"]\n#{quote}\n[/quote]\n"
       end
 
       # [HTML]...[/HTML]
@@ -399,11 +407,23 @@ class ImportScripts::VBulletin < ImportScripts::Base
       # [MP3]<url>[/MP3]
       raw = raw.gsub(/\[MP3\](.+?)\[\/MP3\]/i) { "\n#{$1}\n" }
 
+      # replace all chevrons with HTML entities
+      raw = raw.gsub(/`([^`]+)`/im) { "`" + $1.gsub("<", "\u2603") + "`" }
+               .gsub("<", "&lt;")
+               .gsub("\u2603", "<")
+
+      raw = raw.gsub(/`([^`]+)`/im) { "`" + $1.gsub(">", "\u2603") + "`" }
+               .gsub(">", "&gt;")
+               .gsub("\u2603", ">")
+
       raw
     end
 
     def import_topics
       puts "", "Importing topics..."
+
+      # sort the topics
+      @topics.sort_by! { |topic| topic[:threadid].to_i }
 
       create_posts(@topics) do |topic|
         next unless post = @posts.select { |p| p[:postid] == topic[:firstpostid] }.first
@@ -441,8 +461,11 @@ class ImportScripts::VBulletin < ImportScripts::Base
       first_post_ids = Set.new(@topics.map { |t| t[:firstpostid] })
       @posts.reject! { |post| first_post_ids.include?(post[:postid]) }
 
+      # sort the posts
+      @posts.sort_by! { |post| post[:postid].to_i }
+
       create_posts(@posts) do |post|
-        t = topic_lookup_from_imported_post_id("thread#" + post[:threadid])
+        next unless t = topic_lookup_from_imported_post_id("thread#" + post[:threadid])
 
         p = {
           id: post[:postid],
@@ -487,13 +510,17 @@ class ImportScripts::VBulletin < ImportScripts::Base
       # [QUOTE=<username>;<post_id>]...[/QUOTE]
       raw = raw.gsub(/\[quote=([^;]+);(\d+)\](.+?)\[\/quote\]/im) do
         old_username, post_id, quote = $1, $2, $3
-        if @old_username_to_new_usernames.has_key?(old_username) && topic_lookup = topic_lookup_from_imported_post_id(post_id)
+
+        if @old_username_to_new_usernames.has_key?(old_username)
+          old_username = @old_username_to_new_usernames[old_username]
+        end
+
+        if topic_lookup = topic_lookup_from_imported_post_id(post_id)
           post_number = topic_lookup[:post_number]
           topic_id    = topic_lookup[:topic_id]
-          username    = @old_username_to_new_usernames[old_username]
-          "\n[quote=\"#{username},post:#{post_number},topic:#{topic_id}\"]\n#{quote}\n[/quote]\n"
+          "\n[quote=\"#{old_username},post:#{post_number},topic:#{topic_id}\"]\n#{quote}\n[/quote]\n"
         else
-          $&
+          "\n[quote=\"#{old_username}\"]\n#{quote}\n[/quote]\n"
         end
       end
 

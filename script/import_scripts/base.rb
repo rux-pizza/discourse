@@ -28,27 +28,32 @@ class ImportScripts::Base
     @existing_posts = {}
     @topic_lookup = {}
 
+    puts "loading existing groups..."
     GroupCustomField.where(name: 'import_id').pluck(:group_id, :value).each do |group_id, import_id|
       @existing_groups[import_id] = group_id
     end
 
+    puts "loading existing users..."
     UserCustomField.where(name: 'import_id').pluck(:user_id, :value).each do |user_id, import_id|
       @existing_users[import_id] = user_id
     end
 
+    puts "loading existing categories..."
     CategoryCustomField.where(name: 'import_id').pluck(:category_id, :value).each do |category_id, import_id|
       @categories_lookup[import_id] = Category.find(category_id.to_i)
     end
 
+    puts "loading existing posts..."
     PostCustomField.where(name: 'import_id').pluck(:post_id, :value).each do |post_id, import_id|
       @existing_posts[import_id] = post_id
     end
 
-    Post.joins(:topic).select("posts.id, posts.topic_id, posts.post_number, topics.slug").each do |post|
-      @topic_lookup[post.id] = {
-        topic_id: post.topic_id,
-        post_number: post.post_number,
-        url: post.url,
+    puts "loading existing topics..."
+    Post.joins(:topic).pluck("posts.id, posts.topic_id, posts.post_number, topics.slug").each do |p|
+      @topic_lookup[p[0]] = {
+        topic_id: p[1],
+        post_number: p[2],
+        url: Post.url(p[3], p[1], p[2]),
       }
     end
   end
@@ -235,9 +240,11 @@ class ImportScripts::Base
 
   def create_user(opts, import_id)
     opts.delete(:id)
+    merge = opts.delete(:merge)
     post_create_action = opts.delete(:post_create_action)
+
     existing = User.where(email: opts[:email].downcase, username: opts[:username]).first
-    return existing if existing && existing.custom_fields["import_id"].to_i == import_id.to_i
+    return existing if existing && (merge || existing.custom_fields["import_id"].to_i == import_id.to_i)
 
     bio_raw = opts.delete(:bio_raw)
     website = opts.delete(:website)
@@ -434,12 +441,12 @@ class ImportScripts::Base
   end
 
   def update_bumped_at
-    puts "updating bumped_at on topics"
+    puts "", "updating bumped_at on topics"
     Post.exec_sql("update topics t set bumped_at = (select max(created_at) from posts where topic_id = t.id and post_type != #{Post.types[:moderator_action]})")
   end
 
   def update_feature_topic_users
-    puts "updating featured topic users"
+    puts "", "updating featured topic users"
 
     total_count = Topic.count
     progress_count = 0
@@ -452,7 +459,7 @@ class ImportScripts::Base
   end
 
   def update_category_featured_topics
-    puts "updating featured topics in categories"
+    puts "", "updating featured topics in categories"
 
     total_count = Category.count
     progress_count = 0
@@ -465,7 +472,7 @@ class ImportScripts::Base
   end
 
   def update_topic_count_replies
-    puts "updating user topic reply counts"
+    puts "", "updating user topic reply counts"
 
     total_count = User.real.count
     progress_count = 0

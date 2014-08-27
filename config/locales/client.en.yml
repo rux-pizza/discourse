@@ -288,7 +288,6 @@ en:
     user:
       said: "{{username}} said:"
       profile: "Profile"
-      show_profile: "Visit Profile"
       mute: "Mute"
       edit: "Edit Preferences"
       download_archive: "download archive of my posts"
@@ -376,7 +375,7 @@ en:
 
       email:
         title: "Email"
-        instructions: "Your email will never be shown to the public."
+        instructions: "Will never be shown to the public."
         ok: "Looks good. We will email you to confirm."
         invalid: "Please enter a valid email address."
         authenticated: "Your email has been authenticated by {{provider}}."
@@ -384,12 +383,12 @@ en:
 
       name:
         title: "Name"
-        instructions: "The long version of your name."
+        instructions: "Longer version of your name."
         too_short: "Your name is too short."
         ok: "Your name looks good."
       username:
         title: "Username"
-        instructions: "Your @username must be unique, no spaces, short."
+        instructions: "Must be unique, no spaces, short."
         short_instructions: "People can mention you as @{{username}}."
         available: "Your username is available."
         global_match: "Email matches the registered username."
@@ -507,12 +506,13 @@ en:
       prev_page: "while trying to load"
       reasons:
         network: "Network Error"
-        server: "Server Error: {{code}}"
+        server: "Server Error"
+        forbidden: "Access Denied"
         unknown: "Error"
       desc:
         network: "Please check your connection."
         network_fixed: "Looks like it's back."
-        server: "Something went wrong."
+        server: "Error code: {{status}}"
         unknown: "Something went wrong."
       buttons:
         back: "Go Back"
@@ -706,7 +706,7 @@ en:
       invitee_accepted: "<i title='accepted your invitation' class='fa fa-user'></i><p><span>{{username}}</span> accepted your invitation</p>"
       moved_post: "<i title='moved post' class='fa fa-sign-out'></i><p><span>{{username}}</span> moved {{description}}</p>"
       linked: "<i title='linked post' class='fa fa-arrow-left'></i><p><span>{{username}}</span> {{description}}</p>"
-      granted_badge: "<i title='badge granted' class='fa fa-certificate'></i><p>You were granted {{description}}</p>"
+      granted_badge: "<i title='badge granted' class='fa fa-certificate'></i><p>Earned '{{description}}'</p>"
 
     upload_selector:
       title: "Add an image"
@@ -2052,6 +2052,8 @@ en:
         title: 'Application'
         create: '<b>c</b> Create a new topic'
         notifications: '<b>n</b> Open notifications'
+        site_map_menu: '<b>=</b> Open site map menu'
+        user_profile_menu: '<b>p</b> Open user profile menu'
         search: '<b>/</b> Search'
         help: '<b>?</b> Open keyboard shortcuts help'
       actions:

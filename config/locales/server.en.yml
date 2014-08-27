@@ -801,6 +801,7 @@ en:
     s3_backup_bucket: "The remote bucket to hold backups. WARNING: Make sure it is a private bucket."
 
     active_user_rate_limit_secs: "How frequently we update the 'last_seen_at' field, in seconds"
+    verbose_localization: "Show extended localization tips in the UI"
     previous_visit_timeout_hours: "How long a visit lasts before we consider it the 'previous' visit, in hours"
 
     rate_limit_create_topic: "After creating a topic, users must wait (n) seconds before creating another topic."
@@ -1021,7 +1022,7 @@ en:
     invited_to_private_message: "%{display_username} invited you to a private message: %{link}"
     invitee_accepted: "%{display_username} accepted your invitation"
     linked: "%{display_username} linked you in %{link}"
-    granted_badge: "You were granted %{link}"
+    granted_badge: "You earned %{link}"
 
   search:
     within_post: "#%{post_number} by %{username}: %{excerpt}"

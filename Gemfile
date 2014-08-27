@@ -67,9 +67,7 @@ unless Bundler::Dependency::PLATFORM_MAP.include? :mri_21
    end
 end
 
-# see: https://github.com/mbleigh/seed-fu/pull/54
-# taking forever to get changes upstream in seed-fu
-gem 'seed-fu-discourse', require: 'seed-fu'
+gem 'seed-fu', '~> 2.3.3'
 
 if rails_master?
   gem 'rails', git: 'https://github.com/rails/rails.git'
@@ -79,6 +77,12 @@ else
   gem 'actionpack-action_caching'
 end
 gem 'rails-observers'
+
+# Rails 4.1.6+ will relax the mail gem version requirement to `~> 2.5, >= 2.5.4`.
+# However, mail gem 2.6.x currently does not work with discourse because of the
+# reference to `Mail::RFC2822Parser` in `lib/email.rb`. This ensure discourse
+# would continue to work with Rails 4.1.6+ when it is released.
+gem 'mail', '~> 2.5.4'
 
 #gem 'redis-rails'
 gem 'hiredis'

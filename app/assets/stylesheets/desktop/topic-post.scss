@@ -434,6 +434,7 @@ a.star {
 
   td {
     vertical-align: top;
+    padding:1px;
   }
 
   .buttons {
@@ -674,8 +675,6 @@ blockquote > *:last-child {
 /* quotes with attribution */
 .quote {
   &>blockquote {
-    margin-top: 0;
-    padding-top: 0;
     .onebox-result {
       background-color: scale-color-diff();
     }
@@ -684,7 +683,8 @@ blockquote > *:last-child {
   .title {
     border-left: 5px solid darken(scale-color-diff(), 10%);
     background-color: scale-color-diff();
-    padding: 12px;
+    padding: 12px 12px 0 12px;
+    /* blockquote is underneath this and has top margin */
     .avatar { margin-right: 7px; }
     img { margin-top: -4px; }
   }
@@ -801,12 +801,6 @@ $topic-avatar-width: 45px;
 .posts-wrapper {
   position: relative;
 }
-
-.row:before, .row:after {
-  display: table;
-  content: "";
-}
-.row:after {clear: both;}
 
 .dropdown {
   position: relative;
