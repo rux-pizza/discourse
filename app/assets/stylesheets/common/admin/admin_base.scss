@@ -284,11 +284,11 @@ td.flaggers td {
 
 section.details {
   h1 {
-    font-size: 15px;
-    background-color: scale-color-diff();
-    color: $secondary;
-    padding: 0 10px;
-    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: $primary;
+    padding: 5px 10px;
+    margin: 30px 0 5px 0;
+    border-bottom: 5px solid scale-color-diff();
   }
 }
 
@@ -299,6 +299,12 @@ section.details {
   position: fixed;
   bottom: 0;
   width: 1075px;
+}
+
+.user-controls {
+  padding: 5px;
+  clear: both;
+  text-align: right;
 }
 
 .display-row {
@@ -409,6 +415,40 @@ section.details {
       margin-left: 10px;
       width: 80px;
       color: $primary;
+    }
+  }
+}
+
+.badge-query-preview {
+  .grant-count, .sample, .error-header {
+    margin-left: 10px;
+  }
+
+  .badge-errors {
+    font-size: 14px;
+    line-height: 16px;
+    padding: 4px;
+    background-color: scale-color-diff();
+  }
+
+  .badge-query-plan {
+    font-size: 12px;
+    line-height: 13px;
+    padding: 4px;
+    background-color: scale-color-diff();
+  }
+
+  .count-warning {
+    background-color: dark-light-diff(rgba($danger,.7), $secondary, 50%, -60%);
+    margin: 0 0 7px 0;
+    padding: 10px 20px;
+
+    p {
+      margin: 0;
+    }
+    .heading {
+      color: $danger;
+      font-weight: bold;
     }
   }
 }
@@ -1258,5 +1298,16 @@ and (max-width : 500px) {
     a {
       margin-left: 5px;
     }
+  }
+}
+
+tr.not-activated {
+  td, td a, td a:visited {
+    color: #bbb;
+  }
+}
+.details.not-activated {
+  .username .value, .email .value a, .email .value a:visited {
+    color: #bbb;
   }
 }

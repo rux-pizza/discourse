@@ -69,6 +69,7 @@ class PostCreator
       setup_topic
       setup_post
       rollback_if_host_spam_detected
+      plugin_callbacks
       save_post
       extract_links
       store_unique_post_key
@@ -113,7 +114,6 @@ class PostCreator
 
     post.cooked ||= post.cook(post.raw, cooking_options)
     post.sort_order = post.post_number
-    DiscourseEvent.trigger(:before_create_post, post)
     post.last_version_at ||= Time.now
   end
 
@@ -155,6 +155,11 @@ class PostCreator
     elsif @post && !@post.errors.present? && !skip_validations?
       SpamRulesEnforcer.enforce!(@post)
     end
+  end
+
+  def plugin_callbacks
+    DiscourseEvent.trigger :before_create_post, @post
+    DiscourseEvent.trigger :validate_post, @post
   end
 
   def track_latest_on_category
@@ -203,7 +208,7 @@ class PostCreator
   end
 
   def setup_post
-    @opts[:raw] = TextCleaner.normalize_whitespaces(@opts[:raw]).strip
+    @opts[:raw] = TextCleaner.normalize_whitespaces(@opts[:raw]).gsub(/\s+\z/, "")
 
     post = @topic.posts.new(raw: @opts[:raw],
                             user: @user,
@@ -270,14 +275,7 @@ class PostCreator
     return if @opts[:import_mode]
     return unless @post.post_number > 1
 
-    MessageBus.publish("/topic/#{@post.topic_id}",{
-                    id: @post.id,
-                    created_at: @post.created_at,
-                    user: BasicUserSerializer.new(@post.user).as_json(root: false),
-                    post_number: @post.post_number
-                  },
-                  group_ids: @topic.secure_group_ids
-    )
+    @post.publish_change_to_clients! :created
   end
 
   def extract_links
@@ -288,8 +286,8 @@ class PostCreator
   def track_topic
     return if @opts[:auto_track] == false
 
-    TopicUser.change(@post.user.id,
-                     @post.topic.id,
+    TopicUser.change(@post.user_id,
+                     @topic.id,
                      posted: true,
                      last_read_post_number: @post.post_number,
                      seen_post_count: @post.post_number)

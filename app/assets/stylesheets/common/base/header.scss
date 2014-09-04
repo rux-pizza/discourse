@@ -320,3 +320,26 @@
     }
   }
 }
+
+.search-link .topic-statuses {
+  float: none;
+  display: inline-block;
+  color: scale-color($primary, $lightness: 50%);
+  margin: 0;
+  .fa {
+    margin: 0;
+  }
+}
+
+.search-link .badge-category {
+  padding: 4px 6px;
+  margin-left: 6px;
+}
+
+.highlight-strong {
+  background-color: dark-light-diff($highlight, $secondary, 40%, -50%);
+}
+
+.search-highlight {
+  font-weight: bold;
+}

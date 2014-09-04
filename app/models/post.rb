@@ -87,6 +87,15 @@ class Post < ActiveRecord::Base
     end
   end
 
+  def publish_change_to_clients!(type)
+    MessageBus.publish("/topic/#{topic_id}", {
+        id: id,
+        post_number: post_number,
+        updated_at: Time.now,
+        type: type
+    }, group_ids: topic.secure_group_ids)
+  end
+
   def trash!(trashed_by=nil)
     self.topic_links.each(&:destroy)
     super(trashed_by)
@@ -145,14 +154,14 @@ class Post < ActiveRecord::Base
 
     # Default is to cook posts
     cooked = if !self.user || SiteSetting.leader_links_no_follow || !self.user.has_trust_level?(:leader)
-      post_analyzer.cook(*args)
-    else
-      # At trust level 3, we don't apply nofollow to links
-      cloned = args.dup
-      cloned[1] ||= {}
-      cloned[1][:omit_nofollow] = true
-      post_analyzer.cook(*cloned)
-    end
+               post_analyzer.cook(*args)
+             else
+               # At trust level 3, we don't apply nofollow to links
+               cloned = args.dup
+               cloned[1] ||= {}
+               cloned[1][:omit_nofollow] = true
+               post_analyzer.cook(*cloned)
+             end
     Plugin::Filter.apply( :after_post_cook, self, cooked )
   end
 

@@ -188,25 +188,25 @@ class PostAction < ActiveRecord::Base
     else
       opts[:subtype] = TopicSubtype.notify_user
       opts[:target_usernames] = if post_action_type == :notify_user
-        post.user.username
-      elsif post_action_type != :notify_moderators
-        # this is a hack to allow a PM with no reciepients, we should think through
-        # a cleaner technique, a PM with myself is valid for flagging
-        'x'
-      end
+                                  post.user.username
+                                elsif post_action_type != :notify_moderators
+                                  # this is a hack to allow a PM with no recipients, we should think through
+                                  # a cleaner technique, a PM with myself is valid for flagging
+                                  'x'
+                                end
     end
 
     PostCreator.new(user, opts).create.id
   end
 
-  def self.act(user, post, post_action_type_id, opts={})
+  def self.act(user, post, post_action_type_id, opts = {})
     related_post_id = create_message_for_post_action(user, post, post_action_type_id, opts)
     staff_took_action = opts[:take_action] || false
 
     targets_topic = if opts[:flag_topic] && post.topic
-      post.topic.reload
-      post.topic.posts_count != 1
-    end
+                      post.topic.reload
+                      post.topic.posts_count != 1
+                    end
 
     where_attrs = {
       post_id: post.id,
@@ -233,6 +233,9 @@ class PostAction < ActiveRecord::Base
       end
     else
       post_action = PostAction.where(where_attrs).first
+
+      # after_commit is not called on an `update_all` so do the notify ourselves
+      post_action.notify_subscribers
     end
 
     # agree with other flags
@@ -375,13 +378,7 @@ class PostAction < ActiveRecord::Base
 
   def notify_subscribers
     if (is_like? || is_flag?) && post
-      MessageBus.publish("/topic/#{post.topic_id}",{
-                      id: post.id,
-                      post_number: post.post_number,
-                      type: "acted"
-                    },
-                    group_ids: post.topic.secure_group_ids
-      )
+      post.publish_change_to_clients! :acted
     end
   end
 

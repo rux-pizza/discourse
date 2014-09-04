@@ -1,11 +1,15 @@
+{{#if redirectedReason}}
+  <div class="alert alert-info">{{redirectedReason}}</div>
+{{/if}}
+
 {{#if showDismissAtTop}}
   <div class="row">
     {{#if showDismissRead}}
-      <button title="{{i18n topics.bulk.dismiss_topics_tooltip}}" class='btn dismiss-read' {{action dismissRead "topics"}}>{{i18n topics.bulk.dismiss_topics}}</button>
-      <button title="{{i18n topics.bulk.dismiss_posts_tooltip}}" class='btn dismiss-read' {{action dismissRead "posts"}}>{{i18n topics.bulk.dismiss_posts}}</button>
+      <button title="{{i18n topics.bulk.dismiss_topics_tooltip}}" id='dismiss-topics-top' class='btn dismiss-read' {{action dismissRead "topics"}}>{{i18n topics.bulk.dismiss_topics}}</button>
+      <button title="{{i18n topics.bulk.dismiss_posts_tooltip}}" id='dismiss-posts-top' class='btn dismiss-read' {{action dismissRead "posts"}}>{{i18n topics.bulk.dismiss_posts}}</button>
     {{/if}}
     {{#if showResetNew}}
-      <button class='btn dismiss-read' {{action resetNew}}>{{i18n topics.bulk.dismiss_new}}</button>
+      <button id='dismiss-new-top' class='btn dismiss-read' {{action resetNew}}>{{i18n topics.bulk.dismiss_new}}</button>
     {{/if}}
   </div>
 {{/if}}
@@ -83,15 +87,17 @@
   {{/if}}
   {{#if allLoaded}}
     {{#if showDismissRead}}
-      <button title="{{i18n topics.bulk.dismiss_topics_tooltip}}" class='btn dismiss-read' {{action dismissRead "topics"}}>{{i18n topics.bulk.dismiss_topics}}</button>
-      <button title="{{i18n topics.bulk.dismiss_posts_tooltip}}" class='btn dismiss-read' {{action dismissRead "posts"}}>{{i18n topics.bulk.dismiss_posts}}</button>
+      <button title="{{i18n topics.bulk.dismiss_topics_tooltip}}" id='dismiss-topics' class='btn dismiss-read' {{action dismissRead "topics"}}>{{i18n topics.bulk.dismiss_topics}}</button>
+      <button title="{{i18n topics.bulk.dismiss_posts_tooltip}}" id='dismiss-posts' class='btn dismiss-read' {{action dismissRead "posts"}}>{{i18n topics.bulk.dismiss_posts}}</button>
     {{/if}}
     {{#if showResetNew}}
-      <button class='btn dismiss-read' {{action resetNew}}>{{i18n topics.bulk.dismiss_new}}</button>
+      <button id='dismiss-new' class='btn dismiss-read' {{action resetNew}}>{{i18n topics.bulk.dismiss_new}}</button>
     {{/if}}
 
     {{#if latest}}
-      {{{footerEducation}}}
+      <div class="education">
+        {{{footerEducation}}}
+      </div>
       <h3>
         {{footerMessage}}
         {{#if can_create_topic}}<a href='#' {{action createTopic}}>{{i18n topic.suggest_create_topic}}</a>{{/if}}
@@ -102,7 +108,9 @@
           {{#link-to "discovery.categories"}}{{i18n topic.browse_all_categories}}{{/link-to}}, {{#link-to 'discovery.latest'}}{{i18n topic.view_latest_topics}}{{/link-to}} {{i18n or}} {{i18n filters.top.other_periods}}
         {{top-period-buttons period=period}}
       {{else}}
-        {{{footerEducation}}}
+        <div class="education">
+            {{{footerEducation}}}
+        </div>
         <h3>
           {{footerMessage}}{{#link-to "discovery.categories"}} {{i18n topic.browse_all_categories}}{{/link-to}} {{i18n or}} {{#link-to 'discovery.latest'}}{{i18n topic.view_latest_topics}}{{/link-to}}
         </h3>

@@ -35,6 +35,11 @@ en:
       long_no_year_no_time: "MMM D"
       long_with_year: "MMM D, YYYY h:mm a"
       long_with_year_no_time: "MMM D, YYYY"
+      long_date_with_year: "MMM D, 'YY LT"
+      long_date_without_year: "MMM D, LT"
+      long_date_with_year_without_time: "MMM D, 'YY"
+      long_date_without_year_with_linebreak: "MMM D <br/>LT"
+      long_date_with_year_with_linebreak: "MMM D, 'YY <br/>LT"
       tiny:
         half_a_minute: "< 1m"
         less_than_x_seconds:
@@ -64,7 +69,7 @@ en:
         almost_x_years:
           one:   "1y"
           other: "%{count}y"
-        date_month: "D MMM"
+        date_month: "MMM D"
         date_year: "MMM 'YY"
       medium:
         x_minutes:
@@ -76,7 +81,7 @@ en:
         x_days:
           one: "1 day"
           other: "%{count} days"
-        date_year: "D MMM YYYY"
+        date_year: "MMM D, 'YY"
       medium_with_ago:
         x_minutes:
           one: "1 min ago"
@@ -199,6 +204,7 @@ en:
     disable: "Disable"
     undo: "Undo"
     revert: "Revert"
+    failed: "Failed"
 
     banner:
       close: "Dismiss this banner."
@@ -312,7 +318,7 @@ en:
       admin_tooltip: "This user is an admin"
       suspended_notice: "This user is suspended until {{date}}."
       suspended_reason: "Reason: "
-      mailing_list_mode: "Receive an email every time a post is made on the forum (unless you mute the topic or category)"
+      mailing_list_mode: "Receive an email for every new post (unless you mute the topic or category)"
       watched_categories: "Watched"
       watched_categories_instructions: "You will automatically watch all new topics in these categories. You will be notified of all new posts and topics, plus the count of unread and new posts will also appear next to the topic's listing."
       tracked_categories: "Tracked"
@@ -402,7 +408,7 @@ en:
 
       locale:
         title: "Interface language"
-        instructions: "The language used by the forum interface. It will change when you refresh the page."
+        instructions: "User interface language. It will change when you refresh the page."
         default: "(default)"
 
       password_confirmation:
@@ -424,7 +430,7 @@ en:
 
       email_direct: "Receive an email when someone quotes you, replies to your post, or mentions your @username"
       email_private_messages: "Receive an email when someone sends you a private message"
-      email_always: "Receive email notifications and email digests even if you are active on the forum"
+      email_always: "Do not suppress email notifications when I am active on the site"
 
       other_settings: "Other"
       categories_settings: "Categories"
@@ -523,7 +529,7 @@ en:
     read_only_mode:
       enabled: "An administrator enabled read-only mode. You can continue to browse the site but interactions may not work."
       login_disabled: "Login is disabled while the site is in read only mode."
-    too_few_topics_notice: "Create at least 5 public topics and %{posts} public posts to get discussion started. New users will not be able to earn trust levels unless there's content for them to read. This message appears only to staff."
+    too_few_topics_notice: "Create at least 5 public topics and %{posts} public posts to get discussion started. New users cannot earn trust levels unless there's content for them to read. This message appears only to staff."
 
     learn_more: "learn more..."
 
@@ -542,7 +548,7 @@ en:
     last_post_lowercase: last post
 
     summary:
-      enabled_description: "You're viewing a summary of this topic: just the most interesting posts as determined by the community. To see all posts again, click below."
+      enabled_description: "You're viewing a summary of this topic: the most interesting posts as determined by the community."
       description: "There are <b>{{count}}</b> replies."
       description_time: "There are <b>{{count}}</b> replies with an estimated read time of <b>{{readingTime}} minutes</b>."
       enable: 'Summarize This Topic'
@@ -726,6 +732,7 @@ en:
       title: "search topics, posts, users, or categories"
       no_results: "No results found."
       searching: "Searching ..."
+      post_format: "#{{post_number}} by {{username}}"
 
       context:
         user: "Search posts by @{{username}}"
@@ -1416,7 +1423,7 @@ en:
         today: "Today"
         other_periods: "see more top topics"
 
-    browser_update: 'Unfortunately, <a href="http://www.discourse.org/faq/#browser">your browser is too old to work on this Discourse forum</a>. Please <a href="http://browsehappy.com">upgrade your browser</a>.'
+    browser_update: 'Unfortunately, <a href="http://www.discourse.org/faq/#browser">your browser is too old to work on this site</a>. Please <a href="http://browsehappy.com">upgrade your browser</a>.'
 
     permission_types:
       full: "Create / Reply / See"
@@ -1563,7 +1570,7 @@ en:
         confirm_revoke: "Are you sure you want to revoke that key?"
         info_html: "Your API key will allow you to create and update topics using JSON calls."
         all_users: "All Users"
-        note_html: "Keep this key <strong>secret</strong>, all users that have it may create arbitrary posts on the forum as any user."
+        note_html: "Keep this key <strong>secret</strong>, all users that have it may create arbitrary posts as any user."
 
       backups:
         title: "Backups"
@@ -1797,11 +1804,8 @@ en:
           title: "Error Logs"
 
       impersonate:
-        title: "Impersonate User"
-        username_or_email: "Username or Email of User"
-        help: "Use this tool to impersonate a user account for debugging purposes."
-        not_found: "That user can't be found."
-        invalid: "Sorry, you may not impersonate that user."
+        title: "Impersonate"
+        help: "Use this tool to impersonate a user account for debugging purposes. You will have to log out once finished."
 
       users:
         title: 'Users'
@@ -1831,7 +1835,7 @@ en:
           newuser: 'Users at Trust Level 0 (New User)'
           basic: 'Users at Trust Level 1 (Basic User)'
           regular: 'Users at Trust Level 2 (Regular User)'
-          leader: 'Users at Trust Level 3 (Leader)'
+          leader: 'Users at Trust Level 3 (Veteran)'
           elder: 'Users at Trust Level 4 (Elder)'
           admins: 'Admin Users'
           moderators: 'Moderators'
@@ -1843,6 +1847,7 @@ en:
         reject_failures:
           one: "Failed to reject 1 user."
           other: "Failed to reject %{count} users."
+        not_verified: "Not verified"
 
       user:
         suspend_failed: "Something went wrong suspending this user {{error}}"
@@ -2019,7 +2024,6 @@ en:
         target_posts: Query targets posts
         auto_revoke: Run revocation query daily
         show_posts: Show post granting badge on badge page
-        preview: Preview badge
         trigger: Trigger
         trigger_type:
           none: "Update daily"
@@ -2027,6 +2031,25 @@ en:
           post_revision: "When a user edits or creates a post"
           trust_level_change: "When a user changes trust level"
           user_change: "When a user is edited or created"
+        preview:
+          link_text: "Preview granted badges"
+          plan_text: "Preview with query plan"
+          modal_title: "Badge Query Preview"
+          sql_error_header: "There was an error with the query."
+          error_help: "See the following links for help with badge queries."
+          bad_count_warning:
+            header: "WARNING!"
+            text: "There are missing grant samples. This happens when the badge query returns user IDs or post IDs that do not exist. This may cause unexpected results later on - please double-check your query."
+          grant_count:
+            zero: "No badges to be assigned."
+            one: "<b>1</b> badge to be assigned."
+            other: "<b>%{count}</b> badges to be assigned."
+          sample: "Sample:"
+          grant:
+            with: <span class="username">%{username}</span>
+            with_post: <span class="username">%{username}</span> for post in %{link}
+            with_post_time: <span class="username">%{username}</span> for post in %{link} at <span class="time">%{time}</span>
+            with_time: <span class="username">%{username}</span> at <span class="time">%{time}</span>
 
     lightbox:
       download: "download"
@@ -2047,20 +2070,24 @@ en:
         back: '<b>u</b> Back'
         up_down: '<b>k</b>/<b>j</b> Move selection up/down'
         open: '<b>o</b> or <b>Enter</b> Open selected topic'
-        next_prev: '<b>`</b>/<b>~</b> Next/previous section'
+        next_prev: '<b>shift j</b>/<b>shift k</b> Next/previous section'
       application:
         title: 'Application'
         create: '<b>c</b> Create a new topic'
         notifications: '<b>n</b> Open notifications'
         site_map_menu: '<b>=</b> Open site map menu'
         user_profile_menu: '<b>p</b> Open user profile menu'
+        show_incoming_updated_topics: '<b>.</b> Show incoming/updated topics'
         search: '<b>/</b> Search'
         help: '<b>?</b> Open keyboard shortcuts help'
+        dismiss_new_posts: '<b>x</b>, <b>r</b> Dismiss New/Posts'
+        dismiss_topics: '<b>x</b>, <b>t</b> Dismiss Topics'
       actions:
         title: 'Actions'
         star: '<b>f</b> Star topic'
         share_topic: '<b>shift s</b> Share topic'
         share_post: '<b>s</b> Share post'
+        reply_as_new_topic: '<b>t</b> Reply as new topic'
         reply_topic: '<b>shift r</b> Reply to topic'
         reply_post: '<b>r</b> Reply to post'
         quote_post: '<b>q</b> Quote post'

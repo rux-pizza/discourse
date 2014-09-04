@@ -10,9 +10,9 @@
   <div class='searching'></div>
 {{else}}
   {{#unless noResults}}
-    {{#each resultType in content}}
+    {{#each resultType in content.resultTypes}}
       <ul>
-        <li class='heading'>
+        <li class='heading row'>
           {{resultType.name}}
           {{#if resultType.more}}
             <a href='#' class='filter' {{action moreOfType resultType.type bubbles=false}}>{{i18n show_more}}</a>
@@ -22,7 +22,7 @@
             {{/if}}
           {{/if}}
         </li>
-        {{view 'search-results-type' type=resultType.type content=resultType.results}}
+        {{view 'search-results-type' type=resultType.type displayType=resultType.displayType content=resultType.results}}
       </ul>
     {{/each}}
   {{else}}

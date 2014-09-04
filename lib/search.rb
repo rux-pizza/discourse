@@ -1,11 +1,13 @@
-require_dependency 'search/search_result'
-require_dependency 'search/search_result_type'
 require_dependency 'search/grouped_search_results'
 
 class Search
 
   def self.per_facet
     5
+  end
+
+  def self.per_filter
+    50
   end
 
   # Sometimes we want more topics than are returned due to exclusion of dupes. This is the
@@ -93,6 +95,7 @@ class Search
   end
 
   def initialize(term, opts=nil)
+    term = process_advanced_search!(term)
     if term.present?
       @term = Search.prepare_data(term.to_s)
       @original_term = PG::Connection.escape_string(@term)
@@ -102,8 +105,16 @@ class Search
     @guardian = @opts[:guardian] || Guardian.new
     @search_context = @opts[:search_context]
     @include_blurbs = @opts[:include_blurbs] || false
-    @limit = Search.per_facet * Search.facets.size
-    @results = GroupedSearchResults.new(@opts[:type_filter])
+    @limit = Search.per_facet
+    if @opts[:type_filter].present?
+      @limit = Search.per_filter
+    end
+
+    @results = GroupedSearchResults.new(@opts[:type_filter], term, @search_context, @include_blurbs)
+  end
+
+  def self.execute(term, opts=nil)
+    self.new(term, opts).execute
   end
 
   # Query a term
@@ -111,18 +122,42 @@ class Search
     return nil if @term.blank? || @term.length < (@opts[:min_search_term_length] || SiteSetting.min_search_term_length)
 
     # If the term is a number or url to a topic, just include that topic
-    if @results.type_filter == 'topic'
-      begin
-        route = Rails.application.routes.recognize_path(@term)
-        return single_topic(route[:topic_id]).as_json if route[:topic_id].present?
-      rescue ActionController::RoutingError
+    if @opts[:search_for_id] && @results.type_filter == 'topic'
+      if @term =~ /^\d+$/
+        single_topic(@term.to_i)
+      else
+        begin
+          route = Rails.application.routes.recognize_path(@term)
+          single_topic(route[:topic_id]) if route[:topic_id].present?
+        rescue ActionController::RoutingError
+        end
       end
     end
 
-    find_grouped_results.as_json
+    find_grouped_results unless @results.posts.present?
+
+    @results
   end
 
   private
+
+    def process_advanced_search!(term)
+      term.to_s.split(/\s+/).map do |word|
+        if word == 'status:open'
+          @status = :open
+          nil
+        elsif word == 'status:closed'
+          @status = :closed
+          nil
+        elsif word == 'order:latest'
+          @order = :latest
+          nil
+        else
+          word
+        end
+      end.compact.join(' ')
+    end
+
 
     def find_grouped_results
 
@@ -150,22 +185,24 @@ class Search
       expected_topics = 0
       expected_topics = Search.facets.size unless @results.type_filter.present?
       expected_topics = Search.per_facet * Search.facets.size if @results.type_filter == 'topic'
-      expected_topics -= @results.topic_count
+      expected_topics -= @results.posts.length
       if expected_topics > 0
         extra_posts = posts_query(expected_topics * Search.burst_factor)
-        extra_posts = extra_posts.where("posts.topic_id NOT in (?)", @results.topic_ids) if @results.topic_ids.present?
-        extra_posts.each do |p|
-          @results.add_result(SearchResult.from_post(p, @search_context, @term, @include_blurbs))
+        extra_posts = extra_posts.where("posts.topic_id NOT in (?)", @results.posts.map(&:topic_id)) if @results.posts.present?
+        extra_posts.each do |post|
+          @results.add(post)
+          expected_topics -= 1
+          break if expected_topics == 0
         end
       end
     end
 
     # If we're searching for a single topic
     def single_topic(id)
-      topic = Topic.find_by(id: id)
-      return nil unless @guardian.can_see?(topic)
+      post = Post.find_by(topic_id: id, post_number: 1)
+      return nil unless @guardian.can_see?(post)
 
-      @results.add_result(SearchResult.from_topic(topic))
+      @results.add(post)
       @results
     end
 
@@ -188,8 +225,8 @@ class Search
                            .secured(@guardian)
                            .limit(@limit)
 
-      categories.each do |c|
-        @results.add_result(SearchResult.from_category(c))
+      categories.each do |category|
+        @results.add(category)
       end
     end
 
@@ -201,23 +238,29 @@ class Search
                   .limit(@limit)
                   .references(:user_search_data)
 
-      users.each do |u|
-        @results.add_result(SearchResult.from_user(u))
+      users.each do |user|
+        @results.add(user)
       end
     end
 
     def posts_query(limit, opts=nil)
       opts ||= {}
-      posts = Post.includes(:post_search_data, {:topic => :category})
+      posts = Post
+                  .joins(:post_search_data, {:topic => :category})
                   .where("topics.deleted_at" => nil)
                   .where("topics.visible")
                   .where("topics.archetype <> ?", Archetype.private_message)
-                  .references(:post_search_data, {:topic => :category})
 
       if @search_context.present? && @search_context.is_a?(Topic)
         posts = posts.where("posts.raw ilike ?", "%#{@term}%")
       else
         posts = posts.where("post_search_data.search_data @@ #{ts_query}")
+      end
+
+      if @status == :open
+        posts = posts.where('NOT topics.closed AND NOT topics.archived')
+      elsif @status == :closed
+        posts = posts.where('topics.closed OR topics.archived')
       end
 
       # If we have a search context, prioritize those posts first
@@ -234,15 +277,23 @@ class Search
 
       end
 
-      posts = posts.order("TS_RANK_CD(TO_TSVECTOR(#{query_locale}, topics.title), #{ts_query}) DESC")
-
-      data_ranking = "TS_RANK_CD(post_search_data.search_data, #{ts_query})"
-      if opts[:aggregate_search]
-        posts = posts.order("SUM(#{data_ranking}) DESC")
+      if @order == :latest
+        if opts[:aggregate_search]
+          posts = posts.order("MAX(posts.created_at) DESC")
+        else
+          posts = posts.order("posts.created_at DESC")
+        end
       else
-        posts = posts.order("#{data_ranking} DESC")
+        posts = posts.order("TS_RANK_CD(TO_TSVECTOR(#{query_locale}, topics.title), #{ts_query}) DESC")
+
+        data_ranking = "TS_RANK_CD(post_search_data.search_data, #{ts_query})"
+        if opts[:aggregate_search]
+          posts = posts.order("SUM(#{data_ranking}) DESC")
+        else
+          posts = posts.order("#{data_ranking} DESC")
+        end
+        posts = posts.order("topics.bumped_at DESC")
       end
-      posts = posts.order("topics.bumped_at DESC")
 
       if secure_category_ids.present?
         posts = posts.where("(categories.id IS NULL) OR (NOT categories.read_restricted) OR (categories.id IN (?))", secure_category_ids).references(:categories)
@@ -278,35 +329,33 @@ class Search
     end
 
     def aggregate_search
-      cols = ['topics.id', 'topics.title', 'topics.slug']
-      topics = posts_query(@limit, aggregate_search: true).group(*cols).pluck(*cols)
-      topics.each do |t|
-        @results.add_result(SearchResult.new(type: :topic,
-                                             topic_id: t[0],
-                                             id: t[0],
-                                             title: t[1],
-                                             url: "/t/#{t[2]}/#{t[0]}"))
+
+      post_sql = posts_query(@limit, aggregate_search: true)
+        .select('topics.id', 'min(post_number) post_number')
+        .group('topics.id')
+        .to_sql
+
+      # double wrapping so we get correct row numbers
+      post_sql = "SELECT *, row_number() over() row_number FROM (#{post_sql}) xxx"
+
+      posts = Post.includes(:topic => :category)
+                  .joins("JOIN (#{post_sql}) x ON x.id = posts.topic_id AND x.post_number = posts.post_number")
+                  .order('row_number')
+
+      posts.each do |post|
+        @results.add(post)
       end
     end
 
     def topic_search
-
-      posts = if @search_context.is_a?(User)
-                # If we have a user filter, search all posts by default with a higher limit
-                posts_query(@limit * Search.burst_factor)
-              elsif @search_context.is_a?(Topic)
-                posts_query(@limit).where('posts.post_number = 1 OR posts.topic_id = ?', @search_context.id)
-              elsif @include_blurbs
-                posts_query(@limit).where('posts.post_number = 1')
-              end
-
-      # If no context, do an aggregate search
-      return aggregate_search if posts.nil?
-
-      posts.each do |p|
-        @results.add_result(SearchResult.from_post(p, @search_context, @term, @include_blurbs))
+      if @search_context.is_a?(Topic)
+        posts = posts_query(@limit).where('posts.topic_id = ?', @search_context.id).includes(:topic => :category)
+        posts.each do |post|
+          @results.add(post)
+        end
+      else
+        aggregate_search
       end
-
     end
 
 end

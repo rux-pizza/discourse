@@ -19,35 +19,42 @@ class PostRevisor
   def revise!(editor, new_raw, opts = {})
     @editor = editor
     @opts = opts
-    @new_raw = TextCleaner.normalize_whitespaces(new_raw).strip
+    @new_raw = TextCleaner.normalize_whitespaces(new_raw).gsub(/\s+\z/, "")
 
     return false unless should_revise?
+
     @post.acting_user = @editor
-    revise_post
-    update_category_description
-    update_topic_excerpt
+
+    Post.transaction do
+      revise_post
+
+      # TODO these callbacks are being called in a transaction
+      #  it is kind of odd, cause the callback is called before_edit
+      #  but the post is already edited at this point
+      #  trouble is that much of the logic of should I edit? is deeper
+      #  down so yanking this in front of the transaction will lead to
+      #  false positives. This system needs a review
+      plugin_callbacks
+
+      update_category_description
+      update_topic_excerpt
+      @post.advance_draft_sequence
+    end
+
+    # WARNING: do not pull this into the transaction, it can fire events in
+    #  sidekiq before the post is done saving leading to corrupt state
     post_process_post
     update_topic_word_counts
-    @post.advance_draft_sequence
+
     PostAlerter.new.after_save_post(@post)
-    publish_revision
+
+    @post.publish_change_to_clients! :revised
     BadgeGranter.queue_badge_grant(Badge::Trigger::PostRevision, post: @post)
 
     true
   end
 
   private
-
-  def publish_revision
-    MessageBus.publish("/topic/#{@post.topic_id}",{
-                    id: @post.id,
-                    post_number: @post.post_number,
-                    updated_at: @post.updated_at,
-                    type: "revised"
-                  },
-                  group_ids: @post.topic.secure_group_ids
-    )
-  end
 
   def should_revise?
     @post.raw != @new_raw || @opts[:changed_owner]
@@ -59,6 +66,11 @@ class PostRevisor
     else
       update_post
     end
+  end
+
+  def plugin_callbacks
+    DiscourseEvent.trigger :before_edit_post, @post
+    DiscourseEvent.trigger :validate_post, @post
   end
 
   def get_revised_at
@@ -73,13 +85,11 @@ class PostRevisor
   end
 
   def revise_and_create_new_version
-    Post.transaction do
-      @post.version += 1
-      @post.last_version_at = get_revised_at
-      update_post
-      EditRateLimiter.new(@editor).performed! unless @opts[:bypass_rate_limiter] == true
-      bump_topic unless @opts[:bypass_bump]
-    end
+    @post.version += 1
+    @post.last_version_at = get_revised_at
+    update_post
+    EditRateLimiter.new(@editor).performed! unless @opts[:bypass_rate_limiter] == true
+    bump_topic unless @opts[:bypass_bump]
   end
 
   def bump_topic
