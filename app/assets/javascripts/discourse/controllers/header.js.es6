@@ -7,7 +7,12 @@ export default DiscourseController.extend({
   loadingNotifications: false,
   needs: ['application'],
 
+  loginRequired: Em.computed.alias('controllers.application.loginRequired'),
   canSignUp: Em.computed.alias('controllers.application.canSignUp'),
+
+  showPrivateMessageGlyph: function() {
+    return !this.get('topic.is_warning') && this.get('topic.isPrivateMessage');
+  }.property('topic.is_warning', 'topic.isPrivateMessage'),
 
   showSignUpButton: function() {
     return this.get('canSignUp') && !this.get('showExtraInfo');

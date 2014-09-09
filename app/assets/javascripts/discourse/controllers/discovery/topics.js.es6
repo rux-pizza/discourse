@@ -122,6 +122,7 @@ var controllerOpts = {
   showTable: Em.computed.or('hasTopics', 'topicTrackingState.hasIncoming'),
   allLoaded: Em.computed.empty('more_topics_url'),
   latest: Discourse.computed.endWith('filter', 'latest'),
+  new: Discourse.computed.endWith('filter', 'new'),
   top: Em.computed.notEmpty('period'),
   yearly: Em.computed.equal('period', 'yearly'),
   monthly: Em.computed.equal('period', 'monthly'),
@@ -153,7 +154,7 @@ var controllerOpts = {
 
     var split = this.get('filter').split('/');
 
-    if (split[0] !== 'new' && split[0] !== 'unread') { return; }
+    if (split[0] !== 'new' && split[0] !== 'unread' && split[0] !== 'starred') { return; }
 
     return I18n.t("topics.none.educate." + split[0], {
       userPrefsUrl: Discourse.getURL("/users/") + (Discourse.User.currentProp("username_lower")) + "/preferences"

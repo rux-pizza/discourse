@@ -1,5 +1,5 @@
 .d-header {
-    min-width: 100%;
+    width: 100%;
     position: absolute;
     top: 0;
     z-index: 1001;
@@ -39,17 +39,6 @@
       position: relative;
     }
 
-    .current-username {
-      float: left;
-      a {
-        color: $header_primary;
-        font-size: 14px;
-        max-width: 200px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
     button.login-button, button.sign-up-button {
       float: left;
       margin-top: 7px;
@@ -142,7 +131,6 @@
     .flagged-posts {
       background: $danger;
     }
-
 }
 
 .d-dropdown {
@@ -176,7 +164,7 @@
     line-height: 16px;
 
       .fa {
-        margin-right: 3px;
+        font-size: inherit;
       }
 
       a {
@@ -217,6 +205,14 @@
       p {
         margin: 0;
         overflow: hidden;
+      }
+    }
+    .is-warning {
+      i.fa-envelope-o {
+        &:before {
+          content: "\f0e0";
+        }
+        color: $danger;
       }
     }
     .read {
@@ -286,8 +282,11 @@
       size: 18px;
     };
   }
+  // I am ghetto using this to display "Show More".. be warned
   .no-results {
     padding: 5px;
+    height: 12px;
+    width:60%;
   }
   .filter {
     float: right;

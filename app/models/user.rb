@@ -35,6 +35,7 @@ class User < ActiveRecord::Base
   has_many :invites, dependent: :destroy
   has_many :topic_links, dependent: :destroy
   has_many :uploads
+  has_many :warnings
 
   has_one :user_avatar, dependent: :destroy
   has_one :facebook_user_info, dependent: :destroy
@@ -298,7 +299,7 @@ class User < ActiveRecord::Base
   end
 
   def new_user?
-    created_at >= 24.hours.ago || trust_level == TrustLevel.levels[:newuser]
+    created_at >= 24.hours.ago || trust_level == TrustLevel[0]
   end
 
   def seen_before?
@@ -393,6 +394,10 @@ class User < ActiveRecord::Base
     PostAction.where(user_id: id, post_action_type_id: PostActionType.flag_types.values).count
   end
 
+  def warnings_received_count
+    warnings.count
+  end
+
   def flags_received_count
     posts.includes(:post_actions).where('post_actions.post_action_type_id' => PostActionType.flag_types.values).count
   end
@@ -405,7 +410,7 @@ class User < ActiveRecord::Base
 
     # Does not apply to staff, non-new members or your own topics
     return false if staff? ||
-                    (trust_level != TrustLevel.levels[:newuser]) ||
+                    (trust_level != TrustLevel[0]) ||
                     Topic.where(id: topic_id, user_id: id).exists?
 
     last_action_in_topic = UserAction.last_action_in_topic(id, topic_id)
@@ -438,7 +443,7 @@ class User < ActiveRecord::Base
   # Use this helper to determine if the user has a particular trust level.
   # Takes into account admin, etc.
   def has_trust_level?(level)
-    raise "Invalid trust level #{level}" unless TrustLevel.valid_level?(level)
+    raise "Invalid trust level #{level}" unless TrustLevel.valid?(level)
     admin? || moderator? || TrustLevel.compare(trust_level, level)
   end
 
@@ -562,7 +567,7 @@ class User < ActiveRecord::Base
   end
 
   def leader_requirements
-    @lq ||= LeaderRequirements.new(self)
+    @lq ||= TrustLevel3Requirements.new(self)
   end
 
   def should_be_redirected_to_top

@@ -14,17 +14,6 @@ html {font-size: 14px/19px;}
   }
 }
 
-@include small-width {
-  body {
-    min-width: 760px;
-  }
-  .container,
-  .full-width {
-    min-width: 760px;
-  }
-}
-
-
 @media all
 and (max-width : 570px) {
   body {
@@ -34,9 +23,6 @@ and (max-width : 570px) {
   .full-width {
     min-width: 0;
   }
-
-  .d-header .current-username a {display: none;}
-
 }
 
 header {
@@ -127,6 +113,10 @@ body {
     i {
         font-size: 15px;
           }
+  }
+
+  i.fa-envelope {
+    color: $danger;
   }
 }
 

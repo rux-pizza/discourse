@@ -28,6 +28,7 @@ class PostCreator
   #   When creating a topic:
   #     title                 - New topic title
   #     archetype             - Topic archetype
+  #     is_warning            - Is the topic a warning?
   #     category              - Category to assign to topic
   #     target_usernames      - comma delimited list of usernames for membership (private message)
   #     target_group_names    - comma delimited list of groups for membership (private message)
@@ -215,7 +216,7 @@ class PostCreator
                             reply_to_post_number: @opts[:reply_to_post_number])
 
     # Attributes we pass through to the post instance if present
-    [:post_type, :no_bump, :cooking_options, :image_sizes, :acting_user, :invalidate_oneboxes, :cook_method].each do |a|
+    [:post_type, :no_bump, :cooking_options, :image_sizes, :acting_user, :invalidate_oneboxes, :cook_method, :via_email].each do |a|
       post.send("#{a}=", @opts[a]) if @opts[a].present?
     end
 

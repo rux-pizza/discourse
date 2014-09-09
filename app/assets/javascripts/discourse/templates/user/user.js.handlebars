@@ -80,6 +80,9 @@
               {{#if number_of_suspensions}}
                 <div><span class="pill suspensions">{{number_of_suspensions}}</span>&nbsp;{{i18n user.staff_counters.suspensions}}</div>
               {{/if}}
+              {{#if number_of_warnings}}
+                <div><span class="pill warnings-received">{{number_of_warnings}}</span>&nbsp;{{i18n user.staff_counters.warnings_received}}</div>
+              {{/if}}
             </div>
 
             {{bound-avatar model "huge"}}
@@ -130,9 +133,6 @@
               {{/if}}
               {{#if invited_by}}
                 <dt>{{i18n user.invited_by}}</dt><dd>{{#link-to 'user' invited_by}}{{invited_by.username}}{{/link-to}}</dd>
-              {{/if}}
-              {{#if email}}
-                <dt>{{i18n user.email.title}}</dt><dd {{bind-attr title="email"}}>{{email}}</dd>
               {{/if}}
               <dt>{{i18n user.trust_level}}</dt><dd>{{trustLevel.name}}</dd>
             </dl>

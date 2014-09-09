@@ -120,14 +120,15 @@ en:
     errors:
       can_not_modify_automatic: "You can not modify an automatic group"
     default_names:
+      everyone: "everyone"
       admins: "admins"
       moderators: "moderators"
       staff: "staff"
+      trust_level_0: "trust_level_0"
       trust_level_1: "trust_level_1"
       trust_level_2: "trust_level_2"
       trust_level_3: "trust_level_3"
       trust_level_4: "trust_level_4"
-      trust_level_5: "trust_level_5"
 
   education:
     until_posts:
@@ -201,6 +202,8 @@ en:
         name: "Category Name"
       post:
         raw: "Body"
+      user_profile:
+        bio_raw: "About Me"
       user:
         ip_address: ""
     errors:
@@ -210,6 +213,9 @@ en:
       models:
         topic:
           attributes:
+            base:
+              warning_requires_pm: "You can only attach warnings to private messages."
+              too_many_users: "You can only send warnings to one user at a time."
             archetype:
               cant_send_pm: "Sorry, you cannot send a private message to that user."
         user:
@@ -284,9 +290,9 @@ en:
     basic:
       title: "basic user"
     regular:
-      title: "regular user"
+      title: "member"
     leader:
-      title: "veteran"
+      title: "regular"
     elder:
       title: "elder"
     change_failed_explanation: "You attempted to demote %{user_name} to '%{new_trust_level}'. However their trust level is already '%{current_trust_level}'. %{user_name} will remain at '%{current_trust_level}'"
@@ -689,7 +695,7 @@ en:
     summary_likes_required: "Minimum fucks in a topic before 'Summarize This Topic' is enabled"
     summary_percent_filter: "When a user clicks 'Summarize This Topic', show the top % of posts"
 
-    enable_private_messages: "Allow basic (1) trust level users to create private messages and reply to private messages"
+    enable_private_messages: "Allow trust level 1 users to create private messages and reply to private messages"
 
     enable_long_polling: "Message bus used for notification can use long polling"
     long_polling_interval: "Interval before a new long poll is issued in milliseconds "
@@ -837,29 +843,29 @@ en:
     default_invitee_trust_level: "Default trust level (0-4) for invited users."
     default_trust_level: "Default trust level (0-4) for all new users."
 
-    basic_requires_topics_entered: "How many topics a new user must enter before promotion to basic (1) trust level."
-    basic_requires_read_posts: "How many posts a new user must read before promotion to basic (1) trust level."
-    basic_requires_time_spent_mins: "How many minutes a new user must read posts before promotion to basic (1) trust level."
+    tl1_requires_topics_entered: "How many topics a new user must enter before promotion to trust level 1."
+    tl1_requires_read_posts: "How many posts a new user must read before promotion to trust level 1."
+    tl1_requires_time_spent_mins: "How many minutes a new user must read posts before promotion to trust level 1."
 
-    regular_requires_topics_entered: "How many topics a basic user must enter before promotion to regular (2) trust level."
-    regular_requires_read_posts: "How many posts a basic user must read before promotion to regular (2) trust level."
-    regular_requires_time_spent_mins: "How many minutes a basic user must read posts before promotion to regular (2) trust level."
-    regular_requires_days_visited: "How many days a basic user must visit the site before promotion to regular (2) trust level."
-    regular_requires_likes_received: "How many fucks a basic user must receive before promotion to regular (2) trust level."
-    regular_requires_likes_given: "How many fucks a basic user must cast before promotion to regular (2) trust level."
-    regular_requires_topic_reply_count: "How many topics a basic user must reply to before promotion to regular (2) trust level."
+    tl2_requires_topics_entered: "How many topics a user must enter before promotion to trust level 2."
+    tl2_requires_read_posts: "How many posts a user must read before promotion to trust level 2."
+    tl2_requires_time_spent_mins: "How many minutes a user must read posts before promotion to trust level 2."
+    tl2_requires_days_visited: "How many days a user must visit the site before promotion to trust level 2."
+    tl2_requires_likes_received: "How many likes a user must receive before promotion to trust level 2."
+    tl2_requires_likes_given: "How many likes a user must cast before promotion to trust level 2."
+    tl2_requires_topic_reply_count: "How many topics user must reply to before promotion to trust level 2."
 
-    leader_requires_days_visited: "Minimum number of days that a user needs to have visited the site in the last 100 days to qualify for promotion to veteran (3) trust level. (0 to 100)"
-    leader_requires_topics_replied_to: "Minimum number of topics a user needs to have replied to in the last 100 days to qualify for promotion to veteran (3) trust level. (0 or higher)"
-    leader_requires_topics_viewed: "The percentage of topics created in the last 100 days that a user needs to have viewed to qualify for promotion to veteran (3) trust level. (0 to 100)"
-    leader_requires_posts_read: "The percentage of posts created in the last 100 days that a user needs to have viewed to qualify for promotion to veteran (3) trust level. (0 to 100)"
-    leader_requires_topics_viewed_all_time: "The minimum total number of topics a user must have viewed to qualify for veteran (3) trust level."
-    leader_requires_posts_read_all_time: "The minimum total number of posts a user must have read to qualify for veteran (3) trust level."
-    leader_requires_max_flagged: "User must not have had more than x posts flagged by x different users in the last 100 days to qualify for promotion to veteran (3) trust level, where x is this setting's value. (0 or higher)"
-    leader_promotion_min_duration: "The minimum number of days that a promotion to veteran lasts before a user can be demoted."
-    leader_requires_likes_given: "The minimum number of likes that must be given in the last 100 days to qualify for promotion to veteran (3) trust level."
-    leader_requires_likes_received: "The minimum number of likes that must be received in the last 100 days to qualify for promotion to veteran (3) trust level."
-    leader_links_no_follow: "Do not remove rel=nofollow from veteran links."
+    tl3_requires_days_visited: "Minimum number of days that a user needs to have visited the site in the last 100 days to qualify for promotion to trust level 3. (0 to 100)"
+    tl3_requires_topics_replied_to: "Minimum number of topics a user needs to have replied to in the last 100 days to qualify for promotion to trust level 3. (0 or higher)"
+    tl3_requires_topics_viewed: "The percentage of topics created in the last 100 days that a user needs to have viewed to qualify for promotion to trust level 3. (0 to 100)"
+    tl3_requires_posts_read: "The percentage of posts created in the last 100 days that a user needs to have viewed to qualify for promotion to trust level 3. (0 to 100)"
+    tl3_requires_topics_viewed_all_time: "The minimum total number of topics a user must have viewed to qualify for trust level 3."
+    tl3_requires_posts_read_all_time: "The minimum total number of posts a user must have read to qualify for trust level 3."
+    tl3_requires_max_flagged: "User must not have had more than x posts flagged by x different users in the last 100 days to qualify for promotion to trust level 3, where x is this setting's value. (0 or higher)"
+    tl3_promotion_min_duration: "The minimum number of days that a promotion to trust level 3 lasts before a user can be demoted back to trust level 2."
+    tl3_requires_likes_given: "The minimum number of likes that must be given in the last 100 days to qualify for promotion to trust level 3."
+    tl3_requires_likes_received: "The minimum number of likes that must be received in the last 100 days to qualify for promotion to trust level 3."
+    tl3_links_no_follow: "Do not remove rel=nofollow from links posted by trust level 3 users."
 
     min_trust_to_create_topic: "The minimum trust level required to create a new topic."
 
@@ -998,6 +1004,8 @@ en:
 
     vacuum_db_days: "Run VACUUM FULL ANALYZE to reclaim DB space after migrations (set to 0 to disable)"
 
+    prevent_anons_from_downloading_files: "Prevent anonymous users from downloading files."
+
     errors:
       invalid_email: "Invalid email address."
       invalid_username: "There's no user with that username."
@@ -1084,6 +1092,7 @@ en:
     active: "Your account is activated and ready to use."
     activate_email: "You're almost done! We sent an activation email to <b>%{email}</b>. Please follow the instructions in the email to activate your account."
     not_activated: "You can't log in yet. We sent an activation email to you. Please follow the instructions in the email to activate your account."
+    not_allowed_from_ip_address: "You can't login as %{username} from that IP address."
     suspended: "You can't log in until %{date}."
     suspended_with_reason: "You can't log in until %{date}. The reason you were suspended: %{reason}"
     errors: "%{errors}"
@@ -1144,7 +1153,7 @@ en:
   test_mailer:
     subject_template: "[%{site_name}] Email Deliverability Test"
     text_body_template: |
-      This is a test email sent from your %{site_name} forum at:
+      This is a test email from
 
       [**%{base_url}**][0]
 
@@ -1152,7 +1161,7 @@ en:
 
       - Be *sure* to set the `notification email` from: address correctly in your site settings. **The domain specified in the "from" address of the emails you send is the domain your email will be validated against**.
 
-      - Know how to view the *raw source of the email* in your mail client, so you can examine email headers for important clues. in Gmail, it is the "show original" option in the drop-down menu at the top right of each mail.
+      - Know how to view the raw source of the email in your mail client, so you can examine email headers for important clues. in Gmail, it is the "show original" option in the drop-down menu at the top right of each mail.
 
       - **IMPORTANT:** Does your ISP have a reverse DNS record entered to associate the domain names and IP addresses you send mail from? [Test your Reverse PTR record][2] here. If your ISP does not enter the proper reverse DNS pointer record, it's very unlikely any of your email will be delivered.
 
@@ -1160,11 +1169,9 @@ en:
 
       - Is your domain's [DKIM record][3] correct? This will significantly improve email deliverability. [Test your DKIM record][7] here.
 
-      - If you run your own mail server, check to make sure the IPs of your mail server are [not on any email blacklists][4].
+      - If you run your own mail server, check to make sure the IPs of your mail server are [not on any email blacklists][4]. Also verify that it is definitely sending a fully-qualified hostname that resolves in DNS in its HELO message. If not, this will cause your email to be rejected by many mail services.
 
-      - If you run your own mail server, verify that it is *definitely* sending a fully-qualified hostname that resolves in DNS in its HELO message. If not, this will cause your email to be rejected by many mail services.
-
-      (The *easy* way is to [sign up for Mandrill][6], which has a generous free mailing plan and will be fine for small forums. You'll still need to set up the SPF and DKIM records in your DNS, though!)
+      (The *easy* way is to create a free account on [Mandrill][md] or [Mailgun][mg] or [Mailjet][mj], which have free generous free mailing plans and will be fine for small communities. You'll still need to set up the SPF and DKIM records in your DNS, though!)
 
       We hope you received this email deliverability test OK!
 
@@ -1178,9 +1185,11 @@ en:
       [3]: http://www.dkim.org/
       [4]: http://whatismyipaddress.com/blacklist-check
       [5]: %{base_url}/unsubscribe
-      [6]: http://mandrill.com
       [7]: http://dkimcore.org/tools/dkimrecordcheck.html
       [8]: http://www.openspf.org/SPF_Record_Syntax
+      [md]: http://mandrill.com
+      [mg]: http://www.mailgun.com/
+      [mj]: http://www.mailjet.com/pricing
 
       ----
 
