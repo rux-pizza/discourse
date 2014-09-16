@@ -48,16 +48,16 @@
               <div class="featured-topic">
                 {{topic-status topic=this}}
                 <a class='title' href="{{unbound lastUnreadUrl}}">{{{unbound fancy_title}}}</a>
-                {{topic-post-badges unread=totalUnread unseen=unseen url=lastUnreadUrl}}
+                {{topic-post-badges newPosts=totalUnread unseen=unseen url=lastUnreadUrl}}
 
                 {{#if controller.latestTopicOnly}}
                   <div class='last-user-info'>
                     {{i18n categories.latest_by}} <a href="{{{unbound lastPosterUrl}}}">{{unbound last_poster.username}}</a>
-                    <a href="{{unbound lastPostUrl}}">{{age last_posted_at}}</a>
+                    <a href="{{unbound lastPostUrl}}">{{format-age last_posted_at}}</a>
                   </div>
                 {{else}}
                   &nbsp;
-                  <a href="{{unbound lastPostUrl}}" class="last-posted-at">{{age last_posted_at}}</a>
+                  <a href="{{unbound lastPostUrl}}" class="last-posted-at">{{format-age last_posted_at}}</a>
                 {{/if}}
               </div>
             {{/each}}

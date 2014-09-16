@@ -1,5 +1,4 @@
 (function() {
-
   var emoji = <%= Dir.glob(File.expand_path("../../../public/images/*.png", __FILE__)).map{|f| File.basename(f).split(".")[0]}.inspect %>;
 
   function imageFor(code) {
@@ -55,6 +54,7 @@
     } else {
       var replacement = translations[t];
       Discourse.Dialect.inlineReplace(t, function (token, match, prev) {
+        if (!Discourse.SiteSettings.enable_emoji) { return; }
         return checkPrev(prev) ? imageFor(replacement) : token;
       });
     }
@@ -69,6 +69,8 @@
                                            }).join("|"));
 
   Discourse.Dialect.registerInline('&', function(text, match, prev) {
+    if (!Discourse.SiteSettings.enable_emoji) { return; }
+
     var endPos = text.indexOf('&', 1),
         firstSpace = text.search(/\s/),
         contents;
@@ -104,6 +106,7 @@
   var ComposerView = (Discourse && Discourse.ComposerView) || (typeof require !== "undefined" && require('discourse/views/composer').default);
   if (ComposerView) {
     ComposerView.on("initWmdEditor", function(event){
+      if (!Discourse.SiteSettings.enable_emoji) { return; }
 
       var baseUrl = Discourse.getURL("/");
 
@@ -112,7 +115,7 @@
                                           "{{#each options}}" +
                                               "<li>" +
                                                 "<a href='#'>" +
-                                                "<img src='" + baseUrl + "plugins/emoji/images/{{this}}.png' class='emoji'> " +
+                                                "<img src='" + baseUrl + "plugins/emoji/images/{{this}}.png?v=1' class='emoji'> " +
                                                 "{{this}}</a>" +
                                               "</li>" +
                                           "{{/each}}" +

@@ -98,14 +98,15 @@ fr:
     errors:
       can_not_modify_automatic: "Vous ne pouvez pas modifier un groupe automatique"
     default_names:
-      admins: "adminisateurs"
-      moderators: "modérateurs"
+      everyone: "tous"
+      admins: "administrateurs"
+      moderators: "moderateurs"
       staff: "staff"
+      trust_level_0: "niveau_confiance_0"
       trust_level_1: "niveau_confiance_1"
       trust_level_2: "niveau_confiance_2"
       trust_level_3: "niveau_confiance_3"
       trust_level_4: "niveau_confiance_4"
-      trust_level_5: "niveau_confiance_5"
   education:
     until_posts:
       one: "1 message"
@@ -165,6 +166,8 @@ fr:
         name: "Nom de la catégorie"
       post:
         raw: "Corps"
+      user_profile:
+        bio_raw: "À propos de moi"
     errors:
       messages:
         is_invalid: "n'est pas valide; merci d'être plus descriptif"
@@ -196,6 +199,27 @@ fr:
   assets_topic_body: "Ceci est un sujet permanent, visible uniquement par l'équipe, pour stocker les images et fichiers utilisés pour le design du site. Ne pas le supprimer !\n\n\nMarche à suivre:\n\n1. Répondre à ce sujet\n2. Envoyer toutes les images que vous voulez utilisés comme logos, favicons, et tout ce que vous souhaitez. (Utiliser l'icone dans la barre d'édition ou glisser-déposer ou coller les images)\n3. Envoyer votre réponse\n4. Afin d'obtenir le chemin complet de votre image, faites un clic-droit dessus ou éditer votre message et copier le chemin.\n5. Coller le chemin de l'image dans les [paramètres requis](/admin/site_settings/category/required).\n\nDe plus, si vous souhaitez envoyer d'autres formats de fichier, modifier l'option `authorized_extensions` dans les [paramètres de fichier](/admin/site_settings/category/files)."
   lounge_welcome:
     title: "Bienvenue dans le salon"
+    body: |2
+
+      Félicitation ! :confetti_ball:
+
+      Si vous voyez ce sujet, c'est que vous avez récemment été promu au [niveau de confiance 3 (régulier)][trust].
+
+      Vous pouvez désormais &hellip;
+
+      * Modifier le titre de tous les sujets
+      * Modifier la catégorie de tous les sujets
+      * Avoir vos liens suivis [automatic nofollow](http://en.wikipedia.org/wiki/Nofollow) est retiré)
+      * Accès à un salon privé visible uniquement pour les membres de niveau de confiance 3 ou plus.
+      * Avoir des J'aimes et signalements qui ont un plus gros impact.
+
+      Voici la [liste courante des meneurs](/badges/3/regular). Hésitez pas à dire bonjour !
+
+      Merci d'être une part importante de la communauté !
+
+      (Pour plus d'information sur les niveaux de confiance [voir ce sujet][trust]. Veuillez noter que seuls les membres qui continuerons de respecter les critères garderons ce niveau de confiance.
+
+      [trust]: https://meta.discourse.org/t/what-do-user-trust-levels-do/4924
   category:
     topic_prefix: "A propos de la catégorie %{category}"
     replace_paragraph: "[Remplacez ce premier paragraphe par une courte description de votre nouvelle catégorie. Ce texte apparaît dans la zone de sélection de catégorie, alors essayez de le maintenir en dessous de 200 caractères. Cette catégorie n'apparaîtra pas sur la page des catégories tant que vous modifiez ce texte ou jusqu'à ce qu'un sujet soit crée.]"
@@ -217,9 +241,9 @@ fr:
     basic:
       title: "utilisateur de base"
     regular:
-      title: "utilisateur régulier"
-    elder:
-      title: "vétéran"
+      title: "membre"
+    leader:
+      title: "régulier"
     change_failed_explanation: "Vous avez essayé de rétrograder %{user_name} au niveau '%{new_trust_level}'. Cependant son niveau de confiance est déjà '%{current_trust_level}'. %{user_name} restera au niveau  '%{current_trust_level}'."
   rate_limiter:
     slow_down: "Vous avez effectué cette action trop de fois, réessayez plus tard"
@@ -340,6 +364,7 @@ fr:
       long_form: 'signalé comme inapproprié'
     notify_user:
       title: 'Avertir {{username}}'
+      description: 'Ce message contient quelque chose sur lequel je souhaite discuter en privé avec cet utilisateur. N''envoi pas de signalement.'
       long_form: 'utilisateur avertis'
       email_title: 'Votre message sur "%{title}"'
       email_body: "%{link}\n\n%{message}"
@@ -597,7 +622,7 @@ fr:
     summary_posts_required: "Nombre minimum de messages dans un sujet avant que le 'Résumé du sujet' soit activé"
     summary_likes_required: "Nombre de J'aime minimum dans un sujet avant que le 'Résumé du sujet' soit activé"
     summary_percent_filter: "Quand un utilisateur clique sur 'Résumé du sujet', montrer le top % des messages"
-    enable_private_messages: "Autoriser les utilisateurs de base (niveau de confiance 1) à créer des messages et messages privés."
+    enable_private_messages: "Autoriser les utilisateurs du niveau de confiance 1 à créer des messages et conversations privés."
     enable_long_polling: "Utiliser les requêtes longues pour le flux de notifications."
     long_polling_interval: "Intervalle en millisecondes avant de lancer une nouvelle requête longue."
     polling_interval: "À quelle fréquence les clients doivent-ils requêter le serveur, en millisecondes"
@@ -629,6 +654,7 @@ fr:
     track_external_right_clicks: "Suivi des clics sur les liens externes (ex: ouverture dans un nouvel onglet) désactivé par défaut car nécessite une ré-écriture de toutes les urls"
     topics_per_page: "Combien de sujets seront chargés par défaut sur la liste des sujets et lors du défilement vers le bas pour charger des sujets supplémentaires"
     posts_per_page: "Combien de messages seront chargés par défaut sur un sujet, et lors du défilement vers le bas pour charger des messages supplémentaires."
+    site_contact_username: "Tous les messages privés automatisés le seront depuis cet utilisateur; si non renseigné, le compte par défaut System sera utilisé."
     send_welcome_message: "Envoyer à tous les nouveaux utilisateurs un message privé avec un guide de démarrage rapide."
     suppress_reply_directly_below: "Ne pas afficher le panneau extensible des réponses d'un message quand la seule réponse est juste en dessous ce dernier."
     suppress_reply_directly_above: "Ne pas afficher 'en réponse à' sur un message quand la seule réponse est juste en dessus de ce dernier."
@@ -711,16 +737,27 @@ fr:
     enable_flash_video_onebox: "Activer l'utilisation de swf et flv (Adobe Flash) dans les boites imbriquées. ATTENTION : cela pourrait introduire un risque de sécurité."
     default_invitee_trust_level: "Niveau de confiance par défaut (0-4) pour les invités."
     default_trust_level: "Niveau de confiance par défaut (0-4) pour les nouveaux utilisateurs."
-    basic_requires_topics_entered: "A combien de sujet un nouvel utilisateur doit avoir participé pour être promu au niveau de base (1)."
-    basic_requires_read_posts: "Combien de message un nouvel utilisateur doit avoir lu pour être promu au niveau de base (1)."
-    basic_requires_time_spent_mins: "Combien de minutes un nouvel utilisateur doit avoir passées à lire des messages pour être promu au niveau de base (1)."
-    regular_requires_topics_entered: "A combien de sujet un utilisateur de base doit avoir participé pour être promu au niveau régulier (2)."
-    regular_requires_read_posts: "Combien de message un utilisateur de base doit avoir lu pour être promu au niveau régulier (2)."
-    regular_requires_time_spent_mins: "Combien de minutes un utilisateur de base doit avoir passées à lire des messages pour être promu au niveau régulier (2)"
-    regular_requires_days_visited: "Combien de jours un utilisateur de base doit visiter le site pour être promu au niveau régulier (2)"
-    regular_requires_likes_received: "Combien de J'aime un utilisateur de base doit recevoir pour être promu au niveau régulier (2)"
-    regular_requires_likes_given: "Combien de J'aime un utilisateur de base doit donner pour être promu au niveau régulier (2)"
-    regular_requires_topic_reply_count: "Combien de réponses un utilisateur de base doit donner pour être promu au niveau régulier (2)"
+    tl1_requires_topics_entered: "A combien de sujet un nouvel utilisateur doit avoir participé pour être promu au niveau de confiance 1."
+    tl1_requires_read_posts: "Combien de message un nouvel utilisateur doit avoir lu pour être promu au niveau de confiance 1."
+    tl1_requires_time_spent_mins: "Combien de minutes un nouvel utilisateur doit avoir passées à lire des messages pour être promu au niveau de confiance 1."
+    tl2_requires_topics_entered: "A combien de sujet un utilisateur doit avoir participé pour être promu au niveau de confiance 2."
+    tl2_requires_read_posts: "Combien de message un utilisateur doit avoir lu pour être promu au niveau de confiance 2."
+    tl2_requires_time_spent_mins: "Combien de minutes un utilisateur doit avoir passées à lire des messages pour être promu au niveau de confiance 2."
+    tl2_requires_days_visited: "Combien de jours un utilisateur doit visiter le site pour être promu au niveau de confiance 2."
+    tl2_requires_likes_received: "Combien de J'aime un utilisateur doit recevoir pour être promu au niveau de confiance 2."
+    tl2_requires_likes_given: "Combien de J'aime un utilisateur doit donner pour être promu au niveau de confiance 2."
+    tl2_requires_topic_reply_count: "A combien de sujet un utilisateur doit avoir participé pour être promu au niveau de confiance 2."
+    tl3_requires_days_visited: "Nombre minimum de jours qu'un utilisateur doit avoir passer sur le site dans les 100 derniers jours pour être promu au niveau de confiance 3. (0 à 100)"
+    tl3_requires_topics_replied_to: "Nombre minimum de sujets auquel un utilisateur doit avoir répondu dans les 100 derniers jours pour être promu au niveau de confiance 3. (0 à 100)"
+    tl3_requires_topics_viewed: "Pourcentage de sujets crées dans les 100 derniers jours qu'un utilisateur doit avoir vu pour être promu au niveau de confiance 3. (0 à 100)"
+    tl3_requires_posts_read: "Pourcentage de message crées dans les 100 derniers jours qu'un utilisateur doit avoir vu pour être promu au niveau de confiance 3. (0 à 100)"
+    tl3_requires_topics_viewed_all_time: "Nombre minimum de sujets qu'un utilisateur doit avoir vu pour être promu au niveau de confiance 3."
+    tl3_requires_posts_read_all_time: "Nombre minimum de messages qu'un utilisateur doit avoir vu pour être promu au niveau de confiance 3."
+    tl3_requires_max_flagged: "L'utilisateur ne doit pas avoir plus de x messages signalés par x utilisateurs différents dans les 100 derniers jours pour être promu au niveau de confiance 3; x étant la valeur de ce paramètre. (0 ou plus)"
+    tl3_promotion_min_duration: "Nombre minimum de jours qu'un utilisateur restera promu au niveau de confiance 3 avant de pouvoir être rétrogradé au niveau de confiance 2."
+    tl3_requires_likes_given: "Nombre minimum de J'aime à donner dans les 100 derniers jours pour être promu au niveau de confiance 3."
+    tl3_requires_likes_received: "Nombre minimum de J'aime à recevoir dans les 100 derniers jours pour être promu au niveau de confiance 3."
+    tl3_links_no_follow: "Ne pas retirer rel=nofollow sur les liens des messages par les utilisateurs de niveau de confiance 3."
     min_trust_to_create_topic: "Le niveau de confiance minimum pour créer un nouveau sujet."
     min_trust_to_edit_wiki_post: "Le niveau de confiance minimum requis pour modifier les messages de type wiki."
     newuser_max_links: "Combien de liens un nouvel utilisateur peut-il ajouter à un message."
@@ -767,6 +804,13 @@ fr:
     reply_by_email_enabled: "Activer les réponses aux sujets via courriel."
     reply_by_email_address: "Modèle pour la réponse par courriel entrant; exemple : %{reply_key}@reply.example.com ou replies+%{reply_key}@example.com"
     disable_emails: "Désactiver l'envoi de les courriels depuis Discourse."
+    pop3_polling_enabled: "Utiliser POP3 pour les réponses via courriel."
+    pop3_polling_ssl: "Utiliser SSL pour les connections au serveur POP3. (Recommandé)"
+    pop3_polling_period_mins: "La période en minute entre chaque vérification du compte POP3 des courriels.\nNote: nécessite un redémarrage de la machine."
+    pop3_polling_port: "Le port pour le pooling des courriels via POP3."
+    pop3_polling_host: "L'hôte pour le pooling des courriels via POP3."
+    pop3_polling_username: "Le nom d'utilisateur du compte POP3 pour le pooling des courriels."
+    pop3_polling_password: "Le mot de passe du compte POP3 pour le pooling des courriels."
     email_in: "Autoriser les utilisateurs à poster de nouveaux sujets par courriel (requêtes via pop3 requise). Configurer les adresses dans l'onglet \"Paramètres\" de chaque catégorie."
     email_in_min_trust: "Le niveau de confiance minimum qu'un utilisateur doit avoir pour être autorisé à poster de nouveaux sujets par courriel."
     email_prefix: "Le [label] qui sera utilisé dans le sujet des courriels. Par défaut il prend la valeur de 'title'."
@@ -794,7 +838,6 @@ fr:
     dominating_topic_minimum_percent: "Quel est le pourcentage de messages un utilisateur doit poster dans un sujet avant d'être rappelé à l'ordre pour laissé la communauté répondre."
     suppress_uncategorized_badge: "Ne pas afficher le badge pour les sujets non catégorisés dans les listes des sujets."
     global_notice: "Affiche un bandeau global URGENT pour tout les utilisateurs du site, laissez vide pour le cacher (HTML autorisé)."
-    disable_edit_notifications: "Désactiver les notifications de modifications lorsque l'option 'download_remote_images_to_local' est activé."
     enable_names: "Autoriser l'affichage des noms complets des utilisateurs. Désactiver pour cacher les noms complets."
     display_name_on_posts: "Afficher le nom complet de l'utilisateur dans ses messages en plus de son @pseudo."
     invites_per_page: "Afficher les invitations sur la page de l'utilisateur."
@@ -843,6 +886,7 @@ fr:
     linked: "%{display_username} a mentionné l'un de vos messages : %{link}"
     granted_badge: "Vous avez gagné %{link}"
   search:
+    within_post: "#%{post_number} par %{username}"
     types:
       category: 'Catégories'
       topic: 'Résultats'
@@ -885,8 +929,6 @@ fr:
     pinned_disabled: "Ce sujet est maintenant dé-épinglé. Il n'apparaîtra plus en haut de sa categorie."
     pinned_globally_enabled: "Ce sujet est maintenant épinglé pour tous. Il apparaîtra en haut de sa catégorie et de chaque liste de sujets jusqu'à ce qu'il soit désépinglé par un modérateur, ou individuellement par les utilisateurs eux-mêmes."
     pinned_globally_disabled: "Ce sujet est maintenant désépinglé. Il n'apparaîtra plus en haut de sa catégorie."
-    visible_enabled: "Ce sujet est maintenant visible. Il sera affiché dans la liste des sujets."
-    visible_disabled: "Ce sujet est maintenant invisible. Il ne sera plus affiché dans la liste des sujets. Le seul moyen d'y accéder est par un lien direct."
   login:
     not_approved: "Votre compte n'a pas encore été approuvé. Vous serez notifié par courriel quand cela sera fait."
     incorrect_username_email_or_password: "pseudo, adresse de courriel ou mot de passe incorrect"
@@ -894,6 +936,7 @@ fr:
     active: "Votre compte est activé et prêt à l'emploi."
     activate_email: "Vous avez presque fini ! Un courriel de confirmation a été envoyé à <b>%{email}</b>. Suivez les instructions pour activer votre compte."
     not_activated: "Vous ne pouvez pas vous connecter pour le moment. Nous vous avons envoyé un courriel d'activation. Merci de suivre les instructions qui s'y trouve pour activer votre compte."
+    not_allowed_from_ip_address: "Vous ne pouvez pas vous connecter en tant que %{username} depuis cette adresse IP."
     suspended: "Vous ne pouvez pas vous connecter jusqu'au %{date}."
     suspended_with_reason: "Vous ne pouvez pas vous connecter jusqu'au %{date}. La raison de votre suspension est : %{reason}"
     errors: "%{errors}"
@@ -949,48 +992,6 @@ fr:
       Cette invitation provient d'un utilisateur de confiance, vous n'avez pas besoin de vous connecter.
   test_mailer:
     subject_template: "[%{site_name}] Test de délivrabilité d'un courriel"
-    text_body_template: |
-      Ceci est un courriel de test envoyé depuis le forum :
-
-      [**%{base_url}**][0]
-
-      La délivrabilité d'un courriel est complexe. Voici les points importants que vous devez vérifier immédiatement :
-
-      - Soyez *sûr* d'avoir renseigné `notification email` dans les paramètres du site.
-
-      - Soyez sûr de savoir comment voir la *source brute du courriel* dans votre client de courriels, afin que vous puissiez examiner l'entête du courriel contenant des indices importants. Dans Gmail, utiliser "voir la source".
-
-      - **IMPORTANT** : Votre FAI a-t-elle effectué un enregistrement reverse DNS pour associer le nom de domaine depuis lequel vous envoyez les courriels avec les IPs que vous utilisez pour envoyer les courriels ? [Testez votre enregistrement Reverse PTR][2] ici. Si l'enregistrement du reverse DNS pointer approprié n'est pas effectué par votre FAI, il est peu probable que vos courriels soient délivrés.
-
-      - L'[enregistrement SPF][8] de votre domaine est-il correct ? [Testez votre enregistrement SPF][1] ici. Notez que la version TXT est le format officiel pour le SPF.
-
-      - L'[enregistrement DKIM][3] de votre domaine est-il correct? Cela améliore significativement la délivrance des courriels. [Testez votre enregistrement DKIM ][7] ici.
-
-      - Si vous utilisé votre propre serveur de courriel, vérifié que votre adresse IP [n'est pas dans la liste des courriels black-listés][4].
-
-      - Vérifiez que votre serveur de messagerie envoi *vraiment* un nom d'hôte pleinement qualifié présent dans le message HELO lors d'une résolution DNS. Si ce n'est pas le cas, cela augmentera les chances que votre adresse de courriel soit rejetée par de nombreux services de messagerie.
-
-      (La méthode *facile* est d'utiliser [Mandrill][6], qui a un plan généreusement gratuit pour les petites productions. Vous devrez toujours configurer les enregistrements SPF et DKIM dans votre DNS)
-
-      Nous espérons que vous avez correctement reçu ce courriel de test !
-
-      Bonne chance.
-
-      Vos amis de [Discourse](http://www.discourse.org)
-
-      [0]: %{base_url}
-      [1]: http://www.kitterman.com/spf/validate.html
-      [2]: http://mxtoolbox.com/ReverseLookup.aspx
-      [3]: http://www.dkim.org/
-      [4]: http://whatismyipaddress.com/blacklist-check
-      [5]: %{base_url}/unsubscribe
-      [6]: http://mandrill.com
-      [7]: http://dkimcore.org/tools/dkimrecordcheck.html
-      [8]: http://www.openspf.org/SPF_Record_Syntax
-
-      ----
-
-      <small>Vous pouvez mettre un message pour les désinscriptions, en voici un de test. Ce courriel a été envoyé par Nom de l'entreprise, 55 rue du cheval, 78015 Paris. Si vous ne souhaitez plus recevoir nos courriels [cliquez ici pour vous désinscrire][5].</small>
   new_version_mailer:
     subject_template: "[%{site_name}] Nouvelle version de Discourse, mise à jour disponible"
     text_body_template: |

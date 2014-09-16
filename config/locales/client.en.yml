@@ -332,11 +332,11 @@ en:
       unread_message_count: "Messages"
 
       staff_counters:
-        flags_given: "helpful flags cast"
+        flags_given: "helpful flags"
         flagged_posts: "flagged posts"
         deleted_posts: "deleted posts"
         suspensions: "suspensions"
-        warnings_received: "warnings received"
+        warnings_received: "warnings"
 
       messages:
         all: "All"
@@ -479,7 +479,7 @@ en:
         bulk_invite:
           none: "You haven't invited anyone here yet. You can send individual invites, or invite a bunch of people at once by <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>uploading a bulk invite file</a>."
           text: "Bulk Invite from File"
-          uploading: "UPLOADING"
+          uploading: "Uploading..."
           success: "File uploaded successfully, you will be notified shortly with progress."
           error: "There was an error uploading '{{filename}}': {{message}}"
 
@@ -520,6 +520,7 @@ en:
         network: "Please check your connection."
         network_fixed: "Looks like it's back."
         server: "Error code: {{status}}"
+        forbidden: "You're not allowed to view that."
         unknown: "Something went wrong."
       buttons:
         back: "Go Back"
@@ -585,7 +586,11 @@ en:
       reset: "Reset Password"
       complete_username: "If an account matches the username <b>%{username}</b>, you should receive an email with instructions on how to reset your password shortly."
       complete_email: "If an account matches <b>%{email}</b>, you should receive an email with instructions on how to reset your password shortly."
+      complete_username_found: "We found an account that matches the username <b>%{username}</b>, you should receive an email with instructions on how to reset your password shortly."
+      complete_email_found: "We found an account that matches <b>%{email}</b>, you should receive an email with instructions on how to reset your password shortly."
 
+      complete_username_not_found: "No account matches the username <b>%{username}</b>"
+      complete_email_not_found: "No account matches <b>%{email}</b>"
     login:
       title: "Log In"
       username: "User"
@@ -936,8 +941,8 @@ en:
         pin_globally: "Pin Topic Globally"
         unarchive: "Unarchive Topic"
         archive: "Archive Topic"
-        invisible: "Make Invisible"
-        visible: "Make Visible"
+        invisible: "Make Unlisted"
+        visible: "Make Listed"
         reset_read: "Reset Read Data"
         multi_select: "Select Posts"
 
@@ -1102,8 +1107,11 @@ en:
           yes_value: "Yes, delete the replies too"
           no_value: "No, just this post"
         admin: "post admin actions"
-        wiki: "Wiki post"
-        unwiki: "Unwiki post"
+        wiki: "Make Wiki"
+        unwiki: "Remove Wiki"
+        convert_to_moderator: "Add Staff Color"
+        revert_to_regular: "Remove Staff Color"
+        rebake: "Rebuild HTML"
 
       actions:
         flag: 'Flag'
@@ -1339,7 +1347,7 @@ en:
       archived:
         help: "This topic is archived; it is frozen and cannot be changed"
       invisible:
-        help: "This topic is invisible; it will not be displayed in topic lists, and can only be accessed via a direct link"
+        help: "This topic is unlisted; it will not be displayed in topic lists, and can only be accessed via a direct link"
 
     posts: "Posts"
     posts_lowercase: "posts"
@@ -1605,8 +1613,8 @@ en:
           filename: "Filename"
           size: "Size"
         upload:
-          text: "UPLOAD"
-          uploading: "UPLOADING"
+          text: "Upload"
+          uploading: "Uploading..."
           success: "'{{filename}}' has successfully been uploaded."
           error: "There has been an error while uploading '{{filename}}': {{message}}"
         operations:
@@ -2079,22 +2087,23 @@ en:
         unread: '<b>g</b>, <b>u</b> Unread'
         starred: '<b>g</b>, <b>f</b> Starred'
         categories: '<b>g</b>, <b>c</b> Categories'
+        top: '<b>g</b>, <b>t</b> Top'
       navigation:
         title: 'Navigation'
-        jump: '<b>#</b> Go to post number'
+        jump: '<b>#</b> Go to post #'
         back: '<b>u</b> Back'
-        up_down: '<b>k</b>/<b>j</b> Move selection up/down'
+        up_down: '<b>k</b>/<b>j</b> Move selection &uarr; &darr;'
         open: '<b>o</b> or <b>Enter</b> Open selected topic'
         next_prev: '<b>shift j</b>/<b>shift k</b> Next/previous section'
       application:
         title: 'Application'
         create: '<b>c</b> Create a new topic'
         notifications: '<b>n</b> Open notifications'
-        site_map_menu: '<b>=</b> Open site map menu'
-        user_profile_menu: '<b>p</b> Open user profile menu'
-        show_incoming_updated_topics: '<b>.</b> Show incoming/updated topics'
+        site_map_menu: '<b>=</b> Open site menu'
+        user_profile_menu: '<b>p</b> Open user menu'
+        show_incoming_updated_topics: '<b>.</b> Show updated topics'
         search: '<b>/</b> Search'
-        help: '<b>?</b> Open keyboard shortcuts help'
+        help: '<b>?</b> Open keyboard help'
         dismiss_new_posts: '<b>x</b>, <b>r</b> Dismiss New/Posts'
         dismiss_topics: '<b>x</b>, <b>t</b> Dismiss Topics'
       actions:
@@ -2173,6 +2182,24 @@ en:
         great_post:
           name: Great Post
           description: Received 50 fucks on a post. This badge can be granted multiple times
+        nice_topic:
+          name: Nice Topic
+          description: Received 10 likes on a topic. This badge can be granted multiple times
+        good_topic:
+          name: Good Topic
+          description: Received 25 likes on a topic. This badge can be granted multiple times
+        great_topic:
+          name: Great Topic
+          description: Received 50 likes on a topic. This badge can be granted multiple times
+        nice_share:
+          name: Nice Share
+          description: Shared a post with 25 unique visitors
+        good_share:
+          name: Good Share
+          description: Shared a post with 300 unique visitors
+        great_share:
+          name: Great Share
+          description: Shared a post with 1000 unique visitors
         first_like:
           name: First Fuck
           description: Given a fuck to a post

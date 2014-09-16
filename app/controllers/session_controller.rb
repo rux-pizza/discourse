@@ -54,6 +54,8 @@ class SessionController < ApplicationController
     params.require(:login)
     params.require(:password)
 
+    return invalid_credentials if params[:password].length > User.max_password_length
+
     login = params[:login].strip
     login = login[1..-1] if login[0] == "@"
 
@@ -108,8 +110,13 @@ class SessionController < ApplicationController
       email_token = user.email_tokens.create(email: user.email)
       Jobs.enqueue(:user_email, type: :forgot_password, user_id: user.id, email_token: email_token.token)
     end
-    # always render of so we don't leak information
-    render json: {result: "ok"}
+
+    json = { result: "ok" }
+    unless SiteSetting.forgot_password_strict
+      json[:user_found] = user.present?
+    end
+
+    render json: json
 
   rescue RateLimiter::LimitExceeded
     render_json_error(I18n.t("rate_limiter.slow_down"))

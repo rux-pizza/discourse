@@ -330,7 +330,7 @@ span.post-count {
 
 .topic-post {
   &.moderator {
-    background-color: scale-color($highlight, $lightness: 60%);
+    background-color: scale-color($highlight, $lightness: 75%);
   }
 }
 
@@ -373,19 +373,6 @@ iframe {
   position: relative;
 }
 
-.wiki {
-  float: left;
-  padding: 10px;
-  color: #408040;
-  i {
-    float: left;
-  }
-  h3 {
-    float: left;
-    margin-left: 10px;
-  }
-}
-
 .modal-body {
   input[type=text] {
     font-size: 16px;
@@ -393,7 +380,6 @@ iframe {
     margin-top: 10px;
   }
 }
-
 
 #share-link {
   width: 290px;
@@ -460,19 +446,6 @@ blockquote > *:first-child {
 }
 blockquote > *:last-child {
   margin-bottom: 0 !important;
-}
-
-.quote-controls, .quote-controls .back:before, .quote-controls .quote-other-topic:before {
-  color: $primary;
-}
-
-
-.quote .title {
-  border-left: 5px solid scale-color($primary, $lightness: 75%);
-  background-color: scale-color-diff();
-  padding: 10px 10px 10px 12px;
-  clear: both;
-  .avatar { margin-right: 7px; }
 }
 
 .gutter { display: none; }

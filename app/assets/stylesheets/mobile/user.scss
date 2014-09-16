@@ -152,7 +152,6 @@
           width: 90%;
           margin: 0 auto;
           padding: 4px;
-          background: rgba($primary, 0.3);
 
           h1, h2 {
             margin: 7px;
@@ -283,6 +282,26 @@
     .remove-bookmark {
       float: right !important;
       margin-top: -8px;
+    }
+    .notification {
+      padding: 0 8px;
+      li { display: inline-block; }
+      p {
+        display: inline-block;
+        margin: 7px;
+        span {
+          color: $primary;
+        }
+      }
+      .time {
+        display: inline-block;
+        margin: 0;
+        float: none;
+      }
+      // common/base/header.scss
+      .fa, .icon {
+        color: scale-color($primary, $lightness: 50%);
+      }
     }
   }
 

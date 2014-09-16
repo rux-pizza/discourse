@@ -58,7 +58,7 @@
               {{#if model.archetype.hasOptions}}
                 <button class='btn' {{action showOptions}}>{{i18n topic.options}}</button>
               {{/if}}
-              {{render "additionalComposerButtons" model}}
+              {{render "additional-composer-buttons" model}}
             {{/unless}}
           </div>
         {{/if}}
@@ -79,7 +79,7 @@
             <div id="file-uploading" {{bind-attr class="view.isUploading::hidden"}}>
               {{i18n upload_selector.uploading}} {{view.uploadProgress}}% <a id="cancel-file-upload">{{i18n cancel}}</a>
             </div>
-            {{#if Discourse.Mobile.mobileView}}
+            {{#if site.mobileView}}
               <a {{bind-attr class=":mobile-file-upload view.isUploading:hidden"}}>{{i18n upload}}</a>
               <input type="file" id="mobile-uploader" />
             {{/if}}
