@@ -202,8 +202,11 @@ Discourse.KeyboardShortcuts = Ember.Object.createWithMixins({
     var $selected = $articles.filter('.selected'),
         index = $articles.index($selected);
 
-    // loop is not allowed
-    if (direction === -1 && index === 0) { return; }
+    if($selected.length !== 0){ //boundries check
+      // loop is not allowed
+      if (direction === -1 && index === 0) { return; }
+      if (direction === 1 && index === ($articles.size()-1) ) { return;}  
+    }
 
     // if nothing is selected go to the first post on screen
     if ($selected.length === 0) {
@@ -229,10 +232,8 @@ Discourse.KeyboardShortcuts = Ember.Object.createWithMixins({
 
     if ($article.size() > 0) {
       $articles.removeClass('selected');
-      Em.run.next(function(){
-        $article.addClass('selected');
-      });
-
+      $article.addClass('selected');
+      
       var rgx = new RegExp("post-cloak-(\\d+)").exec($article.parent()[0].id);
       if (rgx === null || typeof rgx[1] === 'undefined') {
           this._scrollList($article, direction);
@@ -243,8 +244,8 @@ Discourse.KeyboardShortcuts = Ember.Object.createWithMixins({
   },
 
   _scrollList: function($article, direction) {
-    var $body = $('body'),
-        distToElement = $article.position().top + $article.height() - $(window).height() - $body.scrollTop();
+    var $document = $(document),
+        distToElement = $article.position().top + $article.height() - $(window).height() - $document.scrollTop();
 
     // cut some bottom slack
     distToElement += 40;
@@ -254,7 +255,7 @@ Discourse.KeyboardShortcuts = Ember.Object.createWithMixins({
       return;
     }
 
-    $('html, body').scrollTop($body.scrollTop() + distToElement);
+    $('html, body').scrollTop($document.scrollTop() + distToElement);
   },
 
   _findArticles: function() {
