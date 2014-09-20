@@ -152,6 +152,9 @@ class Search
         elsif word == 'order:latest'
           @order = :latest
           nil
+        elsif word =~ /category:(.+)/
+          @category_id = Category.find_by('name ilike ?', $1).try(:id)
+          nil
         else
           word
         end
@@ -252,7 +255,8 @@ class Search
                   .where("topics.archetype <> ?", Archetype.private_message)
 
       if @search_context.present? && @search_context.is_a?(Topic)
-        posts = posts.where("posts.raw ilike ?", "%#{@term}%")
+        posts = posts.joins('JOIN users u ON u.id = posts.user_id')
+        posts = posts.where("posts.raw  || ' ' || u.username || ' ' || u.name ilike ?", "%#{@term}%")
       else
         posts = posts.where("post_search_data.search_data @@ #{ts_query}")
       end
@@ -275,6 +279,10 @@ class Search
                        .order("posts.post_number")
         end
 
+      end
+
+      if @category_id
+        posts = posts.where("topics.category_id = ?", @category_id)
       end
 
       if @order == :latest

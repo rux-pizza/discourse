@@ -175,19 +175,19 @@ test("Quotes", function() {
 
   cookedOptions("[quote=\"eviltrout, post: 1\"]\na quote\n\nsecond line\n\nthird line[/quote]",
                 { topicId: 2 },
-                "<aside class=\"quote\" data-post=\"1\"><div class=\"title\"><div class=\"quote-controls\"></div>eviltrout said:</div><blockquote>" +
+                "<aside class=\"quote\" data-post=\"1\"><div class=\"title\"><div class=\"quote-controls\"></div>eviltrout:</div><blockquote>" +
                 "<p>a quote</p><p>second line</p><p>third line</p></blockquote></aside>",
                 "works with multiple lines");
 
   cookedOptions("1[quote=\"bob, post:1\"]my quote[/quote]2",
                 { topicId: 2, lookupAvatar: function(name) { return "" + name; }, sanitize: true },
                 "<p>1</p>\n\n<aside class=\"quote\" data-post=\"1\"><div class=\"title\"><div class=\"quote-controls\"></div>bob" +
-                "bob said:</div><blockquote><p>my quote</p></blockquote></aside>\n\n<p>2</p>",
+                "bob:</div><blockquote><p>my quote</p></blockquote></aside>\n\n<p>2</p>",
                 "handles quotes properly");
 
   cookedOptions("1[quote=\"bob, post:1\"]my quote[/quote]2",
                 { topicId: 2, lookupAvatar: function() { } },
-                "<p>1</p>\n\n<aside class=\"quote\" data-post=\"1\"><div class=\"title\"><div class=\"quote-controls\"></div>bob said:" +
+                "<p>1</p>\n\n<aside class=\"quote\" data-post=\"1\"><div class=\"title\"><div class=\"quote-controls\"></div>bob:" +
                 "</div><blockquote><p>my quote</p></blockquote></aside>\n\n<p>2</p>",
                 "includes no avatar if none is found");
 });
@@ -340,9 +340,11 @@ test("Code Blocks", function() {
          "<p>hello<br/>world<br/></p>\n\n<p><pre><code class=\"json\">line 1\n\nline 2\n\n\nline3</code></pre></p>",
          "it maintains new lines inside a code block with leading content.");
 
-  cooked("```text\n<header>hello</header>\n```",
-         "<p><pre><code class=\"text\">&lt;header&gt;hello&lt;/header&gt;</code></pre></p>",
+  cooked("```ruby\n<header>hello</header>\n```",
+         "<p><pre><code class=\"ruby\">&lt;header&gt;hello&lt;/header&gt;</code></pre></p>",
          "it escapes code in the code block");
+
+  cooked("```text\ntext\n```", "<p><pre><code>text</code></pre></p>", "handles text without adding class");
 
   cooked("```ruby\n# cool\n```",
          "<p><pre><code class=\"ruby\"># cool</code></pre></p>",
@@ -456,7 +458,7 @@ test("urlAllowed", function() {
   allowed("//eviltrout.com/evil/trout", "allows protocol relative urls");
 
   equal(urlAllowed("http://google.com/test'onmouseover=alert('XSS!');//.swf"),
-        "http://google.com/test&#39;onmouseover=alert(&#39;XSS!&#39;);//.swf",
+        "http://google.com/test%27onmouseover=alert(%27XSS!%27);//.swf",
         "escape single quotes");
 });
 
