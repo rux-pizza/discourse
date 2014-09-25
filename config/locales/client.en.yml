@@ -382,7 +382,7 @@ en:
 
       email:
         title: "Email"
-        instructions: "Will never be shown to the public."
+        instructions: "Never shown to the public."
         ok: "Looks good. We will email you to confirm."
         invalid: "Please enter a valid email address."
         authenticated: "Your email has been authenticated by {{provider}}."
@@ -771,6 +771,7 @@ en:
         actions: "Bulk Actions"
         change_category: "Change Category"
         close_topics: "Close Topics"
+        archive_topics: "Archive Topics"
         notification_level: "Change Notification Level"
         selected:
           one: "You have selected <b>1</b> topic."
@@ -1044,7 +1045,7 @@ en:
       post_number: "post {{number}}"
       in_reply_to: "reply to"
       last_edited_on: "post last edited on"
-      reply_as_new_topic: "Reply as new Topic"
+      reply_as_new_topic: "Reply as linked Topic"
       continue_discussion: "Continuing the discussion from {{postLink}}:"
       follow_quote: "go to the quoted post"
       show_full: "Show Full Post"
@@ -1112,6 +1113,7 @@ en:
         convert_to_moderator: "Add Staff Color"
         revert_to_regular: "Remove Staff Color"
         rebake: "Rebuild HTML"
+        unhide: "Unhide"
 
       actions:
         flag: 'Flag'
@@ -1980,10 +1982,9 @@ en:
           external_email: "Email"
           external_avatar_url: "Avatar URL"
 
-      site_content:
+      site_text:
         none: "Choose a type of content to begin editing."
-        title: 'Content'
-        edit: "Edit Site Content"
+        title: 'Text Content'
 
       site_settings:
         show_overriden: 'Only show overridden'
@@ -2111,7 +2112,7 @@ en:
         star: '<b>f</b> Star topic'
         share_topic: '<b>shift s</b> Share topic'
         share_post: '<b>s</b> Share post'
-        reply_as_new_topic: '<b>t</b> Reply as new topic'
+        reply_as_new_topic: '<b>t</b> Reply as linked topic'
         reply_topic: '<b>shift r</b> Reply to topic'
         reply_post: '<b>r</b> Reply to post'
         quote_post: '<b>q</b> Quote post'

@@ -6,7 +6,7 @@ require_dependency 'rate_limiter'
 class UsersController < ApplicationController
 
   skip_before_filter :authorize_mini_profiler, only: [:avatar]
-  skip_before_filter :check_xhr, only: [:show, :password_reset, :update, :activate_account, :perform_account_activation, :authorize_email, :user_preferences_redirect, :avatar, :my_redirect]
+  skip_before_filter :check_xhr, only: [:show, :password_reset, :update, :account_created, :activate_account, :perform_account_activation, :authorize_email, :user_preferences_redirect, :avatar, :my_redirect]
 
   before_filter :ensure_logged_in, only: [:username, :update, :change_email, :user_preferences_redirect, :upload_user_image, :pick_avatar, :destroy_user_image, :destroy]
   before_filter :respond_to_suspicious_request, only: [:create]
@@ -18,6 +18,7 @@ class UsersController < ApplicationController
   skip_before_filter :redirect_to_login_if_required, only: [:check_username,
                                                             :create,
                                                             :get_honeypot_value,
+                                                            :account_created,
                                                             :activate_account,
                                                             :perform_account_activation,
                                                             :send_activation_email,
@@ -182,7 +183,8 @@ class UsersController < ApplicationController
       render json: {
         success: true,
         active: user.active?,
-        message: activation.message
+        message: activation.message,
+        user_id: user.id
       }
     else
       render json: {
@@ -291,6 +293,11 @@ class UsersController < ApplicationController
     else
       flash[:error] = I18n.t('change_email.error')
     end
+    render layout: 'no_js'
+  end
+
+  def account_created
+    expires_now
     render layout: 'no_js'
   end
 
@@ -501,10 +508,14 @@ class UsersController < ApplicationController
     end
 
     def suspicious?(params)
+      return false if current_user && is_api? && current_user.admin?
+
       honeypot_or_challenge_fails?(params) || SiteSetting.invite_only?
     end
 
     def honeypot_or_challenge_fails?(params)
+      return false if is_api?
+
       params[:password_confirmation] != honeypot_value ||
         params[:challenge] != challenge_value.try(:reverse)
     end

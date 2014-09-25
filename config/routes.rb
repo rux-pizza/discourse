@@ -109,8 +109,11 @@ Discourse::Application.routes.draw do
     post "flags/disagree/:id" => "flags#disagree"
     post "flags/defer/:id" => "flags#defer"
     resources :site_customizations, constraints: AdminConstraint.new
-    resources :site_contents, constraints: AdminConstraint.new
-    resources :site_content_types, constraints: AdminConstraint.new
+    scope "/customize" do
+      resources :site_text, constraints: AdminConstraint.new
+      resources :site_text_types, constraints: AdminConstraint.new
+    end
+
     resources :color_schemes, constraints: AdminConstraint.new
 
     get "version_check" => "versions#show"
@@ -201,6 +204,7 @@ Discourse::Application.routes.draw do
 
   post "users/read-faq" => "users#read_faq"
   get "users/search/users" => "users#search_users"
+  get "users/account-created/" => "users#account_created"
   get "users/password-reset/:token" => "users#password_reset"
   put "users/password-reset/:token" => "users#password_reset"
   get "users/activate-account/:token" => "users#activate_account"
@@ -245,8 +249,8 @@ Discourse::Application.routes.draw do
   get "user_avatar/:hostname/:username/:size/:version.png" => "user_avatars#show",
       format: false, constraints: {hostname: /[\w\.-]+/}
 
-
   get "uploads/:site/:id/:sha.:extension" => "uploads#show", constraints: {site: /\w+/, id: /\d+/, sha: /[a-z0-9]{15,16}/i, extension: /\w{2,}/}
+  get "uploads/:site/:sha" => "uploads#show", constraints: { site: /\w+/, sha: /[a-z0-9]{40}/}
   post "uploads" => "uploads#create"
 
   get "posts/by_number/:topic_id/:post_number" => "posts#by_number"
@@ -265,6 +269,7 @@ Discourse::Application.routes.draw do
     put "wiki"
     put "post_type"
     put "rebake"
+    put "unhide"
     get "replies"
     get "revisions/:revision" => "posts#revisions"
     put "recover"

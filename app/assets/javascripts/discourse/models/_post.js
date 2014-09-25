@@ -296,6 +296,10 @@ Discourse.Post = Discourse.Model.extend({
       var value = otherPost[key],
           oldValue = self[key];
 
+      if (key === "replyHistory") {
+        return;
+      }
+
       if (!value) { value = null; }
       if (!oldValue) { oldValue = null; }
 
@@ -323,12 +327,24 @@ Discourse.Post = Discourse.Model.extend({
   updateFromJson: function(obj) {
     if (!obj) return;
 
+    var skip, oldVal;
+
     // Update all the properties
     var post = this;
     _.each(obj, function(val,key) {
       if (key !== 'actions_summary'){
-        if (val) {
-          post.set(key, val);
+        oldVal = post[key];
+        skip = false;
+
+        if (val && val !== oldVal) {
+
+          if (key === "reply_to_user" && val && oldVal) {
+            skip = val.username === oldVal.username || Em.get(val, "username") === Em.get(oldVal, "username");
+          }
+
+          if(!skip) {
+            post.set(key, val);
+          }
         }
       }
     });
@@ -404,6 +420,10 @@ Discourse.Post = Discourse.Model.extend({
 
   rebake: function () {
     return Discourse.ajax("/posts/" + this.get("id") + "/rebake", { type: "PUT" });
+  },
+
+  unhide: function () {
+    return Discourse.ajax("/posts/" + this.get("id") + "/unhide", { type: "PUT" });
   }
 });
 

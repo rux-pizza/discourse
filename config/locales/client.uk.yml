@@ -173,7 +173,6 @@ uk:
       phone: Телефон
       other_accounts: Інші облікові записи з цією IP адресою
     user:
-      said: "{{username}} сказав(ла):"
       profile: "Профіль"
       mute: "Mute"
       edit: "Редагувати налаштування"
@@ -318,7 +317,6 @@ uk:
         too_short: "Ваш пароль надто короткий."
         common: "Цей пароль надто простий."
         ok: "Ваш пароль добрий."
-        instructions: "Має містити щонайменше %{count} символів."
       ip_address:
         title: "Остання IP-адреса"
       registration_ip_address:
@@ -1342,7 +1340,7 @@ uk:
           posts_read: "Прочитано Дописів"
           posts_read_all_time: "Прочитано дописів (весь час)"
           flagged_posts: "Оскаржені дописи"
-      site_content:
+      site_text:
         none: "Виберіть тип вмісту, щоб почати його редагувати."
         title: 'Вміст'
         edit: "Редагування вмісту сайта"

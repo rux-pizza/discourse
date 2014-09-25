@@ -16,7 +16,6 @@ test('basic bbcode', function() {
   format("[u]underlined[/u]", "<span class=\"bbcode-u\">underlined</span>", "underlines text");
   format("[s]strikethrough[/s]", "<span class=\"bbcode-s\">strikethrough</span>", "strikes-through text");
   format("[img]http://eviltrout.com/eviltrout.png[/img]", "<img src=\"http://eviltrout.com/eviltrout.png\">", "links images");
-  format("[url]http://bettercallsaul.com[/url]", "<a href=\"http://bettercallsaul.com\">http://bettercallsaul.com</a>", "supports [url] without a title");
   format("[email]eviltrout@mailinator.com[/email]", "<a href=\"mailto:eviltrout@mailinator.com\">eviltrout@mailinator.com</a>", "supports [email] without a title");
   format("[b]evil [i]trout[/i][/b]",
          "<span class=\"bbcode-b\">evil <span class=\"bbcode-i\">trout</span></span>",
@@ -25,6 +24,14 @@ test('basic bbcode', function() {
   format("[b]strong [b]stronger[/b][/b]", "<span class=\"bbcode-b\">strong <span class=\"bbcode-b\">stronger</span></span>", "accepts nested bbcode tags");
 });
 
+test('urls', function() {
+  format("[url]not a url[/url]", "not a url", "supports [url] that isn't a url");
+  format("[url]http://bettercallsaul.com[/url]", "<a href=\"http://bettercallsaul.com\">http://bettercallsaul.com</a>", "supports [url] without parameter");
+  format("[url=http://example.com]example[/url]", "<a href=\"http://example.com\">example</a>", "supports [url] with given href");
+  format("[url=http://www.example.com][img]http://example.com/logo.png[/img][/url]",
+         "<a href=\"http://www.example.com\"><img src=\"http://example.com/logo.png\"></a>",
+         "supports [url] with an embedded [img]");
+});
 test('invalid bbcode', function() {
   var cooked = Discourse.Markdown.cook("[code]I am not closed\n\nThis text exists.", {lookupAvatar: false});
   equal(cooked, "<p>[code]I am not closed</p>\n\n<p>This text exists.</p>", "does not raise an error with an open bbcode tag.");
@@ -65,6 +72,9 @@ test("size tags", function() {
   format("[size=35]NEWLINE\n\ntest[/size]",
          "<span class=\"bbcode-size-35\"><p>NEWLINE</p><p>test</p></span>",
          "works with newlines");
+  format("[size=35][quote=\"user\"]quote[/quote][/size]",
+         "<span class=\"bbcode-size-35\"><aside class=\"quote\"><div class=\"title\"><div class=\"quote-controls\"></div>user:</div><blockquote><p>quote</p></blockquote></aside></span>",
+         "works with nested complex blocks");
 });
 
 test("quotes", function() {

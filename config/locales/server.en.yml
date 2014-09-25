@@ -36,6 +36,7 @@ en:
   is_reserved: "is reserved"
 
   purge_reason: "Automatically deleted due to being old and unverified"
+  disable_remote_images_download_reason: "Remote images download was disabled because there wasn't enough disk space available."
 
   errors:
     messages:
@@ -742,6 +743,7 @@ en:
     topics_per_period_in_top_summary: "Number of top topics shown in the default top topics summary."
     topics_per_period_in_top_page: "Number of top topics shown on the expanded 'Show More' top topics."
     redirect_users_to_top_page: "Automatically redirect new and long absent users to the top page."
+    show_email_on_profile: "Show a user's email on their profile (only visible to themselves and staff)"
 
     email_token_valid_hours: "Forgot password / activate account tokens are valid for (n) hours."
     email_token_grace_period_hours: "Forgot password / activate account tokens are still valid for a grace period of (n) hours after being redeemed."
@@ -805,7 +807,7 @@ en:
     allow_restore: "Allow restore, which can replace ALL site data! Leave false unless you plan to restore a backup"
     maximum_backups: "The maximum amount of backups to keep on disk. Older backups are automatically deleted"
     backup_daily: "Automatically create a site backup once a day."
-    enable_s3_backups: "Upload backups to S3 when complete. IMPORTANT: Requires valid S3 credentials entered in Files settings."
+    enable_s3_backups: "Upload backups to S3 when complete. IMPORTANT: requires valid S3 credentials entered in Files settings."
     s3_backup_bucket: "The remote bucket to hold backups. WARNING: Make sure it is a private bucket."
 
     active_user_rate_limit_secs: "How frequently we update the 'last_seen_at' field, in seconds"
@@ -832,7 +834,7 @@ en:
     clean_orphan_uploads_grace_period_hours: "Grace period (in hours) before an orphan upload is removed."
     purge_deleted_uploads_grace_period_days: "Grace period (in days) before a deleted upload is erased."
     purge_inactive_users_grace_period_days: "Grace period (in days) before an inactive user is deleted."
-    enable_s3_uploads: "Place uploads on Amazon S3 storage."
+    enable_s3_uploads: "Place uploads on Amazon S3 storage. IMPORTANT: requires valid S3 credentials (both access key id & secret access key)."
     s3_use_iam_profile: 'Use AWS EC2 IAM role to retrieve keys. NOTE: enabling will override "s3 access key id" and "s3 secret access key" settings.'
     s3_upload_bucket: "The Amazon S3 bucket name that files will be uploaded into. WARNING: must be lowercase, no periods."
     s3_access_key_id: "The Amazon S3 access key id that will be used to upload images."
@@ -933,6 +935,9 @@ en:
     reply_by_email_address: "Template for reply by email incoming email address, for example: %{reply_key}@reply.example.com or replies+%{reply_key}@example.com"
 
     disable_emails: "Prevent Discourse from sending any kind of emails"
+
+    strip_images_from_short_emails: "Strip images from emails having size less than 2800 Bytes"
+    short_email_length: "Short email length in Bytes"
 
     pop3_polling_enabled: "Poll via POP3 for email replies."
     pop3_polling_ssl: "Use SSL while connecting to the POP3 server. (Recommended)"
@@ -1091,7 +1096,7 @@ en:
     incorrect_username_email_or_password: "Incorrect username, email or password"
     wait_approval: "Thanks for signing up. We will notify you when your account has been approved."
     active: "Your account is activated and ready to use."
-    activate_email: "You're almost done! We sent an activation email to <b>%{email}</b>. Please follow the instructions in the email to activate your account."
+    activate_email: "You're almost done! We sent an activation mail to the email address you provided. Please follow the instructions in the email to activate your account."
     not_activated: "You can't log in yet. We sent an activation email to you. Please follow the instructions in the email to activate your account."
     not_allowed_from_ip_address: "You can't login as %{username} from that IP address."
     suspended: "You can't log in until %{date}."
@@ -1289,15 +1294,13 @@ en:
 
         ## Where am I?
 
-        - For search, your user page, or the menu, use the **icon buttons at the upper right**.
+        - For search, your user page, or the menu, use the **icon <kbd>☰</kbd> buttons at the upper right**.
 
-        - In a list of topics, the title will always take you to your next unread post. Use the last activity time to jump to the last post.
+        - Any topic title will take you to the next unread post. Use the last activity time and post count to enter at the top or bottom.
 
         - While reading a topic, jump to the top &uarr; by selecting the topic title. Select the green progress bar at the bottom right for full navigation controls, or use the <kbd>home</kbd> and <kbd>end</kbd> keys.
 
             <img src="/images/welcome/progress-bar.png" width="143" height="39">
-
-
 
         ## How do I reply?
 
@@ -1305,7 +1308,7 @@ en:
 
         - To reply to a specific post, use the Reply button <img src="/images/welcome/reply-post.png" width="29" height="25"> on that post.
 
-        - To take the conversation in a different direction, but keep them linked together, use Reply as New Topic <img src="/images/welcome/reply-as-new-topic.png" width="33" height="25"> to the right of the post.
+        - To take the conversation in a different direction, but keep them linked together, use <img src="/images/welcome/reply-as-linked-topic.png" width="15" height="25"> Reply as linked Topic to the right of the post.
 
         To quote someone in your reply, select the text you wish to quote, then press any Reply button.
 
@@ -1371,7 +1374,7 @@ en:
 
         1. Log in using any method you like -- but it must resolve to the **same email address** that you received your original invitation email at. Otherwise we won't be able to tell it is you!
 
-        2. Create a unique password for on [your user profile][prefs], and use it to log in.
+        2. Create a unique password for [your user profile][prefs], and use it to log in.
 
         %{new_user_tips}
 
@@ -1459,7 +1462,7 @@ en:
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
         We couldn't find any content in the email. Make sure that you wrote something at the top of the email - we can't parse inline replies.
-        If you're getting this and you did include content, try again in UTF-8 plain text (no HTML).
+        If you're getting this and you did include content, try again with HTML content included in your email (not just plain text only).
 
     email_reject_parsing:
       subject_template: "Email issue -- Content unrecognized"

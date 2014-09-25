@@ -63,7 +63,6 @@
   .topic-item-stats {
     .category, .num, .last-poster {
       float: left;
-      margin-right: 14px;
     }
     .num .fa {
       color: scale-color($primary, $lightness: 50%);
@@ -72,11 +71,22 @@
 
   .num.posts {
     font-weight: bold;
+    a {
+      padding: 15px 10px 15px 5px;
+    }
+  }
+
+  .num.activity.last {
+    a {
+      padding: 15px 0 15px 5px;
+    }
   }
 
   .age {
     white-space: nowrap;
-    margin-left: 5px;
+    a {
+      padding: 15px 10px 15px 5px;
+    }
   }
 }
 
@@ -303,4 +313,8 @@ ol.category-breadcrumb {
   button {
     margin-top: 10px;
   }
+}
+
+button.dismiss-read {
+  margin-right: 10px;
 }
