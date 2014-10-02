@@ -24,12 +24,12 @@ describe UserProfile do
     let(:user_profile) { Fabricate.build(:user_profile) }
 
     it 'is not valid without user' do
-      expect(user_profile.valid?).to be_false
+      expect(user_profile.valid?).should == false
     end
 
     it 'is is valid with user' do
       user_profile.user = Fabricate.build(:user)
-      expect(user_profile.valid?).to be_true
+      expect(user_profile.valid?).should == true
     end
 
     it "doesn't support really long bios" do
@@ -122,6 +122,7 @@ describe UserProfile do
         it 'adds nofollow to links in bio when trust level is decreased' do
           created_user.trust_level = TrustLevel[3]
           created_user.save
+          created_user.reload
           created_user.change_trust_level!(TrustLevel[2])
           expect(created_user.user_profile.bio_excerpt).to match_html("I love <a href='http://discourse.org' rel='nofollow'>http://discourse.org</a>")
           expect(created_user.user_profile.bio_processed).to match_html("<p>I love <a href=\"http://discourse.org\" rel=\"nofollow\">http://discourse.org</a></p>")

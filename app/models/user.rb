@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
   has_one :facebook_user_info, dependent: :destroy
   has_one :twitter_user_info, dependent: :destroy
   has_one :github_user_info, dependent: :destroy
+  has_one :google_user_info, dependent: :destroy
   has_one :oauth2_user_info, dependent: :destroy
   has_one :user_stat, dependent: :destroy
   has_one :user_profile, dependent: :destroy, inverse_of: :user
@@ -569,8 +570,16 @@ class User < ActiveRecord::Base
     last_sent_email_address || email
   end
 
-  def leader_requirements
+  def tl3_requirements
     @lq ||= TrustLevel3Requirements.new(self)
+  end
+
+  def on_tl3_grace_period?
+    UserHistory.for(self, :auto_trust_level_change)
+      .where('created_at >= ?', SiteSetting.tl3_promotion_min_duration.to_i.days.ago)
+      .where(previous_value: TrustLevel[2].to_s)
+      .where(new_value: TrustLevel[3].to_s)
+      .exists?
   end
 
   def should_be_redirected_to_top
@@ -631,6 +640,33 @@ class User < ActiveRecord::Base
 
   def first_post_created_at
     user_stat.try(:first_post_created_at)
+  end
+
+  def associated_accounts
+    result = []
+
+    result << "Twitter(#{twitter_user_info.screen_name})" if twitter_user_info
+    result << "Facebook(#{facebook_user_info.username})"  if facebook_user_info
+    result << "Google(#{google_user_info.email})"         if google_user_info
+    result << "Github(#{github_user_info.screen_name})"   if github_user_info
+
+    user_open_ids.each do |oid|
+      result << "OpenID #{oid.url[0..20]}...(#{oid.email})"
+    end
+
+    result.empty? ? I18n.t("user.no_accounts_associated") : result.join(", ")
+  end
+
+  def user_fields
+    return @user_fields if @user_fields
+    user_field_ids = UserField.pluck(:id)
+    if user_field_ids.present?
+      @user_fields = {}
+      user_field_ids.each do |fid|
+        @user_fields[fid.to_s] = custom_fields["user_field_#{fid}"]
+      end
+    end
+    @user_fields
   end
 
   protected

@@ -1,6 +1,7 @@
 import ObjectController from 'discourse/controllers/object';
+import CanCheckEmails from 'discourse/mixins/can-check-emails';
 
-export default ObjectController.extend({
+export default ObjectController.extend(CanCheckEmails, {
 
   allowAvatarUpload: Discourse.computed.setting('allow_uploaded_avatars'),
   allowUserLocale: Discourse.computed.setting('allow_user_locale'),
@@ -17,11 +18,16 @@ export default ObjectController.extend({
 
   newNameInput: null,
 
-  saveDisabled: function() {
-    if (this.get('saving')) return true;
-    if (this.blank('email')) return true;
-    return false;
-  }.property('saving', 'email'),
+  userFields: function() {
+    var siteUserFields = this.site.get('user_fields');
+    if (!Ember.empty(siteUserFields)) {
+      var userFields = this.get('user_fields');
+      return siteUserFields.filterProperty('editable', true).map(function(uf) {
+        var val = userFields ? userFields[uf.get('id').toString()] : null;
+        return Ember.Object.create({value: val, field: uf});
+      });
+    }
+  }.property('user_fields.@each.value'),
 
   cannotDeleteAccount: Em.computed.not('can_delete_account'),
   deleteDisabled: Em.computed.or('saving', 'deleting', 'cannotDeleteAccount'),
@@ -75,8 +81,20 @@ export default ObjectController.extend({
       var self = this;
       this.setProperties({ saving: true, saved: false });
 
+      var model = this.get('model'),
+          userFields = this.get('userFields');
+
+      // Update the user fields
+      if (!Em.empty(userFields)) {
+        var modelFields = model.get('user_fields');
+        if (!Em.empty(modelFields)) {
+          userFields.forEach(function(uf) {
+            modelFields[uf.get('field.id').toString()] = uf.get('value');
+          });
+        }
+      }
+
       // Cook the bio for preview
-      var model = this.get('model');
       model.set('name', this.get('newNameInput'));
       return model.save().then(function() {
         // model was saved

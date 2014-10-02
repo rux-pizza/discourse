@@ -18,6 +18,8 @@ Discourse.Route.buildRoutes(function() {
       this.resource('adminSiteText', { path: '/site_text' }, function() {
         this.route('edit', {path: '/:text_type'});
       });
+      this.resource('adminUserFields', { path: '/user_fields' }, function() {
+      });
     });
     this.route('api');
 
@@ -46,7 +48,7 @@ Discourse.Route.buildRoutes(function() {
     this.resource('adminUsers', { path: '/users' }, function() {
       this.resource('adminUser', { path: '/:username' }, function() {
         this.route('badges');
-        this.route('leaderRequirements', { path: '/leader_requirements' });
+        this.route('tl3Requirements', { path: '/tl3_requirements' });
       });
       this.resource('adminUsersList', { path: '/list' }, function() {
         _.each(['active', 'new', 'pending', 'admins', 'moderators', 'blocked', 'suspended',

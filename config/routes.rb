@@ -72,11 +72,13 @@ Discourse::Application.routes.draw do
       put "block"
       put "unblock"
       put "trust_level"
+      put "trust_level_lock"
       put "primary_group"
       post "groups" => "users#add_group", constraints: AdminConstraint.new
       delete "groups/:group_id" => "users#remove_group", constraints: AdminConstraint.new
       get "badges"
-      get "leader_requirements"
+      get "leader_requirements" => "users#tl3_requirements"
+      get "tl3_requirements"
     end
 
     resources :impersonate, constraints: AdminConstraint.new
@@ -112,6 +114,7 @@ Discourse::Application.routes.draw do
     scope "/customize" do
       resources :site_text, constraints: AdminConstraint.new
       resources :site_text_types, constraints: AdminConstraint.new
+      resources :user_fields, constraints: AdminConstraint.new
     end
 
     resources :color_schemes, constraints: AdminConstraint.new
@@ -218,6 +221,7 @@ Discourse::Application.routes.draw do
   get "users/:username/private-messages/:filter" => "user_actions#private_messages", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username" => "users#show", as: 'user', constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username" => "users#update", constraints: {username: USERNAME_ROUTE_FORMAT}
+  put "users/:username/emails" => "users#check_emails", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/preferences" => "users#preferences", constraints: {username: USERNAME_ROUTE_FORMAT}, as: :email_preferences
   get "users/:username/preferences/email" => "users#preferences", constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username/preferences/email" => "users#change_email", constraints: {username: USERNAME_ROUTE_FORMAT}
@@ -232,7 +236,7 @@ Discourse::Application.routes.draw do
   delete "users/:username/preferences/user_image" => "users#destroy_user_image", constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username/preferences/avatar/pick" => "users#pick_avatar", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/invited" => "users#invited", constraints: {username: USERNAME_ROUTE_FORMAT}
-  post "users/:username/send_activation_email" => "users#send_activation_email", constraints: {username: USERNAME_ROUTE_FORMAT}
+  post "users/action/send_activation_email" => "users#send_activation_email"
   get "users/:username/activity" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/activity/:filter" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/badges" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}

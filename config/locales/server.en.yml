@@ -41,6 +41,7 @@ en:
   errors:
     messages:
       too_long_validation: "is limited to %{max} characters; you entered %{length}."
+      invalid_boolean: "Invalid boolean."
     embed:
       load_from_remote: "There was an error loading that post."
 
@@ -296,7 +297,7 @@ en:
       title: "regular"
     elder:
       title: "leader"
-    change_failed_explanation: "You attempted to demote %{user_name} to '%{new_trust_level}'. However their trust level is already '%{current_trust_level}'. %{user_name} will remain at '%{current_trust_level}'"
+    change_failed_explanation: "You attempted to demote %{user_name} to '%{new_trust_level}'. However their trust level is already '%{current_trust_level}'. %{user_name} will remain at '%{current_trust_level}' - if you wish to demote user lock trust level first"
 
 
   rate_limiter:
@@ -472,8 +473,8 @@ en:
       title: "Regular Topic"
     banner:
       message:
-        make: "This topic is now a banner topic. It will appear at the top of every page until it is dismissed by the user."
-        remove: "This topic is not a banner topic anymore. It will no longer appear at the top of every page."
+        make: "This topic is now a banner. It will appear at the top of every page until it is dismissed by the user."
+        remove: "This topic is no longer a banner. It will no longer appear at the top of every page."
 
   unsubscribed:
     title: 'Unsubscribed'
@@ -613,12 +614,6 @@ en:
     login_required_welcome_message:
       title: "Login Required: Welcome Message"
       description: "Welcome message that is displayed to logged out users when the 'login required' setting is enabled."
-    tos_user_content_license:
-      title: "Terms of Service: Content License"
-      description: "DEPRECATED. Not used anymore and will be removed. Edit the Terms of Service topic in the Staff category instead."
-    tos_miscellaneous:
-      title: "Terms of Service: Miscellaneous"
-      description: "DEPRECATED. Not used anymore and will be removed. Edit the Terms of Service topic in the Staff category instead."
     login_required:
       title: "Login Required: Homepage"
       description: "The text displayed for unauthorized users when login is required on the site."
@@ -631,14 +626,12 @@ en:
     bottom:
       title: "Bottom of the pages"
       description: "HTML that will be added at the bottom of every page."
-    tos_signup_form_message:
-      title: "Signup Form: Terms of Service Message"
-      description: "The message that will appear beside a checkbox on the signup form if the tos_accept_required site setting is enabled."
     notification_email_top:
       title: "Notification Email Top"
       description: "A message that will be displayed at the top of all notification emails."
 
   site_settings:
+    delete_old_hidden_posts: "Auto-delete any hidden posts that stay hidden for more than 30 days."
     default_locale: "The default language of this Discourse instance (ISO 639-1 Code)"
     allow_user_locale: "Allow users to choose their own language interface preference"
     min_post_length: "Minimum allowed post length in characters"
@@ -689,6 +682,7 @@ en:
 
     notification_email: "The from: email address used when sending all essential system emails. The domain specified here must have SPF, DKIM and reverse PTR records set correctly for email to arrive."
     email_custom_headers: "A pipe-delimited list of custom email headers"
+    email_subject: "Subject format for standard emails."
     use_https: "Should the full url for the site (Discourse.base_url) be http or https? DO NOT ENABLE THIS UNLESS HTTPS IS ALREADY SET UP AND WORKING!"
 
     summary_score_threshold: "The minimum score required for a post to be included in 'Summarize This Topic'"
@@ -833,7 +827,7 @@ en:
     clean_up_uploads: "Remove orphan unreferenced uploads to prevent illegal hosting. WARNING: you may want to back up of your /uploads directory before enabling this setting."
     clean_orphan_uploads_grace_period_hours: "Grace period (in hours) before an orphan upload is removed."
     purge_deleted_uploads_grace_period_days: "Grace period (in days) before a deleted upload is erased."
-    purge_inactive_users_grace_period_days: "Grace period (in days) before an inactive user is deleted."
+    purge_inactive_users_grace_period_days: "Grace period (in days) before a user who has not activated their account is deleted."
     enable_s3_uploads: "Place uploads on Amazon S3 storage. IMPORTANT: requires valid S3 credentials (both access key id & secret access key)."
     s3_use_iam_profile: 'Use AWS EC2 IAM role to retrieve keys. NOTE: enabling will override "s3 access key id" and "s3 secret access key" settings.'
     s3_upload_bucket: "The Amazon S3 bucket name that files will be uploaded into. WARNING: must be lowercase, no periods."
@@ -1003,7 +997,6 @@ en:
     embed_post_limit: "Maximum number of posts to embed."
     embed_whitelist_selector: "CSS selector for elements that are allowed in embeds."
     embed_blacklist_selector: "CSS selector for elements that are removed from embeds."
-    tos_accept_required: "If enabled, users will need to check a box on the signup form to confirm that they accept the terms of service. Edit 'Signup Form: Terms of Service Message' in the Content tab to change the message."
     notify_about_flags_after: "If there are flags that haven't been handled after this many hours, send an email to the contact_email. Set to 0 to disable."
     enable_cdn_js_debugging: "Allow /logs to display proper errors by adding crossorigin permissions on all js includes."
     show_create_topics_notice: "If the site has fewer than 5 public topics, show a notice asking admins to create some topics."
@@ -1108,8 +1101,10 @@ en:
     omniauth_error_unknown: "Something went wrong processing your log in, please try again."
     new_registrations_disabled: "New account registrations are not allowed at this time."
     password_too_long: "Passwords are limited to 200 characters."
+    missing_user_field: "You have not completed all the user fields"
 
   user:
+    no_accounts_associated: "No accounts associated"
     username:
       short: "must be at least %{min} characters"
       long: "must be no more than %{max} characters"
@@ -1240,14 +1235,14 @@ en:
 
   flags_reminder:
     flags_were_submitted:
-      one: "There are flags that were submitted over 1 hour ago."
-      other: "There are flags that were submitted over %{count} hours ago."
+      one: "These flags were submitted over 1 hour ago."
+      other: "These flags were submitted over %{count} hours ago."
     please_review: "Please review them."
     post_number: "post"
-    how_to_disable: "Disable this email by changing the notify_about_flags_after setting to 0."
+    how_to_disable: "Disable this email by changing the <pre>notify_about_flags_after</pre> setting to 0."
     subject_template:
-      one: "1 flag is waiting to be handled"
-      other: "%{count} flags are waiting to be handled"
+      one: "1 flag waiting to be handled"
+      other: "%{count} flags waiting to be handled"
 
   flag_reasons:
     off_topic: "Your post was flagged as **off-topic**: the community thinks it does not fit into the topic, as currently defined by the title and the first post."
@@ -1318,7 +1313,7 @@ en:
 
         <img src="/images/welcome/username-completion.png" width="230" height="131">
 
-        For [standard Emoji](http://www.emoji-cheat-sheet.com/), just start typing `:` or the traditional smileys `:)` :smile:
+        For [standard Emoji](http://www.emoji.codes/), just start typing `:` or the traditional smileys `:)` :smile:
 
         ## What else can I do?
 
@@ -1576,6 +1571,9 @@ en:
 
   unsubscribe_link: "To unsubscribe from these emails, visit your [user preferences](%{user_preferences_url})."
 
+  subject_re: "Re: "
+  subject_pm: "[PM] "
+
   user_notifications:
     previous_discussion: "Previous Replies"
     unsubscribe:
@@ -1739,9 +1737,6 @@ en:
 
   terms_of_service:
     title: "Terms of Service"
-    user_content_license: |
-      User contributions are licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US). Without limiting any of those representations or warranties, %{company_short_name} has the right (though not the obligation) to, in %{company_short_name}’s sole discretion (i) refuse or remove any content that, in %{company_short_name}’s reasonable opinion, violates any %{company_short_name} policy or is in any way harmful or objectionable, or (ii) terminate or deny access to and use of the Website to any individual or entity for any reason, in %{company_short_name}’s sole discretion. %{company_short_name} will have no obligation to provide a refund of any amounts previously paid.
-    miscellaneous: "This Agreement constitutes the entire agreement between %{company_short_name} and you concerning the subject matter hereof, and they may only be modified by a written amendment signed by an authorized executive of %{company_short_name}, or by the posting by %{company_short_name} of a revised version. Except to the extent applicable law, if any, provides otherwise, this Agreement, any access to or use of the Website will be governed by the laws of the state of California, U.S.A., excluding its conflict of law provisions, and the proper venue for any disputes arising out of or relating to any of the same will be the state and federal courts located in San Francisco County, California. Except for claims for injunctive or equitable relief or claims regarding intellectual property rights (which may be brought in any competent court without the posting of a bond), any dispute arising under this Agreement shall be finally settled in accordance with the Comprehensive Arbitration Rules of the Judicial Arbitration and Mediation Service, Inc. (“JAMS”) by three arbitrators appointed in accordance with such Rules. The arbitration shall take place in San Francisco, California, in the English language and the arbitral decision may be enforced in any court. The prevailing party in any action or proceeding to enforce this Agreement shall be entitled to costs and attorneys’ fees. If any part of this Agreement is held invalid or unenforceable, that part will be construed to reflect the parties’ original intent, and the remaining portions will remain in full force and effect. A waiver by either party of any term or condition of this Agreement or any breach thereof, in any one instance, will not waive such term or condition or any subsequent breach thereof. You may assign your rights under this Agreement to any party that consents to, and agrees to be bound by, its terms and conditions; %{company_short_name} may assign its rights under this Agreement without condition. This Agreement will be binding upon and will inure to the benefit of the parties, their successors and permitted assigns."
     signup_form_message: 'I have read and accept the <a href="/tos" target="_blank">Terms of Service</a>.'
 
   deleted: 'deleted'

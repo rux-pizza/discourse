@@ -307,6 +307,10 @@ section.details {
   text-align: right;
 }
 
+.display-row.associations .value {
+  width: 750px;
+}
+
 .display-row {
   line-height: 30px;
   padding: 5px;
@@ -1143,7 +1147,7 @@ table.api-keys {
   }
 }
 
-.leader-requirements {
+.tl3-requirements {
   .fa-check {
     color: $success;
   }
@@ -1313,5 +1317,38 @@ tr.not-activated {
 .details.not-activated {
   .username .value, .email .value a, .email .value a:visited {
     color: #bbb;
+  }
+}
+
+.user-fields {
+  h2 {
+    margin-bottom: 10px;
+  }
+
+  .user-field {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid scale-color-diff();
+
+    .form-display {
+      width: 25%;
+      display: inline-block;
+      float: left;
+    }
+
+    .form-element {
+      float: left;
+      width: 25%;
+    }
+
+    .controls {
+      float: right;
+      text-align: right;
+      width: 20%;
+    }
+
+    .clearfix {
+      clear: both;
+    }
   }
 }

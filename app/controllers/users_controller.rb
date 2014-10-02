@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   skip_before_filter :authorize_mini_profiler, only: [:avatar]
   skip_before_filter :check_xhr, only: [:show, :password_reset, :update, :account_created, :activate_account, :perform_account_activation, :authorize_email, :user_preferences_redirect, :avatar, :my_redirect]
 
-  before_filter :ensure_logged_in, only: [:username, :update, :change_email, :user_preferences_redirect, :upload_user_image, :pick_avatar, :destroy_user_image, :destroy]
+  before_filter :ensure_logged_in, only: [:username, :update, :change_email, :user_preferences_redirect, :upload_user_image, :pick_avatar, :destroy_user_image, :destroy, :check_emails]
   before_filter :respond_to_suspicious_request, only: [:create]
 
   # we need to allow account creation with bad CSRF tokens, if people are caching, the CSRF token on the
@@ -46,6 +46,16 @@ class UsersController < ApplicationController
   def update
     user = fetch_user_from_params
     guardian.ensure_can_edit!(user)
+
+    if params[:user_fields].present?
+      params[:custom_fields] ||= {}
+      UserField.where(editable: true).pluck(:id).each do |fid|
+        val = params[:user_fields][fid.to_s]
+        return render_json_error(I18n.t("login.missing_user_field")) if val.blank?
+        params[:custom_fields]["user_field_#{fid}"] = val
+      end
+    end
+
     json_result(user, serializer: UserSerializer, additional_errors: [:user_profile]) do |u|
       updater = UserUpdater.new(current_user, user)
       updater.update(params)
@@ -62,6 +72,20 @@ class UsersController < ApplicationController
     raise Discourse::InvalidParameters.new(:new_username) unless result
 
     render nothing: true
+  end
+
+  def check_emails
+    user = fetch_user_from_params
+    guardian.ensure_can_check_emails!(user)
+
+    StaffActionLogger.new(current_user).log_check_email(user, context: params[:context])
+
+    render json: {
+      email: user.email,
+      associated_accounts: user.associated_accounts
+    }
+  rescue Discourse::InvalidAccess => e
+    render json: failed_json, status: 403
   end
 
   def badge_title
@@ -148,17 +172,33 @@ class UsersController < ApplicationController
   end
 
   def create
+    params.permit(:user_fields)
+
     unless SiteSetting.allow_new_registrations
-      render json: { success: false, message: I18n.t("login.new_registrations_disabled") }
-      return
+      return fail_with("login.new_registrations_disabled")
     end
 
     if params[:password] && params[:password].length > User.max_password_length
-      render json: { success: false, message: I18n.t("login.password_too_long") }
-      return
+      return fail_with("login.password_too_long")
     end
 
     user = User.new(user_params)
+
+    # Handle custom fields
+    user_field_ids = UserField.pluck(:id)
+    if user_field_ids.present?
+      if params[:user_fields].blank?
+        return fail_with("login.missing_user_field")
+      else
+        fields = user.custom_fields
+        user_field_ids.each do |fid|
+          field_val = params[:user_fields][fid.to_s]
+          return fail_with("login.missing_user_field") if field_val.blank?
+          fields["user_field_#{fid}"] = field_val
+        end
+        user.custom_fields = fields
+      end
+    end
 
     authentication = UserAuthenticator.new(user, session)
 
@@ -179,6 +219,7 @@ class UsersController < ApplicationController
     if user.save
       authentication.finish
       activation.finish
+
 
       render json: {
         success: true,
@@ -325,7 +366,14 @@ class UsersController < ApplicationController
   end
 
   def send_activation_email
-    @user = fetch_user_from_params(include_inactive: true)
+
+    RateLimiter.new(nil, "activate-hr-#{request.remote_ip}", 30, 1.hour).performed!
+    RateLimiter.new(nil, "activate-min-#{request.remote_ip}", 6, 1.minute).performed!
+
+    @user = User.find_by_username_or_email(params[:username].to_s)
+
+    raise Discourse::NotFound unless @user
+
     @email_token = @user.email_tokens.unconfirmed.active.first
     enqueue_activation_email if @user
     render nothing: true
@@ -529,4 +577,9 @@ class UsersController < ApplicationController
         :active
       ).merge(ip_address: request.ip, registration_ip_address: request.ip)
     end
+
+    def fail_with(key)
+      render json: { success: false, message: I18n.t(key) }
+    end
+
 end

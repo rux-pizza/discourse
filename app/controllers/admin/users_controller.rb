@@ -17,6 +17,7 @@ class Admin::UsersController < Admin::AdminController
                                     :block,
                                     :unblock,
                                     :trust_level,
+                                    :trust_level_lock,
                                     :add_group,
                                     :remove_group,
                                     :primary_group,
@@ -127,11 +128,47 @@ class Admin::UsersController < Admin::AdminController
 
   def trust_level
     guardian.ensure_can_change_trust_level!(@user)
-    @user.change_trust_level!(params[:level].to_i, log_action_for: current_user)
+    level = params[:level].to_i
+
+
+    if !@user.trust_level_locked && [0,1,2].include?(level) && Promotion.send("tl#{level+1}_met?", @user)
+      @user.trust_level_locked = true
+      @user.save
+    end
+
+    if !@user.trust_level_locked && level == 3 && Promotion.tl3_lost?(@user)
+      @user.trust_level_locked = true
+      @user.save
+    end
+
+    @user.change_trust_level!(level, log_action_for: current_user)
 
     render_serialized(@user, AdminUserSerializer)
   rescue Discourse::InvalidAccess => e
     render_json_error(e.message)
+  end
+
+  def trust_level_lock
+    guardian.ensure_can_change_trust_level!(@user)
+
+    new_lock = params[:locked].to_s
+    unless new_lock =~ /true|false/
+      return render_json_error I18n.t('errors.invalid_boolaen')
+    end
+
+    @user.trust_level_locked = new_lock == "true"
+    @user.save
+
+    unless @user.trust_level_locked
+      p = Promotion.new(@user)
+      2.times{ p.review }
+      p.review_tl2
+      if @user.trust_level == 3 && Promotion.tl3_lost?(@user)
+        @user.change_trust_level!(2, log_action_for: current_user)
+      end
+    end
+
+    render nothing: true
   end
 
   def approve
@@ -198,7 +235,7 @@ class Admin::UsersController < Admin::AdminController
   def badges
   end
 
-  def leader_requirements
+  def tl3_requirements
   end
 
   def ip_info

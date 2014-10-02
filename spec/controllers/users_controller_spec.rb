@@ -251,7 +251,7 @@ describe UsersController do
       it 'disallows login' do
         flash[:error].should be_present
         session[:current_user_id].should be_blank
-        assigns[:invalid_token].should be_nil
+        assigns[:invalid_token].should == nil
         response.should be_success
       end
     end
@@ -264,7 +264,7 @@ describe UsersController do
       it 'disallows login' do
         flash[:error].should be_present
         session[:current_user_id].should be_blank
-        assigns[:invalid_token].should be_true
+        assigns[:invalid_token].should == true
         response.should be_success
       end
     end
@@ -345,7 +345,7 @@ describe UsersController do
         SiteSetting.stubs(:allow_new_registrations).returns(false)
         post_user
         json = JSON.parse(response.body)
-        json['success'].should be_false
+        json['success'].should == false
         json['message'].should be_present
       end
 
@@ -355,7 +355,7 @@ describe UsersController do
 
         post_user
 
-        expect(JSON.parse(response.body)['active']).to be_false
+        expect(JSON.parse(response.body)['active']).to be_falsey
       end
 
       context "and 'must approve users' site setting is enabled" do
@@ -373,14 +373,12 @@ describe UsersController do
 
         it 'indicates the user is not active in the response' do
           post_user
-          expect(JSON.parse(response.body)['active']).to be_false
+          expect(JSON.parse(response.body)['active']).to be_falsey
         end
 
         it "shows the 'waiting approval' message" do
           post_user
-          expect(JSON.parse(response.body)['message']).to eq(
-            I18n.t 'login.wait_approval'
-          )
+          expect(JSON.parse(response.body)['message']).to eq(I18n.t 'login.wait_approval')
         end
       end
     end
@@ -410,14 +408,14 @@ describe UsersController do
       it 'indicates the user is active in the response' do
         User.any_instance.expects(:enqueue_welcome_message)
         post_user
-        expect(JSON.parse(response.body)['active']).to be_true
+        expect(JSON.parse(response.body)['active']).to be_truthy
       end
 
       it 'returns 500 status when new registrations are disabled' do
         SiteSetting.stubs(:allow_new_registrations).returns(false)
         post_user
         json = JSON.parse(response.body)
-        json['success'].should be_false
+        json['success'].should == false
         json['message'].should be_present
       end
 
@@ -449,11 +447,11 @@ describe UsersController do
 
       it 'has the proper JSON' do
         json = JSON::parse(response.body)
-        json["success"].should be_true
+        json["success"].should == true
       end
 
       it 'should not result in an active account' do
-        User.find_by(username: @user.username).active.should be_false
+        User.find_by(username: @user.username).active.should == false
       end
     end
 
@@ -472,7 +470,7 @@ describe UsersController do
       it 'should say it was successful' do
         xhr :post, :create, create_params
         json = JSON::parse(response.body)
-        json["success"].should be_true
+        json["success"].should == true
       end
     end
 
@@ -513,7 +511,7 @@ describe UsersController do
       it 'should report failed' do
         xhr :post, :create, create_params
         json = JSON::parse(response.body)
-        json["success"].should_not be_true
+        json["success"].should_not == true
       end
     end
 
@@ -533,7 +531,6 @@ describe UsersController do
     end
 
     context 'when an Exception is raised' do
-
       [ ActiveRecord::StatementInvalid,
         RestClient::Forbidden ].each do |exception|
         before { User.any_instance.stubs(:save).raises(exception) }
@@ -544,6 +541,40 @@ describe UsersController do
         }
 
         include_examples 'failed signup'
+      end
+    end
+
+    context "with custom fields" do
+      let!(:user_field) { Fabricate(:user_field) }
+      let!(:another_field) { Fabricate(:user_field) }
+
+      context "without a value for the fields" do
+        let(:create_params) { {name: @user.name, password: 'watwatwat', username: @user.username, email: @user.email} }
+        include_examples 'failed signup'
+      end
+
+      context "with values for the fields" do
+        let(:create_params) { {
+          name: @user.name,
+          password: 'watwatwat',
+          username: @user.username,
+          email: @user.email,
+          user_fields: {
+            user_field.id.to_s => 'value1',
+            another_field.id.to_s => 'value2',
+          }
+        } }
+
+        it "should succeed" do
+          xhr :post, :create, create_params
+          response.should be_success
+          inserted = User.where(email: @user.email).first
+          inserted.should be_present
+          inserted.custom_fields.should be_present
+          inserted.custom_fields["user_field_#{user_field.id}"].should == 'value1'
+          inserted.custom_fields["user_field_#{another_field.id}"].should == 'value2'
+        end
+
       end
     end
 
@@ -593,7 +624,7 @@ describe UsersController do
       end
 
       it 'should return available as false in the JSON' do
-        ::JSON.parse(response.body)['available'].should be_false
+        ::JSON.parse(response.body)['available'].should == false
       end
 
       it 'should return a suggested username' do
@@ -607,7 +638,7 @@ describe UsersController do
       end
 
       it 'should return available in the JSON' do
-        ::JSON.parse(response.body)['available'].should be_true
+        ::JSON.parse(response.body)['available'].should == true
       end
     end
 
@@ -637,7 +668,7 @@ describe UsersController do
       end
 
       it 'should not return an available key' do
-        ::JSON.parse(response.body)['available'].should be_nil
+        ::JSON.parse(response.body)['available'].should == nil
       end
 
       it 'should return an error message' do
@@ -709,7 +740,7 @@ describe UsersController do
     it 'filters by email' do
       inviter = Fabricate(:user)
       invitee = Fabricate(:user)
-      invite = Fabricate(
+      _invite = Fabricate(
         :invite,
         email: 'billybob@example.com',
         invited_by: inviter,
@@ -732,7 +763,7 @@ describe UsersController do
     it 'filters by username' do
       inviter = Fabricate(:user)
       invitee = Fabricate(:user, username: 'billybob')
-      invite = Fabricate(
+      _invite = Fabricate(
         :invite,
         invited_by: inviter,
         email: 'billybob@example.com',
@@ -803,7 +834,7 @@ describe UsersController do
           it 'does not return invites' do
             user = log_in
             inviter = Fabricate(:user)
-            invitee = Fabricate(:user)
+            _invitee = Fabricate(:user)
             Fabricate(:invite, invited_by: inviter)
             stub_guardian(user) do |guardian|
               guardian.stubs(:can_see_invite_details?).
@@ -820,7 +851,7 @@ describe UsersController do
 
       context 'with redeemed invites' do
         it 'returns invites' do
-          user = log_in
+          _user = log_in
           inviter = Fabricate(:user)
           invitee = Fabricate(:user)
           invite = Fabricate(:invite, invited_by: inviter, user: invitee)
@@ -846,12 +877,10 @@ describe UsersController do
 
     context 'with authenticated user' do
       context 'with permission to update' do
+        let!(:user) { log_in(:user) }
+
         it 'allows the update' do
-          user = Fabricate(:user, name: 'Billy Bob')
-          log_in_user(user)
-
           put :update, username: user.username, name: 'Jim Tom', custom_fields: {test: :it}
-
           expect(response).to be_success
 
           user.reload
@@ -860,14 +889,42 @@ describe UsersController do
           expect(user.custom_fields['test']).to eq 'it'
         end
 
-        it 'returns user JSON' do
-          user = log_in
+        context "with user fields" do
+          context "an editable field" do
+            let!(:user_field) { Fabricate(:user_field) }
 
+            it "should update the user field" do
+              put :update, username: user.username, name: 'Jim Tom', user_fields: { user_field.id.to_s => 'happy' }
+              expect(response).to be_success
+              expect(user.user_fields[user_field.id.to_s]).to eq 'happy'
+            end
+
+            it "cannot be updated to blank" do
+              put :update, username: user.username, name: 'Jim Tom', user_fields: { user_field.id.to_s => '' }
+              response.should_not be_success
+              user.user_fields[user_field.id.to_s].should_not == 'happy'
+            end
+          end
+
+          context "uneditable field" do
+            let!(:user_field) { Fabricate(:user_field, editable: false) }
+
+            it "does not update the user field" do
+              put :update, username: user.username, name: 'Jim Tom', user_fields: { user_field.id.to_s => 'happy' }
+              expect(response).to be_success
+              expect(user.user_fields[user_field.id.to_s]).to be_blank
+            end
+          end
+
+        end
+
+        it 'returns user JSON' do
           put :update, username: user.username
 
           json = JSON.parse(response.body)
           expect(json['user']['id']).to eq user.id
         end
+
       end
 
       context 'without permission to update' do
@@ -1245,6 +1302,34 @@ describe UsersController do
         response.should be_redirect
       end
     end
+  end
+
+  describe '.check_emails' do
+
+    it 'raises an error when not logged in' do
+      lambda { xhr :put, :check_emails, username: 'zogstrip' }.should raise_error(Discourse::NotLoggedIn)
+    end
+
+    context 'while logged in' do
+      let!(:user) { log_in }
+
+      it "raises an error when you aren't allowed to check emails" do
+        Guardian.any_instance.expects(:can_check_emails?).returns(false)
+        xhr :put, :check_emails, username: Fabricate(:user).username
+        response.should be_forbidden
+      end
+
+      it "returns both email and associated_accounts when you're allowed to see them" do
+        Guardian.any_instance.expects(:can_check_emails?).returns(true)
+        xhr :put, :check_emails, username: Fabricate(:user).username
+        response.should be_success
+        json = JSON.parse(response.body)
+        json["email"].should be_present
+        json["associated_accounts"].should be_present
+      end
+
+    end
+
   end
 
 end

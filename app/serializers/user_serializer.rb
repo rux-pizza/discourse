@@ -46,12 +46,12 @@ class UserSerializer < BasicUserSerializer
              :notification_count,
              :has_title_badges,
              :edit_history_public,
-             :custom_fields
+             :custom_fields,
+             :user_fields
 
   has_one :invited_by, embed: :object, serializer: BasicUserSerializer
   has_many :custom_groups, embed: :object, serializer: BasicGroupSerializer
   has_many :featured_user_badges, embed: :ids, serializer: UserBadgeSerializer, root: :user_badges
-
 
   staff_attributes :number_of_deleted_posts,
                    :number_of_flagged_posts,
@@ -59,9 +59,7 @@ class UserSerializer < BasicUserSerializer
                    :number_of_suspensions,
                    :number_of_warnings
 
-
-  private_attributes :email,
-                     :locale,
+  private_attributes :locale,
                      :email_digests,
                      :email_private_messages,
                      :email_direct,
@@ -86,6 +84,10 @@ class UserSerializer < BasicUserSerializer
   ###
   ### ATTRIBUTES
   ###
+
+  def include_email?
+    object.id && object.id == scope.user.try(:id)
+  end
 
   def bio_raw
     object.user_profile.bio_raw
@@ -250,6 +252,14 @@ class UserSerializer < BasicUserSerializer
 
   def include_edit_history_public?
     can_edit && !SiteSetting.edit_history_visible_to_public
+  end
+
+  def user_fields
+    object.user_fields
+  end
+
+  def include_user_fields?
+    user_fields.present?
   end
 
   def custom_fields
