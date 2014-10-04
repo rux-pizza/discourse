@@ -260,7 +260,7 @@ en:
       * Change the category of any topic
       * Have all your links followed ([automatic nofollow](http://en.wikipedia.org/wiki/Nofollow) is removed)
       * Access a private Lounge category only visible to users at trust level 3 and higher
-      * Cast more heavily weighted likes and flags
+      * Hide spam with a single flag
 
       Here's the [current list of fellow regulars](/badges/3/regular). Be sure to say hi.
 
@@ -631,6 +631,7 @@ en:
       description: "A message that will be displayed at the top of all notification emails."
 
   site_settings:
+    censored_words: "Words that will be automatically replaced with &#9632;&#9632;&#9632;&#9632;"
     delete_old_hidden_posts: "Auto-delete any hidden posts that stay hidden for more than 30 days."
     default_locale: "The default language of this Discourse instance (ISO 639-1 Code)"
     allow_user_locale: "Allow users to choose their own language interface preference"
@@ -1089,7 +1090,7 @@ en:
     incorrect_username_email_or_password: "Incorrect username, email or password"
     wait_approval: "Thanks for signing up. We will notify you when your account has been approved."
     active: "Your account is activated and ready to use."
-    activate_email: "You're almost done! We sent an activation mail to the email address you provided. Please follow the instructions in the email to activate your account."
+    activate_email: "<p>You're almost done! We sent an activation mail to <b>%{email}</b>. Please follow the instructions in the email to activate your account.</p><p>If it doesn't arrive, check your spam folder, or try to log in again to send another activation mail.</p>"
     not_activated: "You can't log in yet. We sent an activation email to you. Please follow the instructions in the email to activate your account."
     not_allowed_from_ip_address: "You can't login as %{username} from that IP address."
     suspended: "You can't log in until %{date}."

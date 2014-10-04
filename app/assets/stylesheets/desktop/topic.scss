@@ -17,12 +17,13 @@
 
 #topic-title {
   z-index: 1000;
-  padding: 14px 0 8px 0;
-  margin-bottom: 20px;
+  padding-top: 14px;
+  margin-bottom: 10px;
   .star {
     font-size: 20px;
     margin-top: 6px;
     margin-right: 6px;
+    margin-bottom: 30px; // this allows the categories to align underneath title
   }
   #edit-title { width: 500px; }
   .category-combobox {
@@ -47,11 +48,13 @@
       margin-top: 2px;
       margin-right: 5px;
       }
-    a.edit-topic { font-size: 15px; position: absolute; margin-left: 8px; }
+    a.edit-topic { font-size: 17px; position: absolute; margin-left: 8px; }
+  }
+  .title-category-wrapper {
+    margin-top: 5px;
   }
   .topic-statuses {
     margin-top: -2px;
-
   }
   .select2-container {
     vertical-align: middle;

@@ -380,6 +380,11 @@ posting:
     client: true
     default: false
   delete_old_hidden_posts: true
+  censored_words:
+    client: true
+    default: ''
+    refresh: true
+    type: list
 
 email:
   email_time_window_mins: 10
@@ -390,7 +395,7 @@ email:
     default: 7
     enum: 'DigestEmailSiteSetting'
   email_custom_headers: 'Auto-Submitted: auto-generated'
-  email_subject: '%{optional_re}[%{site_name}] %{optional_pm}%{topic_title}'
+  email_subject: '%{optional_re}[%{site_name}] %{optional_pm}%{optional_cat}%{topic_title}'
   reply_by_email_enabled: false
   reply_by_email_address: ''
   pop3_polling_enabled: false
@@ -584,12 +589,22 @@ rate_limits:
   max_replies_in_first_day: 10
 
 developer:
-  force_hostname: ''
+  force_hostname:
+    hidden:
+      development: false
+      default: true
+    default: ''
   port:
+    hidden:
+      development: false
+      default: true
     default:
       development: 3000
       default: ''
   queue_jobs:
+    hidden:
+      development: false
+      default: true
     default:
       test: false
       default: true

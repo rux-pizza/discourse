@@ -51,6 +51,7 @@ class UsersController < ApplicationController
       params[:custom_fields] ||= {}
       UserField.where(editable: true).pluck(:id).each do |fid|
         val = params[:user_fields][fid.to_s]
+        val = nil if val === "false"
         return render_json_error(I18n.t("login.missing_user_field")) if val.blank?
         params[:custom_fields]["user_field_#{fid}"] = val
       end
@@ -220,6 +221,8 @@ class UsersController < ApplicationController
       authentication.finish
       activation.finish
 
+      # save user email in session, to show on account-created page
+      session["user_created_email"] = user.email
 
       render json: {
         success: true,
