@@ -15,6 +15,14 @@
 # http://yamllint.com/
 
 en:
+  # some default transliteration rules may be missing, add them to your locale
+  i18n:
+    transliterate:
+      rule:
+        ț: "t"
+        Ț: "t"
+        ș: "s"
+        Ș: "s"
   dates:
     short_date_no_year: "D MMM"
     short_date: "D MMM, YYYY"
@@ -42,6 +50,7 @@ en:
     messages:
       too_long_validation: "is limited to %{max} characters; you entered %{length}."
       invalid_boolean: "Invalid boolean."
+      taken: "has already been taken"
     embed:
       load_from_remote: "There was an error loading that post."
 
@@ -626,9 +635,6 @@ en:
     bottom:
       title: "Bottom of the pages"
       description: "HTML that will be added at the bottom of every page."
-    notification_email_top:
-      title: "Notification Email Top"
-      description: "A message that will be displayed at the top of all notification emails."
 
   site_settings:
     censored_words: "Words that will be automatically replaced with &#9632;&#9632;&#9632;&#9632;"
@@ -661,7 +667,7 @@ en:
     ninja_edit_window: "For (n) seconds after posting, editing will not create a new version in the post history."
     post_edit_time_limit: "The author can edit or delete their post for (n) minutes after posting. Set to 0 for forever."
     edit_history_visible_to_public: "Allow everyone to see previous versions of an edited post. When disabled, only staff members can view."
-    delete_removed_posts_after: "Posts removed by the author will be automatically deleted after (n) hours."
+    delete_removed_posts_after: "Posts removed by the author will be automatically deleted after (n) hours. If set to 0, posts will be deleted immediately."
     max_image_width: "Maximum thumbnail width of images in a post"
     max_image_height: "Maximum thumbnail height of images in a post"
     category_featured_topics: "Number of topics displayed per category on the /categories page. After changing this value, it takes up to 15 minutes for the categories page to update."
@@ -683,7 +689,7 @@ en:
 
     notification_email: "The from: email address used when sending all essential system emails. The domain specified here must have SPF, DKIM and reverse PTR records set correctly for email to arrive."
     email_custom_headers: "A pipe-delimited list of custom email headers"
-    email_subject: "Subject format for standard emails."
+    email_subject: "Customizable subject format for standard emails. See https://meta.discourse.org/t/customize-subject-format-for-standard-emails/20801"
     use_https: "Should the full url for the site (Discourse.base_url) be http or https? DO NOT ENABLE THIS UNLESS HTTPS IS ALREADY SET UP AND WORKING!"
 
     summary_score_threshold: "The minimum score required for a post to be included in 'Summarize This Topic'"
@@ -694,9 +700,11 @@ en:
     enable_private_messages: "Allow trust level 1 users to create private messages and reply to private messages"
 
     enable_long_polling: "Message bus used for notification can use long polling"
-    long_polling_interval: "Interval before a new long poll is issued in milliseconds "
-    polling_interval: "How often should logged in user clients poll in milliseconds"
+    long_polling_base_url: "Base URL used for long polling (when a CDN is serving dynamic content, be sure to set this to origin pull) eg: http://origin.site.com"
+    long_polling_interval: "Amount of time the server should wait before responding to clients when there is no data to send (logged on users only)"
+    polling_interval: "When not long polling, how often should logged on clients poll in milliseconds"
     anon_polling_interval: "How often should anonymous clients poll in milliseconds"
+    background_polling_interval: "How often should the clients poll in milliseconds (when the window is in the background)"
 
     auto_track_topics_after: "Global default milliseconds before a topic is automatically tracked, users can override (0 for always, -1 for never)"
     new_topic_duration_minutes: "Global default number of minutes a topic is considered new, users can override (-1 for always, -2 for last visit)"
@@ -722,18 +730,21 @@ en:
     enable_escaped_fragments: "Fall back to Google's Ajax-Crawling API if no webcrawler is detected. See https://support.google.com/webmasters/answer/174992?hl=en"
     enable_noscript_support: "Enable standard webcrawler search engine support via the noscript tag"
     allow_moderators_to_create_categories: "Allow moderators to create new categories"
+    cors_origins: "Allowed origins for cross-origin requests (CORS). Each origin must include http:// or https://. The DISCOURSE_ENABLE_CORS env variable must be set to true to enable CORS."
     top_menu: "Determine which items appear in the homepage navigation, and in what order. Example latest|new|unread|starred|categories|top|read|posted"
     post_menu: "Determine which items appear on the post menu, and in what order. Example like|edit|flag|delete|share|bookmark|reply"
     post_menu_hidden_items: "The menu items to hide by default in the post menu unless an expansion ellipsis is clicked on."
     share_links: "Determine which items appear on the share dialog, and in what order."
     track_external_right_clicks: "Track external links that are right clicked (eg: open in new tab) disabled by default because it rewrites URLs"
     topics_per_page: "How many topics are loaded by default on the topic list, and when scrolling down to load more topics"
-    posts_per_page: "How many posts are loaded by default on a topic, and when scrolling down to load more posts"
+    posts_chunksize: "How many posts are loaded by default on a topic, and when scrolling down to load more posts"
     site_contact_username: "All automated private messages will be from this user; if left blank the default System account will be used."
     send_welcome_message: "Send all new users a welcome private message with a quick start guide."
     suppress_reply_directly_below: "Don't show the expandable reply count on a post when there is only a single reply directly below this post."
     suppress_reply_directly_above: "Don't show the expandable in-reply-to on a post when there is only a single reply directly above this post."
     suppress_reply_when_quoting: "Don't show the expandable in-reply-to on a post when post quotes reply."
+
+    experimental_reply_expansion: "Hide intermediate replies when expanding a reply to (experimental)"
 
     topics_per_period_in_top_summary: "Number of top topics shown in the default top topics summary."
     topics_per_period_in_top_page: "Number of top topics shown on the expanded 'Show More' top topics."
@@ -743,7 +754,7 @@ en:
     email_token_valid_hours: "Forgot password / activate account tokens are valid for (n) hours."
     email_token_grace_period_hours: "Forgot password / activate account tokens are still valid for a grace period of (n) hours after being redeemed."
 
-    enable_badges: "Enable the badge system (experimental)"
+    enable_badges: "Enable the badge system"
 
     allow_index_in_robots_txt: "Specify in robots.txt that this site is allowed to be indexed by web search engines."
     email_domains_blacklist: "A list of email domains that users are not allowed to register accounts with. Example: mailinator.com trashmail.net"
@@ -934,6 +945,8 @@ en:
     strip_images_from_short_emails: "Strip images from emails having size less than 2800 Bytes"
     short_email_length: "Short email length in Bytes"
 
+    enable_email_names: "Allow showing user full name in emails. Disable to hide full name in emails."
+
     pop3_polling_enabled: "Poll via POP3 for email replies."
     pop3_polling_ssl: "Use SSL while connecting to the POP3 server. (Recommended)"
     pop3_polling_period_mins: "The period in minutes between checking the POP3 account for email. NOTE: requires restart."
@@ -1004,7 +1017,7 @@ en:
 
     vacuum_db_days: "Run VACUUM FULL ANALYZE to reclaim DB space after migrations (set to 0 to disable)"
 
-    prevent_anons_from_downloading_files: "Prevent anonymous users from downloading files. WARNING: this will prevent any site assets posted as attachments from working."
+    prevent_anons_from_downloading_files: "Prevent anonymous users from downloading attachments. WARNING: this will prevent any non-image site assets posted as attachments from working."
 
     errors:
       invalid_email: "Invalid email address."
@@ -1103,6 +1116,7 @@ en:
     new_registrations_disabled: "New account registrations are not allowed at this time."
     password_too_long: "Passwords are limited to 200 characters."
     missing_user_field: "You have not completed all the user fields"
+    close_window: "Authentication is complete. Close this window to continue."
 
   user:
     no_accounts_associated: "No accounts associated"
@@ -1152,6 +1166,14 @@ en:
       %{invite_link}
 
       This invitation is from a trusted user, so you won't need to log in.
+
+  invite_password_instructions:
+    subject_template: "Set password for your %{site_name} account"
+    text_body_template: |
+      Thanks for accepting your invitation to %{site_name} -- welcome!
+
+      To log in again, click the following link to choose a password:
+      %{base_url}/users/password-reset/%{email_token}
 
   test_mailer:
     subject_template: "[%{site_name}] Email Deliverability Test"
@@ -1380,14 +1402,16 @@ en:
 
         [prefs]: %{user_preferences_url}
 
-    export_succeeded:
-      subject_template: "Export completed successfully"
-      text_body_template: "The export was successful."
+    backup_succeeded:
+      subject_template: "Backup completed successfully"
+      text_body_template: "The backup was successful.
 
-    export_failed:
-      subject_template: "Export failed"
+      Visit the [admin > backup section](/admin/backups) to download your new backup."
+
+    backup_failed:
+      subject_template: "Backup failed"
       text_body_template: |
-        The export has failed.
+        The backup has failed.
 
         Here's the log:
 
@@ -1395,14 +1419,14 @@ en:
         %{logs}
         ```
 
-    import_succeeded:
-      subject_template: "Import completed successfully"
-      text_body_template: "The import was successful."
+    restore_succeeded:
+      subject_template: "Restore completed successfully"
+      text_body_template: "The restore was successful."
 
-    import_failed:
-      subject_template: "Import failed"
+    restore_failed:
+      subject_template: "Restore failed"
       text_body_template: |
-        The import has failed.
+        The restore has failed.
 
         Here's the log:
 
@@ -1446,26 +1470,27 @@ en:
         Your account does not have the required trust level to post new topics to this email address. If you believe this is in error, contact a staff member.
 
     email_reject_no_account:
-      subject_template: "Email issue -- No Account"
+      subject_template: "Email issue -- Unknown Account"
       text_body_template: |
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
-        There is no known account with this email address. Try sending from a different email address, or contact a staff member.
+        There is no known user account with this email address. Try sending from a different email address, or contact a staff member.
 
     email_reject_empty:
       subject_template: "Email issue -- No Content"
       text_body_template: |
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
-        We couldn't find any content in the email. Make sure that you wrote something at the top of the email - we can't parse inline replies.
-        If you're getting this and you did include content, try again with HTML content included in your email (not just plain text only).
+        We couldn't find any content in the email. Make sure your reply is at the top of the email -- we can't process inline replies.
+
+        If you're getting this and you _did_ include content, try again with HTML content included in your email (not just plain text only).
 
     email_reject_parsing:
       subject_template: "Email issue -- Content unrecognized"
       text_body_template: |
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
-        We couldn't find where your reply was in the email. **Make sure to write your entire reply at the top of the email** -- everything below the start of the replied-to message is discarded.
+        We couldn't find your reply in the provided email. **Make sure your reply is at the top of the email** -- we can't process inline replies.
 
     email_reject_post_error:
       subject_template: "Email issue -- Posting error"
@@ -1486,18 +1511,18 @@ en:
         If you can correct the problem, please try again.
 
     email_reject_reply_key:
-      subject_template: "Email issue -- Bad Reply Key"
+      subject_template: "Email issue -- Unknown Reply Key"
       text_body_template: |
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
         The provided reply key is invalid or unknown, so we don't know what this email is in reply to. Contact a staff member.
 
     email_reject_destination:
-      subject_template: "Email issue -- Bad Destination Address(es)"
+      subject_template: "Email issue -- Unknown To: Address"
       text_body_template: |
         We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
 
-        None of the destination addresses are recognized by the forum. Please make sure that the forum is in the To: line (not CC or BCC), and that you are sending to the email address provided by the forum administrators.
+        None of the destination addresses are recognized. Please make sure that the site address is in the To: line (not Cc: or Bcc:), and that you are sending to the correct email address provided by staff.
 
     email_error_notification:
       subject_template: "Email issue -- POP authentication error"
@@ -2102,3 +2127,26 @@ en:
       If we decide to change our privacy policy, we will post those changes on this page.
 
       This document is CC-BY-SA. It was last updated May 31, 2013.
+
+  static:
+    search_help: |
+      <h2>Tips</h2>
+      <p>
+      <ul>
+        <li>Title matches are prioritized, so when in doubt, search for titles</li>
+        <li>Unique, uncommon words will always produce the best results</li>
+        <li>Whenever possible, scope your search to a particular category, user, or topic</li>
+      </ul>
+      </p>
+      <h2>Options</h2>
+      <p>
+        <table>
+        <tr><td><code>order:views</code></td><td><code>order:latest</code></td><td colspan=3></td></tr>
+        <tr><td><code>status:open</code></td><td><code>status:closed</code></td><td><code>status:archived</code></td><td><code>status:noreplies</code></td><td><code>status:singleuser</code></td></tr>
+        <tr><td><code>category:foo</code></td><td><code>user:foo</code></td><td colspan=3></td></tr>
+        <tr><td><code>in:likes</code></td><td><code>in:posted</code></td><td><code>in:watching</code></td><td><code>in:tracking</code></td><td></td></tr>
+        </table>
+      </p>
+      <p>
+        <code>rainbows category:parks status:open order:latest</code> will search for topics containing the word "rainbows" in the category "parks" that are not closed or archived, ordered by date of last post.
+      </p>

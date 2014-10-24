@@ -122,22 +122,9 @@ da:
     daily: "dagligt"
     weekly: "ugentligt"
     every_two_weeks: "hver anden uge"
-    max: "maksimum"
     character_count:
       one: "{{count}} tegn"
       other: "{{count}} tegn"
-    in_n_seconds:
-      one: "på 1 sekund"
-      other: "på {{count}} sekunder"
-    in_n_minutes:
-      one: "på 1 minut"
-      other: "på {{count}} minutter"
-    in_n_hours:
-      one: "på 1 time"
-      other: "på {{count}} timer"
-    in_n_days:
-      one: "på 1 dag"
-      other: "på {{count}} dage"
     suggested_topics:
       title: "Foreslåede emner"
     about:
@@ -149,10 +136,6 @@ da:
       stat:
         all_time: "Alt"
         last_7_days: "De sidste 7 Dage"
-      like_count: "Likes"
-      topic_count: "Emner"
-      post_count: "Indlæg"
-      user_count: "Brugere"
     bookmarks:
       not_logged_in: "Beklager, du skal været logget ind for at bogmærke indlæg"
       created: "Du har bogmærket dette indlæg."
@@ -259,6 +242,7 @@ da:
       other_accounts: Andre kontoer med denne IP adresse
       no_other_accounts: (ingen)
     user:
+      said: "{{username}}:"
       profile: "Profil"
       mute: "Mute"
       edit: "Redigér indstillinger"
@@ -555,7 +539,6 @@ da:
       drafts_offline: "kladder offline"
       min_length:
         need_more_for_title: "der mangler {{n}} tegn i titlen"
-        need_more_for_reply: "der mangler {{n}} tegn i svaret"
       error:
         title_missing: "Titlen er påkrævet"
         title_too_short: "Titlen skal være på mindst {{min}} tegn"
@@ -579,7 +562,6 @@ da:
       view_new_post: "Se dit nye indlæg."
       saving: "Gemmer…"
       saved: "Gemt!"
-      saved_draft: "Du har en kladde i gang. vælg denne kasse for at forsætte med at redigere den."
       uploading: "Uploader…"
       show_preview: 'forhåndsvisning &raquo;'
       hide_preview: '&laquo; skjul forhåndsvisning'
@@ -609,10 +591,6 @@ da:
       help: "Hjælp til Markdown-redigering"
       toggler: "skjul eller vis editor-panelet"
       admin_options_title: "Valgfrie staff-indstillinger for dette emne"
-      auto_close_label: "Tidspunkt for automatisk lukning af emne:"
-      auto_close_units: "(antal timer, et tidspunkt eller et timestamp)"
-      auto_close_examples: 'indtast klokkeslet eller antal timer — 24, 17:00, 2013-11-22 14:00'
-      auto_close_error: "Indtast venligst en gyldig værdi."
     notifications:
       title: "notifikation ved @navns nævnelse, svar til dine indlæg og emner, private beskeder, mv."
       none: "Du har ikke nogen notifikationer lige nu."
@@ -712,7 +690,6 @@ da:
         one: '1 ulæst emne'
         other: '{{count}} ulæste emner'
       title: 'Emne'
-      loading_more: "Indlæser flere emner…"
       loading: 'Indlæser emne…'
       invalid_access:
         title: "Emnet er privat"
@@ -773,8 +750,6 @@ da:
           '2_4': 'Du får notifikationer fordi du har besvaret dette emne.'
           '2_2': 'Du får notifikationer fordi du følger dette emne.'
           '2': 'Du får notifikationer fordi du <a href="/users/{{username}}/preferences">har læst dette emne</a>.'
-          '1_2': 'Du får kun notifikationer hvis nogen nævner dit @navn eller svarer på dit indlæg.'
-          '1': 'Du får kun notifikationer hvis nogen nævner dit @navn eller svarer på dit indlæg.'
           '0_7': 'Du ignorerer alle notifikationer i denne kategori.'
           '0_2': 'Du får ingen notifikationer for dette emne.'
           '0': 'Du får ingen notifikationer for dette emne.'
@@ -784,15 +759,12 @@ da:
           title: "Overvåger"
         tracking_pm:
           title: "Følger"
-          description: "Antallet af ulæste og nye indlæg, vil stå efter den private besked. Du bliver kun notificeret nogen nævner dit @name eller svarer på dit indlæg."
         tracking:
           title: "Følger"
         regular:
           title: "Standard"
-          description: "du får kun besked hvis nogen nævner dit @navn eller svarer på dit indlæg."
         regular_pm:
           title: "Standard"
-          description: "Du får kun notifikationer hvis nogen nævner dit @navn eller svarer på dit indlæg i denne private besked."
         muted_pm:
           title: "Lydløs"
           description: "Du vil aldrig blive underrettet om noget omhandlende denne private mailboks"
@@ -919,7 +891,6 @@ da:
         edit: "Beklager, der opstrod en fejl under redigeringen af dit indlæg. Prøv venligst igen."
         upload: "Beklager, der opstod en fejl ved upload af filen. Prøv venligst igen."
         attachment_too_large: "Beklager, filen, som du forsøger at uploade, er for store (den maksimale størrelse er {{max_size_kb}}kb)."
-        image_too_large: "Beklager, billedet, som du forsøger at uploade, er for stort (den maksimale størrelse er {{max_size_kb}}kb), gør det venligst mindre og prøv igen."
         too_many_uploads: "Beklager, men du kan kun uploade én fil ad gangen."
         upload_not_authorized: "Beklager, filen, som du forsøger at uploade, er ikke godkendt (godkendte filendelser: {{authorized_extensions}})."
         image_upload_not_allowed_for_new_user: "Beklager, nye brugere kan ikke uploade billeder."
@@ -1119,7 +1090,6 @@ da:
           title: "Følger"
         regular:
           title: "Standard"
-          description: "Du får kun notifikationer hvis nogen nævner dit @navn eller svarer på dit indlæg."
         muted:
           title: "Ignoreret"
           description: "Du ignorerer automatisk alle emner i disse kategorier. De vil heller ikke stå i sin \"ulæste\" indikation."
@@ -1418,7 +1388,6 @@ da:
             text: "Backup"
             title: "Start backup"
             confirm: "Vil du starte en ny backup?"
-            without_uploads: "Ja (Uden upload)"
           download:
             text: "Download"
             title: "Download backuppen"
@@ -1883,7 +1852,6 @@ da:
         one: "1 givet"
         other: "%{count} givet"
       select_badge_for_title: Vælg en badge, du vil bruge som din titel
-      no_title: "<ingen titel>"
       badge_grouping:
         getting_started:
           name: Kom igang

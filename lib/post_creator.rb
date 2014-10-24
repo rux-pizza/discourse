@@ -76,6 +76,7 @@ class PostCreator
       store_unique_post_key
       track_topic
       update_topic_stats
+      update_topic_auto_close
       update_user_counts
       create_embedded_topic
 
@@ -208,6 +209,12 @@ class PostCreator
     @topic.update_attributes(attrs)
   end
 
+  def update_topic_auto_close
+    if @topic.auto_close_based_on_last_post && @topic.auto_close_hours
+      @topic.set_auto_close(@topic.auto_close_hours).save
+    end
+  end
+
   def setup_post
     @opts[:raw] = TextCleaner.normalize_whitespaces(@opts[:raw]).gsub(/\s+\z/, "")
 
@@ -216,7 +223,7 @@ class PostCreator
                             reply_to_post_number: @opts[:reply_to_post_number])
 
     # Attributes we pass through to the post instance if present
-    [:post_type, :no_bump, :cooking_options, :image_sizes, :acting_user, :invalidate_oneboxes, :cook_method, :via_email].each do |a|
+    [:post_type, :no_bump, :cooking_options, :image_sizes, :acting_user, :invalidate_oneboxes, :cook_method, :via_email, :raw_email].each do |a|
       post.send("#{a}=", @opts[a]) if @opts[a].present?
     end
 

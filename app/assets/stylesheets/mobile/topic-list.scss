@@ -71,15 +71,6 @@
 
   .num.posts {
     font-weight: bold;
-    a {
-      padding: 15px 10px 15px 5px;
-    }
-  }
-
-  .num.activity.last {
-    a {
-      padding: 15px 0 15px 5px;
-    }
   }
 
   .age {
@@ -261,8 +252,9 @@ tr.category-topic-link:nth-of-type(odd) {
 }
 .fade {
   opacity: 0;
-  -webkit-transition: opacity 0.15s linear;
-  transition: opacity 0.15s linear;
+  transition: opacity linear .15s;
+  -webkit-transition: opacity linear .15s;
+
 }
 .fade.in {
   opacity: 1;
@@ -317,4 +309,12 @@ ol.category-breadcrumb {
 
 button.dismiss-read {
   margin-right: 10px;
+}
+
+// base defines extra padding for easier click/top of title field
+// this is a bit too much for mobile
+td.main-link {
+  a.title {
+    padding: 5px 10px 5px 0;
+  }
 }

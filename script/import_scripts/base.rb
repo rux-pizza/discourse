@@ -470,7 +470,7 @@ class ImportScripts::Base
 
   def update_bumped_at
     puts "", "updating bumped_at on topics"
-    Post.exec_sql("update topics t set bumped_at = (select max(created_at) from posts where topic_id = t.id and post_type != #{Post.types[:moderator_action]})")
+    Post.exec_sql("update topics t set bumped_at = COALESCE((select max(created_at) from posts where topic_id = t.id and post_type != #{Post.types[:moderator_action]}), bumped_at)")
   end
 
   def update_last_posted_at
@@ -547,7 +547,7 @@ class ImportScripts::Base
   end
 
   def print_status(current, max)
-    print "\r%9d / %d (%5.1f%%)" % [current, max, ((current.to_f / max.to_f) * 100).round(1)]
+    print "\r%9d / %d (%5.1f%%)  " % [current, max, ((current.to_f / max.to_f) * 100).round(1)]
   end
 
   def batches(batch_size)

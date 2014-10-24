@@ -35,6 +35,11 @@ class StaticController < ApplicationController
       return
     end
 
+    if I18n.exists?("static.#{@page}")
+      render text: I18n.t("static.#{@page}"), layout: !request.xhr?, formats: [:html]
+      return
+    end
+
     file = "static/#{@page}.#{I18n.locale}"
     file = "static/#{@page}.en" if lookup_context.find_all("#{file}.html").empty?
     file = "static/#{@page}"    if lookup_context.find_all("#{file}.html").empty?
@@ -72,29 +77,32 @@ class StaticController < ApplicationController
   end
 
   skip_before_filter :verify_authenticity_token, only: [:cdn_asset]
+
   def cdn_asset
     path = File.expand_path(Rails.root + "public/assets/" + params[:path])
 
     # SECURITY what if path has /../
-    unless path.start_with?(Rails.root.to_s + "/public/assets")
-      raise Discourse::NotFound
-    end
+    raise Discourse::NotFound unless path.start_with?(Rails.root.to_s + "/public/assets")
 
     expires_in 1.year, public: true
+
+    response.headers["Expires"] = 1.year.from_now.httpdate
     response.headers["Access-Control-Allow-Origin"] = params[:origin]
+
     begin
       response.headers["Last-Modified"] = File.ctime(path).httpdate
+      response.headers["Content-Length"] = File.size(path).to_s
     rescue Errno::ENOENT
       raise Discourse::NotFound
     end
-    opts = {
-      disposition: nil
-    }
-    opts[:type] = "application/x-javascript" if path =~ /\.js$/
+
+    opts = { disposition: nil }
+    opts[:type] = "application/javascript" if path =~ /\.js$/
 
     # we must disable acceleration otherwise NGINX strips
     # access control headers
     request.env['sendfile.type'] = ''
     send_file(path, opts)
   end
+
 end

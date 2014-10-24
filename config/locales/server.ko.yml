@@ -197,27 +197,6 @@ ko:
   staff_category_description: "스태프들의 논의를 위한 비공개 카테고리입니다. 관리자 및 운영자에게만 보입니다."
   lounge_welcome:
     title: "라운지에 오신 것을 환영합니다."
-    body: |2
-
-      축하합니다! :confetti_ball:
-
-      당신의 신뢰도가 **지도자** (신뢰도 3등급)로 올라갔기 때문에 이 토픽을 볼 수 있게 되었습니다.
-
-      이제부터 아래의 행동들을 할 수 있습니다 &hellip;
-
-      * 토픽을 제목을 수정할 수 있습니다
-      * 토픽의 카테고리를 수정할 수 있습니다
-      * 링크가 follow로 처리됩니다 ([automatic nofollow](http://en.wikipedia.org/wiki/Nofollow) 가 제거됩니다)
-      * 신뢰도 3 이상인 사용자가 접근할 수 있는 비공개 카테고리인 라운지에 접근할 수 있습니다
-      * 좋아요와 신고의 가중치가 높아집니다
-
-      [정규 멤버 목록](/badges/3/regular)을 확인할 수 있습니다. 인사하는 것을 잊지마세요.
-
-      이 커뮤니티의 중요한 역할을 해주신 것에 감사드립니다!
-
-      (신뢰도에 관한 더 자세한 정보를 보시려면, [이 토픽을 확인하세요][trust]. 기준에 맞는 사람만 정규 회원으로 자격이 유지됩니다.)
-
-      [trust]: https://meta.discourse.org/t/what-do-user-trust-levels-do/4924
   category:
     topic_prefix: "'%{category}' 카테고리의 설명"
     replace_paragraph: "[이 첫번째 문단을 당신의 새로운 카테고리의 짧은 설명으로 바꿔주세요. 이 지침은 카테고리 선택 화면에 나타날 것입니다. 200자 이하로 적어주세요.]"
@@ -528,12 +507,6 @@ ko:
     bottom:
       title: "페이지 하단"
       description: "모든 페이지 하단에 추가할 HTML"
-    tos_signup_form_message:
-      title: "회원가입 양식: 서비스 약관 메시지"
-      description: "tos_accept_required(약관 필요) 설정이 활성화 되어있다면, 이 메시지는 회원가입 양식 위의 체크박스 옆에 나타납니다."
-    notification_email_top:
-      title: "알림 메일 상단"
-      description: "모든 알람 메일 상단에 보여질 메시지"
   site_settings:
     default_locale: "Discourse 인스턴스가 사용하는 기본 언어 (ISO 639-1 Code)"
     allow_user_locale: "사용자에게 자신이 원하는 언어를 선택할 수 있는 옵션을 제공한다."
@@ -563,7 +536,6 @@ ko:
     ninja_edit_window: "편집을 결과가 새로운 버전을 생성하지 않는 포스팅 이후에 경과할 시간(초)"
     post_edit_time_limit: "글 작성자가 해당 글을 편집하거나 삭제할 수 있도록 허용되는 시간(분). 0으로 설정하면 언제든지 편집이나 삭제가 허용됨."
     edit_history_visible_to_public: "모든 사용자가 게시글의 수정 내역을 볼 수 있도록 허용. 비활성화시 스태프 맴버만 수정 내역을 볼 수 있음."
-    delete_removed_posts_after: "저자에 의해 제거된 게시글이 실제로 삭제될 시간(시)"
     max_image_width: "글에서 사용할 수 있는 썸네일 이미지의 최대 너비"
     max_image_height: "글에서 사용할 수 있는 썸네일 이미지의 최대 높이"
     category_featured_topics: "카테고리 페이지에서 한 카테고리당 보여질 토픽의 수"
@@ -588,8 +560,6 @@ ko:
     summary_likes_required: "하나의 토픽에 대하여 요약본 보기 모드가 활성화되기 전까지 요구되는 최소 좋아요 수"
     summary_percent_filter: "요약본 보기를 클릭시, 글 중에 몇 %의 상위 글을 보여줄 것인가?"
     enable_long_polling: "Message bus used for notification can use long polling"
-    long_polling_interval: "Interval before a new long poll is issued in milliseconds "
-    polling_interval: "How often should logged in user clients poll in milliseconds"
     anon_polling_interval: "How often should anonymous clients poll in milliseconds"
     auto_track_topics_after: "토픽이 자동으로 추적되기까지의 기본 시간, 사용자에 따라 재정의 될 수 있음.(밀리초, 0 : 항상, -1 : 안함)"
     new_topic_duration_minutes: "토픽이 새로운 토픽으로 간주되는 시본 시간, 사용자에 따라 재정의 될 수 있음.(분, -1 : 항상, -2 : 마지막 접속)"
@@ -616,7 +586,6 @@ ko:
     share_links: "공유 다이얼로그에 어떤 아이템이 어떤 순서로 나올지 결정"
     track_external_right_clicks: "우클릭한 외부 링크를 추적한다 (에: 새 탭 열기) 이 설정을 위해선 해당 URL를 다시 써야하는 이유로 기본값은 비활성화이다."
     topics_per_page: "토픽 리스트에서 기본으로 보여지는 토픽 수와 스크롤로 인해 더 많은 토픽들이 불려올 때의 수"
-    posts_per_page: "하나의 토픽에서 기본으로 보여지는 포스트 수와 스크롤로 인해 더 많은 포스트가 불려올 때의 수"
     send_welcome_message: "신규 사용자에게 가입 환영 메세지를 보냅니까?"
     suppress_reply_directly_below: "게시글의 바로 아래에 단 하나의 댓글만 있는 경우 '댓글 수'를 보여주지 않음"
     suppress_reply_directly_above: "단 하나의 댓글 위의 게시글이 하나 있는 상황에서 '~에 대한 댓글'을 보여주지 않음."
@@ -625,7 +594,6 @@ ko:
     redirect_users_to_top_page: "자동으로 신규 사용자와 오래간만에 들어온 사용자를 탑 페이지로 리다이렉트 시킴"
     email_token_valid_hours: "비밀번호 찾기, 계정 활성화에 사용되는 토큰의 유효 기간(시간)"
     email_token_grace_period_hours: "비밀번호 찾기, 계정 활성화에 사용되는 토큰은 사용되어진 이후 유효한 기간(시간)"
-    enable_badges: "뱃지 시스템 활성화 (시험 기능)"
     allow_index_in_robots_txt: "이 사이트가 검색엔진에 의해 인덱스되는 것을 허용합니다.(robots.txt 수정)"
     email_domains_blacklist: "허용하지 않는 Email 도메인을 파이프(|)기호로 구분하여 입력. 예: mailinator.com|trashmail.net"
     email_domains_whitelist: "허용하는 Email 도메인을 파이프(|)기호로 구분하여 입력. 경고: 여기에 주어진 email domain이 아닌 경우 모두 거부됩니다."
@@ -750,7 +718,6 @@ ko:
     short_progress_text_threshold: "토픽의 포스트 개수가 이 값을 넘어서면, 포스트 프로그래스바는 오직 현재 포스트 넘버만 보여준다. 만약 포스트 프로그래스바의 넓이는 변경하면, 이 숫자도 변경해야한다."
     default_code_lang: "기본 programming language syntax highlighting은 GitHub code blocks이 적용된다. (lang-auto, ruby, python etc.)"
     autohighlight_all_code: "형식이 지정되기 전의(되지 않은) 모든 코드 블럭들에 대해, 사용자가 언어를 지정하지 않아도 강제로 code highlighting이 적용된다."
-    tos_accept_required: "서비스 이용 약관 필수"
     errors:
       invalid_email: "유효하지 않은 이메일 주소입니다."
       invalid_username: "해당 이름의 사용자가 없습니다."
@@ -850,12 +817,6 @@ ko:
         다시한번 환영합니다!
     welcome_invite:
       subject_template: "%{site_name} 사이트에 오신것을 환영합니다!"
-    export_succeeded:
-      subject_template: "내보내기 성공"
-      text_body_template: "내보내기가 성공하였습니다."
-    import_succeeded:
-      subject_template: "가져오기 성공"
-      text_body_template: "가져오기가 성공하였습니다."
     too_many_spam_flags:
       subject_template: "새로운 계정은 블락되었습니다."
     blocked_by_staff:
@@ -921,10 +882,17 @@ ko:
         ---
         %{respond_instructions}
     digest:
+      why: "본 메일은 %{last_seen_at}에  %{site_link} 방문 이후 작성된 글들을 간략하게 요약한 내용을 담고 있습니다."
+      subject_template: "[%{site_name}] 요약 %{date}"
       new_activity: "당신의 토픽과 게시물에 등록된 새로운 활동:"
+      top_topics: "인기 게시글"
+      other_new_topics: "인기 토픽"
+      unsubscribe: "이 이메일은 사용자님께서 한동안 %{site_link}에 방문하지 않아 사이트의 활동들을 요약한것 입니다. 만약 구독 해지를 원하시면 링크를 클릭해주세요. %{unsubscribe_link}"
       click_here: "클릭"
       from: "%{site_name} 요약"
       read_more: "더 읽기"
+      posts:
+        other: "%{count} 글"
     forgot_password:
       subject_template: "[%{site_name}] 패스워드 재설정"
       text_body_template: |

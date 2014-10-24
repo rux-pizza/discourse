@@ -82,6 +82,21 @@ Thanks for listening."
       )
     end
 
+    it "handles multiple paragraphs when parsing html" do
+      test_parse_body(fixture_file("emails/html_paragraphs.eml")).
+          should == (
+"Awesome!
+
+Pleasure to have you here!
+
+:boom:"
+      )
+    end
+
+    it "properly renders email reply from MS Outlook client" do
+      test_parse_body(fixture_file("emails/outlook.eml")).should == "Microsoft Outlook 2010"
+    end
+
     it "converts back to UTF-8 at the end" do
       result = test_parse_body(fixture_file("emails/big5.eml"))
       result.encoding.should == Encoding::UTF_8
@@ -131,6 +146,7 @@ Thanks for listening."
         topic.posts.count.should == (start_count + 1)
         created_post = topic.posts.last
         created_post.via_email.should == true
+        created_post.raw_email.should == fixture_file("emails/valid_reply.eml")
         created_post.cooked.strip.should == fixture_file("emails/valid_reply.cooked").strip
       end
     end

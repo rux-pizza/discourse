@@ -68,6 +68,36 @@ describe PostsController do
     end
   end
 
+  describe 'raw_email' do
+    include_examples "action requires login", :get, :raw_email, id: 2
+
+    describe "when logged in" do
+      let(:user) {log_in}
+      let(:post) {Fabricate(:post, user: user, raw_email: 'email_content')}
+
+      it "raises an error if the user doesn't have permission to view raw email" do
+        Guardian.any_instance.expects(:can_view_raw_email?).returns(false)
+
+        xhr :get, :raw_email, id: post.id
+
+        response.should be_forbidden
+      end
+
+      it "can view raw email" do
+        Guardian.any_instance.expects(:can_view_raw_email?).returns(true)
+
+        xhr :get, :raw_email, id: post.id
+
+        response.should be_success
+        json = ::JSON.parse(response.body)
+        json.should be_present
+        json['raw_email'].should == 'email_content'
+      end
+
+    end
+
+  end
+
   describe 'show' do
     include_examples 'finding and showing post' do
       let(:action) { :show }
@@ -697,6 +727,29 @@ describe PostsController do
         response.should be_success
       end
 
+      it "only shows agreed and deferred flags" do
+        user = Fabricate(:user)
+        post_agreed = create_post(user: user)
+        post_deferred = create_post(user: user)
+        post_disagreed = create_post(user: user)
+
+        moderator = Fabricate(:moderator)
+        PostAction.act(moderator, post_agreed, PostActionType.types[:spam])
+        PostAction.act(moderator, post_deferred, PostActionType.types[:off_topic])
+        PostAction.act(moderator, post_disagreed, PostActionType.types[:inappropriate])
+
+        admin = Fabricate(:admin)
+        PostAction.agree_flags!(post_agreed, admin)
+        PostAction.defer_flags!(post_deferred, admin)
+        PostAction.clear_flags!(post_disagreed, admin)
+
+        Guardian.any_instance.expects(:can_see_flagged_posts?).returns(true)
+        xhr :get, :flagged_posts, username: user.username
+        response.should be_success
+
+        JSON.parse(response.body).length.should == 2
+      end
+
     end
 
   end
@@ -718,6 +771,27 @@ describe PostsController do
         Guardian.any_instance.expects(:can_see_deleted_posts?).returns(true)
         xhr :get, :deleted_posts, username: "system"
         response.should be_success
+      end
+
+      it "only shows posts deleted by other users" do
+        user = Fabricate(:user)
+        admin = Fabricate(:admin)
+
+        post_not_deleted = create_post(user: user)
+        post_deleted_by_user = create_post(user: user)
+        post_deleted_by_admin = create_post(user: user)
+
+        PostDestroyer.new(user, post_deleted_by_user).destroy
+        PostDestroyer.new(admin, post_deleted_by_admin).destroy
+
+        Guardian.any_instance.expects(:can_see_deleted_posts?).returns(true)
+        xhr :get, :deleted_posts, username: user.username
+        response.should be_success
+
+        data = JSON.parse(response.body)
+        data.length.should == 1
+        data[0]["id"].should == post_deleted_by_admin.id
+        data[0]["deleted_by"]["id"].should == admin.id
       end
 
     end

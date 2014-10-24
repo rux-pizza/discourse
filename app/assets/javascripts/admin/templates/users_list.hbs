@@ -13,7 +13,7 @@
     </ul>
   </div>
   <div class='username controls'>
-    {{text-field value=username placeholderKey="search_hint"}}
+    {{text-field value=username placeholder=searchHint}}
   </div>
   <div class="pull-right">
     <button {{action "exportUsers"}} class="btn" title="{{i18n admin.export_csv.users.title}}"><i class="fa fa-download"></i>{{i18n admin.export_csv.users.text}}</button>
@@ -32,7 +32,7 @@
   <br/>
 
   {{#if loading}}
-    <div class='admin-loading'>{{i18n loading}}</div>
+    <div class='spinner'></div>
   {{else}}
     {{#if model.length}}
       <table class='table'>

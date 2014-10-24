@@ -90,6 +90,7 @@ es:
       facebook: 'comparte este enlace en Facebook'
       google+: 'comparte este enlace en Google+'
       email: 'comparte este enlace por email'
+    topic_admin_menu: "acciones de administrador para el tema"
     edit: 'editar el título y la categoría de este tema'
     not_implemented: "Esta característica no ha sido implementada aún, ¡lo sentimos!"
     no_value: "No"
@@ -122,22 +123,10 @@ es:
     daily: "cada día"
     weekly: "cada semana"
     every_two_weeks: "cada dos semanas"
-    max: "máximo"
+    max_of_count: "máximo de {{count}}"
     character_count:
       one: "{{count}} carácter"
       other: "{{count}} caracteres"
-    in_n_seconds:
-      one: "en 1 segundo"
-      other: "en {{count}} segundos"
-    in_n_minutes:
-      one: "en 1 minuto"
-      other: "en {{count}} minutos"
-    in_n_hours:
-      one: "en 1 hora"
-      other: "en {{count}} horas"
-    in_n_days:
-      one: "en 1 día"
-      other: "en {{count}} días"
     suggested_topics:
       title: "Temas Sugeridos"
     about:
@@ -149,10 +138,6 @@ es:
       stat:
         all_time: "Todo el tiempo"
         last_7_days: "Últimos 7 días"
-      like_count: "Número de 'me gusta'"
-      topic_count: "Número de Temas"
-      post_count: "Número de Posts"
-      user_count: "Número de Usuarios"
     bookmarks:
       not_logged_in: "Lo sentimos, debes iniciar sesión para guardar posts en marcadores."
       created: "has marcado este post como favorito"
@@ -218,8 +203,8 @@ es:
         members_mods_and_admins: "Solo miembros del grupo, moderadores y administradores"
         everyone: "Todos"
     user_action_groups:
-      '1': "'Me gusta' dados"
-      '2': "'Me gusta' recibidos"
+      '1': "'Me gusta' Dados"
+      '2': "'Me gusta' Recibidos"
       '3': "Marcadores"
       '4': "Temas"
       '5': "Posts"
@@ -245,13 +230,13 @@ es:
       topic_stat_sentence:
         one: "%{count} tema nuevo en los últimos %{unit}."
         other: "%{count} temas nuevos en los últimos %{unit}."
-      post_stats: "Número de comentarios nuevos"
+      post_stats: "El número de posts nuevos."
       post_stat_sentence:
         one: "%{count} nuevo comentario en los pasados %{unit}"
         other: "%{count} nuevos comentarios en los pasados %{unit}"
     ip_lookup:
       title: Búsqueda de Direcciones IP
-      hostname: nombre del host
+      hostname: Nombre del host
       location: Ubicación
       location_not_found: (desconocido)
       organisation: Organización
@@ -369,7 +354,7 @@ es:
         default: "(por defecto)"
       password_confirmation:
         title: "Introduce de nuevo la contraseña"
-      last_posted: "Último vez que publicó"
+      last_posted: "Último post"
       last_emailed: "Último Enviado por email"
       last_seen: "Visto por última vez"
       created: "Creado el"
@@ -421,6 +406,8 @@ es:
         expired: "Esta invitación ha vencido."
         rescind: "Remover"
         rescinded: "Invitación eliminada"
+        reinvite: "Reenviar Invitación"
+        reinvited: "Invitación reenviada"
         time_read: "Tiempo de Lectura"
         days_visited: "Días Visitados"
         account_age_days: "Antigüedad de la cuenta en días"
@@ -512,6 +499,7 @@ es:
     created_lowercase: 'creado'
     trust_level: 'Nivel de Confianza'
     search_hint: 'nombre de usuario'
+    search_hint_admin: 'nombre de usuario o e-mail'
     create_account:
       title: "Crear nueva cuenta"
       failed: "Algo ha salido mal, tal vez este e-mail ya fue registrado, intenta con el enlace 'olvidé la contraseña'"
@@ -520,10 +508,10 @@ es:
       action: "Olvidé mi contraseña"
       invite: "Introduce tu nombre de usuario o tu dirección de e-mail, y te enviaremos un correo electrónico para cambiar tu contraseña."
       reset: "Restablecer Contraseña"
-      complete_username: "Si una cuenta coincide con el nombre de usuario <b>%{username}</b>, dentro de poco deberías recibir un email con las instrucciones para cambiar tu contraseña."
-      complete_email: "Si una cuenta coincide con <b>%{email}</b>, dentro de poco deberías recibir un email con las instrucciones para cambiar tu contraseña."
-      complete_username_found: "Encontramos una cuenta que coincide con el usuario <b>%{username}</b>, deberías recibir en breve un email con instrucciones para restablecer tu contraseña."
-      complete_email_found: "Encontramos una cuenta que coincide con el email <b>%{email}</b>, deberías recibir en breve un email con instrucciones para restablecer tu contraseña."
+      complete_username: "Si una cuenta coincide con el nombre de usuario <b>%{username}</b>, dentro de poco deberías recibir un e-mail con las instrucciones para cambiar tu contraseña."
+      complete_email: "Si una cuenta coincide con <b>%{email}</b>, dentro de poco deberías recibir un e-mail con las instrucciones para cambiar tu contraseña."
+      complete_username_found: "Encontramos una cuenta que coincide con el usuario <b>%{username}</b>, deberías recibir en breve un e-mail con instrucciones para restablecer tu contraseña."
+      complete_email_found: "Encontramos una cuenta que coincide con el e-mail <b>%{email}</b>, deberías recibir en breve un e-mail con instrucciones para restablecer tu contraseña."
       complete_username_not_found: "Ninguna cuenta concuerda con el nombre de usuario <b>%{username}</b>"
       complete_email_not_found: "Ninguna cuenta concuerda con <b>%{email}</b>"
     login:
@@ -533,18 +521,18 @@ es:
       email_placeholder: "dirección de e-mail o nombre de usuario"
       caps_lock_warning: "Está activado Bloqueo de Mayúsculas"
       error: "Error desconocido"
-      blank_username_or_password: "Por favor, introducir tu email o usuario y tu contraseña"
+      blank_username_or_password: "Por favor, introducir tu e-mail o usuario, y tu contraseña."
       reset_password: 'Restablecer Contraseña'
       logging_in: "Iniciando Sesión"
       or: "O"
       authenticating: "Autenticando..."
-      awaiting_confirmation: "Tu cuenta está pendiente de activación, usa el enlace de 'olvidé contraseña' para recibir otro email de activación."
-      awaiting_approval: "Tu cuenta todavía no ha sido aprobada por un moderador. Recibirás un email cuando sea aprobada."
+      awaiting_confirmation: "Tu cuenta está pendiente de activación, usa el enlace de 'olvidé contraseña' para recibir otro e-mail de activación."
+      awaiting_approval: "Tu cuenta todavía no ha sido aprobada por un moderador. Recibirás un e-mail cuando sea aprobada."
       requires_invite: "Lo sentimos pero solo se puede acceder a este foro mediante invitación."
       not_activated: "No puedes iniciar sesión todavía. Anteriormente te hemos enviado un email de activación a <b>{{sentTo}}</b>. Por favor sigue las instrucciones en ese email para activar tu cuenta."
       not_allowed_from_ip_address: "No puedes iniciar sesión desde esa dirección IP."
       resend_activation_email: "Has clic aquí para enviar el email de activación nuevamente."
-      sent_activation_email_again: "Te hemos enviado otro email de activación a <b>{{currentemail}}</b>. Podría tardar algunos minutos en llegar; asegúrate de revisar tu carpeta de spam."
+      sent_activation_email_again: "Te hemos enviado otro e-mail de activación a <b>{{currentemail}}</b>. Podría tardar algunos minutos en llegar; asegúrate de revisar tu carpeta de spam."
       google:
         title: "con Google"
         message: "Autenticando con Google (asegúrate de desactivar cualquier bloqueador de pop ups)"
@@ -573,7 +561,6 @@ es:
       drafts_offline: "borradores offline"
       min_length:
         need_more_for_title: "{{n}} para completar el título"
-        need_more_for_reply: "{{n}} para completar el post"
       error:
         title_missing: "Es necesario un título"
         title_too_short: "El título debe ser por lo menos de {{min}} caracteres."
@@ -582,12 +569,12 @@ es:
         post_length: "El post debe tener por lo menos {{min}} caracteres."
         category_missing: "Debes escoger una categoría."
       save_edit: "Guardar edición"
-      reply_original: "Responder en el tema original"
-      reply_here: "Responder aquí"
+      reply_original: "Responder en el Tema Original"
+      reply_here: "Responder Aquí"
       reply: "Responder"
       cancel: "Cancelar"
-      create_topic: "Crear tema"
-      create_pm: "Crear mensaje privado"
+      create_topic: "Crear Tema"
+      create_pm: "Crear Mensaje Privado"
       title: "O pulsa Ctrl+Intro"
       users_placeholder: "Añadir usuario"
       title_placeholder: "En una frase breve, ¿de qué trata este tema?"
@@ -597,7 +584,6 @@ es:
       view_new_post: "Ver tu nuevo post."
       saving: "Guardando..."
       saved: "¡Guardado!"
-      saved_draft: "Tienes el borrador de un post sin terminar. Haz clic en esta barra para continuar editándolo."
       uploading: "Subiendo..."
       show_preview: 'mostrar vista previa &raquo;'
       hide_preview: '&laquo; ocultar vista previa'
@@ -627,10 +613,6 @@ es:
       help: "Ayuda de edición con Markdown"
       toggler: "ocultar o mostrar el panel de edición"
       admin_options_title: "Opciones de moderación para este tema"
-      auto_close_label: "Hora de auto-cierre:"
-      auto_close_units: "(# de horas, una fecha, o marca de tiempo)"
-      auto_close_examples: 'Poner el tiempo exacto o el número de horas -24, 17:00, 2013-11-22 14:00'
-      auto_close_error: "Por favor, introduce un valor válido."
     notifications:
       title: "notificaciones por menciones a tu @nombre, respuestas a tus publicaciones y temas, mensajes privados, etc."
       none: "No tienes notificaciones por el momento."
@@ -736,7 +718,6 @@ es:
         one: '1 tema sin leer'
         other: '{{count}} temas sin leer'
       title: 'Tema'
-      loading_more: "Cargando más temas..."
       loading: 'Cargando tema...'
       invalid_access:
         title: "Este tema es privado"
@@ -797,8 +778,6 @@ es:
           '2_4': 'Recibirás notificaciones porque has publicado una respuesta en este tema.'
           '2_2': 'Recibirás notificaciones porque estás siguiendo este tema.'
           '2': 'Recibirás notificaciones porque <a href="/users/{{username}}/preferences">has leído este tema</a>.'
-          '1_2': 'Recibirás notificaciones solo si alguien menciona tu @nombre o responde a tu post.'
-          '1': 'Recibirás notificaciones solo si alguien menciona tu @nombre o responde a tu post.'
           '0_7': 'Estás ignorando todas las notificaciones en esta categoría.'
           '0_2': 'Estás ignorando todas las notificaciones en este tema.'
           '0': 'Estás ignorando todas las notificaciones en este tema.'
@@ -810,16 +789,12 @@ es:
           description: "Se te notificará de cada nuevo post en este tema. Se añadirá un contador de posts nuevos y sin leer al lado del tema."
         tracking_pm:
           title: "Seguir"
-          description: "Aparecerá un contador de posts no leídos y posts nuevos al lado del mensaje privado. Se te notificará solo si alguien menciona tu @usuario o responde a algundo de tus posts."
         tracking:
           title: "Seguir"
-          description: "Se añadirá un contador de posts nuevos y sin leer al lado del tema. Se te notificará solo si alguien menciona tu @usuario o responde a tus posts."
         regular:
-          title: "Normal"
-          description: "Serás notificado solo si alguien menciona tu @nombre o responde a tus posts."
+          title: "Habitual"
         regular_pm:
-          title: "Normal"
-          description: "Se te notificará solo si alguien menciona tu @nombre o responde a tus posts en el hilo de mensajes privados."
+          title: "Habitual"
         muted_pm:
           title: "Silenciar"
           description: "No se te notificará sobre este mensaje privado."
@@ -949,7 +924,6 @@ es:
         edit: "Lo sentimos, hubo un error al editar tu post. Por favor, inténtalo de nuevo."
         upload: "Lo sentimos, hubo un error al subir el archivo. Por favor, inténtalo de nuevo."
         attachment_too_large: "Lo siento, el archivo que estas intentando subir es demasiado grande (el tamaño máximo es {{max_size_kb}}kb)."
-        image_too_large: "Lo sentimos, la imagen que está intentando cargar es demasiado grande (el tamaño máximo es de {{max_size_kb}}kb), por favor, cambie el tamaño e inténtelo de nuevo."
         too_many_uploads: "Lo siento solo puedes subir un archivo cada vez."
         upload_not_authorized: "Lo sentimos, el archivo que intenta cargar no está autorizado (authorized extension: {{authorized_extensions}})."
         image_upload_not_allowed_for_new_user: "Lo siento, usuarios nuevos no pueden subir imágenes."
@@ -1161,8 +1135,7 @@ es:
           title: "Seguir"
           description: "Seguirás automáticamente todos los nuevos temas en estas categorías. Se añadirá un contador de posts nuevos y sin leer al lado del tema."
         regular:
-          title: "Normal"
-          description: "Se te notificará solo si alguien te menciona con tu @usuario o se responde a alguno de tus posts."
+          title: "Habitual"
         muted:
           title: "Silenciadas"
           description: "No se te notificará de nuevos temas en estas categorías y no aparecerán en la pestaña de no leídos."
@@ -1174,6 +1147,8 @@ es:
       delete_spammer: "Borrar spammer"
       delete_confirm: "Estás a punto de eliminar <b>%{posts}</b> publicaciones y <b>%{topics}</b> temas de este usuario, borrar su cuenta, bloquear sus inicios de sesión desde su dirección IP <b>%{ip_address}</b>, y añadir su dirección de email <b>%{email}</b> a una lista de bloqueo permanente. ¿Estás seguro de que este usuario es realmente un spammer?"
       yes_delete_spammer: "Sí, borrar spammer"
+      ip_address_missing: "(N/D)"
+      hidden_email_address: "(oculto)"
       submit_tooltip: "Enviar el reporte privado"
       take_action_tooltip: "Alcanzar el umbral de reportes inmediatamente, en vez de esperar a más reportes de la comunidad"
       cant: "Lo sentimos, no puedes reportar este post en este momento."
@@ -1470,7 +1445,7 @@ es:
             text: "Copia de seguridad"
             title: "Crear una copia de seguridad"
             confirm: "¿Quieres iniciar una nueva copia de seguridad?"
-            without_uploads: "Sí (sin archivos subidos)"
+            without_uploads: "Sí (no incluir archivos)"
           download:
             text: "Descargar"
             title: "Descargar la copia de seguridad"
@@ -1603,6 +1578,8 @@ es:
         last_match_at: "Última coincidencia"
         match_count: "Coincidencias"
         ip_address: "IP"
+        topic_id: "ID del Tema"
+        post_id: "ID del Post"
         delete: 'Eliminar'
         edit: 'Editar'
         save: 'Guardar'
@@ -1637,6 +1614,8 @@ es:
             grant_badge: "conceder distintivo"
             revoke_badge: "revocar distintivo"
             check_email: "comprobar e-mail"
+            delete_topic: "eliminar tema"
+            delete_post: "eliminar post"
         screened_emails:
           title: "Correos bloqueados"
           description: "Cuando alguien trata de crear una cuenta nueva, los siguientes correos serán revisados y el registro será bloqueado, o alguna otra acción será realizada."
@@ -1693,7 +1672,7 @@ es:
           newuser: 'Usuarios con nivel de confianza 0 (Nuevo)'
           basic: 'Usuarios con nivel de confianza 1 (Básico)'
           regular: 'Usuarios con Nivel de confianza 2 (Miembro)'
-          leader: 'Usuarios con Nivel de confianza 3 (Normal)'
+          leader: 'Usuarios con Nivel de confianza 3 (Habitual)'
           elder: 'Usuarios con Nivel de confianza 4 (Líder)'
           admins: 'Administradores'
           moderators: 'Moderadores'
@@ -1708,7 +1687,7 @@ es:
         not_verified: "No verificado"
         check_email:
           title: "Revelar la dirección de e-mail de este usuario"
-          text: "Mostrar e-mail"
+          text: "Mostrar"
       user:
         suspend_failed: "Algo salió mal baneando este usuario {{error}}"
         unsuspend_failed: "Algo salió mal quitando ban a este usuario {{error}}"
@@ -1811,6 +1790,8 @@ es:
           flagged_by_users: "Usuarios que lo reportaron"
           likes_given: "Likes dados"
           likes_received: "Likes recibidos"
+          likes_received_days: "'Me gusta' Recibidos: días únicos"
+          likes_received_users: "'Me gusta' Recibidos: usuarios únicos."
           qualifies: "Califica para el nivel de confianza 3."
           does_not_qualify: "No califica para el nivel de confianza 3."
           will_be_promoted: "Será promovido pronto."
@@ -1827,16 +1808,24 @@ es:
           external_avatar_url: "URL del avatar"
       user_fields:
         title: "Campos de Usuario"
-        description: "Cualquier campo añadido aquí sera requerido para los usuarios que se registren."
         create: "Crear Campo de Usuario"
         untitled: "Sin título"
         name: "Nombre del Campo"
         type: "Tipo de Campo"
+        description: "Descripción del Campo"
         save: "Guardar"
         edit: "Editar"
         delete: "Borrar"
         cancel: "Cancelar"
         delete_confirm: "Esta seguro que quiere borrar ese campo de usuario?"
+        required:
+          title: "¿Requerido al registrarse?"
+          enabled: "requerido"
+          disabled: "no requerido"
+        editable:
+          title: "¿Editable después del registro?"
+          enabled: "editable"
+          disabled: "no editable"
         field_types:
           text: 'Campo de Texto'
           confirm: 'Confirmación'
@@ -1993,7 +1982,6 @@ es:
         one: "1 concedido"
         other: "%{count} concedido"
       select_badge_for_title: Seleccionar un distintivo para utilizar como tu título
-      no_title: "<no title>"
       badge_grouping:
         getting_started:
           name: Primeros pasos
@@ -2016,7 +2004,7 @@ es:
           name: Miembro
           description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/5">Se le conceden</a> invitaciones
         regular:
-          name: Normal
+          name: Habitual
           description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/6">Se le concede</a> el poder recategorizar, renombrar, publicar enlacer sin el tag no-follow y acceso a sala vip
         leader:
           name: Líder

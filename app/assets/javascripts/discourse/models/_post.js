@@ -64,6 +64,10 @@ Discourse.Post = Discourse.Model.extend({
   hasHistory: Em.computed.gt('version', 1),
   postElementId: Discourse.computed.fmt('post_number', 'post_%@'),
 
+  canViewRawEmail: function() {
+    return Discourse.User.currentProp('staff');
+  }.property(),
+
   bookmarkedChanged: function() {
     Discourse.Post.bookmark(this.get('id'), this.get('bookmarked'))
              .then(null, function (error) {
@@ -163,7 +167,6 @@ Discourse.Post = Discourse.Model.extend({
         title: this.get('title'),
         image_sizes: this.get('imageSizes'),
         target_usernames: this.get('target_usernames'),
-        auto_close_time: Discourse.Utilities.timestampFromAutocloseString(this.get('auto_close_time'))
       };
 
       var metaData = this.get('metaData');
@@ -233,8 +236,8 @@ Discourse.Post = Discourse.Model.extend({
   setDeletedState: function(deletedBy) {
     this.set('oldCooked', this.get('cooked'));
 
-    // Moderators can delete posts. Users can only trigger a deleted at message.
-    if (deletedBy.get('staff')) {
+    // Moderators can delete posts. Users can only trigger a deleted at message, unless delete_removed_posts_after is 0.
+    if (deletedBy.get('staff') || Discourse.SiteSettings.delete_removed_posts_after === 0) {
       this.setProperties({
         deleted_at: new Date(),
         deleted_by: deletedBy,
@@ -472,10 +475,24 @@ Discourse.Post.reopenClass({
     });
   },
 
+  hideRevision: function(postId, version) {
+    return Discourse.ajax("/posts/" + postId + "/revisions/" + version + "/hide", { type: 'PUT' });
+  },
+
+  showRevision: function(postId, version) {
+    return Discourse.ajax("/posts/" + postId + "/revisions/" + version + "/show", { type: 'PUT' });
+  },
+
   loadQuote: function(postId) {
     return Discourse.ajax("/posts/" + postId + ".json").then(function (result) {
       var post = Discourse.Post.create(result);
       return Discourse.Quote.build(post, post.get('raw'));
+    });
+  },
+
+  loadRawEmail: function(postId) {
+    return Discourse.ajax("/posts/" + postId + "/raw-email").then(function (result) {
+      return result.raw_email;
     });
   },
 

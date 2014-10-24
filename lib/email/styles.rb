@@ -35,7 +35,10 @@ module Email
           img['width'] = 20
           img['height'] = 20
         else
-          add_styles(img, 'max-width: 694px;') if img['style'] !~ /max-width/
+          # having no extra style on email images might work best?
+          img['width'] = 'auto'
+          img['height'] = 'auto'
+          add_styles(img, 'max-width:100%;') if img['style'] !~ /max-width/
         end
 
         # ensure all urls are absolute
@@ -54,13 +57,11 @@ module Email
       style('.previous-discussion', 'font-size: 17px; color: #444;')
       style('.notification-date', "text-align:right;color:#999999;padding-right:5px;font-family:'lucida grande',tahoma,verdana,arial,sans-serif;font-size:11px")
       style('.username', "font-size:13px;font-family:'lucida grande',tahoma,verdana,arial,sans-serif;color:#3b5998;text-decoration:none;font-weight:bold")
-      style('.post-wrapper', "margin-bottom:25px;max-width:761px")
+      style('.post-wrapper', "margin-bottom:25px;")
       style('.user-avatar', 'vertical-align:top;width:55px;')
       style('.user-avatar img', nil, width: '45', height: '45')
       style('hr', 'background-color: #ddd; height: 1px; border: 1px;')
       style('.rtl', 'direction: rtl;')
-      # we can do this but it does not look right
-      # style('#main', 'font-family:"Helvetica Neue", Helvetica, Arial, sans-serif')
       style('td.body', 'padding-top:5px;', colspan: "2")
       correct_first_body_margin
       correct_footer_style
@@ -74,7 +75,7 @@ module Email
       style('aside.quote', 'border-left: 5px solid #bebebe; background-color: #f1f1f1; padding: 12px 25px 2px 12px; margin-bottom: 10px;')
       style('aside.quote blockquote', 'border: 0px; padding: 0; margin: 7px 0')
       style('aside.quote div.info-line', 'color: #666; margin: 10px 0')
-      style('aside.quote .avatar', 'margin-right: 5px')
+      style('aside.quote .avatar', 'margin-right: 5px; width:20px; height:20px')
 
       # Oneboxes
       style('aside.onebox', "padding: 12px 25px 2px 12px; border-left: 5px solid #bebebe; background: #eee; margin-bottom: 10px;")

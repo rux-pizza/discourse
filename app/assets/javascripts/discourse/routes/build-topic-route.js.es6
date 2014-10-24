@@ -32,27 +32,32 @@ export default function(filter, extras) {
       return Discourse.TopicList.list(filter, findOpts, extras);
     },
 
+    titleToken: function() {
+      if (filter === Discourse.Utilities.defaultHomepage()) { return; }
+
+      var filterText = I18n.t('filters.' + filter.replace('/', '.') + '.title', {count: 0});
+      return I18n.t('filters.with_topics', {filter: filterText});
+    },
+
     setupController: function(controller, model, trans) {
 
-      controller.setProperties(Em.getProperties(trans, _.keys(queryParams).map(function(v){
-        return 'queryParams.' + v;
-      })));
+      if (trans) {
+        controller.setProperties(Em.getProperties(trans, _.keys(queryParams).map(function(v){
+          return 'queryParams.' + v;
+        })));
+      }
+
 
       var periods = this.controllerFor('discovery').get('periods'),
-          periodId = model.get('for_period') || (filter.indexOf('/') > 0 ? filter.split('/')[1] : ''),
-          filterText = I18n.t('filters.' + filter.replace('/', '.') + '.title', {count: 0});
-
-      if (filter === Discourse.Utilities.defaultHomepage()) {
-        Discourse.set('title', '');
-      } else {
-        Discourse.set('title', I18n.t('filters.with_topics', {filter: filterText}));
-      }
+          periodId = model.get('for_period') || (filter.indexOf('/') > 0 ? filter.split('/')[1] : '');
 
       this.controllerFor('discovery/topics').setProperties({
         model: model,
         category: null,
         period: periods.findBy('id', periodId),
-        selected: []
+        selected: [],
+        order: model.get('params.order'),
+        ascending: model.get('params.ascending'),
       });
 
       this.openTopicDraft(model);

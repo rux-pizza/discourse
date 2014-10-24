@@ -6,6 +6,8 @@ class UserProfile < ActiveRecord::Base
   before_save :cook
   after_save :trigger_badges
 
+  belongs_to :card_image_badge, class_name: 'Badge'
+
   BAKED_VERSION = 1
 
   def bio_excerpt
@@ -27,6 +29,16 @@ class UserProfile < ActiveRecord::Base
   def recook_bio
     self.bio_raw_will_change!
     cook
+  end
+
+  def upload_card_background(upload)
+    self.card_background = upload.url
+    self.save!
+  end
+
+  def clear_card_background
+    self.card_background = ""
+    self.save!
   end
 
   def upload_profile_background(upload)
@@ -96,6 +108,7 @@ end
 #  bio_cooked           :text
 #  dismissed_banner_key :integer
 #  profile_background   :string(255)
+#  card_background      :string(255)
 #  bio_cooked_version   :integer
 #
 # Indexes

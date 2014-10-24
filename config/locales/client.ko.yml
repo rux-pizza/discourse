@@ -74,6 +74,7 @@ ko:
       facebook: 'Facebook으로 공유'
       google+: 'Google+로 공유'
       email: '이메일로 공유'
+    topic_admin_menu: "토픽 관리자 기능"
     edit: '제목과 카테고리를 편집하기'
     not_implemented: "죄송합니다. 아직 이용할 수 없는 기능입니다."
     no_value: "아니오"
@@ -106,17 +107,9 @@ ko:
     daily: "매일"
     weekly: "매주"
     every_two_weeks: "격주"
-    max: "최대"
+    max_of_count: "max of {{count}}"
     character_count:
       other: "{{count}} 자"
-    in_n_seconds:
-      other: "in {{count}}초"
-    in_n_minutes:
-      other: "in {{count}}분"
-    in_n_hours:
-      other: "in {{count}}시간"
-    in_n_days:
-      other: "in {{count}}일"
     suggested_topics:
       title: "추천 토픽"
     about:
@@ -128,10 +121,6 @@ ko:
       stat:
         all_time: "전체"
         last_7_days: "지난 7일"
-      like_count: "'좋아요' 횟수"
-      topic_count: "토픽"
-      post_count: "게시글"
-      user_count: "사용자"
     bookmarks:
       not_logged_in: "죄송합니다. 게시물을 즐겨찾기에 추가하려면 로그인을 해야 합니다."
       created: "이 게시글을 북마크 하였습니다."
@@ -390,6 +379,8 @@ ko:
         expired: "이 초대장의 기한이 만료되었습니다."
         rescind: "삭제"
         rescinded: "초대가 제거되었습니다."
+        reinvite: "초대 메일 재전송"
+        reinvited: "초대 메일 재전송 됨"
         time_read: "읽은 시간"
         days_visited: "일일 방문"
         account_age_days: "일일 계정 나이"
@@ -481,6 +472,7 @@ ko:
     created_lowercase: '최초 글'
     trust_level: '신뢰도'
     search_hint: '사용자명'
+    search_hint_admin: '아이디 혹은 이메일'
     create_account:
       title: "회원 가입"
       failed: "뭔가 잘못되었습니다. 이 메일은 등록이 되어있습니다. 비밀번호를 잊으셨다면 비밀번호 찾기를 눌러주세요."
@@ -542,7 +534,6 @@ ko:
       drafts_offline: "초안"
       min_length:
         need_more_for_title: "제목을 {{n}}글자 더 입력해주세요"
-        need_more_for_reply: "내용을 {{n}}글자 더 입력해주세요"
       error:
         title_missing: "제목은 필수 항목입니다"
         title_too_short: "제목은 최소 {{min}} 글자 이상이어야 합니다."
@@ -566,7 +557,6 @@ ko:
       view_new_post: "새로운 게시물을 볼 수 있습니다."
       saving: "저장 중..."
       saved: "저장 완료!"
-      saved_draft: "작성중인 글이 있습니다. 계속 작성하려면 여기를 클릭하세요."
       uploading: "업로딩 중..."
       show_preview: '미리보기를 보여줍니다 &laquo;'
       hide_preview: '&laquo; 미리보기를 숨기기'
@@ -596,10 +586,6 @@ ko:
       help: "마크다운 편집 도움말"
       toggler: "작성 패널을 숨기거나 표시"
       admin_options_title: "이 토픽에 대한 옵션 설정"
-      auto_close_label: "자동 토픽 닫기: "
-      auto_close_units: "일"
-      auto_close_examples: '정확한 시간을 입력하세요. — 24, 17:00, 2013-11-22 14:00'
-      auto_close_error: "Please enter a valid value."
     notifications:
       title: "@사용자이름 언급, 게시글과 토픽에 대한 언급, 개인 메시지 등에 대한 알림"
       none: "현재 알림이 없습니다."
@@ -702,7 +688,6 @@ ko:
       unread_topics:
         other: '{{count}}개의 읽지 않은 토픽'
       title: '토픽'
-      loading_more: "더 많은 토픽을 로딩 중..."
       loading: '토픽을 로딩 중...'
       invalid_access:
         title: "이 토픽은 비공개입니다"
@@ -759,8 +744,6 @@ ko:
           '2_4': '이 토픽에 답글을 게시하여서 알림을 받게 됩니다.'
           '2_2': '이 토픽을 추적하고 있어서 알림을 받게 됩니다.'
           '2': '이 토픽을 읽어서 알림을 받게 됩니다. <a href="/users/{{username}}/preferences">(설정)</a>'
-          '1_2': '누군가가 게시물에 @사용자이름 또는 답글을 달 경우에 알림을 받게 됩니다.'
-          '1': '누군가가 게시물에 @사용자이름 또는 답글을 달 경우에 알림을 받게 됩니다.'
           '0_7': '당신은 이 토픽에 관한 모든 알림을 무시합니다.'
           '0_2': '당신은 이 토픽에 관한 모든 알림을 무시합니다.'
           '0': '당신은 이 토픽에 관한 모든 알림을 무시합니다.'
@@ -772,16 +755,12 @@ ko:
           description: "이 토픽의 새로운 게시글은 항상 알림이 동작합니다. 읽지 않은 글의 수는 토픽 옆에 표시됩니다."
         tracking_pm:
           title: "알림 : 새 글 표시 중"
-          description: "읽지 않은 글과 새로운 게시물 수를 볼 수 있습니다. 누군가 당신의 @name을 언급했거나 당신의 글에 답글을 작성하면 알림을 받습니다."
         tracking:
           title: "새 글 표시 중"
-          description: "읽지 않은 게시글의 수는 토픽 옆에 표시됩니다. 당신의 @이름 을 언급하거나 당신의 게시글에 답글을 작성한 경우에 알림이 작동합니다."
         regular:
           title: "알림: 일반"
-          description: "누군가가 게시물에 @사용자이름 또는 답글을 달 경우에 알림을 받게 됩니다."
         regular_pm:
           title: "알림: 일반"
-          description: "누군가 당신의 @name 으로 언급했거나 당신의 글에 답글이 달릴 때만 알림을 받게 됩니다."
         muted_pm:
           title: "알림 : 끔"
           description: "이 개인 메시지에 대해 어떠한 알림도 받지 않지 않습니다."
@@ -903,7 +882,6 @@ ko:
         edit: "죄송합니다. 게시물을 수정하는 중에 오류가 발생했습니다. 다시 시도하십시오."
         upload: "죄송합니다. 파일을 업로드하는 동안 오류가 발생했습니다. 다시 시도하십시오."
         attachment_too_large: "업로드하려는 파일의 크기가 너무 큽니다. 최대 크기는 {{max_size_kb}}kb 입니다."
-        image_too_large: "업로드하려는 이미지의 크기가 너무 큽니다. 최대 크기는 {{max_size_kb}}kb 입니다. 사이즈를 조정하고 다시 시도해보세요."
         too_many_uploads: "한번에 한 파일만 업로드 하실 수 있습니다."
         upload_not_authorized: "업로드 하시려는 파일 확장자는 사용이 불가능합니다 (사용가능 확장자: {{authorized_extensions}})."
         image_upload_not_allowed_for_new_user: "죄송합니다. 새로운 유저는 이미지를 업로드 하실 수 없습니다."
@@ -1097,7 +1075,6 @@ ko:
           description: "이 카테고리 내의 새로운 토픽들을 추적하도록 자동으로 설정됩니다. 토픽 옆에 읽지 않은 게시글의 수가 표시됩니다."
         regular:
           title: "알림: 일반"
-          description: "누군가 당신의 @name 으로 언급했거나 당신의 글에 답글이 달릴 때만 알림을 받게 됩니다."
         muted:
           title: "알림 꺼짐"
           description: "이 카테고리의 새로운 토픽에 대한 알림을 받지 않고 읽지 않\x1C은 탭에도 표시하지 않습니다."
@@ -1109,6 +1086,8 @@ ko:
       delete_spammer: "스팸 사용자 삭제"
       delete_confirm: "당신은 이 사용자의 %{posts}개의 게시글과 %{topics}개의 토픽을 삭제하고 IP주소 %{ip_address}와 이메일 %{email}을 영구 블락 합니다. 이 사용자가 진짜 악성 사용자 입니까? "
       yes_delete_spammer: "예, 스팸 사용자 삭제."
+      ip_address_missing: "(알 수 없음)"
+      hidden_email_address: "(감춰짐)"
       submit_tooltip: "신고 접수하기"
       take_action_tooltip: "커뮤니티의 신고 수가 채워지기 기다리지 않고, 바로 신고 수를 제재 수준까지 채웁니다."
       cant: "죄송합니다, 당신은 지금 이 게시물을 신고 할 수 없습니다."
@@ -1399,7 +1378,7 @@ ko:
             text: "백업"
             title: "백업 생성"
             confirm: "새로운 백업을 시작할까요?"
-            without_uploads: "네 (업로드 없이)"
+            without_uploads: "예 (파일을 포함하지 않음)"
           download:
             text: "다운로드"
             title: "백업 다운로드"
@@ -1532,6 +1511,8 @@ ko:
         last_match_at: "마지막 방문"
         match_count: "방문"
         ip_address: "IP"
+        topic_id: "토픽 ID"
+        post_id: "게시글 ID"
         delete: '삭제'
         edit: '편집'
         save: '저장'
@@ -1566,6 +1547,8 @@ ko:
             grant_badge: "뱃지 부여"
             revoke_badge: "뱃지 회수"
             check_email: "이메일 확인"
+            delete_topic: "토픽 삭제"
+            delete_post: "게시글 삭제"
         screened_emails:
           title: "블락된 이메일들"
           description: "누군가가 새로운 계정을 만들면 아래 이메일 주소는 체크되고 등록은 블락됩니다, 또는 다른 조치가 취해집니다."
@@ -1633,7 +1616,7 @@ ko:
         not_verified: "확인되지 않은"
         check_email:
           title: "사용자의 이메일 주소 표시"
-          text: "이메일 보기"
+          text: "Show"
       user:
         suspend_failed: "이 사용자를 접근 금지하는데 오류 발생 {{error}}"
         unsuspend_failed: "이 사용자를 접근 허용 하는데 오류 발생 {{error}}"
@@ -1749,16 +1732,24 @@ ko:
           external_avatar_url: "Avatar URL"
       user_fields:
         title: "사용자 필드"
-        description: "사용자가 가입할 때 입력하여야 하는 필드를 여기에 추가하세요."
         create: "사용자 필드 생성하기"
         untitled: "무제"
         name: "필드명"
         type: "필드 속성"
+        description: "필드 설명"
         save: "저장"
         edit: "편집"
         delete: "삭제"
         cancel: "취소"
         delete_confirm: "사용자 필드를 삭제할까요?"
+        required:
+          title: "회원가입시 필수항목?"
+          enabled: "필수"
+          disabled: "필수 아님"
+        editable:
+          title: "가입 후 편집 가능?"
+          enabled: "편집 가능"
+          disabled: "편집 불가"
         field_types:
           text: '텍스트 필드'
           confirm: '확인'
@@ -1912,7 +1903,6 @@ ko:
       granted:
         other: "%{count} 개 부여"
       select_badge_for_title: 칭호로 사용할 뱃지를 선택하세요
-      no_title: "호칭 없음"
       badge_grouping:
         getting_started:
           name: 교육용 훈장

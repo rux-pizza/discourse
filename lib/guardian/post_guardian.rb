@@ -157,6 +157,14 @@ module PostGuardian
     can_see_post?(post)
   end
 
+  def can_hide_post_revision?(post_revision)
+    is_staff?
+  end
+
+  def can_show_post_revision?(post_revision)
+    is_staff?
+  end
+
   def can_vote?(post, opts={})
     post_can_act?(post,:vote, opts)
   end
@@ -182,6 +190,10 @@ module PostGuardian
   end
 
   def can_see_deleted_posts?
+    is_staff?
+  end
+
+  def can_view_raw_email?
     is_staff?
   end
 

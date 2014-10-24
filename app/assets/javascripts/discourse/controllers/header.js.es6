@@ -10,6 +10,13 @@ export default DiscourseController.extend({
   loginRequired: Em.computed.alias('controllers.application.loginRequired'),
   canSignUp: Em.computed.alias('controllers.application.canSignUp'),
 
+  hasCategory: function() {
+    var cat = this.get('topic.category');
+    return cat &&
+           !cat.get('isUncategorizedCategory') ||
+           !this.siteSettings.suppress_uncategorized_badge;
+  }.property('topic.category'),
+
   showPrivateMessageGlyph: function() {
     return !this.get('topic.is_warning') && this.get('topic.isPrivateMessage');
   }.property('topic.is_warning', 'topic.isPrivateMessage'),

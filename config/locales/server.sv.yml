@@ -22,6 +22,13 @@ sv:
   powered_by_html: 'Drivs av <a href="http://www.discourse.org">Discourse</a>, visas bäst med JavaScript påslaget'
   via: "%{username} via %{site_name}"
   is_reserved: "är reserverat"
+  purge_reason: "Automatiskt borttagen på grund av att vara gammal och ej verifierad"
+  errors:
+    messages:
+      invalid_boolean: "Ogiltigt boolean."
+      taken: "används redan"
+    embed:
+      load_from_remote: "Det uppstod ett fel vid laddning av artikeln."
   too_many_mentions:
     zero: "Tyvärr, du kan inte omnämna andra användare."
     one: "Tyvärr, du kan bara omnämna en annan användare i ett inlägg."
@@ -355,8 +362,6 @@ sv:
     favicon_url: "En favicon för till webbplats, se http://en.wikipedia.org/wiki/Favicon"
     apple_touch_icon_url: "Ikon som används för Apples touch-enheter. Rekommenderad storlek är 144*144 pixlar."
     enable_long_polling: "Message bus used for notification can use long polling"
-    long_polling_interval: "Interval before a new long poll is issued in milliseconds "
-    polling_interval: "How often should logged in user clients poll in milliseconds"
     anon_polling_interval: "How often should anonymous clients poll in milliseconds"
     auto_track_topics_after: "Global default milliseconds before a topic is automatically tracked, users can override (0 for always, -1 for never)"
     new_topic_duration_minutes: "Global default number of minutes a topic is considered new, users can override (-1 for always, -2 for last visit)"
@@ -448,12 +453,6 @@ sv:
       subject_template: "Välkommen till %{site_name}!"
     welcome_invite:
       subject_template: "Välkommen till %{site_name}!"
-    export_succeeded:
-      subject_template: "Export completed successfully"
-      text_body_template: "The export was successful."
-    import_succeeded:
-      subject_template: "Import completed successfully"
-      text_body_template: "The import was successful."
     too_many_spam_flags:
       subject_template: "Nytt konto blockerat"
     blocked_by_staff:

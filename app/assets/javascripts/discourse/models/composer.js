@@ -473,16 +473,16 @@ Discourse.Composer = Discourse.Model.extend({
     });
     this.set('composeState', CLOSED);
 
-    return Em.Deferred.promise(function(promise) {
+    return new Ember.RSVP.Promise(function(resolve, reject) {
       post.save(function(result) {
         post.updateFromPost(result);
         composer.clearState();
       }, function(error) {
         var response = $.parseJSON(error.responseText);
         if (response && response.errors) {
-          promise.reject(response.errors[0]);
+          reject(response.errors[0]);
         } else {
-          promise.reject(I18n.t('generic_error'));
+          reject(I18n.t('generic_error'));
         }
         post.set('cooked', oldCooked);
         composer.set('composeState', OPEN);
@@ -521,7 +521,6 @@ Discourse.Composer = Discourse.Model.extend({
       admin: currentUser.get('admin'),
       yours: true,
       newPost: true,
-      auto_close_time: Discourse.Utilities.timestampFromAutocloseString(this.get('auto_close_time'))
     });
 
     if(post) {
@@ -550,7 +549,7 @@ Discourse.Composer = Discourse.Model.extend({
     }
 
     var composer = this;
-    return Em.Deferred.promise(function(promise) {
+    return new Ember.RSVP.Promise(function(resolve, reject) {
 
       composer.set('composeState', SAVING);
       createdPost.save(function(result) {
@@ -562,6 +561,7 @@ Discourse.Composer = Discourse.Model.extend({
           // It's no longer a new post
           createdPost.set('newPost', false);
           topic.set('draft_sequence', result.draft_sequence);
+          topic.set('details.auto_close_at', result.topic_auto_close_at);
           postStream.commitPost(createdPost);
           addedToStream = true;
         } else {
@@ -584,7 +584,7 @@ Discourse.Composer = Discourse.Model.extend({
           composer.set('composeState', SAVING);
         }
 
-        return promise.resolve({ post: result });
+        return resolve({ post: result });
       }, function(error) {
         // If an error occurs
         if (postStream) {
@@ -605,7 +605,7 @@ Discourse.Composer = Discourse.Model.extend({
         catch(ex) {
           parsedError = "Unknown error saving post, try again. Error: " + error.status + " " + error.statusText;
         }
-        promise.reject(parsedError);
+        reject(parsedError);
       });
     });
   },

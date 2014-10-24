@@ -58,7 +58,7 @@ class TopicsController < ApplicationController
     end
 
     page = params[:page].to_i
-    if (page < 0) || ((page - 1) * SiteSetting.posts_per_page > @topic_view.topic.highest_post_number)
+    if (page < 0) || ((page - 1) * SiteSetting.posts_chunksize > @topic_view.topic.highest_post_number)
       raise Discourse::NotFound
     end
 
@@ -129,6 +129,7 @@ class TopicsController < ApplicationController
     Topic.transaction do
       success = topic.save
       success &= topic.change_category_to_id(params[:category_id].to_i) unless topic.private_message?
+      EditRateLimiter.new(current_user).performed!
     end
 
     # this is used to return the title to the client as it may have been changed by "TextCleaner"
@@ -177,12 +178,20 @@ class TopicsController < ApplicationController
   end
 
   def autoclose
-    raise Discourse::InvalidParameters.new(:auto_close_time) unless params.has_key?(:auto_close_time)
+    params.permit(:auto_close_time)
+    params.require(:auto_close_based_on_last_post)
+
     topic = Topic.find_by(id: params[:topic_id].to_i)
     guardian.ensure_can_moderate!(topic)
+
+    topic.auto_close_based_on_last_post = params[:auto_close_based_on_last_post]
     topic.set_auto_close(params[:auto_close_time], current_user)
+
     if topic.save
-      render json: success_json.merge!(auto_close_at: topic.auto_close_at)
+      render json: success_json.merge!({
+        auto_close_at: topic.auto_close_at,
+        auto_close_hours: topic.auto_close_hours
+      })
     else
       render_json_error(topic)
     end

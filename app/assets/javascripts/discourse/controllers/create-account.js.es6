@@ -51,6 +51,7 @@ export default DiscourseController.extend(ModalFunctionality, {
 
     // Validate required fields
     var userFields = this.get('userFields');
+    if (userFields) { userFields = userFields.filterProperty('field.required'); }
     if (!Ember.empty(userFields)) {
       var anyEmpty = userFields.any(function(uf) {
         var val = uf.get('value');
@@ -363,7 +364,7 @@ export default DiscourseController.extend(ModalFunctionality, {
         if (result.success) {
           // Trigger the browser's password manager using the hidden static login form:
           var $hidden_login_form = $('#hidden-login-form');
-          $hidden_login_form.find('input[name=username]').val(attrs.accountName);
+          $hidden_login_form.find('input[name=username]').val(attrs.accountUsername);
           $hidden_login_form.find('input[name=password]').val(attrs.accountPassword);
           $hidden_login_form.find('input[name=redirect]').val(Discourse.getURL('/users/account-created'));
           $hidden_login_form.submit();

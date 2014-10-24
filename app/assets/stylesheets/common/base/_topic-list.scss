@@ -49,10 +49,8 @@
 
   .main-link {
     font-size: 16px;
-
-    i.score {
-      color: $success;
-      cursor: pointer;
+    a.title {
+      padding: 15px 0;
     }
   }
 
@@ -83,6 +81,18 @@
     }
     a.badge-posts {
       font-weight: bold;
+    }
+  }
+
+  .num.posts {
+    a {
+      padding: 15px 5px;
+    }
+  }
+
+  .num.activity {
+    a {
+      padding: 15px 5px;
     }
   }
 
@@ -127,7 +137,7 @@
 
 .loading .topic-list {
   border: 0;
-  @include box-shadow(none);
+  box-shadow: none;
   tr {
     background-color: transparent;
   }
@@ -263,7 +273,7 @@ ol.category-breadcrumb {
     background: $secondary;
     position: absolute;
     z-index: 1110;
-    @include box-shadow(0 2px 2px rgba(0,0,0, .4));
+    box-shadow: 0 2px 2px rgba(0,0,0, .4);
 
     ul {
       list-style: none;

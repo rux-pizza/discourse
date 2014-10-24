@@ -428,8 +428,6 @@ ja:
     apple_touch_icon_url: "Apple のタッチデバイス用のアイコン。推奨サイズは 144px x 144px"
     email_custom_headers: "カスタムメールヘッダのリスト (パイプ(バーティカルバー) 区切り)"
     enable_long_polling: "通知用のメッセージバスによるロングポーリングの利用を許可する"
-    long_polling_interval: "新たなロングポーリングを開始するまでの間隔 (ミリ秒)"
-    polling_interval: "ログイン済ユーザのクライアントのポーリング間隔 (ミリ秒)"
     anon_polling_interval: "匿名ユーザのクライアントのポーリング間隔 (ミリ秒)"
     auto_track_topics_after: "トピックが自動的にトラックされるまでのデフォルト時間 (ミリ秒)。なお、ユーザはこの設定をカスタマイズできます。(0で常にトラック、-1で常にトラックしない)"
     new_topic_duration_minutes: "トピックが新規と見なされるデフォルト時間 (分)。なお、ユーザはこの設定をカスタマイズできます。(-1で常に新規とみなす、-2で最終訪問したものを新規とみなす)"
@@ -553,12 +551,6 @@ ja:
       subject_template: "%{site_name} へようこそ!"
     welcome_invite:
       subject_template: "%{site_name}へようこそ!"
-    export_succeeded:
-      subject_template: "エクスポートが正しく完了しました"
-      text_body_template: "エクスポートに成功しました。"
-    import_succeeded:
-      subject_template: "インポートが正しく完了しました"
-      text_body_template: "インポートに成功しました。"
     too_many_spam_flags:
       subject_template: "新規アカウントのブロック"
     blocked_by_staff:
@@ -624,11 +616,19 @@ ja:
         ---
         %{respond_instructions}
     digest:
+      why: "あなたが最後にアクセスした %{last_seen_at} 以降に %{site_link} で行われた人気議論のまとめです。"
+      subject_template: "[%{site_name}] メールマガジン【%{date}】"
       new_activity: "あなたのトピックおよびポストにおけるアクティビティ:"
+      top_topics: "人気の投稿"
+      other_new_topics: "人気のトピック"
       unsubscribe: "こちらのメールマガジンでは、%{site_link} が最新情報をご紹介しています！配信停止はこちら %{unsubscribe_link}."
       click_here: "ここをクリック"
       from: "%{site_name} ダイジェスト"
       read_more: "もっと読む"
+      more_topics: "%{last_seen_at}ログイン以来%{new_topics_since_seen}個新規トピックが投稿されました。"
+      more_topics_category: "%{last_seen_at}ログイン以来%{new_topics_since_seen}個新規トピックが以下のカテゴリに投稿されました："
+      posts:
+        other: "%{count} 投稿"
     forgot_password:
       subject_template: "[%{site_name}] パスワードのリセット"
       text_body_template: |

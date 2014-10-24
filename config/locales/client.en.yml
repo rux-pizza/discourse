@@ -101,6 +101,8 @@ en:
       google+: 'share this link on Google+'
       email: 'send this link in an email'
 
+    topic_admin_menu: "topic admin actions"
+
     edit: 'edit the title and category of this topic'
     not_implemented: "That feature hasn't been implemented yet, sorry!"
     no_value: "No"
@@ -115,6 +117,7 @@ en:
     admin_title: "Admin"
     flags_title: "Flags"
     show_more: "show more"
+    show_help: "help"
     links: "Links"
     links_lowercase: "links"
     faq: "FAQ"
@@ -134,23 +137,10 @@ en:
     daily: "daily"
     weekly: "weekly"
     every_two_weeks: "every two weeks"
-    max: "max"
+    max_of_count: "max of {{count}}"
     character_count:
       one: "{{count}} character"
       other: "{{count}} characters"
-
-    in_n_seconds:
-      one: "in 1 second"
-      other: "in {{count}} seconds"
-    in_n_minutes:
-      one: "in 1 minute"
-      other: "in {{count}} minutes"
-    in_n_hours:
-      one: "in 1 hour"
-      other: "in {{count}} hours"
-    in_n_days:
-      one: "in 1 day"
-      other: "in {{count}} days"
 
     suggested_topics:
       title: "Suggested Topics"
@@ -164,10 +154,10 @@ en:
       stat:
         all_time: "All Time"
         last_7_days: "Last 7 Days"
-      like_count: "Fuck Count"
-      topic_count: "Topic Count"
-      post_count: "Post Count"
-      user_count: "User Count"
+      like_count: "Fucks"
+      topic_count: "Topics"
+      post_count: "Posts"
+      user_count: "Users"
 
     bookmarks:
       not_logged_in: "sorry, you must be logged in to bookmark posts"
@@ -306,6 +296,8 @@ en:
       invited_by: "Invited By"
       trust_level: "Trust Level"
       notifications: "Notifications"
+      dismiss_notifications: "Mark all as Read"
+      dismiss_notifications_tooltip: "Mark all unread notifications as read"
       disable_jump_reply: "Don't jump to your new post after replying"
       dynamic_favicon: "Show incoming message notifications on favicon (experimental)"
       edit_history_public: "Let other users view my post revisions"
@@ -379,6 +371,11 @@ en:
 
       change_profile_background:
         title: "Profile Background"
+        instructions: "Profile backgrounds will be centered and have a default width of 850px."
+
+      change_card_background:
+        title: "User Card Background"
+        instructions: "Background images will be centered and have a default width of 590px."
 
       email:
         title: "Email"
@@ -421,6 +418,9 @@ en:
       created: "Joined"
       log_out: "Log Out"
       location: "Location"
+      card_badge:
+        title: "User Card Badge"
+
       website: "Web Site"
       email_settings: "Email"
       email_digests:
@@ -472,6 +472,8 @@ en:
         expired: "This invite has expired."
         rescind: "Remove"
         rescinded: "Invite removed"
+        reinvite: "Resend Invite"
+        reinvited: "Invite re-sent"
         time_read: "Read Time"
         days_visited: "Days Visited"
         account_age_days: "Account age in days"
@@ -574,7 +576,8 @@ en:
     created: 'Created'
     created_lowercase: 'created'
     trust_level: 'Trust Level'
-    search_hint: 'username'
+    search_hint: 'username or IP address'
+    search_hint_admin: 'username, email or IP address'
 
     create_account:
       title: "Create New Account"
@@ -641,7 +644,7 @@ en:
 
       min_length:
         need_more_for_title: "{{n}} to go for the title"
-        need_more_for_reply: "{{n}} to go for the post"
+        need_more_for_reply: "{{n}} to go"
 
       error:
         title_missing: "Title is required"
@@ -668,7 +671,7 @@ en:
       view_new_post: "View your new post."
       saving: "Saving..."
       saved: "Saved!"
-      saved_draft: "You have a post draft in progress. Select this bar to resume editing."
+      saved_draft: "Post draft in progress. Select to resume."
       uploading: "Uploading..."
       show_preview: 'show preview &raquo;'
       hide_preview: '&laquo; hide preview'
@@ -700,10 +703,16 @@ en:
       toggler: "hide or show the composer panel"
 
       admin_options_title: "Optional staff settings for this topic"
-      auto_close_label: "Auto-close topic time:"
-      auto_close_units: "(# of hours, a time, or a timestamp)"
-      auto_close_examples: 'enter absolute time or number of hours — 24, 17:00, 2013-11-22 14:00'
-      auto_close_error: "Please enter a valid value."
+      auto_close:
+        label: "Auto-close topic time:"
+        error: "Please enter a valid value."
+        based_on_last_post: "Don't close until the last post in the topic is at least this old."
+        all:
+          units: ""
+          examples: 'Enter number of hours (24), absolute time (17:30) or timestamp (2013-11-22 14:00).'
+        limited:
+          units: "(# of hours)"
+          examples: 'Enter number of hours (24).'
 
     notifications:
       title: "notifications of @name mentions, replies to your posts and topics, private messages, etc"
@@ -874,6 +883,7 @@ en:
       deleted: "The topic has been deleted"
 
       auto_close_notice: "This topic will automatically close %{timeLeft}."
+      auto_close_notice_based_on_last_post: "This topic will close %{duration} after the last reply."
       auto_close_title: 'Auto-Close Settings'
       auto_close_save: "Save"
       auto_close_remove: "Don't Auto-Close This Topic"
@@ -899,8 +909,8 @@ en:
           "2_4": 'You will receive notifications because you posted a reply to this topic.'
           "2_2": 'You will receive notifications because you are tracking this topic.'
           "2": 'You will receive notifications because you <a href="/users/{{username}}/preferences">read this topic</a>.'
-          "1_2": 'You will be notified only if someone mentions your @name or replies to your post.'
-          "1": 'You will be notified only if someone mentions your @name or replies to your post.'
+          "1_2": 'You will be notified if someone mentions your @name or replies to your post.'
+          "1": 'You will be notified if someone mentions your @name or replies to your post.'
           "0_7": 'You are ignoring all notifications in this category.'
           "0_2": 'You are ignoring all notifications on this topic.'
           "0": 'You are ignoring all notifications on this topic.'
@@ -912,16 +922,16 @@ en:
           description: "You will be notified of every new post in this topic. A count of unread and new posts will also appear next to the topic."
         tracking_pm:
           title: "Tracking"
-          description: "A count of unread and new posts will appear next to the private message. You will be notified only if someone mentions your @name or replies to your post."
+          description: "A count of unread and new posts will appear next to the private message. You will be notified if someone mentions your @name or replies to your post."
         tracking:
           title: "Tracking"
-          description: "A count of unread and new posts will appear next to the topic. You will be notified only if someone mentions your @name or replies to your post. "
+          description: "A count of unread and new posts will appear next to the topic. You will be notified if someone mentions your @name or replies to your post. "
         regular:
           title: "Regular"
-          description: "You will be notified only if someone mentions your @name or replies to your post."
+          description: "You will be notified if someone mentions your @name or replies to your post."
         regular_pm:
           title: "Regular"
-          description: "You will be notified only if someone mentions your @name or replies to your post in the private message."
+          description: "You will be notified if someone mentions your @name or replies to your post in the private message."
         muted_pm:
           title: "Muted"
           description: "You will never be notified of anything about this private message."
@@ -1069,7 +1079,7 @@ en:
         edit: "Sorry, there was an error editing your post. Please try again."
         upload: "Sorry, there was an error uploading that file. Please try again."
         attachment_too_large: "Sorry, the file you are trying to upload is too big (maximum size is {{max_size_kb}}kb)."
-        image_too_large: "Sorry, the image you are trying to upload is too big (maximum size is {{max_size_kb}}kb), please resize it and try again."
+        file_too_large: "Sorry, the file you are trying to upload is too big (maximum size is {{max_size_kb}}kb)"
         too_many_uploads: "Sorry, you can only upload one file at a time."
         upload_not_authorized: "Sorry, the file you are trying to upload is not authorized (authorized extension: {{authorized_extensions}})."
         image_upload_not_allowed_for_new_user: "Sorry, new users can not upload images."
@@ -1222,6 +1232,8 @@ en:
           previous: "Previous revision"
           next: "Next revision"
           last: "Last revision"
+          hide: "Hide revision"
+          show: "Show revision"
           comparing_previous_to_current_out_of_total: "<strong>{{previous}}</strong> vs <strong>{{current}}</strong> / {{total}}"
         displays:
           inline:
@@ -1294,7 +1306,7 @@ en:
           description: "You will automatically track all new topics in these categories. A count of unread and new posts will appear next to the topic."
         regular:
           title: "Regular"
-          description: "You will be notified only if someone mentions your @name or replies to your post."
+          description: "You will be notified if someone mentions your @name or replies to your post."
         muted:
           title: "Muted"
           description: "You will not be notified of anything about new topics in these categories, and they will not appear on your unread tab."
@@ -1307,6 +1319,8 @@ en:
       delete_spammer: "Delete Spammer"
       delete_confirm: "You are about to delete <b>%{posts}</b> posts and <b>%{topics}</b> topics from this user, remove their account, block signups from their IP address <b>%{ip_address}</b>, and add their email address <b>%{email}</b> to a permanent block list. Are you sure this user is really a spammer?"
       yes_delete_spammer: "Yes, Delete Spammer"
+      ip_address_missing: "(N/A)"
+      hidden_email_address: "(hidden)"
       submit_tooltip: "Submit the private flag"
       take_action_tooltip: "Reach the flag threshold immediately, rather than waiting for more community flags"
       cant: "Sorry, you can't flag this post at this time."
@@ -1373,6 +1387,10 @@ en:
     category_title: "Category"
     history: "History"
     changed_by: "by {{author}}"
+
+    raw_email:
+      title: "Raw Email"
+      not_available: "Not available!"
 
     categories_list: "Categories List"
 
@@ -1722,6 +1740,9 @@ en:
           love:
             name: 'love'
             description: "The like button's color."
+          wiki:
+            name: 'wiki'
+            description: "Base color used for the background of wiki posts."
 
 
       email:
@@ -1982,6 +2003,8 @@ en:
           flagged_by_users: "Users Who Flagged"
           likes_given: "Likes Given"
           likes_received: "Likes Received"
+          likes_received_days: "Likes Received: unique days"
+          likes_received_users: "Likes Received: unique users"
           qualifies: "Qualifies for trust level 3."
           does_not_qualify: "Doesn't qualify for trust level 3."
           will_be_promoted: "Will be promoted soon."
@@ -1999,7 +2022,7 @@ en:
 
       user_fields:
         title: "User Fields"
-        help: "Any fields added here will be required from users when they sign up."
+        help: "Add fields that your users can fill out."
         create: "Create User Field"
         untitled: "Untitled"
         name: "Field Name"
@@ -2010,6 +2033,10 @@ en:
         delete: "Delete"
         cancel: "Cancel"
         delete_confirm: "Are you sure you want to delete that user field?"
+        required:
+          title: "Required at signup?"
+          enabled: "required"
+          disabled: "not required"
         editable:
           title: "Editable after signup?"
           enabled: "editable"
@@ -2076,11 +2103,14 @@ en:
         grant: Grant
         no_user_badges: "%{name} has not been granted any badges."
         no_badges: There are no badges that can be granted.
+        none_selected: "Select a badge to get started"
         allow_title: Allow badge to be used as a title
         multiple_grant: Can be granted multiple times
         listable: Show badge on the public badges page
         enabled: Enable badge
         icon: Icon
+        image: Image
+        icon_help: "Use either a Font Awesome class or URL to an image"
         query: Badge Query (SQL)
         target_posts: Query targets posts
         auto_revoke: Run revocation query daily
@@ -2114,6 +2144,9 @@ en:
 
     lightbox:
       download: "download"
+
+    search_help:
+      title: 'Search Help'
 
     keyboard_shortcuts_help:
       title: 'Keyboard Shortcuts'
@@ -2177,7 +2210,7 @@ en:
         one:   "1 granted"
         other: "%{count} granted"
       select_badge_for_title: Select a badge to use as your title
-      no_title: "<no title>"
+      none: "<none>"
       badge_grouping:
         getting_started:
           name: Getting Started
@@ -2259,3 +2292,13 @@ en:
         reader:
           name: Reader
           description: Read every post in a topic with more than 100 posts
+
+    google_search: |
+      <h2>Search with Google</h2>
+      <p>
+        <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
+          <input type="text" id='user-query' value="">
+          <input type='hidden' id='google-query' name="q">
+          <button class="btn btn-primary">Google</button>
+        </form>
+      </p>

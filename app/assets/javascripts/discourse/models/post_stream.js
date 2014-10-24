@@ -149,7 +149,7 @@ Discourse.PostStream = Em.Object.extend({
     var firstIndex = this.indexOf(firstPost);
     if (firstIndex === -1) { return []; }
 
-    var startIndex = firstIndex - Discourse.SiteSettings.posts_per_page;
+    var startIndex = firstIndex - Discourse.SiteSettings.posts_chunksize;
     if (startIndex < 0) { startIndex = 0; }
     return stream.slice(startIndex, firstIndex);
 
@@ -173,7 +173,7 @@ Discourse.PostStream = Em.Object.extend({
     if ((lastIndex + 1) >= this.get('highest_post_number')) { return []; }
 
     // find our window of posts
-    return stream.slice(lastIndex+1, lastIndex+Discourse.SiteSettings.posts_per_page+1);
+    return stream.slice(lastIndex+1, lastIndex+Discourse.SiteSettings.posts_chunksize+1);
   }.property('lastLoadedPost', 'stream.@each'),
 
 
@@ -259,6 +259,31 @@ Discourse.PostStream = Em.Object.extend({
   },
   hasLoadedData: Em.computed.and('hasPosts', 'hasStream'),
 
+  collapsePosts: function(from, to){
+    var posts = this.get('posts');
+    var remove = posts.filter(function(post){
+      var postNumber = post.get('post_number');
+      return postNumber >= from && postNumber <= to;
+    });
+
+    posts.removeObjects(remove);
+
+    // make gap
+    this.set('gaps', this.get('gaps') || {before: {}, after: {}});
+    var before = this.get('gaps.before');
+
+    var post = posts.find(function(post){
+      return post.get('post_number') > to;
+    });
+
+    before[post.get('id')] = remove.map(function(post){
+      return post.get('id');
+    });
+    post.set('hasGap', true);
+
+    this.get('stream').enumerableContentDidChange();
+  },
+
 
   /**
     Fill in a gap of posts before a particular post
@@ -291,6 +316,7 @@ Discourse.PostStream = Em.Object.extend({
 
           delete self.get('gaps.before')[postId];
           self.get('stream').enumerableContentDidChange();
+          post.set('hasGap', false);
         });
       }
     }
@@ -760,6 +786,9 @@ Discourse.PostStream = Em.Object.extend({
         return existing;
       }
 
+      // Update the auto_close_at value of the topic
+      this.set("topic.details.auto_close_at", post.get("topic_auto_close_at"));
+
       post.set('topic', this.get('topic'));
       postIdentityMap.set(post.get('id'), post);
 
@@ -822,7 +851,6 @@ Discourse.PostStream = Em.Object.extend({
     @returns {Promise} a promise that will resolve to the posts in the order requested.
   **/
   loadIntoIdentityMap: function(postIds) {
-
     // If we don't want any posts, return a promise that resolves right away
     if (Em.isEmpty(postIds)) {
       return Ember.RSVP.resolve();
