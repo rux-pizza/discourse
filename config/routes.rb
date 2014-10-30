@@ -81,6 +81,9 @@ Discourse::Application.routes.draw do
       get "tl3_requirements"
     end
 
+
+    post "users/sync_sso" => "users#sync_sso", constraints: AdminConstraint.new
+
     resources :impersonate, constraints: AdminConstraint.new
 
     resources :email do
@@ -282,9 +285,10 @@ Discourse::Application.routes.draw do
     put "rebake"
     put "unhide"
     get "replies"
-    get "revisions/:revision" => "posts#revisions"
-    put "revisions/:revision/hide" => "posts#hide_revision"
-    put "revisions/:revision/show" => "posts#show_revision"
+    get "revisions/latest" => "posts#latest_revision"
+    get "revisions/:revision" => "posts#revisions", constraints: { revision: /\d+/ }
+    put "revisions/:revision/hide" => "posts#hide_revision", constraints: { revision: /\d+/ }
+    put "revisions/:revision/show" => "posts#show_revision", constraints: { revision: /\d+/ }
     put "recover"
     collection do
       delete "destroy_many"

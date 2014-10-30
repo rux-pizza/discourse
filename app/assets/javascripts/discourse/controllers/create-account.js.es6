@@ -70,28 +70,13 @@ export default DiscourseController.extend(ModalFunctionality, {
     return I18n.t('user.password.instructions', {count: Discourse.SiteSettings.min_password_length});
   }.property(),
 
-  // Validate the name
+  // Validate the name. It's not required.
   nameValidation: function() {
-    // If blank, fail without a reason
-    if (this.blank('accountName')) return Discourse.InputValidation.create({ failed: true });
-
     if (this.get('accountPasswordConfirm') === 0) {
       this.fetchConfirmationValue();
     }
 
-    // If too short
-    if (this.get('accountName').length < 3) {
-      return Discourse.InputValidation.create({
-        failed: true,
-        reason: I18n.t('user.name.too_short')
-      });
-    }
-
-    // Looks good!
-    return Discourse.InputValidation.create({
-      ok: true,
-      reason: I18n.t('user.name.ok')
-    });
+    return Discourse.InputValidation.create({ok: true});
   }.property('accountName'),
 
   // Check the email address

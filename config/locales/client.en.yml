@@ -387,7 +387,7 @@ en:
 
       name:
         title: "Name"
-        instructions: "Your full name."
+        instructions: "Your full name (optional)."
         too_short: "Your name is too short."
         ok: "Your name looks good."
       username:
@@ -576,8 +576,7 @@ en:
     created: 'Created'
     created_lowercase: 'created'
     trust_level: 'Trust Level'
-    search_hint: 'username or IP address'
-    search_hint_admin: 'username, email or IP address'
+    search_hint: 'username, email or IP address'
 
     create_account:
       title: "Create New Account"
