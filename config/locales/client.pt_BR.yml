@@ -104,6 +104,7 @@ pt_BR:
     admin_title: "Admin"
     flags_title: "Sinalizações"
     show_more: "mostrar mais"
+    show_help: "Ajuda"
     links: "Links"
     links_lowercase: "links"
     faq: "FAQ"
@@ -138,10 +139,9 @@ pt_BR:
       stat:
         all_time: "Sempre"
         last_7_days: "Últimos 7 Dias"
-      like_count: "Contagem de Likes"
-      topic_count: "Contagem de Tópicos"
-      post_count: "Contagem de Tópicos"
-      user_count: "Contagem de Usuários"
+      like_count: "Likes"
+      topic_count: "Tópicos"
+      user_count: "Usuários"
     bookmarks:
       not_logged_in: "desculpe, você precisa estar logado para favoritar mensagens"
       created: "você favoritou essa resposta"
@@ -331,8 +331,7 @@ pt_BR:
         title: "Fundo do perfil"
         instructions: "Fundos do perfil será centralizado e tera uma largura padrão de 850px."
       change_card_background:
-        title: "Fundo de Expansão do Usuário"
-        instructions: "Imagens de Expansão será centralizado e tera uma largura padrão de 590px."
+        instructions: "As Imagens de fundo serão centralizadas e deverão ter largura de 590px"
       email:
         title: "Email"
         instructions: "Não visível publicamente."
@@ -342,7 +341,6 @@ pt_BR:
         frequency: "Vamos lhe enviar emails apenas quando não o virmos há algum tempo e você não tiver visto as coisas que temos enviado."
       name:
         title: "Nome"
-        instructions: "Seu nome completo."
         too_short: "O seu nome é muito curto."
         ok: "O seu nome parece ok."
       username:
@@ -508,8 +506,6 @@ pt_BR:
     created: 'Criado'
     created_lowercase: 'criado'
     trust_level: 'Nível de confiança'
-    search_hint: 'nome de usuário'
-    search_hint_admin: 'Nome de Usuário ou email'
     create_account:
       title: "Criar nova conta"
       failed: "Alguma coisa deu errado, talvez este email já esteja registrado, tente usar o Esqueci a Senha."
@@ -595,7 +591,7 @@ pt_BR:
       view_new_post: "Ver sua nova resposta."
       saving: "Salvando..."
       saved: "Salvo!"
-      saved_draft: "Você tem um rascunho em progresso. Clique nessa barra para voltar a editar."
+      saved_draft: "Rascunho salvo, clique em selecionar para continuar editando."
       uploading: "Enviando..."
       show_preview: 'mostrar pré-visualização &raquo;'
       hide_preview: '&laquo; esconder pré-visualização'
@@ -884,7 +880,6 @@ pt_BR:
         n_posts:
           one: "1 mensagem"
           other: "{{count}} mensagens"
-        cancel: "Mostrar novamente todas as mensagens deste tópico."
       split_topic:
         title: "Mover para novo tópico"
         action: "mover para novo tópico"
@@ -1350,8 +1345,6 @@ pt_BR:
           7_days_ago: "7 Dias Atrás"
           30_days_ago: "30 Dias Atrás"
           all: "Tudo"
-          view_table: "Visualizar como Tabela"
-          view_chart: "Visualizar como Gráfico de Barras"
       commits:
         latest_changes: "Últimas atualizações: atualize com frequência!"
         by: "por"
@@ -1929,6 +1922,7 @@ pt_BR:
         listable: Mostrar emblema na página pública de emblemas
         enabled: Habilitar emblema
         icon: Ícone
+        image: Imagem
         icon_help: "Use uma classe do Font Awesome ou uma URL de uma imagem"
         query: Badge Query (SQL)
         target_posts: Consultar respostas selecionadas
@@ -2023,7 +2017,6 @@ pt_BR:
         one: "1 emblema concedido"
         other: "%{count} emblemas concedidos"
       select_badge_for_title: Selecione um emblema para usar como título
-      no_title: "<no title>"
       badge_grouping:
         getting_started:
           name: Começando

@@ -20,7 +20,7 @@
     <div class='topic-avatar'>
       <div class="contents">
         {{#unless userDeleted}}
-          {{poster-avatar action="expandPostUser" post=this classNames="main-avatar"}}
+          {{poster-avatar post=this classNames="main-avatar"}}
         {{else}}
           <i class="fa fa-trash-o deleted-user-avatar"></i>
         {{/unless}}
@@ -30,7 +30,7 @@
 
     <div class='topic-body'>
       <div class='topic-meta-data'>
-        {{poster-name post=this expandAction="expandPostUser"}}
+        {{poster-name post=this}}
         <div class='post-info'>
           <a class='post-date' {{bind-attr href="shareUrl" data-share-url="shareUrl" data-post-number="post_number"}}>{{age-with-tooltip created_at}}</a>
         </div>
@@ -50,16 +50,16 @@
           </div>
         {{/if}}
         {{#if wiki}}
-          <div class="post-info wiki" title="{{i18n post.wiki.about}}" {{action "editPost" this}}><i class="fa fa-pencil-square-o"></i></div>
+          <div class="post-info wiki" title="{{i18n post.wiki.about}}" {{action "editPost" this}}>{{fa-icon "pencil-square-o"}}</div>
         {{/if}}
         {{#if via_email}}
           {{#if canViewRawEmail}}
-            <div class="post-info via-email raw-email" title="{{i18n post.via_email}}" {{action "showRawEmail" this}}><i class="fa fa-envelope-o"></i></div>
+            <div class="post-info via-email raw-email" title="{{i18n post.via_email}}" {{action "showRawEmail" this}}>{{fa-icon "envelope-o"}}</div>
           {{else}}
-            <div class="post-info via-email" title="{{i18n post.via_email}}"><i class="fa fa-envelope-o"></i></div>
+            <div class="post-info via-email" title="{{i18n post.via_email}}">{{fa-icon "envelope-o"}}</div>
           {{/if}}
         {{/if}}
-        <div {{bind-attr class=":read-state read"}} title="{{i18n post.unread}}"><i class='fa fa-circle'></i></div>
+        <div {{bind-attr class=":read-state read"}} title="{{i18n post.unread}}">{{fa-icon "circle"}}</div>
       </div>
 
       <div {{bind-attr class=":select-posts controller.multiSelect::hidden"}}>

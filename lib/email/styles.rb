@@ -18,7 +18,8 @@ module Email
     def add_styles(node, new_styles)
       existing = node['style']
       if existing.present?
-        node['style'] = "#{existing}; #{new_styles}"
+        # merge styles
+        node['style'] = "#{new_styles}; #{existing}"
       else
         node['style'] = new_styles
       end
@@ -37,8 +38,8 @@ module Email
           img['height'] = 20
         else
           # having no extra style on email images might work best?
-          img['width'] = 'auto'
-          img['height'] = 'auto'
+          img['width'] = 'auto' if img['width'].to_i > 250
+          img['height'] = 'auto' if img['height'].to_i > 250
           add_styles(img, 'max-width:100%;') if img['style'] !~ /max-width/
         end
 

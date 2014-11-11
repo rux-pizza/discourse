@@ -332,7 +332,6 @@ nl:
         frequency: "We zullen je alleen maar mailen als we je een tijd niet gezien hebben, en als je toevallig hetgeen waarover we je mailen nog niet hebt gezien op onze site."
       name:
         title: "Naam"
-        instructions: "Je volledige naam."
         too_short: "Je naam is te kort."
         ok: "Je naam ziet er prima uit."
       username:
@@ -498,8 +497,6 @@ nl:
     created: 'Gemaakt'
     created_lowercase: 'gemaakt'
     trust_level: 'Trustlevel'
-    search_hint: 'gebruikersnaam'
-    search_hint_admin: 'gebruikersnaam of e-mail'
     create_account:
       title: "Maak een nieuw account"
       failed: "Er ging iets mis, wellicht is het e-mailadres al geregistreerd. Probeer de 'Wachtwoord vergeten'-link."
@@ -848,7 +845,6 @@ nl:
         n_posts:
           one: "één bericht"
           other: "{{count}} berichten"
-        cancel: "Laat alle berichten in deze topic weer zien."
       split_topic:
         title: "Verplaats naar nieuwe topic"
         action: "verplaats naar nieuwe topic"
@@ -1296,8 +1292,6 @@ nl:
           7_days_ago: "7 Dagen geleden"
           30_days_ago: "30 Dagen geleden"
           all: "Alle"
-          view_table: "Bekijk als tabel"
-          view_chart: "Bekijk als staafdiagram"
       commits:
         latest_changes: "Laatste wijzigingen: update regelmatig!"
         by: "door"

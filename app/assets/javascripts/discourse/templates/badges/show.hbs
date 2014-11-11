@@ -36,11 +36,15 @@
       {{/each}}
     </div>
     {{#if canLoadMore}}
-      <div class='spinner'></div>
+      {{loading-spinner}}
+    {{else}}
+      <div class="container">
+        {{custom-html "footer"}}
+      </div>
     {{/if}}
   {{else}}
     {{#unless userBadgesLoaded}}
-      <div class='spinner'></div>
+      {{loading-spinner}}
     {{/unless}}
   {{/if}}
 </div>

@@ -93,12 +93,15 @@ class Post < ActiveRecord::Base
   end
 
   def publish_change_to_clients!(type)
+    # special failsafe for posts missing topics
+    # consistency checks should fix, but message
+    # is safe to skip
     MessageBus.publish("/topic/#{topic_id}", {
         id: id,
         post_number: post_number,
         updated_at: Time.now,
         type: type
-    }, group_ids: topic.secure_group_ids)
+    }, group_ids: topic.secure_group_ids) if topic
   end
 
   def trash!(trashed_by=nil)
@@ -460,8 +463,8 @@ class Post < ActiveRecord::Base
     Jobs.enqueue(:process_post, args)
   end
 
-  def self.public_posts_count_per_day(since_days_ago=30)
-    public_posts.where('posts.created_at > ?', since_days_ago.days.ago).group('date(posts.created_at)').order('date(posts.created_at)').count
+  def self.public_posts_count_per_day(start_date, end_date)
+    public_posts.where('posts.created_at >= ? AND posts.created_at <= ?', start_date, end_date).group('date(posts.created_at)').order('date(posts.created_at)').count
   end
 
   def self.private_messages_count_per_day(since_days_ago, topic_subtype)

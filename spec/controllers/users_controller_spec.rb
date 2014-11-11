@@ -357,8 +357,8 @@ describe UsersController do
 
         expect(JSON.parse(response.body)['active']).to be_falsey
 
-        # should save user_created_email in session
-        session["user_created_email"].should == @user.email
+        # should save user_created_message in session
+        session["user_created_message"].should be_present
       end
 
       context "and 'must approve users' site setting is enabled" do
@@ -393,8 +393,8 @@ describe UsersController do
         User.any_instance.expects(:enqueue_welcome_message).with('welcome_user')
         post_user
 
-        # should save user_created_email in session
-        session["user_created_email"].should == @user.email
+        # should save user_created_message in session
+        session["user_created_message"].should be_present
       end
 
       it "shows the 'active' message" do
@@ -479,7 +479,7 @@ describe UsersController do
         json["success"].should == true
 
         # should not change the session
-        session["user_created_email"].should be_blank
+        session["user_created_message"].should be_blank
       end
     end
 
@@ -523,7 +523,7 @@ describe UsersController do
         json["success"].should_not == true
 
         # should not change the session
-        session["user_created_email"].should be_blank
+        session["user_created_message"].should be_blank
       end
     end
 
@@ -782,7 +782,7 @@ describe UsersController do
       xhr :get, :invited, username: inviter.username, filter: 'billybob'
 
       invites = JSON.parse(response.body)['invites']
-      expect(invites).to have(1).item
+      invites.size.should == 1
       expect(invites.first).to include('email' => 'billybob@example.com')
     end
 
@@ -804,7 +804,7 @@ describe UsersController do
       xhr :get, :invited, username: inviter.username, filter: 'billybob'
 
       invites = JSON.parse(response.body)['invites']
-      expect(invites).to have(1).item
+      invites.size.should == 1
       expect(invites.first).to include('email' => 'billybob@example.com')
     end
 
@@ -830,7 +830,7 @@ describe UsersController do
           xhr :get, :invited, username: inviter.username
 
           invites = JSON.parse(response.body)['invites']
-          expect(invites).to have(1).item
+          invites.size.should == 1
           expect(invites.first).to include('email' => invite.email)
         end
       end
@@ -851,7 +851,7 @@ describe UsersController do
             xhr :get, :invited, username: inviter.username
 
             invites = JSON.parse(response.body)['invites']
-            expect(invites).to have(1).item
+            invites.size.should == 1
             expect(invites.first).to include("email" => invite.email)
           end
         end
@@ -885,7 +885,7 @@ describe UsersController do
           xhr :get, :invited, username: inviter.username
 
           invites = JSON.parse(response.body)['invites']
-          expect(invites).to have(1).item
+          invites.size.should == 1
           expect(invites.first).to include('email' => invite.email)
         end
       end
