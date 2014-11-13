@@ -1,4 +1,5 @@
 require_dependency 'sass/discourse_sass_compiler'
+require_dependency 'distributed_cache'
 
 class DiscourseStylesheets
 
@@ -7,37 +8,26 @@ class DiscourseStylesheets
   MANIFEST_FULL_PATH = "#{MANIFEST_DIR}/stylesheet-manifest"
 
   @lock = Mutex.new
-  @links = {}
 
-  def self.ensure_subscribed!
-    unless @subscribed
-      @lock.synchronize do
-        MessageBus.subscribe("/discourse_stylesheet") do |message|
-          @lock.synchronize do
-            @links[message.site_id] = nil
-          end
-        end
-        @subscribed = true
-      end
-    end
+  def self.cache
+    return {} if Rails.env.development?
+    @cache ||= DistributedCache.new("discourse_stylesheet")
   end
 
   def self.stylesheet_link_tag(target = :desktop)
-    ensure_subscribed!
+    tag = cache[target]
+
+    return tag.dup.html_safe if tag
+
     @lock.synchronize do
-      links = (@links[RailsMultisite::ConnectionManagement.current_db] ||= {})
-      tag = links[target]
+      builder = self.new(target)
+      builder.compile unless File.exists?(builder.stylesheet_fullpath)
+      builder.ensure_digestless_file
+      tag = %[<link href="#{Rails.env.production? ? builder.stylesheet_relpath : builder.stylesheet_relpath_no_digest + '?body=1'}" media="all" rel="stylesheet" />]
 
-      if !tag
-        builder = self.new(target)
-        builder.compile unless File.exists?(builder.stylesheet_fullpath)
-        builder.ensure_digestless_file
-        tag = %[<link href="#{Rails.env.production? ? builder.stylesheet_relpath : builder.stylesheet_relpath_no_digest + '?body=1'}" media="all" rel="stylesheet" />].html_safe
+      cache[target] = tag
 
-        links[target] = tag
-      end
-
-      tag
+      tag.dup.html_safe
     end
   end
 

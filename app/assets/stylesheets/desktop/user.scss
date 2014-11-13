@@ -7,7 +7,7 @@
 }
 
 .profile-image {
-  height: 250px;
+  height: 420px;
   width: 100%;
   background-size: cover;
   transition: height .15s linear;
@@ -16,7 +16,7 @@
 
 .no-background {
   .profile-image {
-    height: 0;
+    height: 200px;
   }
 
 }
@@ -141,15 +141,18 @@
     }
   }
 
+  .user-right {
+    width: 75%;
+    float: right;
+    margin-top: 20px;
+  }
+
   .user-content {
     padding: 10px 8px;
     background-color: $secondary;
     border: 1px solid scale-color-diff();
     margin-bottom: 10px;
     box-sizing: border-box;
-    width: 75%;
-    float: right;
-    margin-top: 20px;
 
     .btn.right {
       float: right
@@ -236,7 +239,8 @@
 
     .details {
       padding: 15px 15px 4px 15px;
-      background-color: $primary;
+      margin-top: -200px;
+      background: rgba($primary, .85);
       transition: margin .15s linear;
 
       h1 {
@@ -394,8 +398,6 @@
 
 
   .user-stream {
-      float: right;
-      width: 75%;
     .excerpt {
       margin: 5px 0;
       font-size: 13px;
@@ -491,8 +493,6 @@
   .staff-counters {
     text-align: left;
     background: $primary;
-    padding: 7px 0;
-    display: inline;
     > div {
       margin: 0 10px 0 0;
       display: inline-block;
@@ -574,20 +574,16 @@
 }
 
 .paginated-topics-list {
-  float: right;
-  width: 75%;
-  margin-top: 20px;
+  .topic-list > tbody > tr:nth-child(odd) {
+    background-color: darken($secondary, 3%);
+  }
 
-    .topic-list > tbody > tr:nth-child(odd)  {
-      background-color: darken($secondary, 3%);
-      }
+  .topic-list > tbody > tr:nth-child(even) {
+    background-color: $secondary;
+  }
 
-    .topic-list > tbody > tr:nth-child(even) {
-      background-color: $secondary;
-      }
-
-    .user-content {
-        width: 100%;
-        margin-top: 0;
-      }
+  .user-content {
+    width: 100%;
+    margin-top: 0;
+  }
 }

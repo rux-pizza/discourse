@@ -7,8 +7,14 @@ GIT
       activemodel (>= 3.0)
 
 GIT
+  remote: https://github.com/rails/arel.git
+  revision: 5035526b534a5d7c9d95eb6b66ade349c3a947f0
+  specs:
+    arel (6.0.0.beta2)
+
+GIT
   remote: https://github.com/rails/rails.git
-  revision: 99dccf1aae31520b701fc37e62542db1e6c0994f
+  revision: 6ff78469cd70ce821dd1455f3607780863f5a9d7
   specs:
     actionmailer (4.2.0.beta4)
       actionpack (= 4.2.0.beta4)
@@ -86,7 +92,6 @@ GEM
     annotate (2.6.5)
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
-    arel (6.0.0.beta2)
     barber (0.4.2)
       ember-source
       execjs
@@ -145,7 +150,7 @@ GEM
     fastimage (1.6.3)
       addressable (~> 2.3, >= 2.3.5)
     ffi (1.9.5)
-    flamegraph (0.0.5)
+    flamegraph (0.0.8)
       fast_stack
     fog (1.22.1)
       fog-brightbox
@@ -221,7 +226,7 @@ GEM
     method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.6.1)
-    minitest (5.4.2)
+    minitest (5.4.3)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     mock_redis (0.13.2)
@@ -409,6 +414,7 @@ GEM
       activesupport (>= 4.0)
       sprockets (~> 2.8)
     stackprof (0.2.7)
+    stringex (2.5.2)
     therubyracer (0.12.1)
       libv8 (~> 3.16.14.0)
       ref
@@ -445,6 +451,7 @@ DEPENDENCIES
   actionpack-action_caching
   active_model_serializers!
   annotate
+  arel!
   barber
   better_errors
   binding_of_caller
@@ -526,6 +533,7 @@ DEPENDENCIES
   sinatra
   spork-rails
   stackprof
+  stringex
   therubyracer
   thin
   timecop
