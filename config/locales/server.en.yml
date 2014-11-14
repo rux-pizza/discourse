@@ -443,7 +443,7 @@ en:
       email_title: 'Your post in "%{title}"'
       email_body: "%{link}\n\n%{message}"
     notify_moderators:
-      title: "It's Something Else"
+      title: "Something Else"
       description: 'This post requires moderator attention for another reason not listed above.'
       long_form: 'flagged this for moderator attention'
       email_title: 'A post in "%{title}" requires moderator attention'
@@ -471,7 +471,7 @@ en:
       description: 'This topic contains content that a reasonable person would consider offensive, abusive, or a violation of <a href="/guidelines">our community guidelines</a>.'
       long_form: 'flagged this as inappropriate'
     notify_moderators:
-      title: "It's Something Else"
+      title: "Something Else"
       description: 'This topic requires general moderator attention based on the <a href="/guidelines">guidelines</a>, <a href="%{tos_url}">TOS</a>, or for another reason not listed above.'
       long_form: 'flagged this for moderator attention'
       email_title: 'The topic "%{title}" requires moderator attention'
@@ -976,6 +976,7 @@ en:
 
     allow_uploaded_avatars: "Allow users to upload custom avatars."
     allow_animated_avatars: "Allow users to use animated gif avatars. WARNING: run the avatars:refresh rake task after changing this setting."
+    allow_animated_thumbnails: "Generates animated thumbnails of animated gifs."
     automatically_download_gravatars: "Download Gravatars for users upon account creation or email change."
     digest_topics: "The maximum number of topics to display in the email digest."
     digest_min_excerpt_length: "Minimum post excerpt in the email digest, in characters."
@@ -1694,17 +1695,17 @@ en:
         %{respond_instructions}
 
     digest:
-      why: "A brief summary of %{site_link} since we last saw you on %{last_seen_at}."
+      why: "A brief summary of %{site_link} since your last visit on %{last_seen_at}."
       subject_template: "[%{site_name}] Digest for %{date}"
       new_activity: "New activity on your topics and posts:"
       top_topics: "Popular posts"
       other_new_topics: "Popular topics"
-      unsubscribe: "This digest is sent as a courtesy notification from %{site_link} when we haven't seen you in a while. To unsubscribe %{unsubscribe_link}."
+      unsubscribe: "This digest is sent from %{site_link} when we haven't seen you in a while. To unsubscribe %{unsubscribe_link}."
       click_here: "click here"
       from: "%{site_name} digest"
       read_more: "Read More"
-      more_topics: "There were %{new_topics_since_seen} other new topics posted since you last visited on %{last_seen_at}."
-      more_topics_category: "There were %{new_topics_since_seen} other new topics posted in these categories since you last visited on %{last_seen_at}:"
+      more_topics: "There were %{new_topics_since_seen} other new topics."
+      more_topics_category: "More new topics:"
 
       posts:
         one: "1 post"
