@@ -278,8 +278,13 @@ en:
       location_not_found: (unknown)
       organisation: Organization
       phone: Phone
-      other_accounts: Other accounts with this IP address
+      other_accounts: "Other accounts with this IP address:"
       no_other_accounts: (none)
+      username: "username"
+      trust_level: "TL"
+      read_time: "read time"
+      topics_entered: "topics entered"
+      post_count: "# posts"
 
     user:
       said: "{{username}}:"
@@ -323,6 +328,7 @@ en:
       deleted_yourself: "Your account has been deleted successfully."
       delete_yourself_not_allowed: "You cannot delete your account right now. Contact an admin to do delete your account for you."
       unread_message_count: "Messages"
+      admin_delete: "Delete"
 
       staff_counters:
         flags_given: "helpful flags"
@@ -660,7 +666,7 @@ en:
       reply: "Reply"
       cancel: "Cancel"
       create_topic: "New Topic"
-      create_pm: "Create Private Message"
+      create_pm: "Private Message"
       title: "Or press Ctrl+Enter"
 
       users_placeholder: "Add a user"
@@ -1757,6 +1763,7 @@ en:
         settings: "Settings"
         all: "All"
         sending_test: "Sending test Email..."
+        error: "<b>ERROR</b> - %{server_error}"
         test_error: "There was a problem sending the test email. Please double-check your mail settings, verify that your host is not blocking mail connections, and try again."
         sent: "Sent"
         skipped: "Skipped"
@@ -2189,6 +2196,7 @@ en:
       actions:
         title: 'Actions'
         star: '<b>f</b> Star topic'
+        pin_unpin_topic: '<b>shift p</b> Pin/Unpin topic'
         share_topic: '<b>shift s</b> Share topic'
         share_post: '<b>s</b> Share post'
         reply_as_new_topic: '<b>t</b> Reply as linked topic'

@@ -23,14 +23,15 @@ export default Ember.Component.extend({
       }
 
       if (!this.get("other_accounts")) {
-        this.set("other_accounts_loading", true);
+        this.set("otherAccountsLoading", true);
         Discourse.AdminUser.findAll("active", {
           "ip": this.get("ip"),
-          "exclude": this.get("user_id")
+          "exclude": this.get("user_id"),
+          "order": "trust_level DESC"
         }).then(function (users) {
           self.setProperties({
             other_accounts: users,
-            other_accounts_loading: false,
+            otherAccountsLoading: false,
           });
         });
       }

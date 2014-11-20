@@ -3,7 +3,7 @@ import { spinnerHTML } from 'discourse/helpers/loading-spinner';
 
 export default ObjectController.extend(Discourse.SelectedPostsCount, {
   multiSelect: false,
-  needs: ['header', 'modal', 'composer', 'quote-button', 'search', 'topic-progress'],
+  needs: ['header', 'modal', 'composer', 'quote-button', 'search', 'topic-progress', 'application'],
   allPostsSelected: false,
   editingTopic: false,
   selectedPosts: null,
@@ -369,6 +369,11 @@ export default ObjectController.extend(Discourse.SelectedPostsCount, {
       this.get('content').clearPin();
     },
 
+    togglePinnedForUser: function() {
+      if (this.get('pinned_at'))
+        this.get('pinned') ? this.get('content').clearPin() : this.get('content').rePin();
+    },
+
     replyAsNewTopic: function(post) {
       var composerController = this.get('controllers.composer'),
           quoteController = this.get('controllers.quote-button'),
@@ -435,6 +440,10 @@ export default ObjectController.extend(Discourse.SelectedPostsCount, {
     unhidePost: function (post) {
       post.unhide();
     }
+  },
+
+  togglePinnedState: function() {
+    this.send('togglePinnedForUser');
   },
 
   showExpandButton: function() {
@@ -688,6 +697,10 @@ export default ObjectController.extend(Discourse.SelectedPostsCount, {
     if (lastLoadedPost && lastLoadedPost === post) {
       postStream.appendMore();
     }
-  }
+  },
+
+  _showFooter: function() {
+    this.set("controllers.application.showFooter", this.get("postStream.loadedAllPosts"));
+  }.observes("postStream.loadedAllPosts")
 
 });

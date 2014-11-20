@@ -942,6 +942,7 @@ en:
     staff_like_weight: "How much extra weighting factor to give staff fucks."
 
     levenshtein_distance_spammer_emails: "When matching spammer emails, number of characters difference that will still allow a fuzzy match."
+    max_new_accounts_per_registration_ip: "If there are already (n) trust level 0 accounts from this IP (and none at TL2 or higher), stop accepting new signups from that IP."
 
     reply_by_email_enabled: "Enable replying to topics via email."
     reply_by_email_address: "Template for reply by email incoming email address, for example: %{reply_key}@reply.example.com or replies+%{reply_key}@example.com"
@@ -1099,7 +1100,7 @@ en:
       other: "This topic was automatically closed %{count} days after the last reply. New replies are no longer allowed."
     autoclosed_enabled_lastpost_hours:
       one: "This topic was automatically closed 1 hour after the last reply. New replies are no longer allowed."
-      other: "This topic was automatically closed count} hours after the last reply. New replies are no longer allowed."
+      other: "This topic was automatically closed %{count} hours after the last reply. New replies are no longer allowed."
     autoclosed_enabled_lastpost_minutes:
       one: "This topic was automatically closed 1 minute after the last reply. New replies are no longer allowed."
       other: "This topic was automatically closed %{count} minutes after the last reply. New replies are no longer allowed."
@@ -1695,7 +1696,7 @@ en:
         %{respond_instructions}
 
     digest:
-      why: "A brief summary of %{site_link} since your last visit on %{last_seen_at}."
+      why: "A brief summary of %{site_link} since your last visit on %{last_seen_at}"
       subject_template: "[%{site_name}] Digest for %{date}"
       new_activity: "New activity on your topics and posts:"
       top_topics: "Popular posts"

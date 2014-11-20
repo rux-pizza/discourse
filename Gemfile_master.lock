@@ -8,13 +8,13 @@ GIT
 
 GIT
   remote: https://github.com/rails/arel.git
-  revision: 5035526b534a5d7c9d95eb6b66ade349c3a947f0
+  revision: a04851702b0e8e694a92139c3ee9f3b1622f3f5d
   specs:
     arel (6.0.0.beta2)
 
 GIT
   remote: https://github.com/rails/rails.git
-  revision: aeb917d475dfccb8b5f3b5a57f62df5358ad3ef0
+  revision: 08576b94ad4f19dfc368619d7751e211d23dcad8
   specs:
     actionmailer (4.2.0.beta4)
       actionpack (= 4.2.0.beta4)
