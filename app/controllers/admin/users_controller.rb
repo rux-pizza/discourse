@@ -281,11 +281,19 @@ class Admin::UsersController < Admin::AdminController
     user_destroyer = UserDestroyer.new(current_user)
     options = { delete_posts: true, block_email: true, block_urls: true, block_ip: true, delete_as_spammer: true }
 
-    AdminUserIndexQuery.new(params).find_users.each do |user|
+    AdminUserIndexQuery.new(params).find_users(50).each do |user|
       user_destroyer.destroy(user, options) rescue nil
     end
 
     render json: success_json
+  end
+
+  def total_other_accounts_with_same_ip
+    params.require(:ip)
+    params.require(:exclude)
+    params.require(:order)
+
+    render json: { total: AdminUserIndexQuery.new(params).count_users }
   end
 
   def invite_admin

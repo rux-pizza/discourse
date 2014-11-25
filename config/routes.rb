@@ -53,6 +53,7 @@ Discourse::Application.routes.draw do
         get "list/:query" => "users#index"
         get "ip-info" => "users#ip_info"
         delete "delete-others-with-same-ip" => "users#delete_other_accounts_with_same_ip"
+        get "total-others-with-same-ip" => "users#total_other_accounts_with_same_ip"
         put "approve-bulk" => "users#approve_bulk"
         delete "reject-bulk" => "users#reject_bulk"
       end
@@ -101,7 +102,11 @@ Discourse::Application.routes.draw do
     scope "/logs" do
       resources :staff_action_logs,     only: [:index]
       resources :screened_emails,       only: [:index, :destroy]
-      resources :screened_ip_addresses, only: [:index, :create, :update, :destroy]
+      resources :screened_ip_addresses, only: [:index, :create, :update, :destroy] do
+        collection do
+          post "roll_up"
+        end
+      end
       resources :screened_urls,         only: [:index]
     end
 
