@@ -1684,13 +1684,12 @@ en:
 
       export_csv:
         users:
-          text: "Export Users"
-          title: "Export user list in a CSV file."
+          title: "Export full user list in CSV format."
         screened_ips:
-          text: "Export Screened IPs"
-          title: "Export screened IPs list in a CSV file."
-        success: "Export has been initiated, you will be notified shortly with progress."
+          title: "Export full screened IPs list in CSV format."
+        success: "Export initiated, you will be notified shortly with progress."
         failed: "Export failed. Please check the logs."
+        button_text: "Export"
 
       customize:
         title: "Customize"
@@ -1892,10 +1891,10 @@ en:
           new: "New"
           active: "Active"
           pending: "Pending"
-          admins: 'Admins'
-          moderators: 'Mods'
+          staff: 'Staff'
           suspended: 'Suspended'
           blocked: 'Blocked'
+          suspect: 'Suspect'
         approved: "Approved?"
         approved_selected:
           one: "approve user"
@@ -1912,10 +1911,12 @@ en:
           regular: 'Users at Trust Level 2 (Member)'
           leader: 'Users at Trust Level 3 (Regular)'
           elder: 'Users at Trust Level 4 (Leader)'
+          staff: "Staff"
           admins: 'Admin Users'
           moderators: 'Moderators'
           blocked: 'Blocked Users'
           suspended: 'Suspended Users'
+          suspect: 'Suspect Users'
         reject_successful:
           one: "Successfully rejected 1 user."
           other: "Successfully rejected %{count} users."
