@@ -291,6 +291,52 @@
   **/
   Ember.CloakedView = Ember.View.extend({
     attributeBindings: ['style'],
+    _containedView: null,
+    _scheduled: null,
+
+    init: function() {
+      this._super();
+      this._scheduled = false;
+      this._childViews = [];
+    },
+
+    setContainedView: function(cv) {
+      if (this._childViews[0]) {
+        this._childViews[0].destroy();
+      }
+      this._childViews[0] = cv;
+      this.setupChildView(cv);
+      if (!this._elementCreated || this._scheduled) return;
+
+      this._scheduled = true;
+      this.set('_containedView', cv);
+      Ember.run.schedule('render', this, this.updateChildView);
+    },
+
+    setupChildView: function (childView) {
+      if (childView) {
+        childView.set('_parentView', this);
+        childView.set('templateData', this.get('templateData'));
+      }
+    },
+
+    render: function (buffer) {
+      var el = buffer.element();
+      this._childViewsMorph = buffer.dom.createMorph(el, null, null, el);
+    },
+
+    updateChildView: function () {
+      // If the element has been destroyed before this call occurs
+      if (!this) { return; }
+
+      this._scheduled = false;
+      if (!this._elementCreated || this.isDestroying || this.isDestroyed) { return; }
+
+      var childView = this._containedView;
+      if (childView && !childView._elementCreated) {
+        this._renderer.renderTree(childView, this, 0);
+      }
+    },
 
     /**
       Triggers the set up for rendering a view that is cloaked.

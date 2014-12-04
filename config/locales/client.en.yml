@@ -293,6 +293,7 @@ en:
       mute: "Mute"
       edit: "Edit Preferences"
       download_archive: "download archive of my posts"
+      new_private_message: "New Private Message"
       private_message: "Private Message"
       private_messages: "Messages"
       activity_stream: "Activity"
@@ -391,7 +392,10 @@ en:
         ok: "We will email you to confirm"
         invalid: "Please enter a valid email address"
         authenticated: "Your email has been authenticated by {{provider}}"
-        frequency: "We'll only email you if we haven't seen you recently and you haven't already seen the thing we're emailing you about."
+        frequency:
+          zero: "We'll email you immediately if you haven't read the thing we're emailing you about."
+          one: "We'll only email you if we haven't seen you in the last minute and you haven't read the thing we're emailing you about."
+          other: "We'll only email you if we haven't seen you in the last {{count}} minutes and you haven't read the thing we're emailing you about."
 
       name:
         title: "Name"
@@ -765,6 +769,7 @@ en:
         user: "Search posts by @{{username}}"
         category: "Search the \"{{category}}\" category"
         topic: "Search this topic"
+        private_messages: "Search private messages"
 
     site_map: "go to another topic list or category"
     go_back: 'go back'
