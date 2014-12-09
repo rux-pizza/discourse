@@ -18,11 +18,11 @@ ComposerView.on("initWmdEditor", function(){
 
   $('#wmd-input').autocomplete({
     template: template,
-    key: ":",
-    transformComplete: function(v){  return v.code + ":"; },
+    key: "&",
+    transformComplete: function(v){  return v.code + "&"; },
     dataSource: function(term){
       return new Ember.RSVP.Promise(function(resolve) {
-        var full = ":" + term;
+        var full = "&" + term;
         term = term.toLowerCase();
 
         if (term === "") {
