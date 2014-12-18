@@ -1,4 +1,3 @@
-//= require ./discourse/helpers/i18n_helpers
 //= require ./discourse/mixins/ajax
 //= require ./discourse
 
@@ -11,7 +10,9 @@
 //
 
 // Stuff we need to load first
+//= require ./discourse/helpers/i18n
 //= require ./discourse/lib/ember_compat_handlebars
+//= require ./discourse/helpers/register-unbound
 //= require ./discourse/lib/computed
 //= require ./discourse/mixins/scrolling
 //= require_tree ./discourse/mixins
@@ -50,6 +51,7 @@
 //= require ./discourse/helpers/user-avatar
 //= require ./discourse/helpers/cold-age-class
 //= require ./discourse/helpers/loading-spinner
+//= require ./discourse/helpers/category-link
 
 //= require ./discourse/dialects/dialect
 //= require_tree ./discourse/dialects

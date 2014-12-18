@@ -21,7 +21,7 @@ export default DiscourseController.extend({
     var usernames = this.get('model.targetUsernames');
 
     // We need exactly one user to issue a warning
-    if (Em.empty(usernames) || usernames.split(',').length !== 1) {
+    if (Ember.isEmpty(usernames) || usernames.split(',').length !== 1) {
       return false;
     }
     return this.get('model.creatingPrivateMessage');
@@ -465,6 +465,11 @@ export default DiscourseController.extend({
 
   canEdit: function() {
     return this.get("model.action") === "edit" && Discourse.User.current().get("can_edit");
-  }.property("model.action")
+  }.property("model.action"),
+
+  visible: function() {
+    var state = this.get('model.composeState');
+    return state && state !== 'closed';
+  }.property('model.composeState')
 
 });
