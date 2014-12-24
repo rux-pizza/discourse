@@ -26,6 +26,7 @@ Discourse::Application.routes.draw do
   resources :about
 
   get "site" => "site#index"
+  get "site_customizations/:key" => "site_customizations#show"
 
   resources :forums
   get "srv/status" => "forums#status"
@@ -125,6 +126,7 @@ Discourse::Application.routes.draw do
       resources :site_text, constraints: AdminConstraint.new
       resources :site_text_types, constraints: AdminConstraint.new
       resources :user_fields, constraints: AdminConstraint.new
+      resources :emojis, constraints: AdminConstraint.new
     end
 
     resources :color_schemes, constraints: AdminConstraint.new
@@ -159,15 +161,6 @@ Discourse::Application.routes.draw do
         put "readonly" => "backups#readonly"
         get "upload" => "backups#check_backup_chunk"
         post "upload" => "backups#upload_backup_chunk"
-      end
-    end
-
-    resources :export_csv, constraints: AdminConstraint.new do
-      collection do
-        get "export_entity" => "export_csv#export_entity"
-      end
-      member do
-        get "" => "export_csv#show", constraints: { id: /[^\/]+/ }
       end
     end
 
@@ -438,6 +431,15 @@ Discourse::Application.routes.draw do
   post "invites/disposable" => "invites#create_disposable_invite"
   get "invites/redeem/:token" => "invites#redeem_disposable_invite"
   delete "invites" => "invites#destroy"
+
+  resources :export_csv do
+    collection do
+      get "export_entity" => "export_csv#export_entity"
+    end
+    member do
+      get "" => "export_csv#show", constraints: { id: /[^\/]+/ }
+    end
+  end
 
   get "onebox" => "onebox#show"
 
