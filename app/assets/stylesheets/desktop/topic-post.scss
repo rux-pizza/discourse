@@ -510,11 +510,12 @@ video {
   max-height: 500px;
 }
 
-@keyframes fadein {
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
 @-webkit-keyframes fadein {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadein {
     from {opacity: 0;}
     to {opacity: 1;}
 }
@@ -524,8 +525,7 @@ video {
 
 .star, .badge-wrapper, i,  .topic-link:not(.loading) {
   -webkit-animation: fadein .7s;
-  animation-duration: .7s;
-  animation-name: fadein;
+  animation: fadein .7s;
 }
 
   .topic-statuses {

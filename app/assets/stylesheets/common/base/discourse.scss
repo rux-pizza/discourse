@@ -181,7 +181,6 @@ body {
   opacity: 1;
 }
 
-
 @-webkit-keyframes rotate-forever {
   0% {
     -webkit-transform: rotate(0deg);
@@ -190,7 +189,6 @@ body {
     -webkit-transform: rotate(360deg);
   }
 }
-
 @keyframes rotate-forever {
   0% {
     transform: rotate(0deg);
