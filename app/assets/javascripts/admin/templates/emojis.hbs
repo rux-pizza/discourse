@@ -19,7 +19,7 @@
           {{#each e in controller}}
             <tr>
               <th><img class="emoji" src="{{unbound e.url}}" title="{{unbound e.name}}"></th>
-              <th>:{{e.name}}:</th>
+              <th>&{{e.name}}&</th>
               <th><button {{action "destroy" e}} class='btn btn-danger no-text pull-right'>{{fa-icon 'trash-o'}} </button></th>
             </tr>
           {{/each}}

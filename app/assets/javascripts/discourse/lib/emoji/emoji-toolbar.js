@@ -86,7 +86,7 @@ var bindEvents = function(page,offset){
      return false;
   }).hover(function(){
     var title = $(this).attr('title');
-    var html = "<img src='" + Discourse.Emoji.urlFor(title) + "' class='emoji'> <span>:" + title + ":<span>";
+    var html = "<img src='" + Discourse.Emoji.urlFor(title) + "' class='emoji'> <span>&" + title + "&<span>";
     $('.emoji-modal .info').html(html);
   },function(){
     $('.emoji-modal .info').html("");
