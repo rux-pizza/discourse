@@ -50,7 +50,7 @@ export default Ember.Component.extend(StringBuffer, {
 
   icon: function() {
     switch(parseInt(this.get('content.action_type'), 10)) {
-      case Discourse.UserAction.TYPES.likes_received: return "heart";
+      case Discourse.UserAction.TYPES.likes_received: return "lemon-o";
       case Discourse.UserAction.TYPES.bookmarks: return "bookmark";
       case Discourse.UserAction.TYPES.edits: return "pencil";
       case Discourse.UserAction.TYPES.replies: return "reply";

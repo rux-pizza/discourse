@@ -212,7 +212,7 @@ export default Discourse.View.extend(StringBuffer, {
   },
 
   clickLike: function(post) {
-    var $heart = this.$('.fa-heart'),
+    var $heart = this.$('.fa-lemon-o'),
         controller = this.get('controller'),
         $likeButton = this.$('button[data-action=like]');
 

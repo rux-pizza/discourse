@@ -9,7 +9,7 @@ PostActionType.seed do |s|
   s.id = PostActionType.types[:like]
   s.name_key = 'like'
   s.is_flag = false
-  s.icon = 'heart'
+  s.icon = 'lemon-o'
   s.position = 2
 end
 
