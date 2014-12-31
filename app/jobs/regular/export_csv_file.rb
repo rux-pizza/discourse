@@ -5,7 +5,7 @@ module Jobs
 
   class ExportCsvFile < Jobs::Base
     HEADER_ATTRS_FOR = {}
-    HEADER_ATTRS_FOR['user_archive'] = ['raw','like_count','reply_count','created_at']
+    HEADER_ATTRS_FOR['user_archive'] = ['topic_title','category','sub_category','is_pm','post','like_count','reply_count','url','created_at']
     HEADER_ATTRS_FOR['user'] = ['id','name','username','email','title','created_at','trust_level','active','admin','moderator','ip_address']
     HEADER_ATTRS_FOR['user_stats'] = ['topics_entered','posts_read_count','time_read','topic_count','post_count','likes_given','likes_received']
     HEADER_ATTRS_FOR['user_sso'] = ['external_id','external_email', 'external_username', 'external_name', 'external_avatar_url']
@@ -45,11 +45,12 @@ module Jobs
         write_csv_file(data, header)
       end
 
+    ensure
       notify_user
     end
 
     def user_archive_export
-      user_archive_data = Post.where(user_id: @current_user.id).select(HEADER_ATTRS_FOR['user_archive']).with_deleted.to_a
+      user_archive_data = Post.includes(:topic => :category).where(user_id: @current_user.id).select('topic_id','post_number','raw','like_count','reply_count','created_at').order('created_at').with_deleted.to_a
       user_archive_data.map do |user_archive|
         get_user_archive_fields(user_archive)
       end
@@ -129,9 +130,33 @@ module Jobs
 
       def get_user_archive_fields(user_archive)
         user_archive_array = []
+        topic_data = user_archive.topic
+        user_archive = user_archive.as_json
+        if topic_data.nil?
+          # deleted topic
+          topic_data = Topic.with_deleted.find_by(id: user_archive['topic_id'])
+        end
+        category = topic_data.category
+        sub_category = "-"
+        if category
+          category_name = category.name
+          if !category.parent_category_id.nil?
+            # sub category
+            category_name = Category.find_by(id: category.parent_category_id).name
+            sub_category = category.name
+          end
+        else
+          # PM
+          category_name = "-"
+        end
+        is_pm = topic_data.archetype == "private_message" ? I18n.t("csv_export.boolean_yes") : I18n.t("csv_export.boolean_no")
+        url = "#{Discourse.base_url}/t/#{topic_data.slug}/#{topic_data.id}/#{user_archive['post_number']}"
+
+        topic_hash = {"post" => user_archive['raw'], "topic_title" => topic_data.title, "category" => category_name, "sub_category" => sub_category, "is_pm" => is_pm, "url" => url}
+        user_archive.merge!(topic_hash)
 
         HEADER_ATTRS_FOR['user_archive'].each do |attr|
-          user_archive_array.push(user_archive.attributes[attr])
+          user_archive_array.push(user_archive[attr])
         end
 
         user_archive_array
@@ -239,17 +264,17 @@ module Jobs
 
 
       def set_file_path
-        @file = CsvExportLog.create(export_type: @entity_type, user_id: @current_user.id)
+        @file = UserExport.create(export_type: @entity_type, user_id: @current_user.id)
         @file_name = "export_#{@file.id}.csv"
-        
+
         # ensure directory exists
-        dir = File.dirname("#{CsvExportLog.base_directory}/#{@file_name}")
+        dir = File.dirname("#{UserExport.base_directory}/#{@file_name}")
         FileUtils.mkdir_p(dir) unless Dir.exists?(dir)
       end
 
       def write_csv_file(data, header)
         # write to CSV file
-        CSV.open(File.expand_path("#{CsvExportLog.base_directory}/#{@file_name}", __FILE__), "w") do |csv|
+        CSV.open(File.expand_path("#{UserExport.base_directory}/#{@file_name}", __FILE__), "w") do |csv|
           csv << header
           data.each do |value|
             csv << value
@@ -259,7 +284,7 @@ module Jobs
 
       def notify_user
         if @current_user
-          if @file_name != "" && File.exists?("#{CsvExportLog.base_directory}/#{@file_name}")
+          if @file_name != "" && File.exists?("#{UserExport.base_directory}/#{@file_name}")
             SystemMessage.create_from_system_user(@current_user, :csv_export_succeeded, download_link: "#{Discourse.base_url}/export_csv/#{@file_name}", file_name: @file_name)
           else
             SystemMessage.create_from_system_user(@current_user, :csv_export_failed)

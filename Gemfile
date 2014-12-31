@@ -117,7 +117,7 @@ gem 'fast_xs'
 
 gem 'fast_xor'
 gem 'fastimage'
-gem 'fog', '1.22.1', require: false
+gem 'fog', '1.26.0', require: false
 gem 'unf', require: false
 
 gem 'email_reply_parser'
@@ -230,7 +230,7 @@ gem 'lru_redux'
 gem 'htmlentities', require: false
 
 # IMPORTANT: mini profiler monkey patches, so it better be required last
-#  If you want to amend mini profiler to do the monkey patches in the railstie
+#  If you want to amend mini profiler to do the monkey patches in the railties
 #  we are open to it. by deferring require to the initializer we can configure discourse installs without it
 
 gem 'flamegraph', require: false
@@ -245,6 +245,9 @@ gem 'rbtrace', require: false, platform: :mri
 gem 'ruby-readability', require: false
 
 gem 'simple-rss', require: false
+
+# TODO mri_22 should be here, but bundler was real slow to pick it up
+# not even in production bundler yet, monkey patching it in feels bad
 gem 'gctools', require: false, platform: :mri_21
 gem 'stackprof', require: false, platform: :mri_21
 gem 'memory_profiler', require: false, platform: :mri_21
