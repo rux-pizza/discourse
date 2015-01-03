@@ -15,7 +15,13 @@ Discourse.ExportCsv.reopenClass({
   @method export_user_archive
   **/
   exportUserArchive: function() {
-    return Discourse.ajax("/export_csv/export_entity.json", {data: {entity_type: 'user', entity: 'user_archive'}});
+    return Discourse.ajax("/export_csv/export_entity.json", {
+      data: {entity_type: 'user', entity: 'user_archive'}
+    }).then(function() {
+      bootbox.alert(I18n.t("admin.export_csv.success"));
+    }).catch(function() {
+      bootbox.alert(I18n.t("admin.export_csv.rate_limit_error"));
+    });
   },
 
   /**
@@ -24,7 +30,7 @@ Discourse.ExportCsv.reopenClass({
     @method export_user_list
   **/
   exportUserList: function() {
-    return Discourse.ajax("/export_csv/export_entity.json", {data: {entity_type: 'admin', entity: 'user'}});
+    return Discourse.ajax("/export_csv/export_entity.json", {data: {entity_type: 'admin', entity: 'user_list'}});
   },
 
   /**

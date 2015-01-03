@@ -5,9 +5,7 @@ class ExportCsvController < ApplicationController
   def export_entity
     params.require(:entity)
     params.require(:entity_type)
-    if params[:entity_type] == "admin"
-      guardian.ensure_can_export_admin_entity!(current_user)
-    end
+    guardian.ensure_can_export_entity!(params[:entity_type])
 
     Jobs.enqueue(:export_csv_file, entity: params[:entity], user_id: current_user.id)
     render json: success_json
@@ -17,7 +15,7 @@ class ExportCsvController < ApplicationController
   def show
     params.require(:id)
     filename = params.fetch(:id)
-    export_id = filename.split('_')[1].split('.')[0]
+    export_id = filename.split('-')[2].split('.')[0]
     export_initiated_by_user_id = 0
     export_initiated_by_user_id = UserExport.where(id: export_id)[0].user_id unless UserExport.where(id: export_id).empty?
     export_csv_path = UserExport.get_download_path(filename)
