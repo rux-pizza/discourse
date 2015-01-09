@@ -21,6 +21,7 @@ required:
   site_description:
     default: ''
   contact_email:
+    client: true
     default: ''
     type: email
   notification_email:
@@ -82,7 +83,7 @@ basic:
     client: true
     refresh: true
     type: list
-    default: 'latest|new|unread|starred|top|categories'
+    default: 'latest|new|unread|top|categories'
     choices:
      - latest
      - new

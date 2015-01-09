@@ -45,7 +45,7 @@
   .fa-thumb-tack {color: $primary;}
   .fa-thumb-tack.unpinned {color: $primary;}
   a.title {color: $primary;}
-  a.title:visited:not(.badge-notification) {color: scale-color($primary, $lightness: 35%);}
+  a.title:visited:not(.badge-notification), .fa-bookmark {color: scale-color($primary, $lightness: 35%);}
   th,
   td {
     padding: 12px 5px;
@@ -143,6 +143,24 @@
   .posts {
     width: 65px;
   }
+
+  .post-actions {
+    clear: both;
+    width: auto;
+    color: scale-color($primary, $lightness: 50%);
+    text-align: left;
+    font-size: 12px;
+    margin-top: 5px;
+    .fa {
+      margin-right: 2px;
+    }
+    a {
+      font-size: 11px;
+      color: scale-color($primary, $lightness: 50%);
+      margin-right: 3px;
+      line-height: 20px;
+    }
+  }
   .activity {
     width: 60px;
     &:lang(zh_CN) {
@@ -183,19 +201,6 @@
       background-color: $secondary;
       }
   }
-  th .toggle-admin {
-    position: absolute;
-    padding: 3px 8px;
-    font-size: 0.857em;
-    right: -35px;
-    top: 4px;
-  }
-  th.latest, td.latest {
-    padding-left: 12px;
-  }
-  th.num {
-    width: 45px;
-  }
   th.stats {
     width: 90px;
   }
@@ -212,12 +217,14 @@
     }
   }
   .category{
-    position: relative;
     width: 45%;
 
     h3 {
       display: inline-block;
       font-size: 1.286em;
+      i {
+        margin-right: 5px;
+      }
       a[href] {
         color: $primary;
       }
@@ -225,19 +232,11 @@
     .subcategories {
       margin-top: 10px;
     }
-    .featured-users {
-      float: right;
-      margin-right: 13px;
-    }
     .category-description {
       margin-top: 10px;
     }
     .clear-badge {
       color: $primary;
-    }
-    .badge-category.bigger {
-      padding: 6px 10px;
-      font-size: 1em;
     }
   }
 
@@ -311,10 +310,6 @@ button.dismiss-read {
     line-height: 1.5em;
     font-size: 1.5em;
   }
-}
-
-.category-name {
-  display: block;
 }
 
 .category-logo {

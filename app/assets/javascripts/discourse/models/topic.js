@@ -172,14 +172,6 @@ Discourse.Topic = Discourse.Model.extend({
            .then(function () { self.set('archetype', 'regular'); });
   },
 
-  starTooltipKey: function() {
-    return this.get('starred') ? 'starred.help.unstar' : 'starred.help.star';
-  }.property('starred'),
-
-  starTooltip: function() {
-    return I18n.t(this.get('starTooltipKey'));
-  }.property('starTooltipKey'),
-
   estimatedReadingTime: function() {
     var wordCount = this.get('word_count');
     if (!wordCount) return;
@@ -188,15 +180,15 @@ Discourse.Topic = Discourse.Model.extend({
     return Math.floor(wordCount / 500.0);
   }.property('word_count'),
 
-  toggleStar: function() {
+  toggleBookmark: function() {
     var topic = this;
-    topic.toggleProperty('starred');
+    topic.toggleProperty('bookmarked');
     return Discourse.ajax({
-      url: "" + (this.get('url')) + "/star",
+      url: "" + (this.get('url')) + "/bookmark",
       type: 'PUT',
-      data: { starred: topic.get('starred') ? true : false }
+      data: { bookmarked: topic.get('bookmarked') ? true : false }
     }).then(null, function (error) {
-      topic.toggleProperty('starred');
+      topic.toggleProperty('bookmarked');
 
       if (error && error.responseText) {
         bootbox.alert($.parseJSON(error.responseText).errors);
@@ -370,6 +362,12 @@ Discourse.Topic.reopenClass({
 
   update: function(topic, props) {
     props = JSON.parse(JSON.stringify(props)) || {};
+
+    // We support `category_id` and `categoryId` for compatibility
+    if (typeof props.categoryId !== "undefined") {
+      props.category_id = props.categoryId;
+      delete props.categoryId;
+    }
 
     // Annoyingly, empty arrays are not sent across the wire. This
     // allows us to make a distinction between arrays that were not

@@ -4,7 +4,28 @@ export default Discourse.View.extend(StringBuffer, {
   rerenderTriggers: ['controller.bulkSelectEnabled', 'topic.pinned'],
   tagName: 'tr',
   rawTemplate: 'list/topic_list_item.raw',
-  classNameBindings: ['controller.checked', 'content.archived', ':topic-list-item', 'content.hasExcerpt:has-excerpt'],
+  classNameBindings: ['controller.checked',
+                      ':topic-list-item',
+                      'unboundClassNames'
+       ],
+
+  unboundClassNames: function(){
+    var classes = [];
+    var topic = this.get('topic');
+
+    if(topic.get('hasExcerpt')){
+      classes.push('has-excerpt');
+    }
+
+    _.each(['liked', 'archived', 'bookmarked'],function(name){
+      if(topic.get(name)){
+        classes.push(name);
+      }
+    });
+
+    return classes.join(' ');
+  }.property(),
+
   attributeBindings: ['data-topic-id'],
   'data-topic-id': Em.computed.alias('content.id'),
   titleColSpan: function(){
@@ -21,6 +42,23 @@ export default Discourse.View.extend(StringBuffer, {
   hasOpLikes: function(){
     return this.get('topic.op_like_count') > 0;
   },
+
+  expandPinned: function(){
+    var pinned = this.get('topic.pinned');
+    if(!pinned){
+      return false;
+    }
+
+    if(this.get('controller.expandGloballyPinned') && this.get('topic.pinned_globally')){
+      return true;
+    }
+
+    if(this.get('controller.expandAllPinned')){
+      return true;
+    }
+
+    return false;
+  }.property(),
 
   click: function(e){
     var target = $(e.target);

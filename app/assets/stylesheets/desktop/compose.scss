@@ -89,7 +89,6 @@
   }
   .toggle-preview {
     right: 5px;
-    text-decoration: underline;
   }
   #file-uploading {
     left: 51%;
@@ -124,7 +123,6 @@
     }
   }
   a.cancel {
-    text-decoration: underline;
     padding-left: 7px;
   }
   .control-row {
@@ -328,13 +326,6 @@
 
 .reply-to {
   margin-bottom: 10px;
-}
-
-#reply-control.edit-title.private-message {
-  .wmd-controls {
-    transition: top 0.3s ease;
-    top: 140px;
-  }
 }
 
 #reply-control {
