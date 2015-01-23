@@ -88,7 +88,8 @@ class UsersController < ApplicationController
     user = fetch_user_from_params
     guardian.ensure_can_edit_username!(user)
 
-    result = user.change_username(params[:new_username])
+    # TODO proper error surfacing (result is a Model#save call)
+    result = user.change_username(params[:new_username], current_user)
     raise Discourse::InvalidParameters.new(:new_username) unless result
 
     render json: {
@@ -312,7 +313,7 @@ class UsersController < ApplicationController
         end
       end
     end
-    render layout: 'no_js'
+    render layout: 'no_ember'
   end
 
   def logon_after_password_reset
@@ -363,18 +364,18 @@ class UsersController < ApplicationController
     else
       flash[:error] = I18n.t('change_email.error')
     end
-    render layout: 'no_js'
+    render layout: 'no_ember'
   end
 
   def account_created
     @message = session['user_created_message']
     expires_now
-    render layout: 'no_js'
+    render layout: 'no_ember'
   end
 
   def activate_account
     expires_now
-    render layout: 'no_js'
+    render layout: 'no_ember'
   end
 
   def perform_account_activation
@@ -392,7 +393,7 @@ class UsersController < ApplicationController
     else
       flash[:error] = I18n.t('activation.already_done')
     end
-    render layout: 'no_js'
+    render layout: 'no_ember'
   end
 
   def send_activation_email

@@ -103,6 +103,8 @@ en:
 
     topic_admin_menu: "topic admin actions"
 
+    emails_are_disabled: "All outgoing email has been globally disabled by an administrator. No email notifications of any kind will be sent."
+
     edit: 'edit the title and category of this topic'
     not_implemented: "That feature hasn't been implemented yet, sorry!"
     no_value: "No"
@@ -160,6 +162,12 @@ en:
       user_count: "Users"
       contact: "Contact Us"
       contact_info: "In the event of a critical issue or urgent matter affecting this site, please contact us at %{contact_email}."
+
+    bookmarked:
+      title: "Bookmark"
+      help:
+        bookmark: "Click to bookmark this topic"
+        unbookmark: "Click to remove bookmark to this topic"
 
     bookmarks:
       not_logged_in: "sorry, you must be logged in to bookmark posts"
@@ -370,10 +378,10 @@ en:
         success: "We've sent an email to that address. Please follow the confirmation instructions."
 
       change_avatar:
-        title: "Change your avatar"
+        title: "Change your profile picture"
         gravatar: "<a href='//gravatar.com/emails' target='_blank'>Gravatar</a>, based on"
         refresh_gravatar_title: "Refresh your Gravatar"
-        letter_based: "System assigned avatar"
+        letter_based: "System assigned profile picture"
         uploaded_avatar: "Custom picture"
         uploaded_avatar_empty: "Add a custom picture"
         upload_title: "Upload your picture"
@@ -512,7 +520,7 @@ en:
       registration_ip_address:
         title: "Registration IP Address"
       avatar:
-        title: "Avatar"
+        title: "Profile Picture"
       title:
         title: "Title"
 
@@ -1010,7 +1018,7 @@ en:
 
         email_placeholder: 'name@example.com'
         success: "We mailed out an invitation to <b>{{email}}</b>. We'll notify you when the invitation is redeemed. Check the invitations tab on your user page to keep track of your invites."
-        error: "Sorry, we couldn't invite that person. Perhaps they are already a user?"
+        error: "Sorry, we couldn't invite that person. Perhaps they are already a user? (Invites are rate limited)"
 
       login_reply: 'Log In to Reply'
 
@@ -1375,13 +1383,13 @@ en:
         help: "This topic is archived; it no longer accepts new replies"
       unpinned:
         title: "Unpinned"
-        help: "This topic is unpinned; it will display in default order"
+        help: "This topic is unpinned for you; it will display in regular order"
       pinned_globally:
         title: "Pinned Globally"
         help: "This topic is pinned globally; it will display at the top of all lists"
       pinned:
         title: "Pinned"
-        help: "This topic is pinned; it will display at the top of its category"
+        help: "This topic is pinned for you; it will display at the top of its category"
       archived:
         help: "This topic is archived; it is frozen and cannot be changed"
       invisible:
@@ -1623,6 +1631,10 @@ en:
         name: "Name"
         add: "Add"
         add_members: "Add members"
+        custom: "Custom"
+        automatic: "Automatic"
+        automatic_membership_email_domains: "Users registering with an email from that list will automatically be a member of this group"
+        automatic_membership_retroactive: "Registered users matching this list are also member of the group"
 
       api:
         generate_master: "Generate Master API Key"
@@ -1709,7 +1721,14 @@ en:
         long_title: "Site Customizations"
         css: "CSS"
         header: "Header"
+        top: "Top"
         footer: "Footer"
+        head_tag:
+          text: "</head>"
+          title: "HTML that will be inserted before the </head> tag"
+        body_tag:
+          text: "</body>"
+          title: "HTML that will be inserted before the </body> tag"
         override_default: "Do not include standard style sheet"
         enabled: "Enabled?"
         preview: "preview"
@@ -1830,7 +1849,7 @@ en:
           do_nothing: "do nothing"
         staff_actions:
           title: "Staff Actions"
-          instructions: "Click usernames and actions to filter the list. Click avatars to go to user pages."
+          instructions: "Click usernames and actions to filter the list. Click profile pictures to go to user pages."
           clear_filters: "Show Everything"
           staff_user: "Staff User"
           target_user: "Target User"
@@ -1848,6 +1867,7 @@ en:
           actions:
             delete_user: "delete user"
             change_trust_level: "change trust level"
+            change_username: "change username"
             change_site_setting: "change site setting"
             change_site_customization: "change site customization"
             delete_site_customization: "delete site customization"
@@ -2061,7 +2081,7 @@ en:
           external_username: "Username"
           external_name: "Name"
           external_email: "Email"
-          external_avatar_url: "Avatar URL"
+          external_avatar_url: "Profile Picture URL"
 
       user_fields:
         title: "User Fields"
@@ -2229,7 +2249,7 @@ en:
         dismiss_topics: '<b>x</b>, <b>t</b> Dismiss Topics'
       actions:
         title: 'Actions'
-        star: '<b>f</b> Star topic'
+        bookmark_topic: '<b>f</b> Bookmark topic'
         pin_unpin_topic: '<b>shift</b>+<b>p</b> Pin/Unpin topic'
         share_topic: '<b>shift</b>+<b>s</b> Share topic'
         share_post: '<b>s</b> Share post'

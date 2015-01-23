@@ -84,6 +84,7 @@ it:
           other: "%{count} giorni fa"
     share:
       topic: 'Condividi un link a questa conversazione'
+      post: 'messaggio n°%{postNumber}'
       close: 'chiudi'
       twitter: 'Condividi questo link su Twitter'
       facebook: 'Condividi questo link su Facebook'
@@ -142,6 +143,12 @@ it:
       topic_count: "Argomenti"
       post_count: "Messaggi"
       user_count: "Utenti"
+      contact: "Contattaci"
+    bookmarked:
+      title: "Segnalibro"
+      help:
+        bookmark: "Clicca per aggiungere un segnalibro a questo argomento"
+        unbookmark: "Clicca per rimuove il segnalibro a questo argomento"
     bookmarks:
       not_logged_in: "spiacenti, devi essere connesso per aggiungere segnalibri ai messaggi"
       created: "hai inserito questo messaggio nei segnalibri."
@@ -258,6 +265,7 @@ it:
       profile: "Profilo"
       mute: "Ignora"
       edit: "Modifica opzioni"
+      download_archive: "Scarica i miei messaggi"
       new_private_message: "Nuovo Messaggio Privato"
       private_message: "Messaggio privato"
       private_messages: "Messaggi"
@@ -326,10 +334,10 @@ it:
         error: "C'è stato un errore nel cambio dell'email; potrebbe essere già usata da un altro utente."
         success: "Abbiamo inviato una email a questo indirizzo. Segui le indicazioni di conferma."
       change_avatar:
-        title: "Cambia il tuo avatar"
+        title: "Cambia l'immagine del tuo profilo"
         gravatar: "<a href='//gravatar.com/emails' target='_blank'>Gravatar</a>, basato su"
         refresh_gravatar_title: "Ricarica il tuo Gravatar"
-        letter_based: "Avatar assegnato dal sistema"
+        letter_based: "Immagine del profilo assegnata dal sistema"
         uploaded_avatar: "Immagine personalizzata"
         uploaded_avatar_empty: "Aggiungi un'immagine personalizzata"
         upload_title: "Carica la tua foto"
@@ -450,8 +458,6 @@ it:
         title: "Ultimo indirizzo IP"
       registration_ip_address:
         title: "Indirizzo IP di Registrazione"
-      avatar:
-        title: "Avatar"
       title:
         title: "Titolo"
       filters:
@@ -690,11 +696,6 @@ it:
     go_back: 'indietro'
     not_logged_in_user: 'pagina utente con riassunto delle attività correnti e delle impostazioni'
     current_user: 'vai alla pagina utente'
-    starred:
-      title: 'Preferito'
-      help:
-        star: 'aggiungi questo argomento alla lista dei preferiti'
-        unstar: 'Elimina questo argomento dalla lista dei preferiti'
     topics:
       bulk:
         reset_read: "Reimposta Lettura"
@@ -714,7 +715,6 @@ it:
           one: "Hai selezionato <b>1</b> argomento."
           other: "Hai selezionato <b>{{count}}</b> argomenti."
       none:
-        starred: "Non hai argomenti preferiti."
         unread: "Non ci sono argomenti non letti."
         new: "Non ci sono nuovi argomenti."
         read: "Non hai ancora letto nessun argomento."
@@ -726,7 +726,6 @@ it:
         educate:
           new: '<p>Qui compaiono i tuoi nuovi argomenti.</p><p>Per difetto, gli argomenti creati negli ultimi 2 giorni saranno considerati nuovi e mostreranno l''indicatore <span class="badge new-topic badge-notification" style="vertical-align:middle;line-height:inherit;">nuovo</span>.</p><p>Puoi cambiare questa configurazione nelle tue <a href="%{userPrefsUrl}">preferenze</a>.</p>'
           unread: '<p>Qui compaiono i tuoi argomenti non letti.</p><p>Per difetto, gli argomenti sono considerati non letti e mostrano un conteggio di non lettura <span class="badge new-posts badge-notification">1</span> se hai:</p><ul><li>Creato l''argomento</li><li>Risposto all''argomento</li><li>Letto l''argomento per più di 4 minuti</li></ul><p>Oppure se hai esplicitamente impostato l''argomento come Seguito o Osservato usando il pannello di controllo delle notifiche in fondo ad ogni argomento.</p><p>Puoi cambiare questa configurazione nelle tue <a href="%{userPrefsUrl}">preferenze</a>.</p>'
-          starred: '<p>Qui compaiono i tuoi argomenti preferiti.</p><p>Per aggiungere o rimuovere un argomento dai preferiti, usa:</p><ul><li>la <i class="fa fa-star"></i> vicino al titolo di ogni argomento</li><li>il bottone Preferito in fondo ad ogni argomento</li></ul>'
       bottom:
         latest: "Non ci sono altri argomenti più recenti."
         hot: "Non ci sono altri argomenti caldi."
@@ -734,7 +733,6 @@ it:
         read: "Non ci sono altri argomenti letti."
         new: "Non ci sono altri argomenti nuovi."
         unread: "Non ci sono altri argomenti non letti"
-        starred: "Non ci sono altri argomenti nei preferiti."
         category: "Non ci sono altri argomenti nella categoria {{category}}."
         top: "Non ci sono altri argomenti di punta."
     topic:
@@ -1225,13 +1223,11 @@ it:
         help: "Questo argomento è chiuso; non sono ammesse nuove risposte"
       unpinned:
         title: "Spuntato"
-        help: "Questo argomento è spuntato; verrà mostrato con l'ordinamento di default"
       pinned_globally:
         title: "In Evidenza Globalmente"
         help: "Questo argomento è in evidenza globalmente; verrà mostrato in cima ad ogni lista"
       pinned:
         title: "In Evidenza"
-        help: "Questo argomento è in evidenza; verrà mostrato in cima alla sua categoria"
       archived:
         help: "Questo argomento è archiviato; è bloccato e non può essere modificato"
       invisible:
@@ -1272,9 +1268,6 @@ it:
       hot:
         title: "Caldo"
         help: "una selezione degli argomenti più caldi"
-      starred:
-        title: "Preferiti"
-        help: "argomenti che hai messo nei preferiti"
       read:
         title: "Letti"
         help: "argomenti che hai letto, in ordine di lettura"
@@ -1445,7 +1438,6 @@ it:
         edit: "Modifica Gruppi"
         refresh: "Aggiorna"
         new: "Nuovo"
-        selector_placeholder: "aggiungi utenti"
         name_placeholder: "Nome del gruppo, senza spazi, stesse regole del nome utente"
         about: "Modifica qui la tua appartenenza ai gruppi e i loro nomi"
         group_members: "Membri del gruppo"
@@ -1646,7 +1638,6 @@ it:
           do_nothing: "non fare nulla"
         staff_actions:
           title: "Azioni Staff"
-          instructions: "Clicca sui nomi degli utenti e sulle azioni per filtrare la lista. Clicca sugli avatar per andare alle pagine degli utenti."
           clear_filters: "Mostra Tutto"
           staff_user: "Utente"
           target_user: "Destinatario"
@@ -1874,7 +1865,6 @@ it:
           external_username: "Nome utente"
           external_name: "Nome"
           external_email: "Email"
-          external_avatar_url: "URL dell'Avatar"
       user_fields:
         title: "Campi Utente"
         help: "Tutti i campi che i tuoi utenti possono riempire."
@@ -2004,7 +1994,6 @@ it:
         latest: '<b>g</b>, <b>l</b> Ultimi'
         new: '<b>g</b>, <b>n</b> Nuovi'
         unread: '<b>g</b>, <b>u</b> Non Letti'
-        starred: '<b>g</b>, <b>f</b> Preferiti'
         categories: '<b>g</b>, <b>c</b> Categorie'
         top: '<b>g</b>, <b>t</b> Alto'
       navigation:
@@ -2026,7 +2015,6 @@ it:
         dismiss_topics: '<b>x</b>, <b>t</b> Chiudi Argomenti'
       actions:
         title: 'Azioni'
-        star: '<b>f</b> Aggiungi l''argomento ai preferiti'
         share_post: '<b>s</b> Condividi messaggio'
         reply_as_new_topic: '<b>t</b> Rispondi con argomento collegato'
         reply_post: '<b>r</b> Rispondi al messaggio'

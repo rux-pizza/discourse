@@ -147,7 +147,6 @@ a.star {
 .topic-post .boxed .contents {
   float: none;
   padding-top: 5px;
-  padding-bottom: 0px;
   clear: both;
   position: relative;
 }
@@ -292,6 +291,7 @@ a.star {
 #topic-footer-buttons {
   border-top: 1px solid scale-color-diff();
   padding: 20px 10px 0 10px;
+  .fa-bookmark.bookmarked { color: $tertiary; }
 }
 
 /* this is to force the drop-down notification state description para below the button */
@@ -384,11 +384,35 @@ iframe {
 }
 
 #selected-posts {
-  padding-left: 20px;
+  float: left;
+  width: 97%;
+  padding-left: 3%;
+  background-color: dark-light-diff($tertiary, $secondary, 90%, -40%);
   .btn {
     margin-bottom: 10px;
+    color: $secondary;
+    background: scale-color($tertiary, $lightness: 50%);
+    clear: both;
+  }
+  p {
+    clear: both;
   }
 }
+
+// hide the full set of selection buttons on mobile
+.select-posts button { display: none; }
+
+// unhide the simple "select just this post" button
+button.select-post {
+  display: inline-block;
+  position: absolute;
+  z-index: 401; // 400 is the reply-to tab
+  left: 200px;
+  background-color: scale-color($tertiary, $lightness: 50%);
+  color: $secondary;
+  padding: 5px;
+}
+
 
 .post-select {
   float: right;
@@ -421,15 +445,6 @@ blockquote {
   /* leave browser defaults for top and bottom here */
   margin-left: 0;
   margin-right: 0;
-}
-
-// we assume blockquotes have their own margins, so all blockquotes
-// will remove margins from first (top) and last (bottom) child elements
-blockquote > *:first-child {
-  margin-top: 0 !important;
-}
-blockquote > *:last-child {
-  margin-bottom: 0 !important;
 }
 
 .gutter { display: none; }
@@ -485,3 +500,4 @@ span.highlighted {
 .read-state {
   display: none;
 }
+

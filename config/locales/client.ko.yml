@@ -68,6 +68,7 @@ ko:
           other: "%{count}일 전"
     share:
       topic: '토픽을 공유합니다.'
+      post: '포스트 #%{postNumber}'
       close: '닫기'
       twitter: 'twitter로 공유'
       facebook: 'Facebook으로 공유'
@@ -125,6 +126,13 @@ ko:
       topic_count: "토픽"
       post_count: "게시글"
       user_count: "사용자"
+      contact: "Contact Us"
+      contact_info: "사이트 운영과 관련된 사항이나 요청이 있으시다면 이메일 %{contact_email}로 연락주시기 바랍니다."
+    bookmarked:
+      title: "북마크"
+      help:
+        bookmark: "이 토픽을 북마크하려면 클릭하세요"
+        unbookmark: "이 토픽의 북마크를 제거하려면 클릭하세요"
     bookmarks:
       not_logged_in: "죄송합니다. 게시물을 즐겨찾기에 추가하려면 로그인을 해야 합니다."
       created: "이 게시글을 북마크 하였습니다."
@@ -227,6 +235,7 @@ ko:
       username: "아이디"
       trust_level: "TL"
       read_time: "읽은 시간"
+      topics_entered: "입력된 제목:"
       post_count: "포스트 개수"
       confirm_delete_other_accounts: "정말 이 계정들을 삭제하시겠습니까?"
     user:
@@ -234,6 +243,8 @@ ko:
       profile: "프로필"
       mute: "알림 끄기"
       edit: "환경 설정 편집"
+      download_archive: "내 게시글 다운로드"
+      new_private_message: "새로운 비공개 메시지"
       private_message: "개인 메시지"
       private_messages: "메시지"
       activity_stream: "활동"
@@ -301,7 +312,7 @@ ko:
         error: "이메일 변경 중 오류가 발생했습니다. 이미 사용 중인 이메일인지 확인해주세요."
         success: "이메일 발송이 완료되었습니다. 확인하신 후 절차에 따라주세요."
       change_avatar:
-        title: "아바타 변경"
+        title: "프로필 사진 변경"
         gravatar: "<a href='//gravatar.com/emails' target='_blank'>Gravatar</a> 기반"
         refresh_gravatar_title: "Gravatar 새로고침"
         letter_based: "자동 생성된 아바타"
@@ -332,6 +343,7 @@ ko:
         instructions: "중복될 수 없으며 띄어쓰기 사용이 불가합니다. 짧을 수록 좋아요."
         short_instructions: "@{{username}}으로 언급이 가능합니다."
         available: "아이디\x1D로 사용가능합니다."
+        global_match: "이메일이 등록된 아이디와 연결되어 있습니다."
         global_mismatch: "이미 등록된 아이디입니다. 다시 시도해보세요. {{suggestion}}"
         not_available: "사용할 수 없는 아이디입니다. 다시 시도해보세요. {{suggestion}}"
         too_short: "아이디가 너무 짧습니다"
@@ -405,6 +417,7 @@ ko:
           none: "아직 아무도 초대하지 않았습니다. 초대장을 각각 보내거나, <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>uploading a bulk invite file</a>을 이용하여 단체 초대를 보낼 수 있습니다."
           text: "파일로 대량 초대하기"
           uploading: "업로드 중..."
+          success: "파일이 성공적으로 업로드되었습니다. 완료되면 비공개 메시지로 알려드리겠습니다."
           error: "'{{filename}}': {{message}} 업로드중 에러가 있었습니다."
       password:
         title: "비밀번호"
@@ -412,12 +425,13 @@ ko:
         common: "That password is too common."
         ok: "적절한 암호입니다."
         instructions: "글자 수가 %{count}자 이상이어야 합니다."
+      associated_accounts: "로그인"
       ip_address:
         title: "마지막 IP 주소"
       registration_ip_address:
         title: "IP Address 등록"
       avatar:
-        title: "아바타"
+        title: "프로필 사진"
       title:
         title: "호칭"
       filters:
@@ -539,7 +553,12 @@ ko:
       github:
         title: "GitHub"
         message: "GitHub 인증 중(팝업 차단을 해제 하세요)"
+    apple_international: "Apple/International"
+    google: "Google"
+    twitter: "Twitter"
+    emoji_one: "Emoji One"
     composer:
+      emoji: "Emoji :smile:"
       add_warning: "공식적인 경고입니다."
       posting_not_on_topic: "어떤 토픽에 답글을 작성하시겠습니까?"
       saving_draft_tip: "저장 중..."
@@ -651,15 +670,11 @@ ko:
         user: "@{{username}}의 글 검색"
         category: "\"{{category}}\" 카테고리 검색"
         topic: "이 토픽을 검색"
+        private_messages: "비공개 메시지 검색"
     site_map: "다른 토픽이나 카테고리로 이동"
     go_back: '돌아가기'
     not_logged_in_user: 'user page with summary of current activity and preferences'
     current_user: '사용자 페이지로 이동'
-    starred:
-      title: '즐겨찾기'
-      help:
-        star: '즐겨찾기로 이 토픽을 추가'
-        unstar: '즐겨찾기에서 이 토픽을 제거'
     topics:
       bulk:
         reset_read: "읽기 초기화"
@@ -678,7 +693,6 @@ ko:
         selected:
           other: "<b>{{count}}</b>개의 토픽이 선택되었습니다."
       none:
-        starred: "별을 받은 토픽이 없습니다."
         unread: "읽지 않은 토픽이 없습니다."
         new: "읽을 새로운 토픽이 없습니다."
         read: "아직 어떠한 토픽도 읽지 않았습니다."
@@ -690,7 +704,6 @@ ko:
         educate:
           new: '<p>새로운 토픽은 여기에서 볼 수 있습니다.</p><p>기본 설정으로 2일 이내에 생성된 토픽은 새로운 것으로 간주되며 <span class="badge new-topic badge-notification" style="vertical-align:middle;line-height:inherit;">new</span> 표시가 나타납니다.</p><p><a href="%{userPrefsUrl}">환경설정</a>에서 설정을 변경 할 수 있습니다.</p>'
           unread: '<p>읽지 않은 토픽은 여기에서 볼 수 있습니다.</p><p>기본 설정으로 다음과 같은 경우 토픽은 읽지 않은 것으로 간주되며 읽지 않은 개수 <span class="badge new-posts badge-notification">1</span> 가 표시됩니다.</p><ul><li>토픽을 만든 경우</li><li>토픽에 리플을 단 경우</li><li>토픽을 4분 이상 읽은 경우</li></ul><p>또는 각 토픽 아래에 있는 알림 설정에서 해당 토픽을 추적하거나 지켜보도록 설정한 경우</p><p><a href="%{userPrefsUrl}">환경설정</a>에서 설정을 변경 할 수 있습니다.</p>'
-          starred: '<p>즐겨찾기한 토픽은 여기에서 볼 수 있습니다.</p><p>즐겨찾기를 하거나 취소하는 방법 :</p><ul><li>토픽 주제 옆에 <i class="fa fa-star"></i>를 누른다.</li><li>각 토픽 아래에 표시된 별표 버튼을 누른다.</li></ul>'
       bottom:
         latest: "더 이상 읽을 최신 토픽이 없습니다"
         hot: "더 이상 읽을 인기있는 토픽이 없습니다"
@@ -698,7 +711,6 @@ ko:
         read: "더 이상 읽을 토픽이 없습니다"
         new: "더 이상 읽을 새로운 토픽이 없습니다."
         unread: "더 이상 읽지 않은 토픽이 없습니다"
-        starred: "더 이상 읽을 즐겨찾기 토픽이 없습니다"
         category: "더 이상 {{category}}에 토픽이 없습니다"
         top: "더 이상 인기 토픽이 없습니다."
     topic:
@@ -1067,6 +1079,8 @@ ko:
       delete: '카테고리 삭제'
       create: '새 카테고리'
       save: '카테고리 저장'
+      slug: '카테고리 Slug'
+      slug_placeholder: '(Optional) dashed-words for url'
       creation_error: 카테고리 생성 중 오류가 발생했습니다.
       save_error: 카테고리 저장 중 오류가 발생했습니다.
       name: "카테고리 이름"
@@ -1151,11 +1165,13 @@ ko:
     topic_statuses:
       warning:
         help: "공식적인 주의입니다."
+      bookmarked:
+        help: "북마크한 토픽"
       locked:
         help: "이 토픽은 폐쇄되었습니다. 더 이상 새 답글을 받을 수 없습니다."
       unpinned:
         title: "핀 제거"
-        help: "이 토픽은 핀 제거 되었습니다. 목록에서 기본적인 순서대로 표시됩니다."
+        help: "이 토픽은 핀 제거 되었습니다. 목록에서 일반적인 순서대로 표시됩니다."
       pinned_globally:
         title: "핀 지정됨 (전역적)"
         help: "이 토픽은 전역적으로 핀 지정 되었습니다. 모든 목록의 최상위에 표시됩니다."
@@ -1202,9 +1218,6 @@ ko:
       hot:
         title: "인기 있는 글"
         help: "가장 인기있는 토픽 중 하나를 선택"
-      starred:
-        title: "즐겨찾기"
-        help: "즐겨찾기로 표시한 게시글"
       read:
         title: "읽기"
         help: "마지막으로 순서대로 읽은 토픽"
@@ -1370,13 +1383,16 @@ ko:
         edit: "그룹 수정"
         refresh: "새로고침"
         new: "새로운"
-        selector_placeholder: "사용자 추가"
+        selector_placeholder: "아이디를 입력하세요"
         name_placeholder: "그룹 이름, 사용자 이름처럼 빈칸 없이 작성"
         about: "회원과 이름을 변경"
         group_members: "그룹 멤버"
         delete: "삭제"
         delete_confirm: "이 그룹을 삭제 하시겠습니까?"
         delete_failed: "이것은 자동으로 생성된 그룹입니다. 삭제할 수 없습니다."
+        name: "이름"
+        add: "추가"
+        add_members: "사용자 추가하기"
       api:
         generate_master: "마스터 API 키 생성"
         none: "지금 활성화된 API 키가 없습니다."
@@ -1452,6 +1468,12 @@ ko:
         css: "CSS"
         header: "헤더"
         footer: "푸터(하단영역)"
+        head_tag:
+          text: "</head>"
+          title: "</head> 태그 전에 들어갈 HTML"
+        body_tag:
+          text: "</body>"
+          title: "</body> 태그 전에 들어갈 HTML"
         override_default: "표준 스타일 시트를 포함하지 마십시오"
         enabled: "사용가능?"
         preview: "미리 보기"
@@ -1569,7 +1591,6 @@ ko:
           do_nothing: "아무것도 하지 않음"
         staff_actions:
           title: "스태프 기록"
-          instructions: "사용자 이름을 클릭하고 리스트를 필터링하세요. 아바타를 클릭하여 사용자 페이지로 이동합니다."
           clear_filters: "전체 보기"
           staff_user: "스태프 사용자"
           target_user: "타겟 사용자"
@@ -1781,7 +1802,7 @@ ko:
           external_username: "아이디"
           external_name: "Name"
           external_email: "Email"
-          external_avatar_url: "Avatar URL"
+          external_avatar_url: "프로필 사진 URL"
       user_fields:
         title: "사용자 필드"
         help: "사용자가 입력할 수 있는 필드를 추가"
@@ -1899,6 +1920,12 @@ ko:
             with_post: <span class="username">%{username}</span> for post in %{link}
             with_post_time: <span class="username">%{username}</span> for post in %{link} at <span class="time">%{time}</span>
             with_time: <span class="username">%{username}</span> at <span class="time">%{time}</span>
+      emoji:
+        title: "Emoji"
+        add: "새로운 Emoji 추가"
+        name: "이름"
+        image: "이미지"
+        delete_confirm: "정말 :%{name}: emoji를 삭제하시겠습니까?"
     lightbox:
       download: "download"
     search_help:
@@ -1911,7 +1938,6 @@ ko:
         latest: '<b>g</b>, <b>l</b> 최신'
         new: '<b>g</b>, <b>n</b> 새로운'
         unread: '<b>g</b>, <b>u</b> 읽지 않은'
-        starred: '<b>g</b>, <b>f</b> 즐겨찾기'
         categories: '<b>g</b>, <b>c</b> 카테고리'
         top: '<b>g</b>, <b>t</b> 인기'
       navigation:
@@ -1920,6 +1946,7 @@ ko:
         back: '<b>u</b> Back'
         up_down: '<b>k</b>/<b>j</b> 선택된 게시글 이동 &uarr; &darr;'
         open: '<b>o</b> or <b>Enter</b> 선택한 토픽에 들어갑니다.'
+        next_prev: '<b>shift</b>+<b>j</b>/<b>shift</b>+<b>k</b> 이전/다음 섹션'
       application:
         title: 'Application'
         create: '<b>c</b> 새 토픽을 만듭니다.'
@@ -1933,9 +1960,12 @@ ko:
         dismiss_topics: '<b>x</b>, <b>t</b> 토픽 무시하기'
       actions:
         title: 'Actions'
-        star: '<b>f</b> 별표시 토픽'
+        bookmark_topic: '<b>f</b> 토픽 북마크'
+        pin_unpin_topic: '<b>shift</b>+<b>p</b> 핀고정/핀해제'
+        share_topic: '<b>shift</b>+<b>s</b> 토픽 공유'
         share_post: '<b>s</b> 게시글 공유'
         reply_as_new_topic: '<b>t</b> 링크된 토픽으로 답글 작성하기'
+        reply_topic: '<b>shift</b>+<b>r</b> 토픽에 답글 달기'
         reply_post: '<b>r</b> 게시글에 답글 달기'
         quote_post: '<b>q</b> 인용 글'
         like: '<b>l</b> Like post'

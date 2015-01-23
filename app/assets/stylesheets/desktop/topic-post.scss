@@ -98,7 +98,6 @@ nav.post-controls {
   .show-replies {
     background: dark-light-diff($primary, $secondary, 90%, -65%);
     padding: 8px 15px;
-    padding-bottom: 20px;
     margin-left: 0;
     span.badge-posts {color: scale-color($primary, $lightness: 60%);}
     &:hover {
@@ -244,8 +243,8 @@ nav.post-controls {
   }
 
   .topic-avatar {
-     width: 45px;
-     padding-left: 15px;
+    padding-left: 15px;
+    padding-top: 0;
   }
 
   // bottom means "reply expansion" below a post
@@ -255,7 +254,6 @@ nav.post-controls {
       opacity: 0;
     }
   }
-  &.bottom .arrow { float: right; }
   &.bottom {
     margin-top: -11px;
     .row {
@@ -274,7 +272,7 @@ nav.post-controls {
   }
 
   .post-date { color: scale-color($primary, $lightness: 50%); }
-  .fa-arrow-up { margin-left: 5px; }
+  .fa-arrow-up, .fa-arrow-down { margin-left: 5px; }
   .row {
     border-top: 1px solid darken(scale-color-diff(), 10%);
   }
@@ -298,14 +296,6 @@ nav.post-controls {
     }
   }
   .arrow {color: scale-color($primary, $lightness: 50%);}
-}
-
-.bottom-round nav.post-controls .show-replies {
-  background: scale-color-diff();
-  margin-bottom: 0;
-  padding-bottom: 8px;
-  &:hover {background: scale-color-diff();
-  }
 }
 
 .post-action {
@@ -464,7 +454,7 @@ a.star {
     outline: 0;
     margin-bottom: 5px;
     margin-right: 10px;
-    .fa-star {margin-right: 5px;}
+    .fa-bookmark.bookmarked { color: $tertiary; }
   }
 }
 
@@ -655,16 +645,6 @@ blockquote {
   a.mention {background: darken(scale-color-diff(), 10%);}
 }
 
-// we assume blockquotes have their own margins, so all blockquotes
-// will remove margins from first (top) and last (bottom) child elements
-blockquote > *:first-child {
-  margin-top: 0 !important;
-}
-blockquote > *:last-child {
-  margin-bottom: 0 !important;
-}
-
-
 /* quotes with attribution */
 .quote {
   &>blockquote {
@@ -744,7 +724,6 @@ $topic-avatar-width: 45px;
   padding: 12px $topic-body-width-padding 15px $topic-body-width-padding;
   &.highlighted {
     background-color: dark-light-diff($tertiary, $secondary, 90%, -40%);
-
   }
 }
 .topic-avatar {

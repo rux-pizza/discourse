@@ -126,7 +126,7 @@ class ApplicationController < ActionController::Base
       #       from the above rescue_from blocks will fail because that isn't valid json.
       render status: error, layout: false, text: (error == 404) ? build_not_found_page(error) : message
     else
-      render text: build_not_found_page(error, include_ember ? 'application' : 'no_js')
+      render text: build_not_found_page(error, include_ember ? 'application' : 'no_ember')
     end
   end
 
@@ -275,7 +275,7 @@ class ApplicationController < ActionController::Base
 
     def custom_html_json
       data = {
-        top: SiteText.text_for(:top),
+        top: SiteCustomization.custom_top(session[:preview_style]),
         footer: SiteCustomization.custom_footer(session[:preview_style])
       }
 

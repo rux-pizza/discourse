@@ -52,6 +52,9 @@ class User < ActiveRecord::Base
   has_many :groups, through: :group_users
   has_many :secure_categories, through: :groups, source: :categories
 
+  has_many :group_managers, dependent: :destroy
+  has_many :managed_groups, through: :group_managers, source: :group
+
   has_one :user_search_data, dependent: :destroy
   has_one :api_key, dependent: :destroy
 
@@ -76,6 +79,7 @@ class User < ActiveRecord::Base
   after_create :create_user_stat
   after_create :create_user_profile
   after_create :ensure_in_trust_level_group
+  after_create :automatic_group_membership
 
   before_save :update_username_lower
   before_save :ensure_password_is_hashed
@@ -182,7 +186,11 @@ class User < ActiveRecord::Base
     Jobs.enqueue(:send_system_message, user_id: id, message_type: message_type)
   end
 
-  def change_username(new_username)
+  def change_username(new_username, actor=nil)
+    if actor && actor != self
+      StaffActionLogger.new(actor).log_username_change(self, self.username, new_username)
+    end
+
     self.username = new_username
     save
   end
@@ -706,6 +714,17 @@ class User < ActiveRecord::Base
 
   def ensure_in_trust_level_group
     Group.user_trust_level_change!(id, trust_level)
+  end
+
+  def automatic_group_membership
+    Group.where(automatic: false)
+         .where("LENGTH(COALESCE(automatic_membership_email_domains, '')) > 0")
+         .each do |group|
+      domains = group.automatic_membership_email_domains.gsub('.', '\.')
+      if self.email =~ Regexp.new("@(#{domains})", true)
+        group.add(self) rescue ActiveRecord::RecordNotUnique
+      end
+    end
   end
 
   def create_user_stat

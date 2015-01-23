@@ -1029,6 +1029,22 @@ describe User do
     end
   end
 
+  context "group management" do
+    let!(:user) { Fabricate(:user) }
+
+    it "by default has no managed groups" do
+      expect(user.managed_groups).to be_empty
+    end
+
+    it "can manage multiple groups" do
+      3.times do |i|
+        g = Fabricate(:group, name: "group_#{i}")
+        g.appoint_manager(user)
+      end
+      expect(user.managed_groups.count).to eq(3)
+    end
+  end
+
   describe "should_be_redirected_to_top" do
     let!(:user) { Fabricate(:user) }
 
@@ -1193,6 +1209,17 @@ describe User do
 
     it "raises an error when passwords are too long" do
       expect { hash(too_long, 'gravy') }.to raise_error
+    end
+
+  end
+
+  describe "automatic group membership" do
+
+    it "is automatically added to a group when the email matches" do
+      group = Fabricate(:group, automatic_membership_email_domains: "bar.com|wat.com")
+      user = Fabricate(:user, email: "foo@bar.com")
+      group.reload
+      expect(group.users.include?(user)).to eq(true)
     end
 
   end
