@@ -1637,8 +1637,8 @@ en:
         add_members: "Add members"
         custom: "Custom"
         automatic: "Automatic"
-        automatic_membership_email_domains: "Users registering with an email from that list will automatically be a member of this group"
-        automatic_membership_retroactive: "Registered users matching this list are also member of the group"
+        automatic_membership_email_domains: "Users who register with an email domain that exactly matches one in this list will be automatically added to this group:"
+        automatic_membership_retroactive: "Apply the same email domain rule to add existing registered users"
 
       api:
         generate_master: "Generate Master API Key"
@@ -2273,8 +2273,8 @@ en:
 
     badges:
       title: Badges
-      allow_title: "allow badge as title?"
-      multiple_grant: "awarded multiple times?"
+      allow_title: "can be used as a title"
+      multiple_grant: "can be awarded multiple times"
       badge_count:
         one:   "1 Badge"
         other: "%{count} Badges"

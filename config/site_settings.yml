@@ -234,6 +234,7 @@ login:
     default: ''
     type: list
   forgot_password_strict: false
+  log_out_strict: true
 
 users:
   min_username_length:
@@ -408,6 +409,10 @@ email:
   default_digest_email_frequency:
     default: 7
     enum: 'DigestEmailSiteSetting'
+  suppress_digest_email_after_days: 365
+  disable_digest_emails:
+    default: false
+    client: true
   email_custom_headers: 'Auto-Submitted: auto-generated'
   email_subject: '[%{site_name}] %{optional_pm}%{optional_cat}%{topic_title}'
   reply_by_email_enabled: false
