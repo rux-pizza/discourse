@@ -100,10 +100,7 @@
   }
 
   td.category a {
-    // suppress extra long category names in tables
     max-width:150px;
-    overflow:hidden;
-    text-overflow:ellipsis;
   }
 
 }
@@ -158,18 +155,17 @@
     color: $primary;
     margin-left: 8px;
   }
+
   .badge-category {
     padding: 4px 10px;
     display: inline-block;
     line-height: 24px;
-    float: left;
   }
 
   .category-dropdown-menu .badge-category {
     width: 100%;
   }
   .category-dropdown-button {
-    border-left: 1px solid rgba(0,0,0,0.15);
     font-size: 1.143em;
     width: 10px;
     text-align: center;
@@ -178,7 +174,7 @@
       opacity: 0.8;
     }
   }
-clear: both;
+  clear: both;
 }
 
 #list-area {
