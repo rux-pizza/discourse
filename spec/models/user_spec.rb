@@ -261,8 +261,14 @@ describe User do
 
     it "downcases email addresses" do
       user = Fabricate.build(:user, email: 'Fancy.Caps.4.U@gmail.com')
-      user.save
-      expect(user.reload.email).to eq('fancy.caps.4.u@gmail.com')
+      user.valid?
+      expect(user.email).to eq('fancy.caps.4.u@gmail.com')
+    end
+
+    it "strips whitespace from email addresses" do
+      user = Fabricate.build(:user, email: ' example@gmail.com ')
+      user.valid?
+      expect(user.email).to eq('example@gmail.com')
     end
   end
 
@@ -534,6 +540,12 @@ describe User do
       expect(Fabricate.build(:user, email: 'notgood@TRASHMAIL.NET')).not_to be_valid
     end
 
+    it 'blacklist should not reject developer emails' do
+      Rails.configuration.stubs(:developer_emails).returns('developer@discourse.org')
+      SiteSetting.stubs(:email_domains_blacklist).returns('discourse.org')
+      expect(Fabricate.build(:user, email: 'developer@discourse.org')).to be_valid
+    end
+
     it 'should not interpret a period as a wildcard' do
       SiteSetting.stubs(:email_domains_blacklist).returns('trashmail.net')
       expect(Fabricate.build(:user, email: 'good@trashmailinet.com')).to be_valid
@@ -569,6 +581,12 @@ describe User do
     it 'should accept some emails based on the email_domains_whitelist site setting ignoring case' do
       SiteSetting.stubs(:email_domains_whitelist).returns('vaynermedia.com')
       expect(Fabricate.build(:user, email: 'good@VAYNERMEDIA.COM')).to be_valid
+    end
+
+    it 'whitelist should accept developer emails' do
+      Rails.configuration.stubs(:developer_emails).returns('developer@discourse.org')
+      SiteSetting.stubs(:email_domains_whitelist).returns('awesome.org')
+      expect(Fabricate.build(:user, email: 'developer@discourse.org')).to be_valid
     end
 
     it 'email whitelist should not be used to validate existing records' do

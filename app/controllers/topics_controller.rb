@@ -55,9 +55,11 @@ class TopicsController < ApplicationController
     begin
       @topic_view = TopicView.new(params[:id] || params[:topic_id], current_user, opts)
     rescue Discourse::NotFound
-      topic = Topic.find_by(slug: params[:id].downcase) if params[:id]
-      raise Discourse::NotFound unless topic
-      redirect_to_correct_topic(topic, opts[:post_number]) && return
+      if params[:id]
+        topic = Topic.find_by(slug: params[:id].downcase)
+        return redirect_to_correct_topic(topic, opts[:post_number]) if topic
+      end
+      raise Discourse::NotFound
     end
 
     page = params[:page].to_i
@@ -131,7 +133,7 @@ class TopicsController < ApplicationController
     end
 
     changes.delete(:title) if topic.title == changes[:title]
-    changes.delete(:category_id) if topic.category_id == changes[:category_id].to_i
+    changes.delete(:category_id) if (changes[:category_id].blank? or topic.category_id == changes[:category_id].to_i)
 
     success = true
     if changes.length > 0
@@ -150,8 +152,9 @@ class TopicsController < ApplicationController
     [:title, :raw].each { |key| check_length_of(key, params[key]) }
 
     # Only suggest similar topics if the site has a minimum amount of topics present.
-    topics = Topic.similar_to(title, raw, current_user).to_a if Topic.count_exceeds_minimum?
+    return render json: [] unless Topic.count_exceeds_minimum?
 
+    topics = Topic.similar_to(title, raw, current_user).to_a
     render_serialized(topics, BasicTopicSerializer)
   end
 
