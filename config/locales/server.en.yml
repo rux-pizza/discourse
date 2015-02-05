@@ -588,6 +588,42 @@ en:
       title: "Top Referred Topics"
       xaxis: "Topic"
       num_clicks: "Clicks"
+    topic_anon_reqs:
+      title: "Anonymous Topic Views"
+      xaxis: "Day"
+      yaxis: "Anonymous Topic Views"
+    topic_logged_in_reqs:
+      title: "Logged In Topic Views"
+      xaxis: "Day"
+      yaxis: "Logged In Topic Views"
+    topic_crawler_reqs:
+      title: "Crawler Topic Views"
+      xaxis: "Day"
+      yaxis: "Crawler Topic Views"
+    background_reqs:
+      title: "Background requests"
+      xaxis: "Day"
+      yaxis: "Requests used for live update and tracking"
+    success_reqs:
+      title: "Successful requests"
+      xaxis: "Day"
+      yaxis: "Successful requests (Status 2xx)"
+    redirect_reqs:
+      title: "Redirect requests"
+      xaxis: "Day"
+      yaxis: "Redirect requests (Status 3xx)"
+    server_error_reqs:
+      title: "Server Errors"
+      xaxis: "Day"
+      yaxis: "Server Errors (Status 5xx)"
+    client_error_reqs:
+      title: "Bad requests"
+      xaxis: "Day"
+      yaxis: "Client Errors (Status 4xx)"
+    total_reqs:
+      title: "Total"
+      xaxis: "Day"
+      yaxis: "Total application requests"
 
   dashboard:
     rails_env_warning: "Your server is running in %{env} mode."
@@ -2213,6 +2249,7 @@ en:
         <tr><td><code>status:open</code></td><td><code>status:closed</code></td><td><code>status:archived</code></td><td><code>status:noreplies</code></td><td><code>status:singleuser</code></td></tr>
         <tr><td><code>category:foo</code></td><td><code>user:foo</code></td><td colspan=3></td></tr>
         <tr><td><code>in:likes</code></td><td><code>in:posted</code></td><td><code>in:watching</code></td><td><code>in:tracking</code></td><td><code>in:private</code></td></tr>
+        <tr><td><code>in:bookmarks</code></td><td colspan=4></td></tr>
         </table>
       </p>
       <p>

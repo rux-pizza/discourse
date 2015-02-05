@@ -130,6 +130,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  class PluginDisabled < Exception; end
+
+  # If a controller requires a plugin, it will raise an exception if that plugin is
+  # disabled. This allows plugins to be disabled programatically.
+  def self.requires_plugin(plugin_name)
+    before_filter do
+      raise PluginDisabled.new if Discourse.disabled_plugin_names.include?(plugin_name)
+    end
+  end
+
   def set_current_user_for_logs
     if current_user
       Logster.add_to_env(request.env,"username",current_user.username)
@@ -376,6 +386,7 @@ class ApplicationController < ActionController::Base
 
     def build_not_found_page(status=404, layout=false)
       category_topic_ids = Category.pluck(:topic_id).compact
+      @container_class = "container not-found-container"
       @top_viewed = Topic.where.not(id: category_topic_ids).top_viewed(10)
       @recent = Topic.where.not(id: category_topic_ids).recent(10)
       @slug =  params[:slug].class == String ? params[:slug] : ''

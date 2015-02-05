@@ -17,7 +17,7 @@ class AdminDashboardData
     'moderator_warning_private_messages',
     'notify_moderators_private_messages',
     'notify_user_private_messages'
-  ]
+  ] + ApplicationRequest.req_types.keys.map{|r| r + "_reqs"}
 
   def problems
     [ rails_env_check,

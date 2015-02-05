@@ -66,6 +66,32 @@
     <table class="table table-condensed table-hover">
       <thead>
         <tr>
+          <th class="title" title="{{i18n 'admin.dashboard.traffic'}}">{{i18n 'admin.dashboard.traffic_short'}}</th>
+          <th>{{i18n 'admin.dashboard.reports.today'}}</th>
+          <th>{{i18n 'admin.dashboard.reports.yesterday'}}</th>
+          <th>{{i18n 'admin.dashboard.reports.last_7_days'}}</th>
+          <th>{{i18n 'admin.dashboard.reports.last_30_days'}}</th>
+          <th>{{i18n 'admin.dashboard.reports.all'}}</th>
+        </tr>
+      </thead>
+      {{#unless loading}}
+        {{ render 'admin_report_counts' topic_anon_reqs }}
+        {{ render 'admin_report_counts' topic_logged_in_reqs }}
+        {{ render 'admin_report_counts' topic_crawler_reqs }}
+        {{ render 'admin_report_counts' background_reqs }}
+        {{ render 'admin_report_counts' success_reqs }}
+        {{ render 'admin_report_counts' redirect_reqs }}
+        {{ render 'admin_report_counts' server_error_reqs }}
+        {{ render 'admin_report_counts' client_error_reqs }}
+        {{ render 'admin_report_counts' total_reqs }}
+      {{/unless}}
+    </table>
+  </div>
+
+  <div class="dashboard-stats">
+    <table class="table table-condensed table-hover">
+      <thead>
+        <tr>
           <th class="title" title="{{i18n 'admin.dashboard.private_messages_title'}}"><i class="fa fa-envelope"></i> {{i18n 'admin.dashboard.private_messages_short'}}</th>
           <th>{{i18n 'admin.dashboard.reports.today'}}</th>
           <th>{{i18n 'admin.dashboard.reports.yesterday'}}</th>
@@ -98,6 +124,28 @@
       {{#unless loading}}
         {{ render 'admin/templates/reports/per_day_counts_report' visits tagName="tbody"}}
       {{/unless}}
+    </table>
+  </div>
+  <div class="dashboard-stats">
+    <table class="table table-condensed table-hover">
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+          {{#unless loading}}
+          <tr>
+            <td>{{i18n 'admin.dashboard.uploads'}}</td>
+            <td>{{disk_space.uploads_used}} ({{i18n 'admin.dashboard.space_free' size=disk_space.uploads_free}})</td>
+            <td>{{i18n 'admin.dashboard.backups'}}</td>
+            <td>{{disk_space.backups_used}} ({{i18n 'admin.dashboard.space_free' size=disk_space.backups_free}})</td>
+          </tr>
+          {{/unless}}
+      </tbody>
     </table>
   </div>
 </div>

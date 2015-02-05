@@ -156,6 +156,7 @@ en:
       stat:
         all_time: "All Time"
         last_7_days: "Last 7 Days"
+        last_30_days: "Last 30 Days"
       like_count: "Fucks"
       topic_count: "Topics"
       post_count: "Posts"
@@ -835,6 +836,7 @@ en:
         unread: "There are no more unread topics."
         category: "There are no more {{category}} topics."
         top: "There are no more top topics."
+        bookmarks: "There are no more bookmarked topics."
 
     topic:
       filter_to: "{{post_count}} posts in topic"
@@ -851,7 +853,6 @@ en:
         one: '1 unread topic'
         other: '{{count}} unread topics'
       title: 'Topic'
-      loading: 'Loading topic...'
       invalid_access:
         title: "Topic is private"
         description: "Sorry, you don't have access to that topic!"
@@ -1531,6 +1532,11 @@ en:
         suspended: 'Suspended:'
         private_messages_short: "PMs"
         private_messages_title: "Private Messages"
+        space_free: "{{size}} free"
+        uploads: "uploads"
+        backups: "backups"
+        traffic_short: "Traffic"
+        traffic: "Application web requests"
 
         reports:
           today: "Today"
@@ -2048,6 +2054,8 @@ en:
         suspended_explanation: "A suspended user can't log in."
         block_explanation: "A blocked user can't post or start topics."
         trust_level_change_failed: "There was a problem changing the user's trust level."
+        grant_admin_failed: "There was a problem granting admin privileges."
+        grant_moderation_failed: "There was a problem granting moderation privileges."
         suspend_modal_title: "Suspend User"
         trust_level_2_users: "Trust Level 2 Users"
         trust_level_3_requirements: "Trust Level 3 Requirements"
@@ -2149,6 +2157,7 @@ en:
           uncategorized: 'Other'
           backups: "Backups"
           login: "Login"
+          plugins: "Plugins"
 
       badges:
         title: Badges

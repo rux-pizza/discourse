@@ -20,7 +20,7 @@ module PostGuardian
       not(is_flag || already_taken_this_action) &&
 
       # nothing except flagging on archived topics
-      not(post.topic.archived?) &&
+      not(post.topic.try(:archived?)) &&
 
       # nothing except flagging on deleted posts
       not(post.trashed?) &&
@@ -176,7 +176,7 @@ module PostGuardian
   end
 
   def can_rebake?
-    is_staff?
+    is_staff? || @user.has_trust_level?(TrustLevel[4])
   end
 
   def can_see_flagged_posts?
