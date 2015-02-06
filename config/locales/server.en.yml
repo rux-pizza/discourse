@@ -441,6 +441,8 @@ en:
       title: 'Spam'
       description: 'This post is an advertisement. It is not useful or relevant to the current topic, but promotional in nature.'
       long_form: 'flagged this as spam'
+      email_title: '"%{title}" was flagged as spam'
+      email_body: "%{link}\n\n%{message}"
     inappropriate:
       title: 'Inappropriate'
       description: 'This post contains content that a reasonable person would consider offensive, abusive, or a violation of <a href="/guidelines">our community guidelines</a>.'
@@ -588,42 +590,46 @@ en:
       title: "Top Referred Topics"
       xaxis: "Topic"
       num_clicks: "Clicks"
-    topic_anon_reqs:
-      title: "Anonymous Topic Views"
+    page_view_anon_reqs:
+      title: "Anonymous"
       xaxis: "Day"
-      yaxis: "Anonymous Topic Views"
-    topic_logged_in_reqs:
-      title: "Logged In Topic Views"
+      yaxis: "Anonymous Page Views"
+    page_view_logged_in_reqs:
+      title: "Logged In"
       xaxis: "Day"
-      yaxis: "Logged In Topic Views"
-    topic_crawler_reqs:
-      title: "Crawler Topic Views"
+      yaxis: "Logged In Page Views"
+    page_view_crawler_reqs:
+      title: "Web Crawlers"
       xaxis: "Day"
-      yaxis: "Crawler Topic Views"
-    background_reqs:
-      title: "Background requests"
-      xaxis: "Day"
-      yaxis: "Requests used for live update and tracking"
-    success_reqs:
-      title: "Successful requests"
-      xaxis: "Day"
-      yaxis: "Successful requests (Status 2xx)"
-    redirect_reqs:
-      title: "Redirect requests"
-      xaxis: "Day"
-      yaxis: "Redirect requests (Status 3xx)"
-    server_error_reqs:
-      title: "Server Errors"
-      xaxis: "Day"
-      yaxis: "Server Errors (Status 5xx)"
-    client_error_reqs:
-      title: "Bad requests"
-      xaxis: "Day"
-      yaxis: "Client Errors (Status 4xx)"
-    total_reqs:
+      yaxis: "Web Crawler Page Views"
+    page_view_total_reqs:
       title: "Total"
       xaxis: "Day"
-      yaxis: "Total application requests"
+      yaxis: "Total Page Views"
+    http_background_reqs:
+      title: "Background"
+      xaxis: "Day"
+      yaxis: "Requests used for live update and tracking"
+    http_2xx_reqs:
+      title: "Status 2xx (OK)"
+      xaxis: "Day"
+      yaxis: "Successful requests (Status 2xx)"
+    http_3xx_reqs:
+      title: "HTTP 3xx (Redirect)"
+      xaxis: "Day"
+      yaxis: "Redirect requests (Status 3xx)"
+    http_4xx_reqs:
+      title: "HTTP 4xx (Client Error)"
+      xaxis: "Day"
+      yaxis: "Client Errors (Status 4xx)"
+    http_5xx_reqs:
+      title: "HTTP 5xx (Server Error)"
+      xaxis: "Day"
+      yaxis: "Server Errors (Status 5xx)"
+    http_total_reqs:
+      title: "Total"
+      xaxis: "Day"
+      yaxis: "Total requests"
 
   dashboard:
     rails_env_warning: "Your server is running in %{env} mode."
@@ -1091,6 +1097,7 @@ en:
       invalid_string_min_max: "Must be between %{min} and %{max} characters."
       invalid_string_min: "Must be at least %{min} characters."
       invalid_string_max: "Must be no more than %{max} characters."
+      invalid_reply_by_email_address: "Value must contain '%{reply_key}' and be different from the notification email."
 
   notification_types:
     mentioned: "%{display_username} mentioned you in %{link}"
