@@ -177,7 +177,10 @@ module SiteSettingExtension
   end
 
   def self.client_settings_cache_key
-    "client_settings_json"
+    # NOTE: we use the git version in the key to ensure
+    # that we don't end up caching the incorrect version
+    # in cases where we are cycling unicorns
+    "client_settings_json_#{Discourse.git_version}"
   end
 
   # refresh all the site settings
@@ -193,18 +196,20 @@ module SiteSettingExtension
       # add defaults, cause they are cached
       new_hash = defaults.merge(new_hash)
 
-      changes,deletions = diff_hash(new_hash, old)
-
-      if deletions.length > 0 || changes.length > 0
-        changes.each do |name, val|
-          next if shadowed_settings.include?(name)
-          current[name] = val
-        end
-        deletions.each do |name,val|
-          next if shadowed_settings.include?(name)
-          current[name] = defaults[name]
-        end
+      # add shadowed
+      shadowed_settings.each do |ss|
+        new_hash[ss] = GlobalSetting.send(ss)
       end
+
+      changes, deletions = diff_hash(new_hash, old)
+
+      changes.each do |name, val|
+        current[name] = val
+      end
+      deletions.each do |name, val|
+        current[name] = defaults[name]
+      end
+
       clear_cache!
     end
   end
@@ -387,9 +392,9 @@ module SiteSettingExtension
 
 
   def setup_methods(name)
-    clean_name = name.to_s.sub("?", "")
+    clean_name = name.to_s.sub("?", "").to_sym
 
-    eval "define_singleton_method :#{clean_name} do
+    define_singleton_method clean_name do
       c = @containers[provider.current_site]
       if c
         c[name]
@@ -399,14 +404,13 @@ module SiteSettingExtension
       end
     end
 
-    define_singleton_method :#{clean_name}? do
-      #{clean_name}
+    define_singleton_method "#{clean_name}?" do
+      self.send clean_name
     end
 
-    define_singleton_method :#{clean_name}= do |val|
-      add_override!(:#{name}, val)
+    define_singleton_method "#{clean_name}=" do |val|
+      add_override!(name, val)
     end
-    "
   end
 
   def enum_class(name)

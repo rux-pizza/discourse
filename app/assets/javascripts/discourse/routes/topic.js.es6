@@ -20,7 +20,8 @@ var TopicRoute = Discourse.Route.extend(ShowFooter, {
       var result = model.get('title'),
           cat = model.get('category');
 
-      if (cat && !cat.get('isUncategorized')) {
+      // Only display uncategorized in the title tag if it was renamed
+      if (cat && !(cat.get('isUncategorizedCategory') && cat.get('name').toLowerCase() === "uncategorized")) {
         var catName = cat.get('name'),
             parentCategory = cat.get('parentCategory');
 
@@ -95,7 +96,6 @@ var TopicRoute = Discourse.Route.extend(ShowFooter, {
 
     // Use replaceState to update the URL once it changes
     postChangedRoute: function(currentPost) {
-
       // do nothing if we are transitioning to another route
       if (isTransitioning || Discourse.TopicRoute.disableReplaceState) { return; }
 

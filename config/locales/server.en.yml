@@ -62,7 +62,7 @@ en:
     messages:
       too_long_validation: "is limited to %{max} characters; you entered %{length}."
       invalid_boolean: "Invalid boolean."
-      taken: "has already been taken. (group names are case insensitive)"
+      taken: "has already been taken"
       accepted: must be accepted
       blank: can't be blank
       present: must be blank
@@ -1488,7 +1488,7 @@ en:
 
         <img src="/images/welcome/topics-new-unread.png" width="368" height="89">
 
-        You can change the individual notification state of a topic via the control at the bottom of the topic (this can also be set per category). To change how you track topics, or the definition of new, see [your user preferences](/my/preferences).
+        You can change the individual notification state of a topic via the control at the bottom of the topic (this can also be set per category). To change how you track topics, or the definition of new, see [your user preferences](%{base_url}/my/preferences).
 
         ## Why can't I do certain things?
 
@@ -1503,9 +1503,9 @@ en:
 
         We believe in [civilized community behavior](%{base_url}/guidelines) at all times.
 
-        (If you need to privately communicate with [staff members](/about) as a new user, just reply to this private message.)
-
         Enjoy your stay!
+
+        (If you need to privately communicate with [staff members](%{base_url}/about) as a new user, just reply to this private message.)
 
     welcome_invite:
       subject_template: "Welcome to %{site_name}!"
@@ -1524,9 +1524,9 @@ en:
 
         We believe in [civilized community behavior](%{base_url}/guidelines) at all times.
 
-        (If you need to privately communicate with [staff members](/about) as a new user, just reply to this private message.)
-
         Enjoy your stay!
+
+        (If you need to privately communicate with [staff members](%{base_url}/about) as a new user, just reply to this private message.)
 
         [prefs]: %{user_preferences_url}
 
@@ -1878,9 +1878,9 @@ en:
 
         We believe in [civilized community behavior](%{base_url}/guidelines) at all times.
 
-        (If you need to privately communicate with [staff members](/about) as a new user, just reply to this private message.)
-
         Enjoy your stay!
+
+        (If you need to privately communicate with [staff members](%{base_url}/about) as a new user, just reply to this private message.)
 
     signup:
       subject_template: "[%{site_name}] Activate your new account"
