@@ -31,16 +31,18 @@
 }
 
 .badge-category {
-  padding: 6px 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: top;
+  .fa {
+    line-height: 0;
+  }
 }
 
 .badge-wrapper > .badge-category {
   // ie9?
   width: 100%;
-  width: calc(100% - 10px)
+  padding: 5px 4px;
 }
 
 .d-header li.category .badge-wrapper {
@@ -69,7 +71,7 @@ header .title-wrapper {
 }
 
 .badge-category-parent-bg, .badge-category-bg {
-  padding: 6px 2px;
+  padding: 5px 2px 4px 2px;
   width: 2px;
   .category-name {
     display: none;
@@ -149,7 +151,8 @@ header .title-wrapper .bar .badge-category {
 
   > .badge-category {
     width: 100%;
-    width: calc(100% - 2px);
+    box-sizing: border-box;
+    padding: 5px 6px 4px 6px;
   }
 }
 
@@ -163,7 +166,7 @@ header .title-wrapper .bar .badge-category {
 
 .badge-notification {
   @extend %badge;
-  padding: 3px 5px;
+  padding: 4px 5px 2px 5px;
   vertical-align: middle;
   color: $secondary;
   font-size: 11px;
@@ -224,7 +227,7 @@ header .title-wrapper .bar .badge-category {
 
 .badge-group {
   @extend %badge;
-  padding: 3px 5px;
+  padding: 4px 5px 2px 5px;
   color: $primary;
   text-shadow: 0 1px 0 rgba($primary, 0.1);
   background-color: dark-light-diff($primary, $secondary, 90%, -65%);

@@ -31,6 +31,14 @@ class Emoji
     Discourse.cache.fetch("custom", family: "emoji") { load_custom }
   end
 
+  def self.exists?(name)
+    Emoji[name].present?
+  end
+
+  def self.[](name)
+    Emoji.custom.detect { |e| e.name == name }
+  end
+
   def self.create_from_path(path)
     extension = File.extname(path)
     Emoji.new(path).tap do |e|
@@ -51,6 +59,7 @@ class Emoji
   def self.create_for(file, name)
     extension = File.extname(file.original_filename)
     path = "#{Emoji.base_directory}/#{name}#{extension}"
+
     # store the emoji
     FileUtils.mkdir_p(Pathname.new(path).dirname)
     File.open(path, "wb") { |f| f << file.tempfile.read }
@@ -59,7 +68,7 @@ class Emoji
     # launch resize job
     Jobs.enqueue(:resize_emoji, path: path)
     # return created emoji
-    Emoji.custom.detect { |e| e.name == name }
+    Emoji[name]
   end
 
   def self.clear_cache

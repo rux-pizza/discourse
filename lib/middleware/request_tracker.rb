@@ -6,29 +6,20 @@ class Middleware::RequestTracker
     @app = app
   end
 
-  def self.log_request_on_site(result, env, helper=nil)
-    host = RailsMultisite::ConnectionManagement.host(env)
+  def self.log_request_on_site(data,host)
     RailsMultisite::ConnectionManagement.with_hostname(host) do
-      log_request(result,env,helper)
+      log_request(data)
     end
   end
 
-  PATH_PARAMS = "action_dispatch.request.path_parameters".freeze
-  TRACK_VIEW = "HTTP_DISCOURSE_TRACK_VIEW".freeze
+  def self.log_request(data)
+    status = data[:status]
+    track_view = data[:track_view]
 
-
-  def self.log_request(result,env,helper=nil)
-
-    helper ||= Middleware::AnonymousCache::Helper.new(env)
-    request = Rack::Request.new(env)
-
-    status,headers = result
-    status = status.to_i
-
-    if (env[TRACK_VIEW] || (request.get? && !request.xhr? && headers["Content-Type"] =~ /text\/html/)) && status == 200
-      if helper.is_crawler?
+    if track_view
+      if data[:is_crawler]
         ApplicationRequest.increment!(:page_view_crawler)
-      elsif helper.has_auth_cookie?
+      elsif data[:has_auth_cookie]
         ApplicationRequest.increment!(:page_view_logged_in)
       else
         ApplicationRequest.increment!(:page_view_anon)
@@ -39,29 +30,50 @@ class Middleware::RequestTracker
 
     if status >= 500
       ApplicationRequest.increment!(:http_5xx)
+    elsif data[:is_background]
+      ApplicationRequest.increment!(:http_background)
     elsif status >= 400
       ApplicationRequest.increment!(:http_4xx)
     elsif status >= 300
       ApplicationRequest.increment!(:http_3xx)
-    else
-      if request.path =~ /^\/message-bus\// || request.path == /\/topics\/timings/
-        ApplicationRequest.increment!(:http_background)
-      elsif status >= 200 && status < 300
-        ApplicationRequest.increment!(:http_2xx)
-      end
+    elsif status >= 200 && status < 300
+      ApplicationRequest.increment!(:http_2xx)
     end
 
-  # rescue => ex
-  #   Discourse.handle_exception(ex, {message: "Failed to log request"})
   end
 
+  TRACK_VIEW = "HTTP_DISCOURSE_TRACK_VIEW".freeze
+  CONTENT_TYPE = "Content-Type".freeze
+  def self.get_data(env,result)
+
+    status,headers = result
+    status = status.to_i
+
+    helper = Middleware::AnonymousCache::Helper.new(env)
+    request = Rack::Request.new(env)
+    {
+      status: status,
+      is_crawler: helper.is_crawler?,
+      has_auth_cookie: helper.has_auth_cookie?,
+      is_background: request.path =~ /^\/message-bus\// || request.path == /\/topics\/timings/,
+      track_view: (env[TRACK_VIEW] || (request.get? && !request.xhr? && headers[CONTENT_TYPE] =~ /text\/html/)) && status == 200
+    }
+  end
 
   def call(env)
     result = @app.call(env)
   ensure
-    Scheduler::Defer.later("Track view", _db=nil) do
-      self.class.log_request_on_site(result,env)
+
+    # we got to skip this on error ... its just logging
+    data = self.class.get_data(env,result) rescue nil
+    host = RailsMultisite::ConnectionManagement.host(env)
+
+    if data
+      Scheduler::Defer.later("Track view", _db=nil) do
+        self.class.log_request_on_site(data,host)
+      end
     end
+
   end
 
 end
