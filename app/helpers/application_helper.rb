@@ -137,6 +137,10 @@ module ApplicationHelper
     end
   end
 
+  def application_logo_url
+    @application_logo_url ||= (mobile_view? && SiteSetting.mobile_logo_url) || SiteSetting.logo_url
+  end
+
   def login_path
     "#{Discourse::base_uri}/login"
   end
@@ -151,7 +155,7 @@ module ApplicationHelper
 
 
   def customization_disabled?
-    controller.class.name.split("::").first == "Admin" || session[:disable_customization]
+    session[:disable_customization]
   end
 
   def category_badge(category, opts=nil)

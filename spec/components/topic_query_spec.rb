@@ -243,20 +243,16 @@ describe TopicQuery do
     let(:category) { Fabricate(:category) }
     let(:topic_category) { category.topic }
     let!(:topic_no_cat) { Fabricate(:topic) }
-    let!(:topic_in_cat) { Fabricate(:topic, category: category) }
-
-    it "returns the topic with a category when filtering by category" do
-      expect(topic_query.list_category(category).topics).to eq([topic_category, topic_in_cat])
-    end
-
-    it "returns only the topic category when filtering by another category" do
-      another_category = Fabricate(:category, name: 'new cat')
-      expect(topic_query.list_category(another_category).topics).to eq([another_category.topic])
-    end
+    let!(:topic_in_cat1) { Fabricate(:topic, category: category,
+                                             bumped_at: 10.minutes.ago,
+                                             created_at: 10.minutes.ago) }
+    let!(:topic_in_cat2) { Fabricate(:topic, category: category) }
 
     describe '#list_new_in_category' do
       it 'returns the topic category and the categorized topic' do
-        expect(topic_query.list_new_in_category(category).topics).to eq([topic_in_cat, topic_category])
+        expect(
+          topic_query.list_new_in_category(category).topics.map(&:id)
+        ).to eq([topic_in_cat2.id, topic_category.id, topic_in_cat1.id])
       end
     end
   end
@@ -408,6 +404,11 @@ describe TopicQuery do
 
   context 'suggested_for' do
 
+
+    before do
+      RandomTopicSelector.clear_cache!
+    end
+
     context 'when anonymous' do
       let(:topic) { Fabricate(:topic) }
       let!(:new_topic) { Fabricate(:post, user: creator).topic }
@@ -462,12 +463,12 @@ describe TopicQuery do
         end
 
         it "won't return new or fully read if there are enough partially read topics" do
-          SiteSetting.stubs(:suggested_topics).returns(1)
+          SiteSetting.suggested_topics = 1
           expect(suggested_topics).to eq([partially_read.id])
         end
 
         it "won't return fully read if there are enough partially read topics and new topics" do
-          SiteSetting.stubs(:suggested_topics).returns(4)
+          SiteSetting.suggested_topics = 4
           expect(suggested_topics[0]).to eq(partially_read.id)
           expect(suggested_topics[1,3]).to include(new_topic.id)
           expect(suggested_topics[1,3]).to include(closed_topic.id)
@@ -475,7 +476,7 @@ describe TopicQuery do
         end
 
         it "returns unread, then new, then random" do
-          SiteSetting.stubs(:suggested_topics).returns(7)
+          SiteSetting.suggested_topics = 7
           expect(suggested_topics[0]).to eq(partially_read.id)
           expect(suggested_topics[1,3]).to include(new_topic.id)
           expect(suggested_topics[1,3]).to include(closed_topic.id)

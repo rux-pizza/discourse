@@ -147,12 +147,13 @@ da:
       user_count: "Nye brugere"
       active_user_count: "Aktive brugere"
       contact: "Kontakt os"
-      contact_info: "I tilfælde af kritiske situationer eller vigtige spørgsmål angående denne side, kontakt os venligst på %{contact_emal}."
+      contact_info: "I tilfælde af kritiske situationer eller vigtige spørgsmål angående denne side, kontakt os venligst på %{contact_email}."
     bookmarked:
       title: "Bogmærke"
+      clear_bookmarks: "Ryd Bogmærker"
       help:
-        bookmark: "Klik for at tilføje dette emne til bogmærker"
-        unbookmark: "Klik for at fjerne dette emne fra bognmærker"
+        bookmark: "Klik for at sætte et bogmærke i det første indlæg i denne tråd"
+        unbookmark: "Klik for at fjerne alle bogmærker i dette emne"
     bookmarks:
       not_logged_in: "Beklager, du skal været logget ind for at bogmærke indlæg"
       created: "Du har bogmærket dette indlæg."
@@ -365,14 +366,14 @@ da:
           other: "Vi vil kun sende dig en email, hvis vi ikke har set dig de sidste {{count}} minutter."
       name:
         title: "Navn"
-        instructions: "Dit fulde navn (optimalt)"
+        instructions: "Dit fulde navn (valgfrit)"
         too_short: "Dit navn er for kort"
         ok: "Dit navn ser fint ud"
       username:
         title: "Brugernavn"
         instructions: "Unikt, ingen mellemrum, kort"
         short_instructions: "Folk kan benævne dig som @{{username}}"
-        available: "Dit brugernavn er utilgængeligt"
+        available: "Dit brugernavn er tilgængeligt"
         global_match: "E-mail tilsvarende det registrerede brugernavn"
         global_mismatch: "Allerede registreret. Prøv {{suggestion}}?"
         not_available: "Ikke ledigt. Prøv {{suggestion}}?"
@@ -979,6 +980,7 @@ da:
         attachment_too_large: "Beklager, filen, som du forsøger at uploade, er for store (den maksimale størrelse er {{max_size_kb}}kb)."
         file_too_large: "Beklager, filen, som du forsøger at uploade, er for store (den maksimale størrelse er {{max_size_kb}}kb)."
         too_many_uploads: "Beklager, men du kan kun uploade én fil ad gangen."
+        too_many_dragged_and_dropped_files: "Beklager, du kan kun drag & drope'e op til 10 filer af gangen."
         upload_not_authorized: "Beklager, filen, som du forsøger at uploade, er ikke godkendt (godkendte filendelser: {{authorized_extensions}})."
         image_upload_not_allowed_for_new_user: "Beklager, nye brugere kan ikke uploade billeder."
         attachment_upload_not_allowed_for_new_user: "Beklager, nye brugere kan ikke uploade vedhæftede filer."
@@ -1040,6 +1042,7 @@ da:
         people:
           off_topic: "{{icons}} markerede dette som urelevant for emnet"
           spam: "{{icons}} markerede dette som spam"
+          spam_with_url: "{{icons}} markerede <a href='{{postUrl}}'>dette som spam</a>"
           inappropriate: "{{icons}} markerede dette som upassende"
           notify_moderators: "{{icons}} underrettede moderatorer"
           notify_moderators_with_url: "{{icons}} <a href='{{postUrl}}'>underrettede moderatorer</a>"
@@ -1380,8 +1383,8 @@ da:
         backups: "backups"
         traffic_short: "Trafik"
         traffic: "Applikation web forespørgsler"
-        page_views: "Side visninger"
-        page_views_short: "side visninger"
+        page_views: "API Forespørgsler"
+        page_views_short: "API Forespørgsler"
         show_traffic_report: "Vist detaljeret trafik rapport"
         reports:
           today: "I dag"
@@ -1498,6 +1501,14 @@ da:
         info_html: "Din API-nøgle giver dig mulighed for at oprette og opdatere emner vha. JSON-kald."
         all_users: "Alle brugere"
         note_html: "Hold denne nøgle <strong>hemmelig</strong>, alle brugere som har den kan oprette vilkårlige indlæg, som enhver bruger."
+      plugins:
+        title: "Plugins"
+        installed: "Installerede Plugins"
+        name: "Navn"
+        none_installed: "Du har ikke nogen plugins installeret"
+        version: "Version"
+        change_settings: "Skift indstillinger"
+        howto: "Hvordan installerer jeg plugins?"
       backups:
         title: "Backups"
         menu:
@@ -1551,6 +1562,7 @@ da:
             title: "Rul databasen tilbage til et tidspunkt hvor tingene virkede"
             confirm: "Er du sikker på du vil rulle databasen tilbage?"
       export_csv:
+        user_archive_confirm: "Er du sikker på du vil downloade dine indlæg?"
         success: "Eksportering i gang, du får en notifikation når processen er afsluttet."
         failed: "Eksport fejlede. Tjek venligst loggen."
         rate_limit_error: "Indlæg kan downloades én gang om dagen, prøv igen i morgen."
@@ -1561,6 +1573,9 @@ da:
           screened_email: "Eksporter den fulde screenede email liste som en CSV fil."
           screened_ip: "Eksporter den fulde screenede IP liste som en CSV fil."
           screened_url: "Eksporter den fulde screenede URL liste som en CSV fil."
+      invite:
+        button_text: "Send Invitationer"
+        button_title: "Send Invitationer"
       customize:
         title: "Tilpasning"
         long_title: "Tilpasning af site"
@@ -1747,6 +1762,7 @@ da:
             label: "Ny:"
             ip_address: "IP-adresse"
             add: "Tilføj"
+            filter: "Søg"
           roll_up:
             text: "Saml sammen"
             title: "Laver et nyt subnet forbud hvis der er mindst 'min_ban_entries_for_roll_up' forbud."
@@ -2086,7 +2102,7 @@ da:
         dismiss_topics: '<b>x</b>, <b>t</b> Afvis emner'
       actions:
         title: 'Handlinger'
-        bookmark_topic: '<b>f</b> Bogmærk emne'
+        bookmark_topic: '<b>f</b> Sæt bogmærke i emne'
         pin_unpin_topic: '<b>shift</b>+<b>p</b> Fastgør / Frigør emne'
         share_topic: '<b>shift</b>+<b>s</b> Del emne'
         share_post: '<b>s</b> Del opslag'
@@ -2151,6 +2167,9 @@ da:
         autobiographer:
           name: Selvbiografi
           description: Har udfyldt sin <a href="/my/preferences">profil</a> information
+        anniversary:
+          name: Jubilæum
+          description: Aktivt medlem i et år, som har skrevet mindst en gang
         nice_post:
           name: Fint indlæg
           description: Har modtaget 10 "likes" på et indlæg. Denne badge kan modtages flere gange.

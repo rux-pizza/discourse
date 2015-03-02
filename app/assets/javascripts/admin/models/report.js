@@ -92,9 +92,9 @@ Discourse.Report = Discourse.Model.extend({
   icon: function() {
     switch( this.get('type') ) {
     case 'flags':
-      return 'fa-flag';
+      return 'flag';
     case 'likes':
-      return 'fa-lemon-o';
+      return 'lemon-o';
     default:
       return null;
     }

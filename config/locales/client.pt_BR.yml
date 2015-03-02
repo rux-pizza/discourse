@@ -150,9 +150,10 @@ pt_BR:
       contact_info: "No evento de um problema crítico ou um assunto urgente em relação à este site, por favor entre em contato conosco via %{contact_email}."
     bookmarked:
       title: "Favorito"
+      clear_bookmarks: "Limpar Favoritos"
       help:
-        bookmark: "Clique para adicionar este tópico aos favoritos"
-        unbookmark: "Clique para remover este tópico dos favoritos"
+        bookmark: "Clique para adicionar o primeiro post deste tópico aos favoritos"
+        unbookmark: "Clique para remover todos os favoritos neste tópico"
     bookmarks:
       not_logged_in: "desculpe, você precisa estar logado para favoritar mensagens"
       created: "você favoritou essa resposta"
@@ -979,6 +980,7 @@ pt_BR:
         attachment_too_large: "Desculpe, o arquivo que você está tentando enviar é muito grande (o tamanho máximo permitido é {{max_size_kb}}kb)."
         file_too_large: "Desculpe, o arquivo que você está tentando enviar é muito grande (o tamanho máximo permitido é {{max_size_kb}}kb)."
         too_many_uploads: "Desculpe, você pode enviar apenas um arquivos por vez."
+        too_many_dragged_and_dropped_files: "Desculpe, você pode arrastar & soltar apenas 10 arquivos por vez."
         upload_not_authorized: "Desculpe, o tipo de arquivo que você está tentando enviar não está autorizado (extensões autorizadas: {{authorized_extensions}})."
         image_upload_not_allowed_for_new_user: "Desculpe, novos usuário não podem enviar imagens."
         attachment_upload_not_allowed_for_new_user: "Desculpe, usuários novos não podem enviar anexos."
@@ -1380,8 +1382,6 @@ pt_BR:
         backups: "backups"
         traffic_short: "Tráfego"
         traffic: "Solicitações do aplicativo pela web"
-        page_views: "Visualizações de Página"
-        page_views_short: "Visualizações de Página"
         show_traffic_report: "Mostrar Relatório de Tráfego Detalhado"
         reports:
           today: "Hoje"
@@ -1498,6 +1498,14 @@ pt_BR:
         info_html: "Sua chave de API permitirá a criação e edição de tópicos usando requests JSON."
         all_users: "Todos os Usuários"
         note_html: "Guarde esta chave <strong>secretamente</strong>, todos usuários que tiverem acesso a ela poderão criar posts arbritários no forum como qualquer usuário."
+      plugins:
+        title: "Plugins"
+        installed: "Plugins Instalados"
+        name: "Nome"
+        none_installed: "Você não tem quaisquer plugins instalados."
+        version: "Versão"
+        change_settings: "Mudar Configurações"
+        howto: "Como eu instalo plugins?"
       backups:
         title: "Backups"
         menu:
@@ -1747,6 +1755,7 @@ pt_BR:
             label: "Novo:"
             ip_address: "Endereço IP"
             add: "Adicionar"
+            filter: "Pesquisar"
           roll_up:
             text: "Combinar"
             title: "Cria novas entradas de banimento por subnet caso existam no mínimo 'min_ban_entries_for_roll_up' entradas."
@@ -2086,7 +2095,6 @@ pt_BR:
         dismiss_topics: '<b>x</b>, <b>t</b> Descartar Tópicos'
       actions:
         title: 'Ações'
-        bookmark_topic: '<b>f</b> Adicionar tópico aos favoritos'
         pin_unpin_topic: '<b>shift</b>+<b>p</b> Fixar/Desfixar tópico'
         share_topic: '<b>shift</b>+<b>s</b> Compartilhar tópico'
         share_post: '<b>s</b> Compartilhar mensagem'

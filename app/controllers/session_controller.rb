@@ -52,21 +52,24 @@ class SessionController < ApplicationController
 
   def sso_login
     unless SiteSetting.enable_sso
-      render nothing: true, status: 404
-      return
+      return render(nothing: true, status: 404)
     end
 
     sso = DiscourseSingleSignOn.parse(request.query_string)
     if !sso.nonce_valid?
-      render text: I18n.t("sso.timeout_expired"), status: 500
-      return
+      return render(text: I18n.t("sso.timeout_expired"), status: 500)
+    end
+
+    if ScreenedIpAddress.should_block?(request.remote_ip)
+      return render(text: I18n.t("sso.unknown_error"), status: 500)
     end
 
     return_path = sso.return_path
     sso.expire_nonce!
 
     begin
-      if user = sso.lookup_or_create_user
+      if user = sso.lookup_or_create_user(request.remote_ip)
+
         if SiteSetting.must_approve_users? && !user.approved?
           render text: I18n.t("sso.account_not_approved"), status: 403
         else
@@ -92,7 +95,7 @@ class SessionController < ApplicationController
       SingleSignOn::ACCESSORS.each do |a|
         details[a] = sso.send(a)
       end
-      Discourse.handle_exception(e, details)
+      Discourse.handle_job_exception(e, details)
 
       render text: I18n.t("sso.unknown_error"), status: 500
     end
@@ -144,9 +147,9 @@ class SessionController < ApplicationController
       return
     end
 
-    if ScreenedIpAddress.block_login?(user, request.remote_ip)
-      not_allowed_from_ip_address(user)
-      return
+    if ScreenedIpAddress.block_login?(user, request.remote_ip) ||
+       ScreenedIpAddress.should_block?(request.remote_ip)
+      return not_allowed_from_ip_address(user)
     end
 
     (user.active && user.email_confirmed?) ? login(user) : not_activated(user)
