@@ -147,7 +147,6 @@ pt:
       user_count: "Novos Utilizadores"
       active_user_count: "Utilizadores Activos"
       contact: "Contacte-nos"
-      contact_info: "No caso de ter um problema critico ou assunto urgente que afete este site, por favor, contacte-nos em %{contact_email}."
     bookmarked:
       title: "Adicionar Marcador"
       clear_bookmarks: "Remover Marcadores"
@@ -397,7 +396,7 @@ pt:
       email_digests:
         daily: "diariamente"
         weekly: "semanalmente"
-        bi_weekly: "a cada duas semanas"
+        every_two_weeks: "a cada duas semanas"
       email_always: "Não suprimir notificações de email quando estou ativo no sítio"
       other_settings: "Outros"
       categories_settings: "Categorias"

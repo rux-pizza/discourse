@@ -43,6 +43,7 @@ class PostCreator
   #     meta_data             - Topic meta data hash
   #     created_at            - Topic creation time (optional)
   #     pinned_at             - Topic pinned time (optional)
+  #     pinned_globally       - Is the topic pinned globally (optional)
   #
   def initialize(user, opts)
     # TODO: we should reload user in case it is tainted, should take in a user_id as opposed to user
@@ -96,7 +97,7 @@ class PostCreator
 
     if @post && @post.errors.empty?
       publish
-      PostAlerter.post_created(@post) unless @opts[:import_mode]
+      PostAlerter.post_created(@post) unless @opts[:import_mode] || @opts[:skip_notifications]
 
       track_latest_on_category
       enqueue_jobs

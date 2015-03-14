@@ -128,7 +128,6 @@ id:
       user_count: "Pengguna Baru"
       active_user_count: "Pengguna Aktif"
       contact: "Kontak kami"
-      contact_info: "Dalam kondisi kritis atau masalah mendesak yang menyangkut laman ini, mohon hubungi kami di %{contact_email}. "
     bookmarked:
       title: "Markah"
     bookmarks:
@@ -288,7 +287,7 @@ id:
       email_digests:
         daily: "harian"
         weekly: "mingguan"
-        bi_weekly: "setiap dua minggu"
+        every_two_weeks: "setiap dua minggu"
       auto_track_options:
         never: "tidak pernah"
         always: "selalu"

@@ -6,11 +6,13 @@ require_dependency 'age_words'
 require_dependency 'configurable_urls'
 require_dependency 'mobile_detection'
 require_dependency 'category_badge'
+require_dependency 'global_path'
 
 module ApplicationHelper
   include CurrentUser
   include CanonicalURL::Helpers
   include ConfigurableUrls
+  include GlobalPath
 
   def shared_session_key
     if SiteSetting.long_polling_base_url != '/'.freeze && current_user
@@ -153,9 +155,12 @@ module ApplicationHelper
     MobileDetection.mobile_device?(request.user_agent)
   end
 
-
   def customization_disabled?
     session[:disable_customization]
+  end
+
+  def loading_admin?
+    controller.class.name.split("::").first == "Admin"
   end
 
   def category_badge(category, opts=nil)

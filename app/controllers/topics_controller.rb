@@ -158,6 +158,19 @@ class TopicsController < ApplicationController
     render_serialized(topics, BasicTopicSerializer)
   end
 
+  def feature_stats
+    params.require(:category_id)
+    category_id = params[:category_id].to_i
+
+    topics = Topic.listable_topics.visible
+
+    render json: {
+      pinned_in_category_count: topics.where(category_id: category_id).where(pinned_globally: false).where.not(pinned_at: nil).count,
+      pinned_globally_count: topics.where(pinned_globally: true).where.not(pinned_at: nil).count,
+      banner_count: topics.where(archetype: Archetype.banner).count,
+    }
+  end
+
   def status
     params.require(:status)
     params.require(:enabled)
@@ -332,24 +345,15 @@ class TopicsController < ApplicationController
 
     guardian.ensure_can_change_post_owner!
 
-    post_ids = params[:post_ids].to_a
-    topic = Topic.find_by(id: params[:topic_id].to_i)
-    new_user = User.find_by(username: params[:username])
-
-    return render json: failed_json, status: 422 unless post_ids && topic && new_user
-
-    ActiveRecord::Base.transaction do
-      post_ids.each do |post_id|
-        post = Post.find(post_id)
-        # update topic owner (first avatar)
-        topic.user = new_user if post.is_first_post?
-        post.set_owner(new_user, current_user)
-      end
+    begin
+      PostOwnerChanger.new( post_ids: params[:post_ids].to_a,
+                            topic_id: params[:topic_id].to_i,
+                            new_owner: User.find_by(username: params[:username]),
+                            acting_user: current_user ).change_owner!
+      render json: success_json
+    rescue ArgumentError
+      render json: failed_json, status: 422
     end
-
-    topic.update_statistics
-
-    render json: success_json
   end
 
   def clear_pin
@@ -501,7 +505,7 @@ class TopicsController < ApplicationController
   end
 
   def check_for_status_presence(key, attr)
-    invalid_param(key) unless %w(pinned_globally visible closed pinned archived).include?(attr)
+    invalid_param(key) unless %w(pinned pinned_globally visible closed archived).include?(attr)
   end
 
   def invalid_param(key)

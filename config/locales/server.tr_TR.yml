@@ -6,16 +6,6 @@
 # https://www.transifex.com/projects/p/discourse-org/
 
 tr_TR:
-  stringex:
-    characters:
-      number: "-"
-  i18n:
-    transliterate:
-      rule:
-        ț: "t"
-        Ț: "t"
-        ș: "s"
-        Ș: "s"
   dates:
     short_date_no_year: "D MMM"
     short_date: "D MMM, YYYY"
@@ -77,6 +67,8 @@ tr_TR:
     backup_file_should_be_tar_gz: "Yedekleme dosyası .tar.gz uzantılı olmalı."
     not_enough_space_on_disk: "Yedeklemenin yapılması için diskte yeterli alan bulunmuyor."
   not_logged_in: "Bunun için giriş yapmanız gerekir."
+  not_found: "İstenilen URL ya da kaynak bulunamamaktadır."
+  invalid_access: "İstenilen kaynağı görebilmeniz için izniniz yoktur."
   read_only_mode_enabled: "Bu site sadece okuma modunda. Etkileşimler etkisizleştirildi."
   too_many_replies:
     other: "Üzgünüz, yeni kullanıcılar geçici olarak aynı konu içinde sadece %{count} cevap ile sınırlılar. "
@@ -210,6 +202,7 @@ tr_TR:
           attributes:
             password:
               common: "En çok kullanılan 10000 paroladan biri. Lütfen daha güvenli bir parola seçin."
+              same_as_username: "kullanıcı adınızla aynı. Lütfen daha güvenli bir şifre seçiniz."
             ip_address:
               signup_not_allowed: "Bu hesaptan yeni üyelik oluşturulmasına izin verilmiyor."
         color_scheme_color:
@@ -436,7 +429,7 @@ tr_TR:
       xaxis: "Gün"
       yaxis: "Ziyaret sayısı"
     signups:
-      title: "Yeni kullanıcı"
+      title: "Yeni Kullanıcılar"
       xaxis: "Gün"
       yaxis: "Yeni kullanıcı sayısı"
     topics:
@@ -721,8 +714,6 @@ tr_TR:
     max_username_length: "Kullanıcı adında olabilecek en fazla karakter sayısı. UYARI: HALİHAZIRDA BUNDAN DAHA UZUN BİR KULLANICI ADINA SAHİP OLAN KULLANICILAR SİTEYE GİRİŞ YAPAMAYACAKLAR. "
     min_password_length: "En az parola uzunluğu."
     block_common_passwords: "En çok kullanılan 10,000 parola arasında yer alan parolalara izin verme."
-    enable_sso: "Dış bir site aracılığı ile tek oturum açma sistemini etkinleştir. (UYARI: etkinleştirildiği takdirde, doğru yapılandırılmamışsa bazı kişilerin giriş yapmasını engelleyebilir; ayrıca davetiye sistemini de devre dışı bırakır)"
-    enable_sso_provider: " /session/sso_provider son noktasında Discourse SSO uygula, sso_secret değerinin seçilmiş olmasını gerektirir"
     sso_url: "Bitiş noktasındaki tek oturum açma URL'i"
     sso_secret: "TOA bilgisinin kritopgrafik şekilde doğrulanması için kullanılan gizli string, 10 karakter veya daha uzun olduğundan emin olun"
     sso_overrides_email: "SSO yararlı yükündeki dış site e-postasını yerel e-postanın üzerine yazar (DİKKAT: yerel e-postaların normalizasyon sürecinde uyuşmazlıklar doğabilir)"
@@ -885,7 +876,6 @@ tr_TR:
     default_external_links_in_new_tab: "Dış bağlantıları yeni sekmede aç. Üyeler, ayarlar sayfasından bu ayarı değiştirebilir."
     detect_custom_avatars: "Olsun ya da olmasın kullanıcıların özel avatar yükleyip yüklemediğini kontrol et."
     max_daily_gravatar_crawls: "Discourse'un gün içinde özel avatarlar için Gravatar'ı en fazla kaç kere kontrol edeceği."
-    public_user_custom_fields: "Kullanıcıların herkes tarafından görüntülenebilir özel alanlar oluşturmaları için beyaz liste."
     allow_profile_backgrounds: "Kullanıcıların profillerine arkaplan eklemesine izin ver."
     sequential_replies_threshold: "Kullanıcının ardarda çok fazla cevap gönderdiğine dair uyarı alması için, bir konuda üstüste yapması gereken gönderi sayısı. "
     enable_mobile_theme: "Mobil cihazlar mobil uyumlu temayı kullanır, dilerse masaüstü görünüme geçebilirler. Eğer özel, duyarlı bir stil kullanıyorsanız bunu devredışı bırakın."
@@ -1004,7 +994,6 @@ tr_TR:
     active: "Hesabınız etkinleştirildi ve kullanıma hazır."
     activate_email: "<p>Az kaldı! <b>%{email}</b> adresine bir etkinleştirme e-postası gönderdik. Hesabınızı etkinleştirmek için lütfen e-postadaki yönlendirmeleri takip edin.</p><p>Eğer e-postayı almadıysanız, gereksiz klasörünüzü kontrol edin ya da başka bir etkinleştirme e-postası daha göndermek için tekrar giriş yapmayı deneyin.</p>"
     not_activated: "Henüz giriş yapamazsınız. Size bir etkinleştirme e-postası gönderdik. Hesabınızı etkinleştirmek için lütfen e-postadaki yönlendirmeleri takip edin."
-    not_allowed_from_ip_address: "Bu IP adresinden %{username} kullanıcı adı ile giriş yapamazsınız."
     suspended: "%{date} tarihine kadar giriş yapamazsınız."
     suspended_with_reason: "%{date} tarihine kadar giriş yapamazsınız. Uzaklaştırılma nedeniniz: %{reason}"
     errors: "%{errors}"
@@ -1562,6 +1551,7 @@ tr_TR:
     body_blank: "içerik boş"
   color_schemes:
     base_theme_name: "Baz"
+  about: "Hakkında"
   guidelines: "Yönergeler"
   privacy: "Gizlilik İlkeleri"
   edit_this_page: "Bu sayfayı düzenle"

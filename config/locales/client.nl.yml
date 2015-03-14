@@ -146,7 +146,6 @@ nl:
       user_count: "Nieuwe leden"
       active_user_count: "Actieve leden"
       contact: "Neem contact op"
-      contact_info: "In het geval van een kritieke probleem of dringende vraagstukken in verband met deze site neem contact op met ons op via% {contact_email}."
     bookmarked:
       title: "Bewaar"
     bookmarks:
@@ -392,7 +391,7 @@ nl:
       email_digests:
         daily: "dagelijks"
         weekly: "wekelijks"
-        bi_weekly: "elke twee weken"
+        every_two_weeks: "elke twee weken"
       email_always: "E-mailnotificaties niet onderdrukken als ik actief ben op de site"
       other_settings: "Overige"
       categories_settings: "Categorieën"
