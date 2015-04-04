@@ -161,6 +161,7 @@ fr:
       not_bookmarked: "vous avez lu ce message; cliquez pour l'ajouter dans vos signets"
       last_read: "ceci est le dernier message que vous avez lu; cliquez pour l'ajouter dans vos signets"
       remove: "Retirer de vos signets"
+      confirm_clear: "Êtes-vous sûr de vouloir effacer tous les signets de ce sujet?"
     topic_count_latest:
       one: "{{count}} sujet récent."
       other: "{{count}} sujets récents."
@@ -205,6 +206,19 @@ fr:
       posted_by_you: "Rédigé par <a href='{{userUrl}}'>vous</a>"
       sent_by_user: "Envoyé par <a href='{{userUrl}}'>{{user}}</a>"
       sent_by_you: "Envoyé par <a href='{{userUrl}}'>vous</a>"
+    directory:
+      filter_name: "filtrer par pseudo"
+      title: "Utilisateurs"
+      likes_given: "Donnés"
+      likes_received: "Reçus"
+      topics_entered: "Sujets visités"
+      time_read: "Temps de lecture"
+      topic_count: "Sujets"
+      post_count: "Réponses"
+      no_results: "Aucun résultat n'a été trouvé."
+      total_rows:
+        one: "1 utilisateur"
+        other: "%{count} utilisateurs"
     groups:
       visible: "Ce groupe est visible par tous les utilisateurs"
       title:
@@ -310,6 +324,9 @@ fr:
       delete_yourself_not_allowed: "Vous ne pouvez pas supprimer votre compte maintenant. Contactez un administrateur pour faire supprimer votre compte pour vous."
       unread_message_count: "Messages"
       admin_delete: "Supprimer"
+      users: "Utilisateurs"
+      muted_users: "Silencieux"
+      muted_users_instructions: "Cacher toutes les notifications de ces utilisateurs."
       staff_counters:
         flags_given: "signalements utiles"
         flagged_posts: "messages signalés"
@@ -545,7 +562,7 @@ fr:
       title: "Créer un nouveau compte"
       failed: "Quelque chose s'est mal passé, peut-être que cette adresse de courriel est déjà enregistrée, essayez le lien Mot de passe oublié."
     forgot_password:
-      title: "Mot de passe oublié ?"
+      title: "Réinitialisation du mot de passe"
       action: "J'ai oublié mon mot de passe"
       invite: "Saisir votre pseudo ou votre adresse de courriel, et vous recevrez un nouveau mot de passe par courriel."
       reset: "Réinitialiser votre mot de passe"
@@ -601,7 +618,7 @@ fr:
       emoji: "Emoji :smile:"
       add_warning: "Ceci est un avertissement officiel."
       posting_not_on_topic: "À quel sujet voulez-vous répondre ?"
-      saving_draft_tip: "sauvegarde…"
+      saving_draft_tip: "sauvegarde en cours..."
       saved_draft_tip: "sauvegardé"
       saved_local_draft_tip: "sauvegardé en local"
       similar_topics: "Votre message est similaire à..."
@@ -618,7 +635,7 @@ fr:
       reply_here: "Répondre ici"
       reply: "Répondre"
       cancel: "Annuler"
-      create_topic: "Créer votre sujet"
+      create_topic: "Créer un sujet"
       create_pm: "Message privé"
       title: "ou appuyez sur Ctrl+Entrée"
       users_placeholder: "Ajouter un utilisateur"
@@ -870,8 +887,8 @@ fr:
         auto_close: "Fermeture automatique"
         make_banner: "Bannière de sujet"
         remove_banner: "Retirer la bannière de sujet"
-        unpin: "De-épingler le sujet"
         pin: "Épingler le sujet"
+        unpin: "De-épingler le sujet"
         pin_globally: "Épingler le sujet globalement"
         unarchive: "Désarchiver le sujet"
         archive: "Archiver le sujet"
@@ -892,6 +909,30 @@ fr:
         title: 'Signaler'
         help: 'signaler secrètement ce sujet pour attirer l''attention ou envoyer une notification privée à son propos.'
         success_message: 'Vous avez signalé ce sujet avec succès.'
+      feature_topic:
+        title: "Mettre ce sujet en évidence"
+        pin: "Faire apparaître ce sujet en haut de la catégorie {{categoryLink}}."
+        confirm_pin: "Vous avez déjà {{count}} sujets épinglés. S'il y a trop de sujets épinglés cela peut être lourd pour les nouveaux utilisateurs et utilisateurs anonymes. Êtes-vous sûr de vouloir ajouter un nouveau sujet épinglé dans cette catégorie?"
+        unpin: "Enlever ce sujet du haut de la catégorie {{categoryLink}}."
+        pin_note: "Les utilisateurs peuvent enlever l'épingle de ce sujet eux-mêmes."
+        already_pinned:
+          zero: "Aucun sujet actuellement épinglé dans {{categoryLink}}."
+          one: "Sujets actuellement épinglés dans  {{categoryLink}}: <strong class='badge badge-notification unread'>1</strong>."
+          other: "Sujets actuellement épinglés dans  {{categoryLink}}: <strong class='badge badge-notification unread'>{{count}}</strong>."
+        pin_globally: "Faire apparaître ce sujet en haut de toutes les listes de sujet, jusqu'à ce qu'un responsable l'enlève."
+        confirm_pin_globally: "Vous avez déjà {{count}} sujets épinglés globalement. S'il y a trop de sujets épinglés cela peut être lourd pour les nouveaux utilisateurs et les utilisateurs anonymes. Êtes-vous sûr de vouloir rajouter une sujet épinglé globalement?"
+        unpin_globally: "Enlever ce sujet du haut de toutes les listes de sujet."
+        global_pin_note: "Les utilisateurs peuvent enlever l'épingle du sujet individuellement."
+        already_pinned_globally:
+          zero: "Aucun sujet épinglé globalement."
+          one: "Sujets actuellement épinglés globalement : <strong class='badge badge-notification unread'>1</strong>."
+          other: "Sujets actuellement épinglés globalement : <strong class='badge badge-notification unread'>{{count}}</strong>."
+        make_banner: "Transformer ce sujet en gros titre qui apparaît en haut de chaque page."
+        remove_banner: "Enlever le gros titre qui apparaît en haut de chaque page."
+        banner_note: "Les utilisateurs peuvent fermer le gros titre. Seul un sujet peut être mis en gros titre à la fois."
+        already_banner:
+          zero: "Il n'y a pas actuellement de sujet en gros titre."
+          one: "Il y <strong class='badge badge-notification unread'>a</strong> actuellement un sujet en gros titre."
       inviting: "Invitation en cours…"
       automatically_add_to_groups_optional: "Cette invitation inclus l'accès à ces groupes: (optionnel, administrateur uniquement)"
       automatically_add_to_groups_required: "Cette invitation inclus l'accès à ces groupes: (<b>Requis</b>, administrateur uniquement)"
@@ -1491,8 +1532,12 @@ fr:
         name: "Nom"
         add: "Ajouter"
         add_members: "Ajouter des membres"
-        custom: "Personnaliser"
-        automatic: "Automatique"
+        custom:
+          label: "Personnalisé"
+          title: "Groupes personnalisés"
+        automatic:
+          label: "Automatique"
+          title: "Groupes automatiques"
         automatic_membership_email_domains: "Les utilisateurs qui s'enregistrent avec un domaine courriel qui correspond exactement à un élément de cette liste seront automatiquement ajoutés à ce groupe:"
         automatic_membership_retroactive: "Appliquer la même règle de domaine courriel pour les utilisateurs existants"
       api:

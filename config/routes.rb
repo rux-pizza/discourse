@@ -222,6 +222,7 @@ Discourse::Application.routes.draw do
   resources :static
   post "login" => "static#enter"
   get "login" => "static#show", id: "login"
+  get "password-reset" => "static#show", id: "password_reset"
   get "faq" => "static#show", id: "faq"
   get "guidelines" => "static#show", id: "guidelines"
   get "tos" => "static#show", id: "tos"
@@ -345,6 +346,9 @@ Discourse::Application.routes.draw do
   get "/badges/:id(/:slug)" => "badges#show"
   resources :user_badges, only: [:index, :create, :destroy]
 
+
+  get '/c', to: redirect('/categories')
+
   resources :categories, :except => :show
   post "category/uploads" => "categories#upload"
   post "category/:category_id/move" => "categories#move"
@@ -383,7 +387,7 @@ Discourse::Application.routes.draw do
   get "category/*path" => "categories#redirect"
 
   get "top" => "list#top"
-  get "search" => "search#query"
+  get "search/query" => "search#query"
 
   # Topics resource
   get "t/:id" => "topics#show"

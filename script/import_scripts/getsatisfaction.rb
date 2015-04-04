@@ -238,7 +238,7 @@ class ImportScripts::GetSatisfaction < ImportScripts::Base
 
 
         unless topic[:post_id]
-          mapped[:title] = post[:title]
+          mapped[:title] = post[:title] || "Topic title missing"
           topic[:post_id] = post[:id]
           mapped[:category] = post[:category]
         else
@@ -276,7 +276,7 @@ class ImportScripts::GetSatisfaction < ImportScripts::Base
         title: topic.subject,
         deleted: topic.removed == "1",
         closed: true,
-        body: topic.additional_detail && normalize_raw!(topic.additional_detail),
+        body: normalize_raw!(topic.additional_detail || topic.subject || "<missing>"),
         created_at: DateTime.parse(topic.created_at),
         user_id: topic.UserId,
         category: category.name
@@ -318,8 +318,6 @@ class ImportScripts::GetSatisfaction < ImportScripts::Base
     end
 
     import_post_batch!(posts, topic_map, count - posts.length, total) if posts.length > 0
-
-    exit
   end
 
 

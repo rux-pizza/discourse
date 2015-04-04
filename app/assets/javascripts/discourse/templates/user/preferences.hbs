@@ -32,7 +32,7 @@
           {{/if}}
         </div>
         <div class='instructions'>
-          {{i18n 'user.name.instructions'}}
+          {{nameInstructions}}
         </div>
       </div>
     {{/if}}
@@ -62,7 +62,7 @@
           </div>
         {{else}}
           <div class="controls">
-            {{d-button action="checkEmail" actionParam=this title="admin.users.check_email.title" icon="envelope-o" label="admin.users.check_email.text"}}
+            {{d-button action="checkEmail" actionParam=model title="admin.users.check_email.title" icon="envelope-o" label="admin.users.check_email.text"}}
           </div>
         {{/if}}
       </div>
@@ -237,6 +237,14 @@
       <div class="instructions">{{i18n 'user.muted_categories_instructions'}}</div>
     </div>
 
+    <div class="control-group muting">
+      <label class="control-label">{{i18n 'user.users'}}</label>
+      <div class="controls category-controls">
+        <label>{{i18n 'user.muted_users'}}</label>
+        {{user-selector excludeCurrentUser=true usernames=muted_usernames class="user-selector"}}
+      </div>
+      <div class="instructions">{{i18n 'user.muted_users_instructions'}}</div>
+    </div>
     <div class="control-group">
       <div class="controls">
         {{partial 'user/preferences/saveButton'}}

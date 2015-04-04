@@ -22,7 +22,7 @@ test("redirect", () => {
 
   click('.modal-header .close');
   andThen(() => {
-    ok(!exists('.login-modal'), "it closes the login modal");
+    ok(invisible('.login-modal'), "it closes the login modal");
   });
 
   click('#search-button');
@@ -32,7 +32,7 @@ test("redirect", () => {
 
   click('.modal-header .close');
   andThen(() => {
-    ok(!exists('.login-modal'), "it closes the login modal");
+    ok(invisible('.login-modal'), "it closes the login modal");
   });
 
   click('#site-map');

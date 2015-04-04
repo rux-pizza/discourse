@@ -19,11 +19,6 @@ class UserUpdater
     :edit_history_public
   ]
 
-  PROFILE_ATTR = [
-    :location,
-    :dismissed_banner_key
-  ]
-
   def initialize(actor, user)
     @user = user
     @guardian = Guardian.new(actor)
@@ -71,7 +66,35 @@ class UserUpdater
     end
 
     User.transaction do
+
+      if attributes.key?(:muted_usernames)
+        update_muted_users(attributes[:muted_usernames])
+      end
+
       user_profile.save && user.save
+    end
+  end
+
+  def update_muted_users(usernames)
+    usernames ||= ""
+    desired_ids = User.where(username: usernames.split(",")).pluck(:id)
+    if desired_ids.empty?
+      MutedUser.where(user_id: user.id).destroy_all
+    else
+      MutedUser.where('user_id = ? AND muted_user_id not in (?)', user.id, desired_ids).destroy_all
+
+      # SQL is easier here than figuring out how to do the same in AR
+      MutedUser.exec_sql("INSERT into muted_users(user_id, muted_user_id, created_at, updated_at)
+                          SELECT :user_id, id, :now, :now
+                          FROM users
+                          WHERE
+                            id in (:desired_ids) AND
+                            id NOT IN (
+                              SELECT muted_user_id
+                              FROM muted_users
+                              WHERE user_id = :user_id
+                            )",
+                          now: Time.now, user_id: user.id, desired_ids: desired_ids)
     end
   end
 

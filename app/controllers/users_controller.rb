@@ -34,6 +34,11 @@ class UsersController < ApplicationController
     if params[:stats].to_s == "false"
       user_serializer.omit_stats = true
     end
+    topic_id = params[:include_post_count_for].to_i
+    if topic_id != 0
+      user_serializer.topic_post_count = {topic_id => Post.where(topic_id: topic_id, user_id: @user.id).count }
+    end
+
     respond_to do |format|
       format.html do
         @restrict_fields = guardian.restrict_user_fields?(@user)
@@ -600,17 +605,12 @@ class UsersController < ApplicationController
       return false if is_api?
 
       params[:password_confirmation] != honeypot_value ||
-        params[:challenge] != challenge_value.try(:reverse)
+      params[:challenge] != challenge_value.try(:reverse)
     end
 
     def user_params
-      params.permit(
-        :name,
-        :email,
-        :password,
-        :username,
-        :active
-      ).merge(ip_address: request.ip, registration_ip_address: request.ip)
+      params.permit(:name, :email, :password, :username, :active)
+            .merge(ip_address: request.remote_ip, registration_ip_address: request.remote_ip)
     end
 
     def fail_with(key)
