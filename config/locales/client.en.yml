@@ -213,6 +213,9 @@ en:
     revert: "Revert"
     failed: "Failed"
 
+    switch_to_anon: "Anonymous Mode"
+    switch_from_anon: "Exit Anonymous Mode"
+
     banner:
       close: "Dismiss this banner."
 
@@ -418,6 +421,7 @@ en:
         upload_title: "Upload your picture"
         upload_picture: "Upload Picture"
         image_is_not_a_square: "Warning: we've cropped your image; width and height were not equal."
+        cache_notice: "You've successfully changed your avatar but it might take some time to appear due to browser caching."
 
       change_profile_background:
         title: "Profile Background"
@@ -484,7 +488,7 @@ en:
         weekly: "weekly"
         every_two_weeks: "every two weeks"
 
-      email_direct: "Send me an email when someone quotes me, replies to my post, or mentions my @username or invites me to a topic"
+      email_direct: "Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic"
       email_private_messages: "Send me an email when someone messages me"
       email_always: "Do not suppress email notifications when I am active on the site"
 
@@ -1003,18 +1007,22 @@ en:
         delete: "Delete Topic"
         open: "Open Topic"
         close: "Close Topic"
-        auto_close: "Auto Close"
-        make_banner: "Banner Topic"
-        remove_banner: "Remove Banner Topic"
-        pin: "Pin Topic"
-        unpin: "Un-Pin Topic"
-        pin_globally: "Pin Topic Globally"
+        multi_select: "Select Posts…"
+        auto_close: "Auto Close…"
+        pin: "Pin Topic…"
+        unpin: "Un-Pin Topic…"
         unarchive: "Unarchive Topic"
         archive: "Archive Topic"
         invisible: "Make Unlisted"
         visible: "Make Listed"
         reset_read: "Reset Read Data"
-        multi_select: "Select Posts"
+
+      feature:
+        pin: "Pin Topic"
+        unpin: "Un-Pin Topic"
+        pin_globally: "Pin Topic Globally"
+        make_banner: "Banner Topic"
+        remove_banner: "Remove Banner Topic"
 
       reply:
         title: 'Reply'
@@ -1073,15 +1081,18 @@ en:
 
       invite_reply:
         title: 'Invite'
+        username_placeholder: "username"
         action: 'Send Invite'
         help: 'invite others to this topic via email or notifications'
         to_forum: "We'll send a brief email allowing your friend to immediately join by clicking a link, no login required."
+        sso_enabled: "Enter the username of the person you'd like to invite to this topic."
         to_topic_blank: "Enter the username or email address of the person you'd like to invite to this topic."
         to_topic_email: "You've entered an email address. We'll email an invitation that allows your friend to immediately reply to this topic."
         to_topic_username: "You've entered a username. We'll send a notification to that user with a link inviting them to this topic."
 
         email_placeholder: 'name@example.com'
-        success: "We mailed out an invitation to <b>{{emailOrUsername}}</b>. We'll notify you when the invitation is redeemed. Check the invitations tab on your user page to keep track of your invites."
+        success_email: "We mailed out an invitation to <b>{{emailOrUsername}}</b>. We'll notify you when the invitation is redeemed. Check the invitations tab on your user page to keep track of your invites."
+        success_username: "We've invited that user to participate in this topic."
         error: "Sorry, we couldn't invite that person. Perhaps they have already been invited? (Invites are rate limited)"
 
       login_reply: 'Log In to Reply'
@@ -1545,15 +1556,17 @@ en:
       top:
         title: "Top"
         help: "the most active topics in the last year, month, week or day"
+        all:
+          title: "All Time"
         yearly:
-          title: "Top Yearly"
+          title: "Yearly"
         monthly:
-          title: "Top Monthly"
+          title: "Monthly"
         weekly:
-          title: "Top Weekly"
+          title: "Weekly"
         daily:
-          title: "Top Daily"
-        all: "All Time"
+          title: "Daily"
+        all_time: "All Time"
         this_year: "This year"
         this_month: "This month"
         this_week: "This week"
@@ -1715,6 +1728,8 @@ en:
         automatic: "Automatic"
         automatic_membership_email_domains: "Users who register with an email domain that exactly matches one in this list will be automatically added to this group:"
         automatic_membership_retroactive: "Apply the same email domain rule to add existing registered users"
+        default_title: "Default title for all users in this group"
+        primary_group: "Automatically set as primary group"
 
       api:
         generate_master: "Generate Master API Key"

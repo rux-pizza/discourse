@@ -44,6 +44,7 @@ en:
 
   purge_reason: "Automatically deleted as abandoned, unactivated account"
   disable_remote_images_download_reason: "Remote images download was disabled because there wasn't enough disk space available."
+  anonymous: "Anonymous"
 
   errors: &errors
     format: ! '%{attribute} %{message}'
@@ -160,6 +161,7 @@ en:
   next_page: "next page →"
   prev_page: "← previous page"
   page_num: "Page %{num}"
+  home_title: "Home"
   topics_in_category: "Topics in the '%{category}' category"
   rss_posts_in_topic: "RSS feed of '%{topic}'"
   rss_topics_in_category: "RSS feed of topics in the '%{category}' category"
@@ -1087,6 +1089,9 @@ en:
     public_user_custom_fields: "A whitelist of custom fields for a user that can be shown publicly."
     staff_user_custom_fields: "A whitelist of custom fields for a user that can be shown to staff."
     enable_user_directory: "Provide a directory of users for browsing"
+    allow_anonymous_posting: "Allow users to switch to anonymous mode"
+    anonymous_posting_min_trust_level: "Minimum trust level required to enable anonymous posting"
+    anonymous_account_duration_minutes: "To protect anonymity create a new anonymous account every N minutes for each user. Example: if set to 600, as soon as 600 minutes elapse from last post AND user switches to anon, a new anonymous account is created."
 
     allow_profile_backgrounds: "Allow users to upload profile backgrounds."
 
@@ -1627,6 +1632,13 @@ en:
 
         We couldn't find your reply in the provided email. **Make sure your reply is at the top of the email** -- we can't process inline replies.
 
+    email_reject_invalid_access:
+      subject_template: "[%{site_name}] Email issue -- Invalid Access"
+      text_body_template: |
+        We're sorry, but your email message to %{destination} (titled %{former_title}) didn't work.
+
+        Your account does not have the privileges to post new topics in that category. If you believe this is in error, contact a staff member.
+
     email_reject_post_error:
       subject_template: "[%{site_name}] Email issue -- Posting error"
       text_body_template: |
@@ -1770,16 +1782,34 @@ en:
     user_invited_to_private_message_pm:
       subject_template: "[%{site_name}] %{username} invited you to a message '%{topic_title}'"
       text_body_template: |
-        %{username} invited you to a message '%{topic_title}' on %{site_name}:
 
-        Please visit this link to view the topic: %{base_url}%{url}
+        %{username} invited you to a message
+
+        > **%{topic_title}**
+        >
+        > %{topic_excerpt}
+
+        at
+
+        > %{site_title} -- %{site_description}
+
+        Please visit this link to view the message: %{base_url}%{url}
 
     user_invited_to_topic:
       subject_template: "[%{site_name}] %{username} invited you to a topic '%{topic_title}'"
       text_body_template: |
-        %{username} invited you to a topic '%{topic_title}' on %{site_name}:
 
-        Please visit this link to view the topic: %{base_url}%{url}
+        %{username} invited you to a discussion
+
+        > **%{topic_title}**
+        >
+        > %{topic_excerpt}
+
+        at
+
+        > %{site_title} -- %{site_description}
+
+        Please visit this link to view the message: %{base_url}%{url}
 
     user_replied:
       subject_template: "[%{site_name}] %{topic_title}"

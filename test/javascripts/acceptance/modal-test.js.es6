@@ -1,4 +1,5 @@
-integration("Modal");
+import { acceptance } from "helpers/qunit-helpers";
+acceptance("Modal");
 
 test("modal", () => {
   visit('/');
@@ -22,7 +23,7 @@ test("modal", () => {
     ok(find('#discourse-modal:visible').length === 1, 'modal should reappear');
   });
 
-  keyEvent('#main-outlet', 'keyup', 27);
+  keyEvent('#main-outlet', 'keydown', 27);
   andThen(() => {
     ok(find('#discourse-modal:visible').length === 0, 'ESC should close the modal');
   });
