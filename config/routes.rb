@@ -244,6 +244,8 @@ Discourse::Application.routes.draw do
   get "user_preferences" => "users#user_preferences_redirect"
   get "users/:username/private-messages" => "user_actions#private_messages", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/private-messages/:filter" => "user_actions#private_messages", constraints: {username: USERNAME_ROUTE_FORMAT}
+  get "users/:username/messages" => "user_actions#private_messages", constraints: {username: USERNAME_ROUTE_FORMAT}
+  get "users/:username/messages/:filter" => "user_actions#private_messages", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username" => "users#show", as: 'user', constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username" => "users#update", constraints: {username: USERNAME_ROUTE_FORMAT}
   put "users/:username/emails" => "users#check_emails", constraints: {username: USERNAME_ROUTE_FORMAT}
@@ -453,6 +455,9 @@ Discourse::Application.routes.draw do
   get "/posts/:id/raw" => "posts#markdown_id"
   get "/posts/:id/raw-email" => "posts#raw_email"
   get "raw/:topic_id(/:post_number)" => "posts#markdown_num"
+
+  resources :queued_posts, constraints: StaffConstraint.new
+  get 'queued-posts' => 'queued_posts#index'
 
   resources :invites do
     collection do

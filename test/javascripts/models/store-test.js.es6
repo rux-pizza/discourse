@@ -5,8 +5,34 @@ import createStore from 'helpers/create-store';
 test('createRecord', function() {
   const store = createStore();
   const widget = store.createRecord('widget', {id: 111, name: 'hello'});
+
+  ok(!widget.get('isNew'), 'it is not a new record');
   equal(widget.get('name'), 'hello');
   equal(widget.get('id'), 111);
+});
+
+test('createRecord without an `id`', function() {
+  const store = createStore();
+  const widget = store.createRecord('widget', {name: 'hello'});
+
+  ok(widget.get('isNew'), 'it is a new record');
+  ok(!widget.get('id'), 'there is no id');
+});
+
+test('createRecord without attributes', function() {
+  const store = createStore();
+  const widget = store.createRecord('widget');
+
+  ok(!widget.get('id'), 'there is no id');
+  ok(widget.get('isNew'), 'it is a new record');
+});
+
+test('createRecord with a record as attributes returns that record from the map', function() {
+  const store = createStore();
+  const widget = store.createRecord('widget', {id: 33});
+  const secondWidget = store.createRecord('widget', {id: 33});
+
+  equal(widget, secondWidget, 'they should be the same');
 });
 
 test('find', function() {
@@ -14,6 +40,7 @@ test('find', function() {
   store.find('widget', 123).then(function(w) {
     equal(w.get('name'), 'Trout Lure');
     equal(w.get('id'), 123);
+    ok(!w.get('isNew'), 'found records are not new');
 
     // A second find by id returns the same object
     store.find('widget', 123).then(function(w2) {
@@ -48,6 +75,7 @@ test('findAll', function() {
   store.findAll('widget').then(function(result) {
     equal(result.get('length'), 2);
     const w = result.findBy('id', 124);
+    ok(!w.get('isNew'), 'found records are not new');
     equal(w.get('name'), 'Evil Repellant');
   });
 });
@@ -60,3 +88,11 @@ test('destroyRecord', function() {
     });
   });
 });
+
+test('find embedded', function() {
+  const store = createStore();
+  store.find('fruit', 1).then(function(f) {
+    ok(f.get('farmer'), 'it has the embedded object');
+  });
+});
+

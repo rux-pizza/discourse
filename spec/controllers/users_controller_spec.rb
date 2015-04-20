@@ -266,13 +266,19 @@ describe UsersController do
 
     context 'valid token' do
       it 'returns success' do
-        user = Fabricate(:user)
+        user = Fabricate(:user, auth_token: SecureRandom.hex(16))
         token = user.email_tokens.create(email: user.email).token
+
+        old_token = user.auth_token
 
         get :password_reset, token: token
         put :password_reset, token: token, password: 'newpassword'
         expect(response).to be_success
         expect(assigns[:error]).to be_blank
+
+        user.reload
+        expect(user.auth_token).to_not eq old_token
+        expect(user.auth_token.length).to eq 32
       end
     end
 
@@ -1162,6 +1168,25 @@ describe UsersController do
       expect(response).to be_success
       json = JSON.parse(response.body)
       expect(json["users"].map { |u| u["username"] }).to include(user.username)
+    end
+
+    it "searches only for users who have access to private topic" do
+      privileged_user = Fabricate(:user, trust_level: 4, username: "joecabit", name: "Lawrence Tierney")
+      privileged_group = Fabricate(:group)
+      privileged_group.add(privileged_user)
+      privileged_group.save
+
+      category = Fabricate(:category)
+      category.set_permissions(privileged_group => :readonly)
+      category.save
+
+      private_topic = Fabricate(:topic, category: category)
+
+      xhr :post, :search_users, term: user.name.split(" ").last, topic_id: private_topic.id, topic_allowed_users: "true"
+      expect(response).to be_success
+      json = JSON.parse(response.body)
+      expect(json["users"].map { |u| u["username"] }).to_not include(user.username)
+      expect(json["users"].map { |u| u["username"] }).to include(privileged_user.username)
     end
 
     context "when `enable_names` is true" do

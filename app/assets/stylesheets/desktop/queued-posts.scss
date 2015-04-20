@@ -1,0 +1,37 @@
+.queued-posts {
+  .queued-post {
+    padding: 1em 0;
+
+    .poster {
+      width: 70px;
+      float: left;
+    }
+    .cooked {
+      width: $topic-body-width;
+      float: left;
+
+      #wmd-input {
+        width: 98%;
+        height: 15em;
+      }
+    }
+
+    .queue-controls {
+      button {
+        float: left;
+        margin-right: 0.5em;
+      }
+    }
+    .post-title {
+      color: darken(scale-color-diff(), 50%);
+      font-weight: bold;
+
+      .badge-wrapper {
+        margin-left: 1em;
+      }
+    }
+
+    border-bottom: 1px solid darken(scale-color-diff(), 10%);
+  }
+}
+
