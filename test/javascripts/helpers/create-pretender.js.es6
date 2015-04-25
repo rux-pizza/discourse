@@ -39,6 +39,13 @@ const _moreWidgets = [
   {id: 224, name: 'Good Repellant'}
 ];
 
+const fruits = [{id: 1, name: 'apple', farmer_id: 1, category_id: 4},
+                {id: 2, name: 'banana', farmer_id: 1, category_id: 3},
+                {id: 3, name: 'grape', farmer_id: 2, category_id: 5}];
+
+const farmers = [{id: 1, name: 'Old MacDonald'},
+                 {id: 2, name: 'Luke Skywalker'}];
+
 function loggedIn() {
   return !!Discourse.User.current();
 }
@@ -93,6 +100,8 @@ export default function() {
     });
 
     this.delete('/draft.json', success);
+
+    this.get('/users/:username/staff-info.json', () => response({}));
 
     this.get('/draft.json', function() {
       return response({});
@@ -178,11 +187,13 @@ export default function() {
     });
 
     this.get('/fruits/:id', function() {
-      return response({
-        __rest_serializer: "1",
-        fruit: {id: 1, name: 'apple', farmer_id: 1},
-        farmers: [{id: 1, name: 'Evil Trout'}]
-      });
+      const fruit = fruits[0];
+
+      return response({ __rest_serializer: "1", fruit, farmers: [farmers[0]] });
+    });
+
+    this.get('/fruits', function() {
+      return response({ __rest_serializer: "1", fruits, farmers });
     });
 
     this.get('/widgets/:widget_id', function(request) {

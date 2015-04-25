@@ -28,6 +28,7 @@ describe NewPostManager do
 
       it "doesn't return a result action" do
         result = NewPostManager.default_handler(manager)
+        expect(NewPostManager.queue_enabled?).to eq(false)
         expect(result).to eq(nil)
       end
     end
@@ -38,6 +39,7 @@ describe NewPostManager do
       end
       it "will return an enqueue result" do
         result = NewPostManager.default_handler(manager)
+        expect(NewPostManager.queue_enabled?).to eq(true)
         expect(result.action).to eq(:enqueued)
       end
     end
@@ -48,6 +50,7 @@ describe NewPostManager do
       end
       it "will return an enqueue result" do
         result = NewPostManager.default_handler(manager)
+        expect(NewPostManager.queue_enabled?).to eq(true)
         expect(result.action).to eq(:enqueued)
       end
     end
@@ -68,7 +71,7 @@ describe NewPostManager do
         result
       end
 
-      @queue_handler = -> (manager) { manager.args[:raw] =~ /queue me/ ? manager.enqueue('new_topic') : nil }
+      @queue_handler = -> (manager) { manager.args[:raw] =~ /queue me/ ? manager.enqueue('default') : nil }
 
       NewPostManager.add_handler(&@counter_handler)
       NewPostManager.add_handler(&@queue_handler)
@@ -77,6 +80,10 @@ describe NewPostManager do
     after do
       NewPostManager.handlers.delete(@counter_handler)
       NewPostManager.handlers.delete(@queue_handler)
+    end
+
+    it "has a queue enabled" do
+      expect(NewPostManager.queue_enabled?).to eq(true)
     end
 
     it "calls custom handlers" do
@@ -102,8 +109,9 @@ describe NewPostManager do
       expect(enqueued.post_options['title']).to eq('this is the title of the queued post')
       expect(result.action).to eq(:enqueued)
       expect(result).to be_success
+      expect(result.pending_count).to eq(1)
       expect(result.post).to be_blank
-      expect(QueuedPost.new_count).to be(1)
+      expect(QueuedPost.new_count).to eq(1)
       expect(@counter).to be(0)
     end
 

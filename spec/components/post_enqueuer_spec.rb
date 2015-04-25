@@ -18,6 +18,7 @@ describe PostEnqueuer do
       expect(qp).to be_present
       expect(qp.topic).to eq(topic)
       expect(qp.user).to eq(user)
+      expect(UserAction.where(user_id: user.id, action_type: UserAction::PENDING).count).to eq(1)
     end
   end
 

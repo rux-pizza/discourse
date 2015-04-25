@@ -23,7 +23,12 @@ class PostEnqueuer
       return unless send(validate_method, queued_post.create_options)
     end
 
-    add_errors_from(queued_post) unless queued_post.save
+    if queued_post.save
+      queued_post.create_pending_action
+    else
+      add_errors_from(queued_post)
+    end
+
     queued_post
   end
 

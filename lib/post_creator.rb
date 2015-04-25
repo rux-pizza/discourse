@@ -129,7 +129,6 @@ class PostCreator
 
     if @post && errors.blank?
       publish
-      PostAlerter.post_created(@post) unless @opts[:import_mode]
 
       track_latest_on_category
       enqueue_jobs
@@ -212,7 +211,7 @@ class PostCreator
     return unless @post && @post.errors.count == 0 && @topic && @topic.category_id
 
     Category.where(id: @topic.category_id).update_all(latest_post_id: @post.id)
-    Category.where(id: @topic.category_id).update_all(latest_topic_id: @topic.id) if @post.post_number == 1
+    Category.where(id: @topic.category_id).update_all(latest_topic_id: @topic.id) if @post.is_first_post?
   end
 
   def ensure_in_allowed_users
@@ -277,6 +276,7 @@ class PostCreator
   end
 
   def save_post
+    @post.disable_rate_limits! if skip_validations?
     saved = @post.save(validate: !skip_validations?)
     rollback_from_errors!(@post) unless saved
   end
@@ -293,7 +293,7 @@ class PostCreator
     end
 
     @user.user_stat.post_count += 1
-    @user.user_stat.topic_count += 1 if @post.post_number == 1
+    @user.user_stat.topic_count += 1 if @post.is_first_post?
 
     # We don't count replies to your own topics
     if !@opts[:import_mode] && @user.id != @topic.user_id

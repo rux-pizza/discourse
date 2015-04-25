@@ -221,7 +221,7 @@ module SiteSettingExtension
 
   def ensure_listen_for_changes
     unless @subscribed
-      MessageBus.subscribe("/site_settings") do |message|
+      DiscourseBus.subscribe("/site_settings") do |message|
         process_message(message)
       end
       @subscribed = true
@@ -233,10 +233,10 @@ module SiteSettingExtension
     if data["process"] != process_id
       begin
         @last_message_processed = message.global_id
-        MessageBus.on_connect.call(message.site_id)
+        DiscourseBus.on_connect.call(message.site_id)
         refresh!
       ensure
-        MessageBus.on_disconnect.call(message.site_id)
+        DiscourseBus.on_disconnect.call(message.site_id)
       end
     end
   end
@@ -294,7 +294,7 @@ module SiteSettingExtension
   end
 
   def notify_changed!
-    MessageBus.publish('/site_settings', {process: process_id})
+    DiscourseBus.publish('/site_settings', {process: process_id})
   end
 
   def has_setting?(name)
@@ -303,6 +303,18 @@ module SiteSettingExtension
 
   def requires_refresh?(name)
     refresh_settings.include?(name.to_sym)
+  end
+
+  def is_valid_data?(name, value)
+    valid = true
+    type = get_data_type(name, defaults[name.to_sym])
+
+    if type == types[:fixnum]
+      # validate fixnum
+      valid = false unless value.to_i.is_a?(Fixnum)
+    end
+
+    return valid
   end
 
   def filter_value(name, value)
@@ -318,12 +330,12 @@ module SiteSettingExtension
   end
 
   def set(name, value)
-    if has_setting?(name)
+    if has_setting?(name) && is_valid_data?(name, value)
       value = filter_value(name, value)
       self.send("#{name}=", value)
       Discourse.request_refresh! if requires_refresh?(name)
     else
-      raise ArgumentError.new("No setting named #{name} exists")
+      raise ArgumentError.new("Either no setting named '#{name}' exists or value provided is invalid")
     end
   end
 

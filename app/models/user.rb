@@ -111,6 +111,8 @@ class User < ActiveRecord::Base
   # excluding fake users like the system user
   scope :real, -> { where('id > 0') }
 
+  scope :staff, -> { where("admin OR moderator") }
+
   # TODO-PERF: There is no indexes on any of these
   # and NotifyMailingListSubscribers does a select-all-and-loop
   # may want to create an index on (active, blocked, suspended_till, mailing_list_mode)?
@@ -204,7 +206,7 @@ class User < ActiveRecord::Base
   # tricky, we need our bus to be subscribed from the right spot
   def sync_notification_channel_position
     @unread_notifications_by_type = nil
-    self.notification_channel_position = MessageBus.last_id("/notification/#{id}")
+    self.notification_channel_position = DiscourseBus.last_id("/notification/#{id}")
   end
 
   def invited_by
@@ -296,7 +298,7 @@ class User < ActiveRecord::Base
   end
 
   def publish_notifications_state
-    MessageBus.publish("/notification/#{id}",
+    DiscourseBus.publish("/notification/#{id}",
                        {unread_notifications: unread_notifications,
                         unread_private_messages: unread_private_messages,
                         total_unread_notifications: total_unread_notifications},
@@ -471,6 +473,8 @@ class User < ActiveRecord::Base
 
   def delete_all_posts!(guardian)
     raise Discourse::InvalidAccess unless guardian.can_delete_all_posts? self
+
+    QueuedPost.where(user_id: id).delete_all
 
     posts.order("post_number desc").each do |p|
       PostDestroyer.new(guardian.user, p).destroy
@@ -675,9 +679,8 @@ class User < ActiveRecord::Base
       Jobs.enqueue(:update_gravatar, user_id: self.id, avatar_id: avatar.id)
     end
 
-    if self.uploaded_avatar_id_changed?
-      Jobs.enqueue(:fix_avatar_in_quotes, user_id: self.id)
-    end
+    # mark all the user's quoted posts as "needing a rebake"
+    Post.rebake_all_quoted_posts(self.id) if self.uploaded_avatar_id_changed?
   end
 
   def first_post_created_at

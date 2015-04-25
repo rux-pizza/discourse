@@ -7,17 +7,42 @@ class QueuedPost < ActiveRecord::Base
   belongs_to :approved_by, class_name: "User"
   belongs_to :rejected_by, class_name: "User"
 
+  def create_pending_action
+    UserAction.log_action!(action_type: UserAction::PENDING,
+                           user_id: user_id,
+                           acting_user_id: user_id,
+                           target_topic_id: topic_id,
+                           queued_post_id: id)
+  end
+
   def self.states
     @states ||= Enum.new(:new, :approved, :rejected)
   end
 
+  # By default queues are hidden from moderators
+  def self.visible_queues
+    @visible_queues ||= Set.new(['default'])
+  end
+
+  def self.visible
+    where(queue: visible_queues.to_a)
+  end
+
+  def self.new_posts
+    visible.where(state: states[:new])
+  end
+
   def self.new_count
-    where(state: states[:new]).count
+    new_posts.count
+  end
+
+  def visible?
+    QueuedPost.visible_queues.include?(queue)
   end
 
   def self.broadcast_new!
     msg = { post_queue_new_count: QueuedPost.new_count }
-    MessageBus.publish('/queue_counts', msg, user_ids: User.staff.pluck(:id))
+    DiscourseBus.publish('/queue_counts', msg, user_ids: User.staff.pluck(:id))
   end
 
   def reject!(rejected_by)
@@ -38,7 +63,7 @@ class QueuedPost < ActiveRecord::Base
     QueuedPost.transaction do
       change_to!(:approved, approved_by)
 
-      creator = PostCreator.new(user, create_options)
+      creator = PostCreator.new(user, create_options.merge(skip_validations: true))
       created_post = creator.create
     end
     created_post
@@ -59,11 +84,15 @@ class QueuedPost < ActiveRecord::Base
       row_count = QueuedPost.where('id = ? AND state <> ?', id, state_val).update_all(updates)
       raise InvalidStateTransition.new if row_count == 0
 
+      if [:rejected, :approved].include?(state)
+        UserAction.where(queued_post_id: id).destroy_all
+      end
+
       # Update the record in memory too, and clear the dirty flag
       updates.each {|k, v| send("#{k}=", v) }
       changes_applied
 
-      QueuedPost.broadcast_new!
+      QueuedPost.broadcast_new! if visible?
     end
 
 end

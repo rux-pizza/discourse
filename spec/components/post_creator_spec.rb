@@ -62,9 +62,17 @@ describe PostCreator do
         expect(creator.spam?).to eq(false)
       end
 
+      it "triggers extensibility events" do
+        DiscourseEvent.expects(:trigger).with(:before_create_post, anything).once
+        DiscourseEvent.expects(:trigger).with(:validate_post, anything).once
+        DiscourseEvent.expects(:trigger).with(:topic_created, anything, anything, user).once
+        DiscourseEvent.expects(:trigger).with(:post_created, anything, anything, user).once
+        creator.create
+      end
+
       it "does not notify on system messages" do
         admin = Fabricate(:admin)
-        messages = MessageBus.track_publish do
+        messages = DiscourseBus.track_publish do
           p = PostCreator.create(admin, basic_topic_params.merge(post_type: Post.types[:moderator_action]))
           PostCreator.create(admin, basic_topic_params.merge(topic_id: p.topic_id, post_type: Post.types[:moderator_action]))
         end
@@ -85,7 +93,7 @@ describe PostCreator do
         created_post = nil
         reply = nil
 
-        messages = MessageBus.track_publish do
+        messages = DiscourseBus.track_publish do
           created_post = PostCreator.new(admin, basic_topic_params.merge(category: cat.id)).create
           reply = PostCreator.new(admin, raw: "this is my test reply 123 testing", topic_id: created_post.topic_id).create
         end
@@ -110,7 +118,7 @@ describe PostCreator do
       it 'generates the correct messages for a normal topic' do
 
         p = nil
-        messages = MessageBus.track_publish do
+        messages = DiscourseBus.track_publish do
           p = creator.create
         end
 
@@ -137,6 +145,7 @@ describe PostCreator do
       it 'queues up post processing job when saved' do
         Jobs.expects(:enqueue).with(:feature_topic_users, has_key(:topic_id))
         Jobs.expects(:enqueue).with(:process_post, has_key(:post_id))
+        Jobs.expects(:enqueue).with(:post_alert, has_key(:post_id))
         Jobs.expects(:enqueue).with(:notify_mailing_list_subscribers, has_key(:post_id))
         creator.create
       end
@@ -144,6 +153,7 @@ describe PostCreator do
       it 'passes the invalidate_oneboxes along to the job if present' do
         Jobs.stubs(:enqueue).with(:feature_topic_users, has_key(:topic_id))
         Jobs.expects(:enqueue).with(:notify_mailing_list_subscribers, has_key(:post_id))
+        Jobs.expects(:enqueue).with(:post_alert, has_key(:post_id))
         Jobs.expects(:enqueue).with(:process_post, has_key(:invalidate_oneboxes))
         creator.opts[:invalidate_oneboxes] = true
         creator.create
@@ -152,6 +162,7 @@ describe PostCreator do
       it 'passes the image_sizes along to the job if present' do
         Jobs.stubs(:enqueue).with(:feature_topic_users, has_key(:topic_id))
         Jobs.expects(:enqueue).with(:notify_mailing_list_subscribers, has_key(:post_id))
+        Jobs.expects(:enqueue).with(:post_alert, has_key(:post_id))
         Jobs.expects(:enqueue).with(:process_post, has_key(:image_sizes))
         creator.opts[:image_sizes] = {'http://an.image.host/image.jpg' => {'width' => 17, 'height' => 31}}
         creator.create
@@ -491,6 +502,7 @@ describe PostCreator do
       # does not notify an unrelated user
       expect(unrelated.notifications.count).to eq(0)
       expect(post.topic.subtype).to eq(TopicSubtype.user_to_user)
+
       expect(target_user1.notifications.count).to eq(1)
       expect(target_user2.notifications.count).to eq(1)
     end

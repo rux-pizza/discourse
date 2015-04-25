@@ -240,6 +240,9 @@ en:
       approval:
         title: "Post Needs Approval"
         description: "We've received your new post but it needs to be approved by a moderator before it will appear. Please be patient."
+        pending_posts:
+          one: "You have <strong>1</strong> post pending."
+          other: "You have <strong>{{count}}</strong> posts pending."
         ok: "OK"
 
     user_action:
@@ -308,6 +311,7 @@ en:
       "11": "Edits"
       "12": "Sent Items"
       "13": "Inbox"
+      "14": "Pending"
 
     categories:
       all: "all categories"
@@ -612,7 +616,7 @@ en:
     logout: "You were logged out."
     refresh: "Refresh"
     read_only_mode:
-      enabled: "An administrator enabled read-only mode. You can continue to browse the site but interactions may not work."
+      enabled: "Read-only mode is enabled. You can continue to browse the site but interactions may not work."
       login_disabled: "Login is disabled while the site is in read only mode."
     too_few_topics_notice: "Create at least 5 public topics and %{posts} public posts to get discussion started. New users cannot earn trust levels unless there's content for them to read. This message appears only to staff."
 
@@ -738,6 +742,7 @@ en:
         title_too_long: "Title can't be more than {{max}} characters"
         post_missing: "Post can't be empty"
         post_length: "Post must be at least {{min}} characters"
+        try_like: 'Have you tried the <i class="fa fa-heart"></i> button?'
         category_missing: "You must choose a category"
 
       save_edit: "Save Edit"
@@ -753,7 +758,7 @@ en:
       title_placeholder: "What is this discussion about in one brief sentence?"
       edit_reason_placeholder: "why are you editing?"
       show_edit_reason: "(add edit reason)"
-      reply_placeholder: "Type here. Use Markdown or BBCode to format. Drag or paste an image to upload it."
+      reply_placeholder: "Type here. Use Markdown, BBCode, or HTML to format. Drag or paste an image to upload it."
       view_new_post: "View your new post."
       saving: "Saving..."
       saved: "Saved!"
@@ -955,7 +960,7 @@ en:
             =0 {}
             one { {BOTH, select, true{and } false {is } other{}} <a href='/new'>1 new</a> topic}
             other { {BOTH, select, true{and } false {are } other{}} <a href='/new'># new</a> topics}
-        } remaining, or {CATEGORY, select, true {browse other topics in {catLink}} false {{latestLink}} other {}}."
+        } remaining, or {CATEGORY, select, true {browse other topics in {catLink}} false {{latestLink}} other {}}"
 
       browse_all_categories: Browse all categories
 

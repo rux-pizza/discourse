@@ -4,6 +4,19 @@
 require_dependency 'cache'
 class DiscourseRedis
 
+  def self.recently_readonly?
+    return false unless @last_read_only
+    @last_read_only > 15.seconds.ago
+  end
+
+  def self.received_readonly!
+    @last_read_only = Time.now
+  end
+
+  def self.clear_readonly!
+    @last_read_only = nil
+  end
+
   def self.raw_connection(config = nil)
     config ||= self.config
     redis_opts = {host: config['host'], port: config['port'], db: config['db']}
@@ -20,8 +33,8 @@ class DiscourseRedis
     "redis://#{(':' + config['password'] + '@') if config['password']}#{config['host']}:#{config['port']}/#{config['db']}"
   end
 
-  def initialize
-    @config = DiscourseRedis.config
+  def initialize(config=nil)
+    @config = config || DiscourseRedis.config
     @redis = DiscourseRedis.raw_connection(@config)
   end
 
@@ -34,10 +47,23 @@ class DiscourseRedis
     self.class.url(@config)
   end
 
+  def self.ignore_readonly
+    yield
+  rescue Redis::CommandError => ex
+    if ex.message =~ /READONLY/
+      unless DiscourseRedis.recently_readonly?
+        STDERR.puts "WARN: Redis is in a readonly state. Performed a noop"
+      end
+      DiscourseRedis.received_readonly!
+    else
+      raise ex
+    end
+  end
+
   # prefix the key with the namespace
   def method_missing(meth, *args, &block)
     if @redis.respond_to?(meth)
-      @redis.send(meth, *args, &block)
+      DiscourseRedis.ignore_readonly { @redis.send(meth, *args, &block) }
     else
       super
     end
@@ -54,28 +80,36 @@ class DiscourseRedis
    :zremrangebyscore, :zrevrange, :zrevrangebyscore, :zrevrank, :zrangebyscore].each do |m|
     define_method m do |*args|
       args[0] = "#{DiscourseRedis.namespace}:#{args[0]}"
-      @redis.send(m, *args)
+      DiscourseRedis.ignore_readonly { @redis.send(m, *args) }
     end
   end
 
   def del(k)
-    k = "#{DiscourseRedis.namespace}:#{k}"
-    @redis.del k
+    DiscourseRedis.ignore_readonly do
+      k = "#{DiscourseRedis.namespace}:#{k}"
+      @redis.del k
+    end
   end
 
   def keys(pattern=nil)
-    len = DiscourseRedis.namespace.length + 1
-    @redis.keys("#{DiscourseRedis.namespace}:#{pattern || '*'}").map{
-      |k| k[len..-1]
-    }
+    DiscourseRedis.ignore_readonly do
+      len = DiscourseRedis.namespace.length + 1
+      @redis.keys("#{DiscourseRedis.namespace}:#{pattern || '*'}").map{
+        |k| k[len..-1]
+      }
+    end
   end
 
   def delete_prefixed(prefix)
-    keys("#{prefix}*").each { |k| $redis.del(k) }
+    DiscourseRedis.ignore_readonly do
+      keys("#{prefix}*").each { |k| $redis.del(k) }
+    end
   end
 
   def flushdb
-    keys.each{|k| del(k)}
+    DiscourseRedis.ignore_readonly do
+      keys.each{|k| del(k)}
+    end
   end
 
   def reconnect
