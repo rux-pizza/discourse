@@ -2,9 +2,6 @@ require 'spec_helper'
 require_dependency 'post_destroyer'
 
 describe PostAction do
-  it { is_expected.to belong_to :user }
-  it { is_expected.to belong_to :post }
-  it { is_expected.to belong_to :post_action_type }
   it { is_expected.to rate_limit }
 
   let(:moderator) { Fabricate(:moderator) }
@@ -202,7 +199,7 @@ describe PostAction do
     it 'should generate notifications correctly' do
       ActiveRecord::Base.observers.enable :all
       PostAction.act(codinghorror, post, PostActionType.types[:like])
-      Notification.count.should == 1
+      expect(Notification.count).to eq(1)
 
       mutee = Fabricate(:user)
 
@@ -210,13 +207,13 @@ describe PostAction do
       MutedUser.create!(user_id: post.user.id, muted_user_id: mutee.id)
       PostAction.act(mutee, post, PostActionType.types[:like])
 
-      Notification.count.should == 1
+      expect(Notification.count).to eq(1)
 
       # you can not mute admin, sorry
       MutedUser.create!(user_id: post.user.id, muted_user_id: admin.id)
       PostAction.act(admin, post, PostActionType.types[:like])
 
-      Notification.count.should == 2
+      expect(Notification.count).to eq(2)
 
     end
 
@@ -458,6 +455,7 @@ describe PostAction do
       end
 
       expect(topic.reload.closed).to eq(true)
+
     end
 
   end

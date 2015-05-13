@@ -206,7 +206,7 @@ class User < ActiveRecord::Base
   # tricky, we need our bus to be subscribed from the right spot
   def sync_notification_channel_position
     @unread_notifications_by_type = nil
-    self.notification_channel_position = DiscourseBus.last_id("/notification/#{id}")
+    self.notification_channel_position = MessageBus.last_id("/notification/#{id}")
   end
 
   def invited_by
@@ -298,7 +298,7 @@ class User < ActiveRecord::Base
   end
 
   def publish_notifications_state
-    DiscourseBus.publish("/notification/#{id}",
+    MessageBus.publish("/notification/#{id}",
                        {unread_notifications: unread_notifications,
                         unread_private_messages: unread_private_messages,
                         total_unread_notifications: total_unread_notifications},
@@ -415,11 +415,11 @@ class User < ActiveRecord::Base
     return letter_avatar_template(username) if !uploaded_avatar_id
     id = uploaded_avatar_id
     username ||= ""
-    "/user_avatar/#{RailsMultisite::ConnectionManagement.current_hostname}/#{username.downcase}/{size}/#{id}.png"
+    "#{Discourse.base_uri}/user_avatar/#{RailsMultisite::ConnectionManagement.current_hostname}/#{username.downcase}/{size}/#{id}.png"
   end
 
   def self.letter_avatar_template(username)
-    "/letter_avatar/#{username.downcase}/{size}/#{LetterAvatar.version}.png"
+    "#{Discourse.base_uri}/letter_avatar/#{username.downcase}/{size}/#{LetterAvatar.version}.png"
   end
 
   def avatar_template
@@ -850,11 +850,13 @@ class User < ActiveRecord::Base
   end
 
   def send_approval_email
-    Jobs.enqueue(:user_email,
-      type: :signup_after_approval,
-      user_id: id,
-      email_token: email_tokens.first.token
-    )
+    if SiteSetting.must_approve_users
+      Jobs.enqueue(:user_email,
+        type: :signup_after_approval,
+        user_id: id,
+        email_token: email_tokens.first.token
+      )
+    end
   end
 
   def set_default_email_digest
@@ -887,7 +889,7 @@ class User < ActiveRecord::Base
     to_destroy.each do |u|
       begin
         destroyer.destroy(u, context: I18n.t(:purge_reason))
-      rescue Discourse::InvalidAccess
+      rescue Discourse::InvalidAccess, UserDestroyer::PostsExistError
         # if for some reason the user can't be deleted, continue on to the next one
       end
     end

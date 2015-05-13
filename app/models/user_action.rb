@@ -142,6 +142,7 @@ SQL
       SELECT
         a.id,
         t.title, a.action_type, a.created_at, t.id topic_id,
+        t.closed AS topic_closed, t.archived AS topic_archived,
         a.user_id AS target_user_id, au.name AS target_name, au.username AS target_username,
         coalesce(p.post_number, 1) post_number, p.id as post_id,
         p.reply_to_post_number,
@@ -224,7 +225,7 @@ SQL
         end
 
         if action.user
-          DiscourseBus.publish("/users/#{action.user.username.downcase}", action.id, user_ids: [user_id], group_ids: group_ids)
+          MessageBus.publish("/users/#{action.user.username.downcase}", action.id, user_ids: [user_id], group_ids: group_ids)
         end
 
         action
@@ -240,7 +241,7 @@ SQL
     require_parameters(hash, :action_type, :user_id, :acting_user_id, :target_topic_id, :target_post_id)
     if action = UserAction.find_by(hash.except(:created_at))
       action.destroy
-      DiscourseBus.publish("/user/#{hash[:user_id]}", {user_action_id: action.id, remove: true})
+      MessageBus.publish("/user/#{hash[:user_id]}", {user_action_id: action.id, remove: true})
     end
 
     update_like_count(hash[:user_id], hash[:action_type], -1)

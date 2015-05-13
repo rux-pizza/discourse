@@ -37,6 +37,26 @@ describe PostsController do
       expect(json["errors"][0]).to eq(I18n.t("poll.default_poll_must_have_at_least_2_options"))
     end
 
+    it "should have at most 'SiteSetting.poll_maximum_options' options" do
+      raw = "[poll]"
+      (SiteSetting.poll_maximum_options + 1).times { |n| raw << "\n- #{n}" }
+      raw << "[/poll]"
+
+      xhr :post, :create, { title: title, raw: raw }
+
+      expect(response).not_to be_success
+      json = ::JSON.parse(response.body)
+      expect(json["errors"][0]).to eq(I18n.t("poll.default_poll_must_have_less_options", max: SiteSetting.poll_maximum_options))
+    end
+
+    it "prevents self-xss" do
+      xhr :post, :create, { title: title, raw: "[poll name=<script>alert('xss')</script>]\n- A\n- B\n[/poll]" }
+      expect(response).to be_success
+      json = ::JSON.parse(response.body)
+      expect(json["cooked"]).to match("data-poll-")
+      expect(json["polls"]["&lt;script&gt;alert(xss)&lt;/script&gt;"]).to be
+    end
+
     describe "edit window" do
 
       describe "within the first 5 minutes" do
@@ -53,6 +73,14 @@ describe PostsController do
           expect(response).to be_success
           json = ::JSON.parse(response.body)
           expect(json["post"]["polls"]["poll"]["options"][2]["html"]).to eq("C")
+        end
+
+        it "resets the votes" do
+          DiscoursePoll::Poll.vote(post_id, "poll", ["5c24fc1df56d764b550ceae1b9319125"], user.id)
+          xhr :put, :update, { id: post_id, post: { raw: "[poll]\n- A\n- B\n- C\n[/poll]" } }
+          expect(response).to be_success
+          json = ::JSON.parse(response.body)
+          expect(json["post"]["polls_votes"]).to_not be
         end
 
       end
@@ -72,7 +100,7 @@ describe PostsController do
           xhr :put, :update, { id: post_id, post: { raw: new_raw } }
           expect(response).not_to be_success
           json = ::JSON.parse(response.body)
-          expect(json["errors"][0]).to eq(I18n.t("poll.cannot_change_polls_after_5_minutes"))
+          expect(json["errors"][0]).to eq(I18n.t("poll.op_cannot_edit_options_after_5_minutes"))
         end
 
         it "can be edited by staff" do
@@ -92,14 +120,14 @@ describe PostsController do
   describe "named polls" do
 
     it "should have different options" do
-      xhr :post, :create, { title: title, raw: "[poll name=foo]\n- A\n- A[/poll]" }
+      xhr :post, :create, { title: title, raw: "[poll name=""foo""]\n- A\n- A[/poll]" }
       expect(response).not_to be_success
       json = ::JSON.parse(response.body)
       expect(json["errors"][0]).to eq(I18n.t("poll.named_poll_must_have_different_options", name: "foo"))
     end
 
     it "should have at least 2 options" do
-      xhr :post, :create, { title: title, raw: "[poll name=foo]\n- A[/poll]" }
+      xhr :post, :create, { title: title, raw: "[poll name='foo']\n- A[/poll]" }
       expect(response).not_to be_success
       json = ::JSON.parse(response.body)
       expect(json["errors"][0]).to eq(I18n.t("poll.named_poll_must_have_at_least_2_options", name: "foo"))

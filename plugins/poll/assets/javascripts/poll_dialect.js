@@ -8,7 +8,7 @@
   const WHITELISTED_ATTRIBUTES = ["type", "name", "min", "max", "step", "order", "color", "background", "status"];
   const WHITELISTED_STYLES = ["color", "background"];
 
-  const ATTRIBUTES_REGEX = new RegExp("(" + WHITELISTED_ATTRIBUTES.join("|") + ")=[^\\s\\]]+", "g");
+  const ATTRIBUTES_REGEX = new RegExp("(" + WHITELISTED_ATTRIBUTES.join("|") + ")=['\"]?[^\\s\\]=]+['\"]?", "g");
 
   Discourse.Dialect.replaceBlock({
     start: /\[poll([^\]]*)\]([\s\S]*)/igm,
@@ -44,8 +44,9 @@
 
       // extract poll attributes
       (matches[1].match(ATTRIBUTES_REGEX) || []).forEach(function(m) {
-        var attr = m.split("=");
-        attributes[DATA_PREFIX + attr[0]] = attr[1];
+        var attr = m.split("="), name = attr[0], value = attr[1];
+        value = Handlebars.Utils.escapeExpression(value.replace(/["']/g, ""));
+        attributes[DATA_PREFIX + name] = value;
       });
 
       // we might need these values later...
@@ -97,13 +98,23 @@
         contents[0][o].splice(1, 0, attr);
       }
 
-      // that's our poll!
-      var result = ["div", attributes].concat(contents);
+      var result = ["div", attributes],
+          poll = ["div"];
 
-      // add a small paragraph displaying the total number of votes
-      result.push(["p", I18n.t("poll.total_votes", { count: 0 })]);
+      // 1 - POLL CONTAINER
+      var container = ["div", { "class": "poll-container" }].concat(contents);
+      poll.push(container);
 
-      // add some information when type is "multiple"
+      // 2 - POLL INFO
+      var info = ["div", { "class": "poll-info" }];
+
+      // # of voters
+      info.push(["p",
+                  ["span", { "class": "info-number" }, "0"],
+                  ["span", { "class": "info-text"}, I18n.t("poll.voters", { count: 0 })]
+                ]);
+
+      // multiple help text
       if (attributes[DATA_PREFIX + "type"] === "multiple") {
         var optionCount = contents[0].length - 1;
 
@@ -130,21 +141,35 @@
           }
         }
 
-        if (help) { result.push(["p", help]); }
+        if (help) { info.push(["p", help]); }
+      }
 
-        // add "cast-votes" button
-        result.push(["a", { "class": "button cast-votes", "title": I18n.t("poll.cast-votes.title") }, I18n.t("poll.cast-votes.label")]);
+      poll.push(info);
+
+      // 3 - BUTTONS
+      var buttons = ["div", { "class": "poll-buttons" }];
+
+      // add "cast-votes" button
+      if (attributes[DATA_PREFIX + "type"] === "multiple") {
+        buttons.push(["a", { "class": "button cast-votes", "title": I18n.t("poll.cast-votes.title") }, I18n.t("poll.cast-votes.label")]);
       }
 
       // add "toggle-results" button
-      result.push(["a", { "class": "button toggle-results", "title": I18n.t("poll.show-results.title") }, I18n.t("poll.show-results.label")]);
+      buttons.push(["a", { "class": "button toggle-results", "title": I18n.t("poll.show-results.title") }, I18n.t("poll.show-results.label")]);
+
+      // 4 - MIX IT ALL UP
+      result.push(poll);
+      result.push(buttons);
 
       return result;
     }
   });
 
   Discourse.Markdown.whiteListTag("div", "class", "poll");
+  Discourse.Markdown.whiteListTag("div", "class", /^poll-(info|container|buttons)/);
   Discourse.Markdown.whiteListTag("div", "data-*");
+
+  Discourse.Markdown.whiteListTag("span", "class", /^info-(number|text)/);
 
   Discourse.Markdown.whiteListTag("a", "class", /^button (cast-votes|toggle-results)/);
 

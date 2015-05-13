@@ -229,6 +229,10 @@ Discourse::Application.routes.draw do
   get "privacy" => "static#show", id: "privacy", as: 'privacy'
   get "signup" => "list#latest"
 
+  get "users/admin-login" => "users#admin_login"
+  put "users/admin-login" => "users#admin_login"
+  get "users/admin-login/:token" => "users#admin_login"
+
   post "users/toggle-anon" => "users#toggle_anon"
   post "users/read-faq" => "users#read_faq"
   get "users/search/users" => "users#search_users"
@@ -283,6 +287,8 @@ Discourse::Application.routes.draw do
 
   get "highlight-js/:hostname/:version.js" => "highlight_js#show", format: false, constraints: { hostname: /[\w\.-]+/ }
 
+  get "stylesheets/:name.css" => "stylesheets#show", constraints: {name: /[a-z0-9_]+/}
+
   get "uploads/:site/:id/:sha.:extension" => "uploads#show", constraints: {site: /\w+/, id: /\d+/, sha: /[a-z0-9]{15,16}/i, extension: /\w{2,}/}
   get "uploads/:site/:sha" => "uploads#show", constraints: { site: /\w+/, sha: /[a-z0-9]{40}/}
   post "uploads" => "uploads#create"
@@ -323,9 +329,8 @@ Discourse::Application.routes.draw do
     end
   end
 
-  get "notifications" => "notifications#recent"
-  get "notifications/history" => "notifications#history"
-  put "notifications/reset-new" => 'notifications#reset_new'
+  get 'notifications' => 'notifications#index'
+  put 'notifications/mark-read' => 'notifications#mark_read'
 
   match "/auth/:provider/callback", to: "users/omniauth_callbacks#complete", via: [:get, :post]
   match "/auth/failure", to: "users/omniauth_callbacks#failure", via: [:get, :post]
@@ -410,6 +415,8 @@ Discourse::Application.routes.draw do
 
   get 'embed/comments' => 'embed#comments'
   get 'embed/count' => 'embed#count'
+
+  get "new-topic" => "list#latest"
 
   # Topic routes
   get "t/id_for/:slug" => "topics#id_for_slug"

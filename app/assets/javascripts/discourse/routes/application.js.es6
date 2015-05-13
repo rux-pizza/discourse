@@ -1,4 +1,5 @@
 import showModal from 'discourse/lib/show-modal';
+import OpenComposer from "discourse/mixins/open-composer";
 
 function unlessReadOnly(method) {
   return function() {
@@ -10,7 +11,7 @@ function unlessReadOnly(method) {
   };
 }
 
-const ApplicationRoute = Discourse.Route.extend({
+const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
 
   siteTitle: Discourse.computed.setting('title'),
 
@@ -38,7 +39,8 @@ const ApplicationRoute = Discourse.Route.extend({
     },
 
     postWasEnqueued(details) {
-      showModal('post-enqueued', {model: details, title: 'queue.approval.title' });
+      const title = details.reason ? 'queue_reason.' + details.reason + '.title' : 'queue.approval.title';
+      showModal('post-enqueued', {model: details, title });
     },
 
     composePrivateMessage(user, post) {
@@ -145,6 +147,10 @@ const ApplicationRoute = Discourse.Route.extend({
             factory = this.container.lookupFactory('controller:' + controllerName);
 
       this.render(w, {into: 'modal/topic-bulk-actions', outlet: 'bulkOutlet', controller: factory ? controllerName : 'topic-bulk-actions'});
+    },
+
+    createNewTopicViaParams: function(title, body, category_id, category) {
+      this.openComposerWithParams(this.controllerFor('discovery/topics'), title, body, category_id, category);
     }
   },
 

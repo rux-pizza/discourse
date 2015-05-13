@@ -89,6 +89,11 @@ class ApplicationController < ActionController::Base
     render_json_error I18n.t("rate_limiter.too_many_requests", time_left: time_left), type: :rate_limit, status: 429
   end
 
+  rescue_from PG::ReadOnlySqlTransaction do |e|
+    Discourse.received_readonly!
+    raise Discourse::ReadOnly
+  end
+
   rescue_from Discourse::NotLoggedIn do |e|
     raise e if Rails.env.test?
 
@@ -224,7 +229,14 @@ class ApplicationController < ActionController::Base
 
   def render_json_dump(obj, opts=nil)
     opts ||= {}
-    obj['__rest_serializer'] = "1" if opts[:rest_serializer]
+    if opts[:rest_serializer]
+      obj['__rest_serializer'] = "1"
+      opts.each do |k, v|
+        obj[k] = v if k.to_s.start_with?("refresh_")
+      end
+    end
+
+
     render json: MultiJson.dump(obj), status: opts[:status] || 200
   end
 
@@ -249,7 +261,7 @@ class ApplicationController < ActionController::Base
     elsif params[:external_id]
       SingleSignOnRecord.find_by(external_id: params[:external_id]).try(:user)
     end
-    raise Discourse::NotFound.new if user.blank?
+    raise Discourse::NotFound if user.blank?
 
     guardian.ensure_can_see!(user)
     user
