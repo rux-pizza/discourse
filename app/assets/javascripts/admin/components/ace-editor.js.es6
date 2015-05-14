@@ -37,7 +37,7 @@ export default Ember.Component.extend({
 
         editor.setTheme("ace/theme/chrome");
         editor.setShowPrintMargin(false);
-        editor.getSession().setMode("ace/mode/" + (self.get('mode')));
+        editor.getSession().setMode("ace/mode/" + self.get('mode'));
         editor.on('change', function() {
           self._skipContentChangeEvent = true;
           self.set('content', editor.getSession().getValue());
