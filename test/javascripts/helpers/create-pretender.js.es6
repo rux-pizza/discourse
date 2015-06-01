@@ -103,6 +103,10 @@ export default function() {
       return response(fixturesByUrl['/t/280/1.json']);
     });
 
+    this.get("/t/28830.json", function() {
+      return response(fixturesByUrl['/t/28830/1.json']);
+    });
+
     this.get("/t/id_for/:slug", function() {
       return response({id: 280, slug: "internationalization-localization", url: "/t/internationalization-localization/280"});
     });
@@ -125,7 +129,7 @@ export default function() {
 
     this.get('/queued_posts', function() {
       return response({
-        queued_posts: [{id: 1, raw: 'queued post text'}]
+        queued_posts: [{id: 1, raw: 'queued post text', can_delete_user: true}]
       });
     });
 
@@ -169,6 +173,14 @@ export default function() {
       data.post.id = request.params.post_id;
       data.post.version = 2;
       return response(200, data.post);
+    });
+
+    this.get('/t/403.json', () => {
+      return response(403, {});
+    });
+
+    this.get('/t/500.json', () => {
+      return response(502, {});
     });
 
     this.put('/t/:slug/:id', (request) => {

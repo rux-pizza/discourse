@@ -17,7 +17,6 @@
 .topic-list {
   width: 100%;
   border-collapse: collapse;
-  background: rgba($secondary, .8);
 
   > tbody > tr {
     &.has-excerpt .star {
@@ -107,7 +106,6 @@
   .category .badge-notification {
     background-color:transparent;
     color: scale-color($primary, $lightness: 50%);
-    position: inherit;
   }
 
   .subcategories .badge {

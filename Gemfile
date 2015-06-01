@@ -51,23 +51,21 @@ gem 'message_bus'
 gem 'rails_multisite', path: 'vendor/gems/rails_multisite'
 
 gem 'redcarpet', require: false
-gem 'eventmachine'
 gem 'fast_xs'
 
 gem 'fast_xor'
 
 # while we sort out https://github.com/sdsykes/fastimage/pull/46
 gem 'fastimage_discourse', require: 'fastimage'
-gem 'fog', '1.26.0', require: false
+gem 'aws-sdk', require: false
+gem 'excon', require: false
 gem 'unf', require: false
 
 gem 'email_reply_parser'
 
-# note: for image_optim to correctly work you need
-# sudo apt-get install -y advancecomp gifsicle jpegoptim libjpeg-progs optipng pngcrush
-#
-# Sam: held back, getting weird errors in latest
-gem 'image_optim', '0.9.1'
+# note: for image_optim to correctly work you need to follow
+# https://github.com/toy/image_optim
+gem 'image_optim'
 gem 'multi_json'
 gem 'mustache'
 gem 'nokogiri'
@@ -96,7 +94,7 @@ gem 'sass'
 gem 'sidekiq'
 
 # for sidekiq web
-gem 'sinatra', require: nil
+gem 'sinatra', require: false
 
 gem 'therubyracer'
 gem 'thin', require: false

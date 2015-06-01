@@ -74,18 +74,24 @@ class Upload < ActiveRecord::Base
       upload.url               = ""
       upload.origin            = options[:origin][0...1000] if options[:origin]
 
-      # deal with width & height for images
-      upload = resize_image(filename, file, upload) if FileHelper.is_image?(filename)
+      if FileHelper.is_image?(filename)
+        # deal with width & height for images
+        upload = resize_image(filename, file, upload)
+        # optimize image
+        ImageOptim.new.optimize_image!(file.path) rescue nil
+      end
 
       return upload unless upload.save
 
       # store the file and update its url
-      url = Discourse.store.store_upload(file, upload, options[:content_type])
-      if url.present?
-        upload.url = url
-        upload.save
-      else
-        upload.errors.add(:url, I18n.t("upload.store_failure", { upload_id: upload.id, user_id: user_id }))
+      File.open(file.path) do |f|
+        url = Discourse.store.store_upload(f, upload, options[:content_type])
+        if url.present?
+          upload.url = url
+          upload.save
+        else
+          upload.errors.add(:url, I18n.t("upload.store_failure", { upload_id: upload.id, user_id: user_id }))
+        end
       end
 
       # return the uploaded file
@@ -128,8 +134,10 @@ class Upload < ActiveRecord::Base
   def self.get_from_url(url)
     return if url.blank?
     # we store relative urls, so we need to remove any host/cdn
-    url = url.gsub(/^#{Discourse.asset_host}/i, "") if Discourse.asset_host.present?
-    Upload.find_by(url: url) if Discourse.store.has_been_uploaded?(url)
+    url = url.sub(/^#{Discourse.asset_host}/i, "") if Discourse.asset_host.present?
+    # when using s3, we need to replace with the absolute base url
+    url = url.sub(/^#{SiteSetting.s3_cdn_url}/i, Discourse.store.absolute_base_url) if SiteSetting.s3_cdn_url.present?
+    Upload.find_by(url: url)
   end
 
   def self.fix_image_orientation(path)
