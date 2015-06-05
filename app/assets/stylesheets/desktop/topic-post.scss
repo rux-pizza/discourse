@@ -226,22 +226,26 @@ nav.post-controls {
 }
 
 .embedded-posts {
-  background: dark-light-diff($primary, $secondary, 90%, -65%) !important;
   h1, h2, h3 { margin: 10px 0; }
 
   .topic-body {
-    background: dark-light-diff($primary, $secondary, 90%, -65%) !important;
     box-sizing: border-box;
     width: calc(100% - 60px); // [100% - .topic-avatar width]
     // WARNING: overflow hide is required for quoted / embedded images
     // which expect "normal" post width, but expansions are narrower
     overflow: hidden;
-    padding: 10px 15px 15px 15px;
+    padding: 15px 15px 0 15px;
+  }
+
+  // this is covered by .topic-body .regular on a normal post
+  // but no such class structure exists for an embedded, expanded post
+  .cooked {
+    margin-top: 15px;
   }
 
   .topic-avatar {
     padding-left: 15px;
-    padding-top: 0;
+    padding-top: 15px;
   }
 
   // bottom means "reply expansion" below a post
@@ -268,17 +272,9 @@ nav.post-controls {
     padding-right: 0;
   }
 
-  .post-date { color: scale-color($primary, $lightness: 50%); }
+  .post-date { color: scale-color($primary, $lightness: 60%); }
   .fa-arrow-up, .fa-arrow-down { margin-left: 5px; }
-  .row {
-    border-top: 1px solid darken(scale-color-diff(), 10%);
-  }
   .reply:first-of-type .row { border-top: none; }
-
-  .quote .title, blockquote, .onebox, .onebox-result {
-    background: darken(scale-color-diff(), 5%);
-    border-left: 5px solid darken(scale-color-diff(), 12%);
-  }
 
   .topic-meta-data {
     position: relative;
@@ -292,7 +288,7 @@ nav.post-controls {
       color: scale-color($primary, $lightness: 30%);
     }
   }
-  .arrow {color: scale-color($primary, $lightness: 50%);}
+  .arrow {color: scale-color($primary, $lightness: 60%);}
 }
 
 .post-action {
@@ -309,7 +305,7 @@ a.star {
 
 .topic-map {
   margin: 20px 0 0 0;
-  background: dark-light-diff($primary, $secondary, 97%, -45%);
+  background: dark-light-diff($primary, $secondary, 97%, -75%);
   border: 1px solid dark-light-diff($primary, $secondary, 90%, -65%);
   border-top: none; // would cause double top border
 
@@ -415,12 +411,12 @@ a.star {
       border: 0;
       padding: 0 23px;
       color: $primary;
-      background: dark-light-diff($primary, $secondary, 97%, -45%);
+      background: dark-light-diff($primary, $secondary, 97%, -75%);
       border-left: 1px solid dark-light-diff($primary, $secondary, 90%, -65%);
       border-top: 1px solid dark-light-diff($primary, $secondary, 90%, -65%);
       &:hover {
         color: $primary;
-        background: dark-light-diff($primary, $secondary, 90%, -65%);
+        background: dark-light-diff($primary, $secondary, 90%, -80%);
       }
 
       &.collapsed {
