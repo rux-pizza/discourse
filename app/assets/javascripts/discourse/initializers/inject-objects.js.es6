@@ -19,11 +19,13 @@ function injectAll(app, name) {
 export default {
   name: "inject-objects",
   initialize(container, app) {
-
     const appEvents = AppEvents.create();
     app.register('app-events:main', appEvents, { instantiate: false });
     injectAll(app, 'appEvents');
     Discourse.URL.appEvents = appEvents;
+
+    app.register('store:main', Store);
+    inject(app, 'store', 'route', 'controller');
 
     // Inject Discourse.Site to avoid using Discourse.Site.current()
     const site = Discourse.Site.current();
@@ -37,9 +39,6 @@ export default {
     // Inject Session for transient data
     app.register('session:main', Session.current(), { instantiate: false });
     injectAll(app, 'session');
-
-    app.register('store:main', Store);
-    inject(app, 'store', 'route', 'controller');
 
     app.register('current-user:main', Discourse.User.current(), { instantiate: false });
     inject(app, 'currentUser', 'component', 'route', 'controller');

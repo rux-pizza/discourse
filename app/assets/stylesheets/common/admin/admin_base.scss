@@ -3,12 +3,30 @@
 @import "common/foundation/mixins";
 @import "common/foundation/helpers";
 
+$mobile-breakpoint: 700px;
+
+// Change the box model for .admin-content
+@media (max-width: $mobile-breakpoint) {
+  .admin-content {
+    box-sizing: border-box;
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    input[type="text"] {
+      // Desktop/_discourse.scss sets a height on text-input elements. Using `box-sizing: border-box`
+      // this value either needs to be increased or set to auto. `mobile.css` seems to not set a height on text-inputs.
+      height: auto;
+    }
+  }
+}
+
 .admin-contents table {
   width: 100%;
   tr {text-align: left;}
   td, th {padding: 8px;}
-  th {border-top: 1px solid scale-color-diff();}
-  td {border-bottom: 1px solid scale-color-diff(); border-top: 1px solid scale-color-diff();}
+  th {border-top: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);}
+  td {border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%); border-top: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);}
   tr:hover { background-color: darken($secondary, 2.5%); }
   tr.selected { background-color: lighten($primary, 80%); }
   .filters input { margin-bottom: 0; }
@@ -23,7 +41,7 @@ td.flaggers td {
   font-size: 0.857em;
   float: right;
   margin-right: 10px;
-  background-color: scale-color-diff();
+  background-color: dark-light-diff($primary, $secondary, 90%, -60%);
   padding: 2px 5px;
   border-radius: 5px;
   color: $primary;
@@ -32,7 +50,7 @@ td.flaggers td {
 .admin-content {
   margin-bottom: 50px;
   .admin-contents {
-    padding: 8px;
+    padding: 8px 0;
     @include clearfix();
   }
 
@@ -96,6 +114,10 @@ td.flaggers td {
   margin-top: 20px;
 }
 
+.admin-container .controls {
+  @include clearfix;
+}
+
 .admin-title {
   height: 45px;
 }
@@ -103,11 +125,11 @@ td.flaggers td {
 .admin-controls {
   background-color: dark-light-diff($primary, $secondary, 90%, -75%);
   padding: 10px 10px 3px 0;
-  height: 35px;
+  @include clearfix;
   .nav.nav-pills {
     li.active {
       a {
-        border-color: scale-color-diff();
+        border-color: dark-light-diff($primary, $secondary, 90%, -60%);
         background-color: lighten($primary, 40%);
         &:hover {
           background-color: lighten($primary, 40%);
@@ -147,6 +169,14 @@ td.flaggers td {
     label {
       margin-top: 5px;
     }
+    .controls {
+      margin-left: 0;
+    }
+    // Hide the search checkbox for very small screens
+    // Todo: find somewhere to display it - probably requires switching its order in the html
+    @media (max-width: 450px) {
+      display: none;
+    }
   }
   .toggle {
     margin-top: 8px;
@@ -184,6 +214,9 @@ td.flaggers td {
 
 .admin-nav {
   width: 18.018%;
+  @media (max-width: $mobile-breakpoint) {
+    width: 33%;
+  }
   margin-top: 30px;
   .nav-stacked {
     border-right: none;
@@ -196,10 +229,16 @@ td.flaggers td {
 
 .admin-detail {
   width: 76.5765%;
+  @media (max-width: $mobile-breakpoint) {
+    width: 67%;
+  }
   min-height: 800px;
   margin-left: 0;
-  border-left: solid 1px scale-color-diff();
+  border-left: solid 1px dark-light-diff($primary, $secondary, 90%, -60%);
   padding: 30px 0 30px 30px;
+  @media (max-width: $mobile-breakpoint) {
+    padding: 30px 0 30px 16px;
+  }
 }
 
 .settings {
@@ -210,12 +249,26 @@ td.flaggers td {
       float: left;
       width: 17.6576%;
       margin-right: 12px;
+      @media (max-width: $mobile-breakpoint) {
+        float: none;
+        margin-right: 0;
+        width: 100%;
+        h3 {
+          margin-bottom: 6px;
+        }
+      }
     }
     .setting-value {
       float: left;
       width: 53%;
-      .select2-container {
+      @media (max-width: $mobile-breakpoint) {
         width: 100%;
+      }
+      .select2-container {
+        width: 100% !important; // Needs !important to override hard-coded value
+        @media (max-width: $mobile-breakpoint) {
+          width: 100% !important; // !important overrides hard-coded mobile width of 68px
+        }
       }
       .select2-container-multi .select2-choices {
         border: none;
@@ -227,13 +280,18 @@ td.flaggers td {
     .input-setting-string {
       width: 404px;
       @include medium-width { width: 314px; }
-      @include small-width  { width: 284px; }
+      @media (max-width: $mobile-breakpoint) {
+        width: 100%;
+      }
     }
     .input-setting-list {
       width: 408px;
+      @media (max-width: $mobile-breakpoint) {
+        width: 100%;
+      }
       padding: 1px;
       background-color: $secondary;
-      border: 1px solid scale-color-diff();
+      border: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
       border-radius: 3px;
       box-shadow: inset 0 1px 1px rgba(51, 51, 51, 0.3);
       transition: border linear 0.2s, box-shadow linear 0.2s;
@@ -255,7 +313,7 @@ td.flaggers td {
         border-radius: 3px;
         background-clip: padding-box;
         -moz-user-select: none;
-        background-color: none;
+        background-color: transparent;
         width: 3em;
         height: 1em;
       }
@@ -301,7 +359,7 @@ section.details {
     color: $primary;
     padding: 5px 10px;
     margin: 30px 0 5px 0;
-    border-bottom: 5px solid scale-color-diff();
+    border-bottom: 5px solid dark-light-diff($primary, $secondary, 90%, -60%);
   }
 }
 
@@ -333,7 +391,7 @@ section.details {
   &.highlight-danger {
     background-color: scale-color($danger, $lightness: 50%);
   }
-  border-top: 1px solid scale-color-diff();
+  border-top: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
   &:before, &:after {
     display: table;
     content: "";
@@ -436,14 +494,14 @@ section.details {
     font-size: 1em;
     line-height: 16px;
     padding: 4px;
-    background-color: scale-color-diff();
+    background-color: dark-light-diff($primary, $secondary, 90%, -60%);
   }
 
   .badge-query-plan {
     font-size: 0.857em;
     line-height: 13px;
     padding: 4px;
-    background-color: scale-color-diff();
+    background-color: dark-light-diff($primary, $secondary, 90%, -60%);
   }
 
   .count-warning {
@@ -545,11 +603,16 @@ section.details {
     .preview-link {
       margin-left: 15px;
     }
+    .export {
+      float: right;
+    }
     padding-left: 10px;
     width: 70%;
     .style-name {
       width: 350px;
       height: 25px;
+      // Remove height to for `box-sizing: border-box`
+      height: auto;
     }
     .ace-wrapper {
       position: relative;
@@ -681,15 +744,12 @@ section.details {
 
 .dashboard-left {
   float: left;
-  margin-top: 10px;
   width: 60%;
 }
+
 .dashboard-right {
   float: right;
-  margin-top: 10px;
   width: 40%;
-
-
   .dashboard-stats {
     width: 100%;
     margin-left: 0;
@@ -697,12 +757,14 @@ section.details {
 }
 
 .version-check {
-  margin-top: 10px;
+
+  th {
+    text-align: left !important;
+  }
 
   .version-number {
     font-size: 1.286em;
     font-weight: bold;
-    text-align: center;
   }
 
   .face {
@@ -774,6 +836,9 @@ table.api-keys {
       i.fa {
         color: $primary;
       }
+      i.fa-lemon-o {
+        color: $love;
+      }
     }
 
     th {
@@ -817,20 +882,27 @@ table.api-keys {
         }
       }
     }
+
+    tr.reverse-colors {
+      td.value.trending-down i.down {
+        color: $success;
+      }
+      td.value.trending-up i.up {
+        color: $danger;
+      }
+    }
   }
 
   &.detected-problems {
     background: dark-light-diff($primary, $secondary, 90%, -75%);
     margin-bottom: 20px;
-    margin-top: 10px;
 
     .look-here {
       float: left;
       margin: 20px 10px 0 10px;
 
       .fa {
-        font-size: 2.286em
-;
+        font-size: 2.286em;
         vertical-align: middle;
         color: $primary
       }
@@ -892,7 +964,7 @@ table.api-keys {
 
 
 .commits-widget {
-  border: solid 1px scale-color-diff();
+  border: solid 1px dark-light-diff($primary, $secondary, 90%, -60%);
   height: 180px;
   margin-bottom: 36px;
 
@@ -938,7 +1010,7 @@ table.api-keys {
       @extend .clearfix;
       line-height: 1.0em;
       padding: 6px 8px;
-    background-color: scale-color-diff();
+    background-color: dark-light-diff($primary, $secondary, 90%, -60%);
       .left {
         float: left;
       }
@@ -948,7 +1020,7 @@ table.api-keys {
 
       img {
         margin-top: 2px;
-        border: solid 1px scale-color-diff();
+        border: solid 1px dark-light-diff($primary, $secondary, 90%, -60%);
         padding: 2px;
         background-color: $secondary;
       }
@@ -983,7 +1055,7 @@ table.api-keys {
     -webkit-border-radius: 3px;
   }
   ::-webkit-scrollbar-track {
-    border-left: solid 1px scale-color-diff();
+    border-left: solid 1px dark-light-diff($primary, $secondary, 90%, -60%);
   }
 }
 
@@ -1001,10 +1073,10 @@ table.api-keys {
     margin: 0;
 
     li:first-of-type {
-      border-top: 1px solid scale-color-diff();
+      border-top: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
     }
     li {
-      border-bottom: 1px solid scale-color-diff();
+      border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
     }
 
     li a {
@@ -1013,7 +1085,7 @@ table.api-keys {
       color: $primary;
 
       &:hover {
-        background-color: scale-color-diff();
+        background-color: dark-light-diff($primary, $secondary, 90%, -60%);
         color: $primary;
       }
 
@@ -1040,7 +1112,7 @@ table.api-keys {
     margin-top: 10px;
   }
 
-  #pagedown-editor {
+  .pagedown-editor {
     width: 98%;
   }
 
@@ -1049,7 +1121,7 @@ table.api-keys {
     height: 200px;
   }
 
-  #wmd-input {
+  .wmd-input {
     width: 98%;
     height: 200px;
   }
@@ -1134,6 +1206,7 @@ table.api-keys {
 
 .staff-actions {
   width: 100%;
+  min-width: 990px;
   .action {
     width: 10.810%;
   }
@@ -1174,7 +1247,7 @@ table.api-keys {
     color: $primary;
     &:hover {
       color: $primary;
-      background-color: scale-color-diff();
+      background-color: dark-light-diff($primary, $secondary, 90%, -60%);
 
 
     }
@@ -1202,13 +1275,13 @@ table.api-keys {
   position: absolute;
 }
 
-.staff-actions, .screened-emails, .screened-urls, .screened-ip-addresses {
+.staff-actions, .screened-emails, .screened-urls, .screened-ip-addresses, .permalinks {
 
   border-bottom: dotted 1px scale-color($primary, $lightness: 75%);
 
   .heading-container {
     width: 100%;
-    background-color: scale-color-diff();
+    background-color: dark-light-diff($primary, $secondary, 90%, -60%);
   }
   .col.heading {
     font-weight: bold;
@@ -1224,7 +1297,7 @@ table.api-keys {
 
   .ember-list-item-view {
     width: 100%;
-    border-top: solid 1px scale-color-diff();
+    border-top: solid 1px dark-light-diff($primary, $secondary, 90%, -60%);
   }
 }
 
@@ -1241,6 +1314,10 @@ table.api-keys {
   .fa-times {
     color: $danger;
   }
+}
+
+.admin-plugins .col-enabled {
+  width: 20px;
 }
 
 // Backups
@@ -1348,7 +1425,7 @@ and (max-width : 500px) {
 
   .content-editor {
     width: 100%;
-      #pagedown-editor {
+      .pagedown-editor {
         box-sizing: border-box;
       }
   }
@@ -1414,7 +1491,7 @@ tr.not-activated {
   .user-field {
     padding: 10px;
     margin-bottom: 10px;
-    border-bottom: 1px solid scale-color-diff();
+    border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
 
     .form-display {
       width: 25%;
@@ -1422,15 +1499,31 @@ tr.not-activated {
       float: left;
     }
 
-    .form-element {
+    .form-element, .form-element-desc {
       float: left;
-      width: 25%;
+      min-height: 30px;
+      padding: 0.25em 0;
+
+      &.input-area {
+        width: 75%;
+        input[type=text] {
+          width: 50%;
+        }
+      }
+
+      &.label-area {
+        width: 25%;
+        label {
+          margin: 0.5em 1em 0 0;
+          text-align: right;
+          font-weight: bold;
+        }
+      }
     }
 
     .controls {
       float: right;
       text-align: right;
-      width: 20%;
     }
 
     .clearfix {
@@ -1449,8 +1542,8 @@ table#user-badges {
   }
 }
 
-.url-list {
-  .url {
+.value-list {
+  .value {
     border-bottom: 1px solid #ddd;
     padding: 3px;
     margin-right: 10px;
@@ -1458,13 +1551,64 @@ table#user-badges {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    cursor: move;
   }
 
-  .urls {
+  .values {
     margin-bottom: 10px;
+  }
+
+  .placeholder {
+    border-bottom: 1px solid #ddd;
+    padding: 3px;
+    margin-right: 10px;
+    height: 30px;
   }
 
   input[type=text] {
     width: 90%;
   }
+}
+
+// Permalinks
+
+.permalinks {
+  .url, .topic, .category, .external_url, .post {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .url {
+    width: 200px;
+  }
+  .topic, .post, .external_url {
+    width: 180px;
+  }
+  .category {
+    width: 140px;
+  }
+  .action {
+    text-align: center;
+    width: 8%;
+  }
+}
+
+.permalink-title {
+  margin-bottom: 10px;
+}
+
+// Mobile specific styles
+// Mobile view text-inputs need some padding
+.mobile-view .admin-contents {
+  input[type="text"] {
+    padding: 4px;
+  }
+}
+
+.mobile-view .admin-controls {
+  padding: 10px 10px 9px 0;
+}
+
+.mobile-view .full-width {
+  margin: 0;
 }

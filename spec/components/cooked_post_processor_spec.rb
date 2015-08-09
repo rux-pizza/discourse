@@ -173,10 +173,10 @@ describe CookedPostProcessor do
 
   context ".extract_images" do
 
-    let(:post) { build(:post_with_images_in_quote_and_onebox) }
+    let(:post) { build(:post_with_plenty_of_images) }
     let(:cpp) { CookedPostProcessor.new(post) }
 
-    it "does not extract images inside oneboxes or quotes" do
+    it "does not extract emojis or images inside oneboxes or quotes" do
       expect(cpp.extract_images.length).to eq(0)
     end
 
@@ -317,11 +317,19 @@ describe CookedPostProcessor do
 
     context "when CDN is enabled" do
 
-      it "uses schemaless CDN url for uploads" do
+      it "does use schemaless CDN url for http uploads" do
         Rails.configuration.action_controller.stubs(:asset_host).returns("http://my.cdn.com")
         cpp.optimize_urls
         expect(cpp.html).to match_html '<a href="//my.cdn.com/uploads/default/2/2345678901234567.jpg">Link</a>
        <img src="//my.cdn.com/uploads/default/1/1234567890123456.jpg"><a href="http://www.google.com">Google</a>
+       <img src="http://foo.bar/image.png">'
+      end
+
+      it "does not use schemaless CDN url for https uploads" do
+        Rails.configuration.action_controller.stubs(:asset_host).returns("https://my.cdn.com")
+        cpp.optimize_urls
+        expect(cpp.html).to match_html '<a href="https://my.cdn.com/uploads/default/2/2345678901234567.jpg">Link</a>
+       <img src="https://my.cdn.com/uploads/default/1/1234567890123456.jpg"><a href="http://www.google.com">Google</a>
        <img src="http://foo.bar/image.png">'
       end
 

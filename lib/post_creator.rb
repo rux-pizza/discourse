@@ -31,6 +31,7 @@ class PostCreator
   #                               :raw_email - Imported from an email
   #   via_email               - Mark this post as arriving via email
   #   raw_email               - Full text of arriving email (to store)
+  #   action_code             - Describes a small_action post (optional)
   #
   #   When replying to a topic:
   #     topic_id              - topic we're replying to
@@ -112,6 +113,7 @@ class PostCreator
   def create
     if valid?
       transaction do
+        build_post_stats
         create_topic
         save_post
         extract_links
@@ -145,6 +147,14 @@ class PostCreator
     @post
   end
 
+  def self.track_post_stats
+    Rails.env != "test".freeze || @track_post_stats
+  end
+
+  def self.track_post_stats=(val)
+    @track_post_stats = val
+  end
+
   def self.create(user, opts)
     PostCreator.new(user, opts).create
   end
@@ -171,6 +181,23 @@ class PostCreator
 
   protected
 
+  def build_post_stats
+    if PostCreator.track_post_stats
+      draft_key = @topic ? "topic_#{@topic.id}" : "new_topic"
+
+      sequence = DraftSequence.current(@user, draft_key)
+      revisions = Draft.where(sequence: sequence,
+                              user_id: @user.id,
+                              draft_key: draft_key).pluck(:revisions).first || 0
+
+      @post.build_post_stat(
+        drafts_saved: revisions,
+        typing_duration_msecs: @opts[:typing_duration_msecs] || 0,
+        composer_open_duration_msecs: @opts[:composer_open_duration_msecs] || 0
+      )
+    end
+  end
+
   def trigger_after_events(post)
     DiscourseEvent.trigger(:topic_created, post.topic, @opts, @user) unless @opts[:topic_id]
     DiscourseEvent.trigger(:post_created, post, @opts, @user)
@@ -193,7 +220,8 @@ class PostCreator
   # discourse post.
   def create_embedded_topic
     return unless @opts[:embed_url].present?
-    TopicEmbed.create!(topic_id: @post.topic_id, post_id: @post.id, embed_url: @opts[:embed_url])
+    embed = TopicEmbed.new(topic_id: @post.topic_id, post_id: @post.id, embed_url: @opts[:embed_url])
+    rollback_from_errors!(embed) unless embed.save
   end
 
   def handle_spam
@@ -254,7 +282,7 @@ class PostCreator
   end
 
   def setup_post
-    @opts[:raw] = TextCleaner.normalize_whitespaces(@opts[:raw]).gsub(/\s+\z/, "")
+    @opts[:raw] = TextCleaner.normalize_whitespaces(@opts[:raw] || '').gsub(/\s+\z/, "")
 
     post = Post.new(raw: @opts[:raw],
                     topic_id: @topic.try(:id),
@@ -262,7 +290,7 @@ class PostCreator
                     reply_to_post_number: @opts[:reply_to_post_number])
 
     # Attributes we pass through to the post instance if present
-    [:post_type, :no_bump, :cooking_options, :image_sizes, :acting_user, :invalidate_oneboxes, :cook_method, :via_email, :raw_email].each do |a|
+    [:post_type, :no_bump, :cooking_options, :image_sizes, :acting_user, :invalidate_oneboxes, :cook_method, :via_email, :raw_email, :action_code].each do |a|
       post.send("#{a}=", @opts[a]) if @opts[a].present?
     end
 

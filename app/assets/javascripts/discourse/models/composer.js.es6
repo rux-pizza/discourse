@@ -22,7 +22,9 @@ const CLOSED = 'closed',
         topic_id: 'topic.id',
         is_warning: 'isWarning',
         archetype: 'archetypeId',
-        target_usernames: 'targetUsernames'
+        target_usernames: 'targetUsernames',
+        typing_duration_msecs: 'typingTime',
+        composer_open_duration_msecs: 'composerTime'
       },
 
       _edit_topic_serializer = {
@@ -52,6 +54,31 @@ const Composer = RestModel.extend({
   viewOpen: Em.computed.equal('composeState', OPEN),
   viewDraft: Em.computed.equal('composeState', DRAFT),
 
+  composeStateChanged: function() {
+    var oldOpen = this.get('composerOpened');
+
+    if (this.get('composeState') === OPEN) {
+      this.set('composerOpened', oldOpen || new Date());
+    } else {
+      if (oldOpen) {
+        var oldTotal = this.get('composerTotalOpened') || 0;
+        this.set('composerTotalOpened', oldTotal + (new Date() - oldOpen));
+      }
+      this.set('composerOpened', null);
+    }
+  }.observes('composeState'),
+
+  composerTime: function() {
+    var total = this.get('composerTotalOpened') || 0;
+
+    var oldOpen = this.get('composerOpened');
+    if (oldOpen) {
+      total += (new Date() - oldOpen);
+    }
+
+    return total;
+  }.property().volatile(),
+
   archetype: function() {
     return this.get('archetypes').findProperty('id', this.get('archetypeId'));
   }.property('archetypeId'),
@@ -59,6 +86,12 @@ const Composer = RestModel.extend({
   archetypeChanged: function() {
     return this.set('metaData', Em.Object.create());
   }.observes('archetype'),
+
+  // view detected user is typing
+  typing: _.throttle(function(){
+    var typingTime = this.get("typingTime") || 0;
+    this.set("typingTime", typingTime + 100);
+  }, 100, {leading: false, trailing: true}),
 
   editingFirstPost: Em.computed.and('editingPost', 'post.firstPost'),
   canEditTitle: Em.computed.or('creatingTopic', 'creatingPrivateMessage', 'editingFirstPost'),
@@ -68,12 +101,13 @@ const Composer = RestModel.extend({
   actionTitle: function() {
     const topic = this.get('topic');
 
-    let postLink, topicLink;
+    let postLink, topicLink, usernameLink;
     if (topic) {
       const postNumber = this.get('post.post_number');
       postLink = "<a href='" + (topic.get('url')) + "/" + postNumber + "'>" +
         I18n.t("post.post_number", { number: postNumber }) + "</a>";
       topicLink = "<a href='" + (topic.get('url')) + "'> " + (Handlebars.Utils.escapeExpression(topic.get('title'))) + "</a>";
+      usernameLink = "<a href='" + (topic.get('url')) + "/" + postNumber + "'>" + this.get('post.username') + "</a>";
     }
 
     let postDescription;
@@ -83,7 +117,8 @@ const Composer = RestModel.extend({
       postDescription = I18n.t('post.' +  this.get('action'), {
         link: postLink,
         replyAvatar: Discourse.Utilities.tinyAvatar(post.get('avatar_template')),
-        username: this.get('post.username')
+        username: this.get('post.username'),
+        usernameLink
       });
 
       if (!Discourse.Mobile.mobileView) {
@@ -114,6 +149,7 @@ const Composer = RestModel.extend({
 
   // whether to disable the post button
   cantSubmitPost: function() {
+
     // can't submit while loading
     if (this.get('loading')) return true;
 
@@ -199,12 +235,9 @@ const Composer = RestModel.extend({
     }
   }.property('privateMessage'),
 
-  /**
-    Number of missing characters in the reply until valid.
-
-    @property missingReplyCharacters
-  **/
   missingReplyCharacters: function() {
+    const postType = this.get('post.post_type');
+    if (postType === this.site.get('post_types.small_action')) { return 0; }
     return this.get('minimumPostLength') - this.get('replyLength');
   }.property('minimumPostLength', 'replyLength'),
 
@@ -304,6 +337,21 @@ const Composer = RestModel.extend({
     Discourse.KeyValueStore.set({ key: 'composer.showPreview', value: this.get('showPreview') });
   },
 
+  applyTopicTemplate: function() {
+    if (this.get('action') !== CREATE_TOPIC) { return; }
+    if (!Ember.isEmpty(this.get('reply'))) { return; }
+
+    const categoryId = this.get('categoryId');
+    const category = this.site.categories.find((c) => c.get('id') === categoryId);
+    if (category) {
+      const topicTemplate = category.get('topic_template');
+      if (!Ember.isEmpty(topicTemplate)) {
+        this.set('reply', topicTemplate);
+      }
+    }
+
+  }.observes('categoryId'),
+
   /*
      Open a composer
 
@@ -336,7 +384,9 @@ const Composer = RestModel.extend({
       composeState: opts.composerState || OPEN,
       action: opts.action,
       topic: opts.topic,
-      targetUsernames: opts.usernames
+      targetUsernames: opts.usernames,
+      composerTotalOpened: opts.composerTime,
+      typingTime: opts.typingTime
     });
 
     if (opts.post) {
@@ -346,8 +396,9 @@ const Composer = RestModel.extend({
       }
     }
 
+    const categoryId = opts.categoryId || this.get('topic.category.id');
     this.setProperties({
-      categoryId: opts.categoryId || this.get('topic.category.id'),
+      categoryId,
       archetypeId: opts.archetypeId || this.site.get('default_archetype'),
       metaData: opts.metaData ? Em.Object.create(opts.metaData) : null,
       reply: opts.reply || this.get("reply") || ""
@@ -406,7 +457,10 @@ const Composer = RestModel.extend({
       post: null,
       title: null,
       editReason: null,
-      stagedPost: false
+      stagedPost: false,
+      typingTime: 0,
+      composerOpened: null,
+      composerTotalOpened: 0
     });
   },
 
@@ -488,7 +542,9 @@ const Composer = RestModel.extend({
       admin: user.get('admin'),
       yours: true,
       read: true,
-      wiki: false
+      wiki: false,
+      typingTime: this.get('typingTime'),
+      composerTime: this.get('composerTime')
     });
 
     this.serialize(_create_serializer, createdPost);
@@ -570,7 +626,7 @@ const Composer = RestModel.extend({
   },
 
   getCookedHtml() {
-    return $('#wmd-preview').html().replace(/<span class="marker"><\/span>/g, '');
+    return $('#reply-control .wmd-preview').html().replace(/<span class="marker"><\/span>/g, '');
   },
 
   saveDraft() {
@@ -589,12 +645,19 @@ const Composer = RestModel.extend({
       postId: this.get('post.id'),
       archetypeId: this.get('archetypeId'),
       metaData: this.get('metaData'),
-      usernames: this.get('targetUsernames')
+      usernames: this.get('targetUsernames'),
+      composerTime: this.get('composerTime'),
+      typingTime: this.get('typingTime')
     };
 
     this.set('draftStatus', I18n.t('composer.saving_draft_tip'));
 
     const composer = this;
+
+    if (this._clearingStatus) {
+      Em.run.cancel(this._clearingStatus);
+      this._clearingStatus = null;
+    }
 
     // try to save the draft
     return Discourse.Draft.save(this.get('draftKey'), this.get('draftSequence'), data)
@@ -603,7 +666,20 @@ const Composer = RestModel.extend({
       }).catch(function() {
         composer.set('draftStatus', I18n.t('composer.drafts_offline'));
       });
-  }
+  },
+
+  dataChanged: function(){
+    const draftStatus = this.get('draftStatus');
+    const self = this;
+
+    if (draftStatus && !this._clearingStatus) {
+
+      this._clearingStatus = Em.run.later(this, function(){
+        self.set('draftStatus', null);
+        self._clearingStatus = null;
+      }, 1000);
+    }
+  }.observes('title','reply')
 
 });
 
@@ -643,7 +719,9 @@ Composer.reopenClass({
         metaData: draft.metaData,
         usernames: draft.usernames,
         draft: true,
-        composerState: DRAFT
+        composerState: DRAFT,
+        composerTime: draft.composerTime,
+        typingTime: draft.typingTime
       });
     }
   },

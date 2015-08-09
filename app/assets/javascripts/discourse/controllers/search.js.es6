@@ -23,6 +23,30 @@ export default Em.Controller.extend(Presence, {
     }
   }.observes('searchContext'),
 
+  fullSearchUrlRelative: function(){
+
+    if (this.get('searchContextEnabled') && this.get('searchContext.type') === 'topic') {
+      return null;
+    }
+
+    var url = '/search?q=' + encodeURIComponent(this.get('term'));
+    var searchContext = this.get('searchContext');
+
+    if (this.get('searchContextEnabled') && searchContext) {
+      url += encodeURIComponent(" " + searchContext.type + ":" + searchContext.id);
+    }
+
+    return url;
+
+  }.property('searchContext','term','searchContextEnabled'),
+
+  fullSearchUrl: function(){
+    var url = this.get('fullSearchUrlRelative');
+    if (url) {
+      return Discourse.getURL(url);
+    }
+  }.property('fullSearchUrlRelative'),
+
   searchContextDescription: function(){
     var ctx = this.get('searchContext');
     if (ctx) {
@@ -68,7 +92,8 @@ export default Em.Controller.extend(Presence, {
 
     searchForTerm(term, {
       typeFilter: typeFilter,
-      searchContext: context
+      searchContext: context,
+      fullSearchUrl: this.get('fullSearchUrl')
     }).then(function(results) {
       self.setProperties({ noResults: !results, content: results });
       self.set('loading', false);
@@ -87,6 +112,12 @@ export default Em.Controller.extend(Presence, {
   }.observes('term'),
 
   actions: {
+    fullSearch: function() {
+      var url = this.get('fullSearchUrlRelative');
+      if (url) {
+        Discourse.URL.routeTo(url);
+      }
+    },
     moreOfType: function(type) {
       this.set('typeFilter', type);
     },

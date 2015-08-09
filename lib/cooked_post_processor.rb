@@ -5,7 +5,6 @@ require_dependency 'url_helper'
 
 class CookedPostProcessor
   include ActionView::Helpers::NumberHelper
-  include UrlHelper
 
   def initialize(post, opts={})
     @dirty = false
@@ -67,6 +66,8 @@ class CookedPostProcessor
     @doc.css("img[src]") -
     # minus, data images
     @doc.css("img[src^='data']") -
+    # minus, emojis
+    @doc.css("img.emoji") -
     # minus, image inside oneboxes
     oneboxed_images -
     # minus, images inside quotes
@@ -106,13 +107,18 @@ class CookedPostProcessor
   end
 
   def get_size(url)
+    return @size_cache[url] if @size_cache.has_key?(url)
+
     absolute_url = url
     absolute_url = Discourse.base_url_no_prefix + absolute_url if absolute_url =~ /^\/[^\/]/
     # FastImage fails when there's no scheme
     absolute_url = SiteSetting.scheme + ":" + absolute_url if absolute_url.start_with?("//")
+
     return unless is_valid_image_url?(absolute_url)
+
     # we can *always* crawl our own images
     return unless SiteSetting.crawl_images? || Discourse.store.has_been_uploaded?(url)
+
     @size_cache[url] ||= FastImage.size(absolute_url)
   rescue Zlib::BufError # FastImage.size raises BufError for some gifs
   end
@@ -129,6 +135,12 @@ class CookedPostProcessor
 
     width, height = img["width"].to_i, img["height"].to_i
     original_width, original_height = get_size(src)
+
+    # can't reach the image...
+    if original_width.nil? || original_height.nil?
+      Rails.logger.error "Can't reach '#{src}' to get its dimension."
+      return
+    end
 
     return if original_width.to_i <= width && original_height.to_i <= height
     return if original_width.to_i <= SiteSetting.max_image_width && original_height.to_i <= SiteSetting.max_image_height
@@ -207,7 +219,7 @@ class CookedPostProcessor
   def update_topic_image(images)
     if @post.is_first_post?
       img = images.first
-      @post.topic.update_column(:image_url, img["src"]) if img["src"].present?
+      @post.topic.update_column(:image_url, img["src"][0...255]) if img["src"].present?
     end
   end
 
@@ -228,13 +240,13 @@ class CookedPostProcessor
     %w{href data-download-href}.each do |selector|
       @doc.css("a[#{selector}]").each do |a|
         href = a["#{selector}"].to_s
-        a["#{selector}"] = schemaless absolute(href) if is_local(href)
+        a["#{selector}"] = UrlHelper.schemaless UrlHelper.absolute(href) if UrlHelper.is_local(href)
       end
     end
 
     @doc.css("img[src]").each do |img|
       src = img["src"].to_s
-      img["src"] = schemaless absolute(src) if is_local(src)
+      img["src"] = UrlHelper.schemaless UrlHelper.absolute(src) if UrlHelper.is_local(src)
     end
   end
 

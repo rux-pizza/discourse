@@ -137,7 +137,7 @@ class TopicUser < ActiveRecord::Base
 
     # Update the last read and the last seen post count, but only if it doesn't exist.
     # This would be a lot easier if psql supported some kind of upsert
-    def update_last_read(user, topic_id, post_number, msecs)
+    def update_last_read(user, topic_id, post_number, msecs, opts={})
       return if post_number.blank?
       msecs = 0 if msecs.to_i < 0
 
@@ -192,7 +192,7 @@ class TopicUser < ActiveRecord::Base
         if before_last_read < post_number
           # The user read at least one new post
           TopicTrackingState.publish_read(topic_id, post_number, user.id, after)
-          user.update_posts_read!(post_number - before_last_read)
+          user.update_posts_read!(post_number - before_last_read, mobile: opts[:mobile])
         end
 
         if before != after
@@ -207,7 +207,8 @@ class TopicUser < ActiveRecord::Base
           args[:new_status] = notification_levels[:tracking]
         end
         TopicTrackingState.publish_read(topic_id, post_number, user.id, args[:new_status])
-        user.update_posts_read!(post_number)
+
+        user.update_posts_read!(post_number, mobile: opts[:mobile])
 
         exec_sql("INSERT INTO topic_users (user_id, topic_id, last_read_post_number, highest_seen_post_number, last_visited_at, first_visited_at, notification_level)
                   SELECT :user_id, :topic_id, :post_number, ft.highest_post_number, :now, :now, :new_status
@@ -232,6 +233,7 @@ class TopicUser < ActiveRecord::Base
 
   def self.update_post_action_cache(opts={})
     user_id = opts[:user_id]
+    post_id = opts[:post_id]
     topic_id = opts[:topic_id]
     action_type = opts[:post_action_type]
 
@@ -275,6 +277,13 @@ SQL
 
     if topic_id
       builder.where("tu2.topic_id = :topic_id", topic_id: topic_id)
+    end
+
+    if post_id
+      builder.where("tu2.topic_id IN (SELECT topic_id FROM posts WHERE id = :post_id)", post_id: post_id)
+      builder.where("tu2.user_id IN (SELECT user_id FROM post_actions
+                                     WHERE post_id = :post_id AND
+                                           post_action_type_id = :action_type_id)")
     end
 
     builder.exec(action_type_id: PostActionType.types[action_type])

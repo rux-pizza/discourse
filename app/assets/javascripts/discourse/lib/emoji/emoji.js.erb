@@ -29,6 +29,18 @@ for (var name in aliases) {
   });
 }
 
+Discourse.Emoji.unescape = function(string) {
+  if (Discourse.SiteSettings.enable_emoji && string.indexOf(":") >= 0) {
+    string = string.replace(/:[^\s:]+:?/g, function(m) {
+      var emoji = Discourse.Emoji.translations[m] ? Discourse.Emoji.translations[m] : m.slice(1, m.length - 1),
+            url = Discourse.Emoji.urlFor(emoji);
+      return url ? "<img src='" + url + "' title='" + emoji + "' alt='" + emoji + "' class='emoji'>" : m;
+    });
+  }
+
+  return string;
+}
+
 Discourse.Emoji.urlFor = urlFor = function(code) {
   var url, set = Discourse.SiteSettings.emoji_set;
 
@@ -86,6 +98,8 @@ var translations = {
   // ':-D'   : 'smiley',
   // ':|'   : 'expressionless',
   // ':-|'   : 'expressionless',
+  // ':/'   : 'confused',
+  // '8-)'  : 'sunglasses',
   // ";P"   : 'stuck_out_tongue_winking_eye',
   // ";-P"   : 'stuck_out_tongue_winking_eye',
   // ":$"   : 'blush',
@@ -99,7 +113,7 @@ function checkPrev(prev) {
     var lastToken = prev[prev.length-1];
     if (lastToken && lastToken.charAt) {
       var lastChar = lastToken.charAt(lastToken.length-1);
-      if (lastChar !== ' ' && lastChar !== "\n") return false;
+      if (!/\s/.test(lastChar)) return false;
     }
   }
   return true;
@@ -140,10 +154,9 @@ Discourse.Dialect.registerInline('&', function(text, match, prev) {
     translationColonRegexp.lastIndex = 0;
     var m = translationColonRegexp.exec(text);
     if (m && m[0] && text.indexOf(m[0]) === 0) {
-
       // Check outer edge
       var lastChar = text.charAt(m[0].length);
-      if (lastChar && (lastChar !== ' ' && lastChar !== "\n")) return;
+      if (lastChar && !/\s/.test(lastChar)) return;
       contents = imageFor(translationsWithColon[m[0]]);
       if (contents) {
         return [m[0].length, contents];
@@ -166,7 +179,7 @@ Discourse.Emoji.search = function(term, options) {
   var maxResults = (options && options["maxResults"]) || -1;
   if (maxResults === 0) { return []; }
 
-  toSearch = toSearch || _.merge(_.keys(emojiHash), _.keys(extendedEmoji));
+  toSearch = toSearch || _.union(_.keys(emojiHash), _.keys(extendedEmoji)).sort();
 
   var i, results = [];
 

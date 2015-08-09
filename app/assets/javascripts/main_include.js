@@ -19,6 +19,7 @@
 //= require ./discourse/lib/markdown
 //= require ./discourse/lib/search-for-term
 //= require ./discourse/lib/user-search
+//= require ./discourse/lib/export-csv
 //= require ./discourse/lib/autocomplete
 //= require ./discourse/lib/after-transition
 //= require ./discourse/lib/debounce
@@ -27,6 +28,10 @@
 //= require_tree ./discourse/adapters
 //= require ./discourse/models/rest
 //= require ./discourse/models/model
+//= require ./discourse/models/result-set
+//= require ./discourse/models/store
+//= require ./discourse/models/post-action-type
+//= require ./discourse/models/action-summary
 //= require ./discourse/models/post
 //= require ./discourse/models/post-stream
 //= require ./discourse/models/topic-details
@@ -44,10 +49,13 @@
 //= require ./discourse/views/flag
 //= require ./discourse/views/cloaked
 //= require ./discourse/components/combo-box
+//= require ./discourse/components/edit-category-panel
 //= require ./discourse/views/button
+//= require ./discourse/components/search-result
 //= require ./discourse/components/dropdown-button
 //= require ./discourse/components/notifications-button
 //= require ./discourse/components/topic-notifications-button
+//= require ./discourse/lib/link-mentions
 //= require ./discourse/views/composer
 //= require ./discourse/lib/show-modal
 //= require ./discourse/routes/discourse

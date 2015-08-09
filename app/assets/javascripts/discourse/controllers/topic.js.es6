@@ -99,19 +99,6 @@ export default ObjectController.extend(SelectedPostsCount, BufferedContent, {
     this.set('selectedReplies', []);
   }.on('init'),
 
-  _togglePinnedStates(property) {
-    const value = this.get('model.pinned_at') ? false : true,
-          topic = this.get('content');
-
-    // optimistic update
-    topic.setProperties({
-      pinned_at: value,
-      pinned_globally: value
-    });
-
-    return topic.saveStatus(property, value);
-  },
-
   actions: {
     deleteTopic() {
       this.deleteTopic();
@@ -153,7 +140,7 @@ export default ObjectController.extend(SelectedPostsCount, BufferedContent, {
     },
 
     toggleLike(post) {
-      const likeAction = post.get('actionByName.like');
+      const likeAction = post.get('likeAction');
       if (likeAction && likeAction.get('canToggle')) {
         likeAction.toggle(post);
       }
@@ -371,27 +358,31 @@ export default ObjectController.extend(SelectedPostsCount, BufferedContent, {
 
     togglePinned() {
       const value = this.get('model.pinned_at') ? false : true,
-            topic = this.get('content');
+            topic = this.get('content'),
+            until = this.get('model.pinnedInCategoryUntil');
 
       // optimistic update
       topic.setProperties({
         pinned_at: value ? moment() : null,
-        pinned_globally: false
+        pinned_globally: false,
+        pinned_until: value ? until : null
       });
 
-      return topic.saveStatus("pinned", value);
+      return topic.saveStatus("pinned", value, until);
     },
 
     pinGlobally() {
-      const topic = this.get('content');
+      const topic = this.get('content'),
+            until = this.get('model.pinnedGloballyUntil');
 
       // optimistic update
       topic.setProperties({
         pinned_at: moment(),
-        pinned_globally: true
+        pinned_globally: true,
+        pinned_until: until
       });
 
-      return topic.saveStatus("pinned_globally", true);
+      return topic.saveStatus("pinned_globally", true, until);
     },
 
     toggleArchived() {
@@ -508,7 +499,7 @@ export default ObjectController.extend(SelectedPostsCount, BufferedContent, {
 
   canChangeOwner: function() {
     if (!Discourse.User.current() || !Discourse.User.current().admin) return false;
-    return !!this.get('selectedPostsUsername');
+    return this.get('selectedPostsUsername') !== undefined;
   }.property('selectedPostsUsername'),
 
   categories: function() {
@@ -734,7 +725,8 @@ export default ObjectController.extend(SelectedPostsCount, BufferedContent, {
   },
 
   _showFooter: function() {
-    this.set("controllers.application.showFooter", this.get("model.postStream.loadedAllPosts"));
-  }.observes("model.postStream.loadedAllPosts")
+    const showFooter = this.get("model.postStream.loaded") && this.get("model.postStream.loadedAllPosts");
+    this.set("controllers.application.showFooter", showFooter);
+  }.observes("model.postStream.{loaded,loadedAllPosts}")
 
 });

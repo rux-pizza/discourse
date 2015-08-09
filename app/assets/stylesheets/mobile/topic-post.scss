@@ -1,13 +1,21 @@
 .gap {
-  background-color: scale-color-diff();
-  padding: 5px 15px;
-  color: $primary;
-  text-align: center;
-  margin: 10px 0;
+  /* may not need this */
+}
+
+.time-gap {
+  border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
+  color: lighten($primary, 50%);
+  padding-bottom: 3px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+  .topic-avatar {
+    margin: 0 5px 0 10px;
+  }
 }
 
 .topic-post {
-  border-top: 1px solid scale-color-diff();
+  border-top: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
   padding: 6px 0 3px 0;
 }
 
@@ -17,13 +25,19 @@ span.badge-posts {
 
 .show-replies {
   display: none;
-  i {
-    margin-left: 5px;
-  }
 }
 
 nav.post-controls {
   clear: both;
+}
+
+.who-liked {
+  margin-left: 10px;
+}
+
+button.like-count {
+  font-size: 1em;
+  padding: 8px 4px;
 }
 
 button {
@@ -74,7 +88,7 @@ button {
   background-color: $secondary;
   width: 205px;
   padding: 10px;
-  border: 1px solid scale-color-diff();
+  border: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
   position: absolute;
   text-align: left;
   bottom: 0;
@@ -153,7 +167,7 @@ a.star {
 
 .topic-map {
 
-  margin: 10px;
+  margin: 10px 0;
   background: dark-light-diff($primary, $secondary, 97%, -45%);
   border: 1px solid dark-light-diff($primary, $secondary, 90%, -65%);
   border-top: none; // would cause double top border
@@ -286,8 +300,9 @@ a.star {
 }
 
 #topic-footer-buttons {
-  border-top: 1px solid scale-color-diff();
-  padding: 20px 10px 0 10px;
+  @include clearfix;
+  border-top: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
+  padding: 20px 0 0 0;
   .fa-bookmark.bookmarked { color: $tertiary; }
 }
 
@@ -299,7 +314,7 @@ a.star {
 
 #suggested-topics {
   clear: left;
-  padding: 20px 10px 15px 10px;
+  padding: 20px 0 15px 0;
     th.views, td.views, td.activity, th.activity, th.likes, td.likes {
     display: none;
     }
@@ -330,7 +345,7 @@ span.post-count {
 #topic-title {
   z-index: 1000;
   margin: 0 0 0 0 !important;
-  padding: 15px 10px 15px 10px;
+  padding: 15px 0;
 }
 
 .topic-post {
@@ -496,4 +511,22 @@ span.highlighted {
 
 .read-state {
   display: none;
+}
+
+.small-action .small-action-desc {
+  p {
+    padding-top: 0;
+  }
+  .custom-message {
+    margin-left: -40px;
+  }
+}
+
+.small-action .topic-avatar {
+  padding: 0;
+  margin: 0;
+}
+
+.small-action.time-gap .topic-avatar {
+  margin-top: -5px;
 }

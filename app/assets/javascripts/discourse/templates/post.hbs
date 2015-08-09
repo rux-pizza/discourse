@@ -1,5 +1,9 @@
 {{post-gap post=this postStream=controller.model.postStream before="true"}}
 
+{{#if hasTimeGap}}
+  {{time-gap daysAgo=daysSincePrevious}}
+{{/if}}
+
 <div class='row'>
   {{view 'reply-history' content=replyHistory}}
 </div>
@@ -86,9 +90,23 @@
             <button {{action "expandFirstPost" this}} class='btn expand-post'>{{i18n 'post.show_full'}}&hellip;</button>
           {{/if}}
         {{/if}}
-        {{view 'post-menu' post=this adminMenu=view.adminMenu}}
+
+        {{post-menu post=this
+                    canCreatePost=controller.model.details.can_create_post
+                    replyToPost="replyToPost"
+                    recoverPost="recoverPost"
+                    deletePost="deletePost"
+                    toggleLike="toggleLike"
+                    showFlags="showFlags"
+                    editPost="editPost"
+                    toggleBookmark="toggleBookmark"
+                    toggleWiki="toggleWiki"
+                    togglePostType="togglePostType"
+                    rebakePost="rebakePost"
+                    unhidePost="unhidePost"}}
       </div>
 
+      {{who-liked post=this}}
       {{#if replies}}
         <section class='embedded-posts bottom'>
           {{#each reply in replies}}
@@ -97,7 +115,7 @@
         </section>
       {{/if}}
 
-      {{discourse-action-history post=this}}
+      {{actions-summary post=this}}
       {{view 'topic-map-container' post=this topic=controller.model}}
     </div>
 
@@ -110,3 +128,4 @@
 </article>
 
 {{post-gap post=this postStream=controller.model.postStream before="false"}}
+{{plugin-outlet "post-bottom"}}

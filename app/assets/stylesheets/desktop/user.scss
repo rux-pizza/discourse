@@ -39,7 +39,7 @@
     }
   }
 
-  #pagedown-editor {
+  .pagedown-editor {
     width: 450px;
 
     textarea {
@@ -115,19 +115,24 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    th.seen {
+    th {
+      padding: 0.5em;
       text-align: right;
+      border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
     }
     td.avatar {
       width: 60px;
     }
     td {
+      padding: 0.5em;
+      border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
       img {
         margin-right: 10px;
       }
-      span.last-seen-at {
+      span.text {
         float: right;
-        color: $primary;
+        font-size: 1.2em;
+        color: dark-light-diff($primary, $secondary, 50%, -50%);
       }
     }
   }
@@ -145,7 +150,7 @@
   .user-content {
     padding: 10px 8px;
     background-color: $secondary;
-    border: 1px solid scale-color-diff();
+    border: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
     margin-bottom: 10px;
     box-sizing: border-box;
 
@@ -163,13 +168,15 @@
 
       th {
         text-align: left;
-        border-bottom: 1px solid scale-color-diff();
-        padding: 5px;
+        border-bottom: 3px solid dark-light-diff($primary, $secondary, 90%, -60%);
+        padding: 0 0 10px 0;
+        color: scale-color($primary, $lightness: 50%);
+        font-weight: normal;
       }
 
       td {
-        padding: 5px;
-        border-bottom: 1px solid scale-color-diff();
+        padding: 10px 0 10px 0;
+        border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
       }
     }
 
@@ -178,6 +185,26 @@
         max-width: 45px;
         max-height: 45px;
       }
+    }
+
+    .user-invite-list {
+      margin-top: 15px;
+    }
+
+    .user-invite-controls {
+      background-color: dark-light-diff($primary, $secondary, 90%, -75%);
+      padding: 5px 10px 0px 0;
+      height: 35px;
+    }
+
+    .user-invite-search {
+      clear: both;
+      margin: 15px 0px -15px 0px;
+    }
+
+    .user-invite-none {
+      clear: both;
+      padding: 15px;
     }
   }
 
@@ -422,7 +449,7 @@
     .item {
       padding: 20px 8px 15px 8px;
       background-color: $secondary;
-      border-bottom: 1px solid scale-color-diff();
+      border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
     }
     .type {
       color: $primary;
@@ -445,10 +472,10 @@
       margin-right: 4px;
     }
     .title {
-      font-size: 1em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      display: block;
     }
     .name {
       font-size: 1em;
@@ -487,6 +514,18 @@
       .fa, .icon {
         color: scale-color($primary, $lightness: 50%);
         font-size: 1.714em;
+      }
+    }
+    .group-member-info {
+      .name {
+        display: inline-block;
+        margin-top: 5px;
+        color: scale-color($primary, $lightness: 30%);
+      }
+      .title {
+        display: inline-block;
+        margin-top: 5px;
+        color: scale-color($primary, $lightness: 50%);
       }
     }
   }

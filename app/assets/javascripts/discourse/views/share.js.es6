@@ -1,3 +1,4 @@
+
 export default Discourse.View.extend({
   templateName: 'share',
   elementId: 'share-link',
@@ -19,9 +20,9 @@ export default Discourse.View.extend({
   }.property('controller.link'),
 
   linkChanged: function() {
-    var self=this;
+    const self = this;
     if (this.present('controller.link')) {
-      Em.run.next(function(){
+      Em.run.next(function() {
         if (!self.capabilities.touch) {
           var $linkInput = $('#share-link input');
           $linkInput.val(self.get('controller.link'));
@@ -34,6 +35,9 @@ export default Discourse.View.extend({
           var $linkForTouch = $('#share-link .share-for-touch a');
           $linkForTouch.attr('href',self.get('controller.link'));
           $linkForTouch.html(self.get('controller.link'));
+          var range = window.document.createRange();
+          range.selectNode($linkForTouch[0]);
+          window.getSelection().addRange(range);
         }
       });
     }

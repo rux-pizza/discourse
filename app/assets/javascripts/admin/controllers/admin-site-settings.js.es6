@@ -5,8 +5,7 @@ export default Ember.ArrayController.extend(Presence, {
   onlyOverridden: false,
   filtered: Ember.computed.notEmpty('filter'),
 
-  filterContent: Discourse.debounce(function() {
-
+  filterContentNow: function(category) {
     // If we have no content, don't bother filtering anything
     if (!this.present('allSiteSettings')) return;
 
@@ -39,11 +38,24 @@ export default Ember.ArrayController.extend(Presence, {
       });
       if (matches.length > 0) {
         matchesGroupedByCategory[0].siteSettings.pushObjects(matches);
+        matchesGroupedByCategory.pushObject({
+          nameKey: settingsCategory.nameKey,
+          name: I18n.t('admin.site_settings.categories.' + settingsCategory.nameKey),
+          siteSettings: matches
+        });
       }
     });
 
     this.set('model', matchesGroupedByCategory);
-    this.transitionToRoute("adminSiteSettingsCategory", "all_results");
+    this.transitionToRoute("adminSiteSettingsCategory", category || "all_results");
+  },
+
+  filterContent: Discourse.debounce(function() {
+    if (this.get("_skipBounce")) {
+      this.set("_skipBounce", false);
+    } else {
+      this.filterContentNow();
+    }
   }, 250).observes('filter', 'onlyOverridden'),
 
   actions: {

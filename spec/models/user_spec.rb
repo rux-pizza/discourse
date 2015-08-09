@@ -509,18 +509,30 @@ describe User do
   end
 
   describe 'passwords' do
-    before do
+
+    it "should not have an active account with a good password" do
       @user = Fabricate.build(:user, active: false)
       @user.password = "ilovepasta"
       @user.save!
-    end
 
-    it "should have a valid password after the initial save" do
-      expect(@user.confirm_password?("ilovepasta")).to eq(true)
-    end
+      @user.auth_token = SecureRandom.hex(16)
+      @user.save!
 
-    it "should not have an active account after initial save" do
       expect(@user.active).to eq(false)
+      expect(@user.confirm_password?("ilovepasta")).to eq(true)
+
+
+      email_token = @user.email_tokens.create(email: 'pasta@delicious.com')
+
+      old_token = @user.auth_token
+      @user.password = "passwordT"
+      @user.save!
+
+      # must expire old token on password change
+      expect(@user.auth_token).to_not eq(old_token)
+
+      email_token.reload
+      expect(email_token.expired).to eq(true)
     end
   end
 
@@ -909,7 +921,7 @@ describe User do
 
       it "with no existing UserVisit record, creates a new UserVisit record and increments the posts_read count" do
         expect {
-          user_visit = user.update_posts_read!(3, 5.days.ago)
+          user_visit = user.update_posts_read!(3, at: 5.days.ago)
           expect(user_visit.posts_read).to eq(3)
         }.to change { UserVisit.count }.by(1)
       end

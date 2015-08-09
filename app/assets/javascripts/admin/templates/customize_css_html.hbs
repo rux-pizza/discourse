@@ -8,12 +8,14 @@
   <button {{action "newCustomization"}} class='btn'>
     {{fa-icon "plus"}}{{i18n 'admin.customize.new'}}
   </button>
+  {{d-button action="importModal" icon="upload" label="admin.customize.import"}}
 </div>
 
 {{#if selectedItem}}
   <div {{bind-attr class=":current-style view.maximized:maximized"}}>
     <div class='wrapper'>
       {{text-field class="style-name" value=selectedItem.name}}
+      <a class="btn export" download target="_blank" href={{selectedItem.download_url}}>{{fa-icon "download"}} {{i18n 'admin.export_json.button_text'}}</a>
 
       <div class='admin-controls'>
         <ul class="nav nav-pills">
@@ -63,9 +65,9 @@
           {{#unless selectedItem.changed}}
           <a class='preview-link' {{bind-attr href="selectedItem.previewUrl"}} target='_blank' title="{{i18n 'admin.customize.explain_preview'}}">{{i18n 'admin.customize.preview'}}</a>
           |
-          <a href="/?preview-style=" target='_blank' title="{{i18n 'admin.customize.explain_undo_preview'}}">{{i18n 'admin.customize.undo_preview'}}</a>
+          <a href="{{undoPreviewUrl}}" target='_blank' title="{{i18n 'admin.customize.explain_undo_preview'}}">{{i18n 'admin.customize.undo_preview'}}</a>
           |
-          <a href="/?preview-style=default" target='_blank' title="{{i18n 'admin.customize.explain_rescue_preview'}}">{{i18n 'admin.customize.rescue_preview'}}</a><br>
+          <a href="{{defaultStyleUrl}}" target='_blank' title="{{i18n 'admin.customize.explain_rescue_preview'}}">{{i18n 'admin.customize.rescue_preview'}}</a><br>
           {{/unless}}
         </div>
 

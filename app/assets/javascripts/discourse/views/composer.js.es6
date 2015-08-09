@@ -3,6 +3,7 @@ import afterTransition from 'discourse/lib/after-transition';
 import loadScript from 'discourse/lib/load-script';
 import avatarTemplate from 'discourse/lib/avatar-template';
 import positioningWorkaround from 'discourse/lib/safari-hacks';
+import { linkSeenMentions, fetchUnseenMentions } from 'discourse/lib/link-mentions';
 
 const ComposerView = Discourse.View.extend(Ember.Evented, {
   _lastKeyTimeout: null,
@@ -29,9 +30,9 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
   // Disable fields when we're loading
   loadingChanged: function() {
     if (this.get('loading')) {
-      $('#wmd-input, #reply-title').prop('disabled', 'disabled');
+      this.$('.wmd-input, #reply-title').prop('disabled', 'disabled');
     } else {
-      $('#wmd-input, #reply-title').prop('disabled', '');
+      this.$('.wmd-input, #reply-title').prop('disabled', '');
     }
   }.observes('loading'),
 
@@ -83,6 +84,8 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
   keyUp() {
     const controller = this.get('controller');
     controller.checkReplyLength();
+
+    this.get('controller.model').typing();
 
     const lastKeyUp = new Date();
     this.set('lastKeyUp', lastKeyUp);
@@ -149,7 +152,7 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
                 'max-width:' + Discourse.SiteSettings.max_image_width + 'px;' +
                 'max-height:' + Discourse.SiteSettings.max_image_height + 'px;';
 
-    $('<style>#wmd-preview img:not(.thumbnail), .cooked img:not(.thumbnail) {' + style + '}</style>').appendTo('head');
+    $('<style>#reply-control .wmd-preview img:not(.thumbnail), .cooked img:not(.thumbnail) {' + style + '}</style>').appendTo('head');
   },
 
   click() {
@@ -158,7 +161,9 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
 
   // Called after the preview renders. Debounced for performance
   afterRender() {
-    const $wmdPreview = $('#wmd-preview');
+    if (this._state !== "inDOM") { return; }
+
+    const $wmdPreview = this.$('.wmd-preview');
     if ($wmdPreview.length === 0) return;
 
     const post = this.get('model.post');
@@ -175,18 +180,27 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
     $('a.onebox', $wmdPreview).each(function(i, e) {
       Discourse.Onebox.load(e, refresh);
     });
-    $('span.mention', $wmdPreview).each(function(i, e) {
-      Discourse.Mention.paint(e);
-    });
+
+    const unseen = linkSeenMentions($wmdPreview, this.siteSettings);
+    if (unseen.length) {
+      Ember.run.debounce(this, this._renderUnseen, $wmdPreview, unseen, 500);
+    }
 
     this.trigger('previewRefreshed', $wmdPreview);
+  },
+
+  _renderUnseen: function($wmdPreview, unseen) {
+    fetchUnseenMentions($wmdPreview, unseen, this.siteSettings).then(() => {
+      linkSeenMentions($wmdPreview, this.siteSettings);
+      this.trigger('previewRefreshed', $wmdPreview);
+    });
   },
 
   _applyEmojiAutocomplete() {
     if (!this.siteSettings.enable_emoji) { return; }
 
     const template = this.container.lookup('template:emoji-selector-autocomplete.raw');
-    $('#wmd-input').autocomplete({
+    this.$('.wmd-input').autocomplete({
       template: template,
       key: "&",
       transformComplete(v) { return v.code + "&"; },
@@ -220,7 +234,7 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
     // but if you start replying to another topic it will get the avatars wrong
     let $wmdInput, editor;
     const self = this;
-    this.wmdInput = $wmdInput = $('#wmd-input');
+    this.wmdInput = $wmdInput = this.$('.wmd-input');
     if ($wmdInput.length === 0 || $wmdInput.data('init') === true) return;
 
     loadScript('defer/html-sanitizer-bundle');
@@ -245,9 +259,10 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
     });
 
     this.editor = editor = Discourse.Markdown.createEditor({
-      lookupAvatarByPostNumber(postNumber) {
+      containerElement: this.element,
+      lookupAvatarByPostNumber(postNumber, topicId) {
         const posts = self.get('controller.controllers.topic.model.postStream.posts');
-        if (posts) {
+        if (posts && topicId === self.get('controller.controllers.topic.model.id')) {
           const quotedPost = posts.findProperty("post_number", postNumber);
           if (quotedPost) {
             const username = quotedPost.get('username'),
@@ -491,7 +506,7 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
   },
 
   addMarkdown(text) {
-    const ctrl = $('#wmd-input').get(0),
+    const ctrl = this.$('.wmd-input').get(0),
         caretPosition = Discourse.Utilities.caretPosition(ctrl),
         current = this.get('model.reply');
     this.set('model.reply', current.substring(0, caretPosition) + text + current.substring(caretPosition, current.length));
@@ -504,7 +519,7 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
   // Uses javascript to get the image sizes from the preview, if present
   imageSizes() {
     const result = {};
-    $('#wmd-preview img').each(function(i, e) {
+    this.$('.wmd-preview img').each(function(i, e) {
       const $img = $(e),
           src = $img.prop('src');
 
@@ -519,7 +534,7 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
     this.initEditor();
 
     // Disable links in the preview
-    $('#wmd-preview').on('click.preview', (e) => {
+    this.$('.wmd-preview').on('click.preview', (e) => {
       e.preventDefault();
       return false;
     });
@@ -528,10 +543,13 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
   childWillDestroyElement() {
     this._unbindUploadTarget();
 
-    $('#wmd-preview').off('click.preview');
+    this.$('.wmd-preview').off('click.preview');
+
+    const self = this;
 
     Em.run.next(() => {
-      $('#main-outlet').css('padding-bottom', 0);
+      const sizePx = self.get('composeState') === Discourse.Composer.CLOSED ? 0 : $('#reply-control').height();
+      $('#main-outlet').css('padding-bottom', sizePx);
       // need to wait a bit for the "slide down" transition of the composer
       Em.run.later(() => {
         this.appEvents.trigger("composer:closed");
@@ -571,15 +589,18 @@ const ComposerView = Discourse.View.extend(Ember.Evented, {
   }.property('model.categoryId'),
 
   replyValidation: function() {
+    const postType = this.get('model.post.post_type');
+    if (postType === this.site.get('post_types.small_action')) { return; }
+
     const replyLength = this.get('model.replyLength'),
-        missingChars = this.get('model.missingReplyCharacters');
+          missingChars = this.get('model.missingReplyCharacters');
 
     let reason;
     if (replyLength < 1) {
       reason = I18n.t('composer.error.post_missing');
     } else if (missingChars > 0) {
       reason = I18n.t('composer.error.post_length', {min: this.get('model.minimumPostLength')});
-      let tl = Discourse.User.currentProp("trust_level");
+      const tl = Discourse.User.currentProp("trust_level");
       if (tl === 0 || tl === 1) {
         reason += "<br/>" + I18n.t('composer.error.try_like');
       }

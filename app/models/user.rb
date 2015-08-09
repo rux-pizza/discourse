@@ -12,7 +12,6 @@ require_dependency 'promotion'
 
 class User < ActiveRecord::Base
   include Roleable
-  include UrlHelper
   include HasCustomFields
 
   has_many :posts
@@ -92,6 +91,7 @@ class User < ActiveRecord::Base
   after_save :clear_global_notice_if_needed
   after_save :refresh_avatar
   after_save :badge_grant
+  after_save :expire_old_email_tokens
 
   before_destroy do
     # These tables don't have primary keys, so destroying them with activerecord is tricky:
@@ -320,7 +320,10 @@ class User < ActiveRecord::Base
 
   def password=(password)
     # special case for passwordless accounts
-    @raw_password = password unless password.blank?
+    unless password.blank?
+      @raw_password = password
+      self.auth_token = nil
+    end
   end
 
   def password
@@ -365,6 +368,11 @@ class User < ActiveRecord::Base
     last_seen_at.present?
   end
 
+  def create_visit_record!(date, opts={})
+    user_stat.update_column(:days_visited, user_stat.days_visited + 1)
+    user_visits.create!(visited_at: date, posts_read: opts[:posts_read] || 0, mobile: opts[:mobile] || false)
+  end
+
   def visit_record_for(date)
     user_visits.find_by(visited_at: date)
   end
@@ -373,14 +381,18 @@ class User < ActiveRecord::Base
     create_visit_record!(date) unless visit_record_for(date)
   end
 
-  def update_posts_read!(num_posts, now=Time.zone.now, _retry=false)
+  def update_posts_read!(num_posts, opts={})
+    now = opts[:at] || Time.zone.now
+    _retry = opts[:retry] || false
+
     if user_visit = visit_record_for(now.to_date)
       user_visit.posts_read += num_posts
+      user_visit.mobile = true if opts[:mobile]
       user_visit.save
       user_visit
     else
       begin
-        create_visit_record!(now.to_date, num_posts)
+        create_visit_record!(now.to_date, posts_read: num_posts, mobile: opts.fetch(:mobile, false))
       rescue ActiveRecord::RecordNotUnique
         if !_retry
           update_posts_read!(num_posts, now, _retry=true)
@@ -423,11 +435,26 @@ class User < ActiveRecord::Base
   end
 
   def avatar_template_url
-    schemaless absolute avatar_template
+    UrlHelper.schemaless UrlHelper.absolute avatar_template
+  end
+
+  def self.default_template(username)
+    if SiteSetting.default_avatars.present?
+      split_avatars = SiteSetting.default_avatars.split("\n")
+      if split_avatars.present?
+        hash = username.each_char.reduce(0) do |result, char|
+          [((result << 5) - result) + char.ord].pack('L').unpack('l').first
+        end
+
+        avatar_template = split_avatars[hash.abs % split_avatars.size]
+      end
+    else
+      "#{Discourse.base_uri}/letter_avatar/#{username.downcase}/{size}/#{LetterAvatar.version}.png"
+    end
   end
 
   def self.avatar_template(username,uploaded_avatar_id)
-    return letter_avatar_template(username) if !uploaded_avatar_id
+    return default_template(username) if !uploaded_avatar_id
     username ||= ""
     hostname = RailsMultisite::ConnectionManagement.current_hostname
     UserAvatar.local_avatar_template(hostname, username.downcase, uploaded_avatar_id)
@@ -783,6 +810,12 @@ class User < ActiveRecord::Base
     BadgeGranter.queue_badge_grant(Badge::Trigger::UserChange, user: self)
   end
 
+  def expire_old_email_tokens
+    if password_hash_changed? && !id_changed?
+      email_tokens.where('not expired').update_all(expired: true)
+    end
+  end
+
   def update_tracked_topics
     return unless auto_track_topics_after_msecs_changed?
     TrackedTopicsUpdater.new(id, auto_track_topics_after_msecs).call
@@ -818,11 +851,6 @@ class User < ActiveRecord::Base
 
   def create_email_token
     email_tokens.create(email: email)
-  end
-
-  def create_visit_record!(date, posts_read=0)
-    user_stat.update_column(:days_visited, user_stat.days_visited + 1)
-    user_visits.create!(visited_at: date, posts_read: posts_read)
   end
 
   def ensure_password_is_hashed

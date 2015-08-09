@@ -1,8 +1,3 @@
-<div class='container'>
-  {{custom-html "top"}}
-  {{global-notice}}
-</div>
-
 <div class="container">
   <section class='user-main'>
     <section {{bind-attr class="collapsedInfo :about model.profileBackground:has-background:no-background"}}  style={{model.profileBackground}}>
@@ -55,7 +50,7 @@
                 <li>{{#link-to 'preferences' class="btn right"}}{{fa-icon "cog"}}{{i18n 'user.preferences'}}{{/link-to}}</li>
               {{/if}}
               {{#if canInviteToForum}}
-                <li>{{#link-to 'user.invited' class="btn right"}}{{fa-icon "user-plus"}}{{i18n 'user.invited.title'}}{{/link-to}}</li>
+                <li>{{#link-to 'userInvited' class="btn right"}}{{fa-icon "user-plus"}}{{i18n 'user.invited.title'}}{{/link-to}}</li>
               {{/if}}
             </ul>
           </section>

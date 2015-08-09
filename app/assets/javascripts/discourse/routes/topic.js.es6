@@ -4,10 +4,9 @@ let isTransitioning = false,
 
 const SCROLL_DELAY = 500;
 
-import ShowFooter from "discourse/mixins/show-footer";
 import showModal from 'discourse/lib/show-modal';
 
-const TopicRoute = Discourse.Route.extend(ShowFooter, {
+const TopicRoute = Discourse.Route.extend({
   redirect() { return this.redirectIfLoginRequired(); },
 
   queryParams: {
@@ -61,6 +60,7 @@ const TopicRoute = Discourse.Route.extend(ShowFooter, {
     showFeatureTopic() {
       showModal('featureTopic', { model: this.modelFor('topic'), title: 'topic.feature_topic.title' });
       this.controllerFor('modal').set('modalClass', 'feature-topic-modal');
+      this.controllerFor('feature_topic').reset();
     },
 
     showInvite() {

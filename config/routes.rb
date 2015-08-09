@@ -133,6 +133,7 @@ Discourse::Application.routes.draw do
     get "customize" => "color_schemes#index", constraints: AdminConstraint.new
     get "customize/css_html" => "site_customizations#index", constraints: AdminConstraint.new
     get "customize/colors" => "color_schemes#index", constraints: AdminConstraint.new
+    get "customize/permalinks" => "permalinks#index", constraints: AdminConstraint.new
     get "flags" => "flags#index"
     get "flags/:filter" => "flags#index"
     post "flags/agree/:id" => "flags#agree"
@@ -147,6 +148,8 @@ Discourse::Application.routes.draw do
     end
 
     resources :color_schemes, constraints: AdminConstraint.new
+
+    resources :permalinks, constraints: AdminConstraint.new
 
     get "version_check" => "versions#show"
 
@@ -268,6 +271,7 @@ Discourse::Application.routes.draw do
   get "users/:username/staff-info" => "users#staff_info", constraints: {username: USERNAME_ROUTE_FORMAT}
 
   get "users/:username/invited" => "users#invited", constraints: {username: USERNAME_ROUTE_FORMAT}
+  get "users/:username/invited/:filter" => "users#invited", constraints: {username: USERNAME_ROUTE_FORMAT}
   post "users/action/send_activation_email" => "users#send_activation_email"
   get "users/:username/activity" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/activity/:filter" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
@@ -275,7 +279,8 @@ Discourse::Application.routes.draw do
   get "users/:username/notifications" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/pending" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   delete "users/:username" => "users#destroy", constraints: {username: USERNAME_ROUTE_FORMAT}
-  get "users/by-external/:external_id" => "users#show"
+  # The external_id constraint is to allow periods to be used in the value without becoming part of the format. ie: foo.bar.json
+  get "users/by-external/:external_id" => "users#show", constraints: {external_id: /[^\/]+/}
   get "users/:username/flagged-posts" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "users/:username/deleted-posts" => "users#show", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "user-badges/:username" => "user_badges#username"
@@ -400,6 +405,7 @@ Discourse::Application.routes.draw do
 
   get "top" => "list#top"
   get "search/query" => "search#query"
+  get "search" => "search#show"
 
   # Topics resource
   get "t/:id" => "topics#show"
@@ -409,7 +415,10 @@ Discourse::Application.routes.draw do
   put "topics/bulk"
   put "topics/reset-new" => 'topics#reset_new'
   post "topics/timings"
-  get "topics/similar_to"
+
+  get 'topics/similar_to' => 'similar_topics#index'
+  resources :similar_topics
+
   get "topics/feature_stats"
   get "topics/created-by/:username" => "list#topics_by", as: "topics_by", constraints: {username: USERNAME_ROUTE_FORMAT}
   get "topics/private-messages/:username" => "list#private_messages", as: "topics_private_messages", constraints: {username: USERNAME_ROUTE_FORMAT}
@@ -483,7 +492,7 @@ Discourse::Application.routes.draw do
 
   resources :export_csv do
     collection do
-      get "export_entity" => "export_csv#export_entity"
+      post "export_entity" => "export_csv#export_entity"
     end
     member do
       get "" => "export_csv#show", constraints: { id: /[^\/]+/ }
