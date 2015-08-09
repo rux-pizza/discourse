@@ -1277,17 +1277,17 @@ en:
         one: "{{count}} Reply"
         other: "{{count}} Replies"
       has_likes:
-        one: "{{count}} Like"
-        other: "{{count}} Likes"
+        one: "{{count}} Fuck"
+        other: "{{count}} Fucks"
 
       has_likes_title:
-        one: "1 person liked this post"
-        other: "{{count}} people liked this post"
+        one: "1 person gave this post a fuck"
+        other: "{{count}} people gave this post a fuck"
 
       has_likes_title_you:
-        zero: "you liked this post"
-        one: "you and 1 other person liked this post"
-        other: "you and {{count}} other people liked this post"
+        zero: "you gave this post a fuck"
+        one: "you and 1 other person gave this post a fuck"
+        other: "you and {{count}} other people gave this post a fuck"
 
       errors:
         create: "Sorry, there was an error creating your post. Please try again."
@@ -2326,10 +2326,10 @@ en:
           posts_read_all_time: "Posts Read (all time)"
           flagged_posts: "Flagged Posts"
           flagged_by_users: "Users Who Flagged"
-          likes_given: "Likes Given"
-          likes_received: "Likes Received"
-          likes_received_days: "Likes Received: unique days"
-          likes_received_users: "Likes Received: unique users"
+          likes_given: "Fucks Given"
+          likes_received: "Fucks Received"
+          likes_received_days: "Fucks Received: unique days"
+          likes_received_users: "Fucks Received: unique users"
           qualifies: "Qualifies for trust level 3."
           does_not_qualify: "Doesn't qualify for trust level 3."
           will_be_promoted: "Will be promoted soon."
@@ -2602,7 +2602,7 @@ en:
           description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/7">Granted</a> global edit, pin, close, archive, split and merge
         welcome:
           name: Welcome
-          description: Received a like
+          description: Was given a fuck
         autobiographer:
           name: Autobiographer
           description: Filled user <a href="/my/preferences">profile</a> information
@@ -2620,13 +2620,13 @@ en:
           description: Received 50 fucks on a post. This badge can be granted multiple times
         nice_topic:
           name: Nice Topic
-          description: Received 10 likes on a topic. This badge can be granted multiple times
+          description: Received 10 fucks on a topic. This badge can be granted multiple times
         good_topic:
           name: Good Topic
-          description: Received 25 likes on a topic. This badge can be granted multiple times
+          description: Received 25 fucks on a topic. This badge can be granted multiple times
         great_topic:
           name: Great Topic
-          description: Received 50 likes on a topic. This badge can be granted multiple times
+          description: Received 50 fucks on a topic. This badge can be granted multiple times
         nice_share:
           name: Nice Share
           description: Shared a post with 25 unique visitors
