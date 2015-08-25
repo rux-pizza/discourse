@@ -104,7 +104,6 @@ fa_IR:
     admin_title: "مدیر"
     flags_title: "پرچم‌ها"
     show_more: "بیش‌تر نشان بده"
-    show_help: "کمک"
     links: "پیوندها"
     links_lowercase:
       other: "پیوندها"
@@ -392,7 +391,6 @@ fa_IR:
         upload_title: "تصویرتان را بار بگذارید"
         upload_picture: "بارگذاری تصویر"
         image_is_not_a_square: "اخطار: ما تصویر شما بریدیم; طول و عرض برابر نبود."
-        cache_notice: "شما با موفقیت آواتار خود را تعویض نمودید ولی ممکن است کمی زمان ببرد برای ظاهر شدن بدلیل کش مرورگر"
       change_profile_background:
         title: "پس‌زمینه نمایه"
         instructions: "تصاویر پس‌زمینه نمایه‌ها در مرکز قرار میگیرند و به صورت پیش‌فرض طول 850px دارند."
@@ -767,7 +765,7 @@ fa_IR:
         category: "جستجوی دستهٔ «{{category}}»"
         topic: "جستجوی این موضوع"
         private_messages: "جستجوی پیام"
-    site_map: "به فهرست موضوع یا دسته‌ای دیگر بروید"
+    hamburger_menu: "به فهرست موضوع یا دسته‌ای دیگر بروید"
     go_back: 'برگردید'
     not_logged_in_user: 'صفحه کاربر با خلاصه ای از فعالیت های و تنظیمات'
     current_user: 'به نمایه‌تان بروید'
@@ -902,10 +900,8 @@ fa_IR:
           title: "ردگیری"
           description: "تعداد پاسخ‌های جدید برای این عنوان نمایش داده خواهد شد. در صورتی که فردی با @name به شما اشاره کند یا به شما پاسخی دهد، به شما اطلاع رسانی خواهد شد."
         regular:
-          title: "منظم"
           description: "در صورتی که فردی با @name به شما اشاره کند یا به شما پاسخی دهد به شما اطلاع داده خواهد شد."
         regular_pm:
-          title: "عادی"
           description: "در صورتی که فردی با @name به شما اشاره کند یا به شما پاسخی دهد به شما اطلاع داده خواهد شد."
         muted_pm:
           title: "بی صدا شد"
@@ -1032,8 +1028,6 @@ fa_IR:
         description:
           other: شما تعداد <b>{{count}}</b> نوشته انتخاب کرده اید
     post:
-      reply: "در حال پاسخ به {{link}} {{replyAvatar}} {{username}}"
-      reply_topic: "پاسخ به {{link}}"
       quote_reply: "پاسخ با نقل قول"
       edit: "در حال ویرایش {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "دلیل:"
@@ -2203,7 +2197,7 @@ fa_IR:
         title: 'نرم‌افزار'
         create: '<b>c</b> ساختن یک موضوع جدید'
         notifications: '<b>n</b> باز کردن آگاه‌سازی‌ها'
-        site_map_menu: '<b>=</b> باز کردن منوی سایت'
+        hamburger_menu: '<b>=</b> باز کردن منوی سایت'
         user_profile_menu: '<b>p</b> باز کردن منوی کاربران'
         show_incoming_updated_topics: '<b>.</b> نمایش موضوعات بروز شده'
         search: '<b>/</b> جستجو'
@@ -2336,12 +2330,3 @@ fa_IR:
         reader:
           name: خواننده
           description: مطالعه تمام نوشته‌هایی در یک  موضوع  که بیش از 100 نوشته دارد.
-    google_search: |
-      <h2>جستجو با گوگل</h2>
-      <p>
-        <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-          <input type="text" id='user-query' value="">
-          <input type='hidden' id='google-query' name="q">
-          <button class="btn btn-primary">گوگل</button>
-        </form>
-      </p>

@@ -1,19 +1,19 @@
 import ModalFunctionality from 'discourse/mixins/modal-functionality';
-import DiscourseController from 'discourse/controllers/controller';
 import showModal from 'discourse/lib/show-modal';
+import { setting } from 'discourse/lib/computed';
 
 // This is happening outside of the app via popup
 const AuthErrors =
   ['requires_invite', 'awaiting_approval', 'awaiting_confirmation', 'admin_not_allowed_from_ip_address',
    'not_allowed_from_ip_address'];
 
-export default DiscourseController.extend(ModalFunctionality, {
+export default Ember.Controller.extend(ModalFunctionality, {
   needs: ['modal', 'createAccount', 'forgotPassword', 'application'],
   authenticate: null,
   loggingIn: false,
   loggedIn: false,
 
-  canLoginLocal: Discourse.computed.setting('enable_local_logins'),
+  canLoginLocal: setting('enable_local_logins'),
   loginRequired: Em.computed.alias('controllers.application.loginRequired'),
 
   resetForm: function() {
@@ -38,7 +38,7 @@ export default DiscourseController.extend(ModalFunctionality, {
   showSignupLink: function() {
     return this.get('controllers.application.canSignUp') &&
            !this.get('loggingIn') &&
-           this.blank('authenticate');
+           Ember.isEmpty(this.get('authenticate'));
   }.property('loggingIn', 'authenticate'),
 
   showSpinner: function() {
@@ -49,7 +49,7 @@ export default DiscourseController.extend(ModalFunctionality, {
     login: function() {
       const self = this;
 
-      if(this.blank('loginName') || this.blank('loginPassword')){
+      if(Ember.isEmpty(this.get('loginName')) || Ember.isEmpty(this.get('loginPassword'))){
         self.flash(I18n.t('login.blank_username_or_password'), 'error');
         return;
       }
@@ -153,7 +153,7 @@ export default DiscourseController.extend(ModalFunctionality, {
   },
 
   authMessage: (function() {
-    if (this.blank('authenticate')) return "";
+    if (Ember.isEmpty(this.get('authenticate'))) return "";
     const method = Discourse.get('LoginMethod.all').findProperty("name", this.get("authenticate"));
     if(method){
       return method.get('message');

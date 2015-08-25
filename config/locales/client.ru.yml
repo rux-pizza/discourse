@@ -161,7 +161,6 @@ ru:
     admin_title: "Админка"
     flags_title: "Жалобы"
     show_more: "показать дальше"
-    show_help: "справка"
     links: "Ссылки"
     links_lowercase:
       one: "ссылка"
@@ -481,7 +480,6 @@ ru:
         upload_title: "Загрузка собственного аватара"
         upload_picture: "Загрузить изображение"
         image_is_not_a_square: "Внимание: мы обрезали ваше изображение; ширина и высота не равны друг другу."
-        cache_notice: "Вы успешно изменили свой аватар, но для его отображения может потребоваться некоторое время из-за кеширования в браузере."
       change_profile_background:
         title: "Фон профиля"
         instructions: "Картинки фона профилей будут отцентрированы и по-умолчанию имеют ширину 850 пикселей."
@@ -761,7 +759,7 @@ ru:
         title_too_long: "Заголовок не может быть длиннее {{max}} символов"
         post_missing: "Сообщение не может быть пустым"
         post_length: "Сообщение должно содержать минимум {{min}} символов"
-        try_like: 'А вы пробовали лайкнуть собощение с помощью кнопки <i class="fa fa-heart"></i> ?'
+        try_like: 'А вы пробовали лайкнуть сообщение с помощью кнопки <i class="fa fa-heart"></i> ?'
         category_missing: "Нужно выбрать раздел"
       save_edit: "Сохранить"
       reply_original: "Ответ в первоначальной теме"
@@ -864,7 +862,7 @@ ru:
         category: "Искать в разделе \"{{category}}\""
         topic: "Искать в этой теме"
         private_messages: "Поиск в сообщениях"
-    site_map: "перейти к другому списку тем или другому разделу"
+    hamburger_menu: "перейти к другому списку тем или другому разделу"
     go_back: 'вернуться'
     not_logged_in_user: 'страница пользователя с историей его последней активности и настроек'
     current_user: 'перейти на вашу страницу пользователя'
@@ -1020,10 +1018,8 @@ ru:
           title: "Следить"
           description: "Количество непрочитанных сообщений появится рядом с названием этой темы. Вам придёт уведомление, только если кто-нибудь упомянет ваш @псевдоним или ответит на ваше сообщение."
         regular:
-          title: "Уведомлять"
           description: "Вам придёт уведомление, только если кто-нибудь упомянет ваш @псевдоним или ответит на ваше сообщение."
         regular_pm:
-          title: "Уведомлять"
           description: "Вам придёт уведомление, только если кто-нибудь упомянет ваш @псевдоним или ответит на ваше сообщение."
         muted_pm:
           title: "Без уведомлений"
@@ -1165,8 +1161,6 @@ ru:
           many: Вы выбрали <b>{{count}}</b> сообщений.
           other: Вы выбрали <b>{{count}}</b> сообщений.
     post:
-      reply: "Ответить на {{link}} {{replyAvatar}} {{username}}"
-      reply_topic: "Ответить на {{link}}"
       quote_reply: "ответить цитированием"
       edit: "Изменить {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Причина:"
@@ -2436,7 +2430,7 @@ ru:
         title: 'Приложение'
         create: '<b>c</b> Создать новую тему'
         notifications: '<b>n</b> Открыть уведомления'
-        site_map_menu: '<b>=</b> Открыть меню сайта'
+        hamburger_menu: '<b>=</b> Открыть меню сайта'
         user_profile_menu: '<b>p</b> Открыть меню моего профиля'
         show_incoming_updated_topics: '<b>.</b> Показать обновленные темы'
         search: '<b>/</b> Поиск'
@@ -2576,12 +2570,3 @@ ru:
         reader:
           name: Читатель
           description: Прочитал каждое сообщение в теме с более чем 100 сообщениями
-    google_search: |
-      <h2>Искать с помощью Google</h2>
-      <p>
-      <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-      <input type="text" id='user-query' value="">
-      <input type='hidden' id='google-query' name="q">
-      <button class="btn btn-primary">Google</button>
-      </form>
-      </p>

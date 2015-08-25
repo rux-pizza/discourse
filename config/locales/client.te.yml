@@ -105,7 +105,6 @@ te:
     admin_title: "అధికారి"
     flags_title: "కేతనాలు"
     show_more: "మరింత చూపు"
-    show_help: "సహాయం"
     links: "లంకెలు"
     links_lowercase:
       one: "లంకె"
@@ -687,7 +686,7 @@ te:
         user: "@{{username}} యొక్క విషయాలు వెతుకు"
         category: "\"{{category}}\" వర్గంలో వెతుకు"
         topic: "ఈ విషయంలో వెతుకు"
-    site_map: "మరో విషయాల జాబితాకు లేదా వర్గానికి వెళ్లు"
+    hamburger_menu: "మరో విషయాల జాబితాకు లేదా వర్గానికి వెళ్లు"
     go_back: 'వెనక్కు మరలు'
     not_logged_in_user: 'సభ్యుని ప్రస్తుత కలాపాల మరియు అభిరూపాల సారాంశ పుట'
     current_user: 'మీ సభ్యపుటకు వెళ్లు'
@@ -817,10 +816,6 @@ te:
           title: "గమనిస్తున్నారు"
         tracking:
           title: "గమనిస్తున్నారు"
-        regular:
-          title: "రెగ్యులరు"
-        regular_pm:
-          title: "రెగ్యులరు"
         muted_pm:
           title: "నిశ్శబ్దం"
         muted:
@@ -906,7 +901,6 @@ te:
           one: మీరు <b>1</b> టపా ఎంచుకున్నారు
           other: మీరు <b>{{count}}</b> టపాలు ఎంచుకున్నారు
     post:
-      reply_topic: " {{link}} కు జవాబివ్వు"
       quote_reply: "కోట్ జవాబు"
       edit_reason: "కారణం:"
       post_number: "టపా {{number}}"
@@ -1967,7 +1961,7 @@ te:
         title: 'అనువర్తనం'
         create: '<b>c</b> కొత్త టపా సృష్టించు'
         notifications: '<b>n</b> తెరచిన ప్రకటనలు'
-        site_map_menu: '<b>=</b> సైట్ మెనూ తెరువు'
+        hamburger_menu: '<b>=</b> సైట్ మెనూ తెరువు'
         user_profile_menu: '<b>p</b> యూజర్ మెనూ తెరువు'
         show_incoming_updated_topics: '<b>.</b> నవీకరించిన విషయాలను చూపించండి'
         search: '<b>/</b> వెతుకు'
@@ -2085,12 +2079,3 @@ te:
         reader:
           name: చదువరి
           description: 100 టపాల కన్నా ఎక్కువ ఉన్న అంశంలో ప్రతి టపా చదవండి
-    google_search: |
-      <h2>గూగుల్ తో వెతుకు</h2>
-      <p>
-      <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-      <input type="text" id='user-query' value="">
-      <input type='hidden' id='google-query' name="q">
-      <button class="btn btn-primary">గూగుల్</button>
-      </form>
-      </p>

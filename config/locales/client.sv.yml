@@ -115,7 +115,6 @@ sv:
     admin_title: "Admin"
     flags_title: "Flaggningar"
     show_more: "visa mer"
-    show_help: "hjälp"
     links: "Länkar"
     links_lowercase:
       one: "länk"
@@ -414,7 +413,6 @@ sv:
         upload_title: "Ladda upp din bild"
         upload_picture: "Ladda upp bild"
         image_is_not_a_square: "Varning: vi beskar din bild; bredd och höjd var inte samma."
-        cache_notice: "Du har bytt profilbild men det kan ta lite tid innan den visas."
       change_profile_background:
         title: "Profilbakgrund"
         instructions: "Bakgrunderna är centrerade och har en förinställd bredd på 850px"
@@ -785,7 +783,7 @@ sv:
         category: "Sök i kategorin \"{{category}}\""
         topic: "Sök i denna diskussion"
         private_messages: "Sök meddelanden"
-    site_map: "gå till en annan ämneslista eller kategori"
+    hamburger_menu: "gå till en annan ämneslista eller kategori"
     go_back: 'gå tillbaka'
     not_logged_in_user: 'användarsida med sammanställning av aktuell aktivitet och inställningar'
     current_user: 'gå till din användarsida'
@@ -927,10 +925,8 @@ sv:
           title: "Följer"
           description: "En räknare över antal nya svar visas för detta ämne. Du notifieras om någon nämner ditt @namn eller svarar dig."
         regular:
-          title: "Vanlig"
           description: "Du kommer att få en notifiering om någon nämner ditt @namn eller svarar dig."
         regular_pm:
-          title: "Vanlig(t)"
           description: "Du kommer att notifieras om någon nämner ditt @namn eller svarar dig."
         muted_pm:
           title: "tystade"
@@ -1061,8 +1057,6 @@ sv:
           one: Du har markerat <b>1</b> inlägg.
           other: Du har markerat <b>{{count}}</b> inlägg.
     post:
-      reply: "Svarar {{link}} {{replyAvatar}} {{username}}"
-      reply_topic: "Svar på {{link}}"
       quote_reply: "citatsvar"
       edit: "Redigerar {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Anledning:"
@@ -2228,7 +2222,7 @@ sv:
       application:
         create: '<b>s</b> Skapa ett nytt ämne'
         notifications: '<b>n</b> Öppna notifikationer'
-        site_map_menu: '<b>=</b> Öppna webbplatsmeny'
+        hamburger_menu: '<b>=</b> Öppna webbplatsmeny'
         user_profile_menu: '<b>p</b> Öppna användarmeny'
         show_incoming_updated_topics: '<b>.</b> Visa uppdaterade ämnen'
         search: 'Sök'
@@ -2345,12 +2339,3 @@ sv:
         reader:
           name: Läsare
           description: Läs varje inlägg i en diskussion med över 100 inlägg
-    google_search: |
-      <h2>Sök med Google</h2>
-      <p>
-      <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-      <input type="text" id='user-query' value="">
-      <input type='hidden' id='google-query' name="q">
-      <button class="btn btn-primary">Google</button>
-      </form>
-      </p>

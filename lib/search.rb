@@ -215,13 +215,21 @@ class Search
   end
 
   advanced_filter(/category:(.+)/) do |posts,match|
-    category_id = Category.find_by('name ilike ? OR id = ?', match, match.to_i).try(:id)
-    posts.where("topics.category_id = ?", category_id)
+    category_id = Category.where('name ilike ? OR id = ?', match, match.to_i).pluck(:id).first
+    if category_id
+      posts.where("topics.category_id = ?", category_id)
+    else
+      posts.where("1 = 0")
+    end
   end
 
   advanced_filter(/user:(.+)/) do |posts,match|
-    user_id = User.find_by('username_lower = ? OR id = ?', match.downcase, match.to_i).try(:id)
-    posts.where("posts.user_id = #{user_id}")
+    user_id = User.where('username_lower = ? OR id = ?', match.downcase, match.to_i).pluck(:id).first
+    if user_id
+      posts.where("posts.user_id = #{user_id}")
+    else
+      posts.where("1 = 0")
+    end
   end
 
   advanced_filter(/min_age:(\d+)/) do |posts,match|
@@ -385,6 +393,10 @@ class Search
           posts = posts.where("posts.raw  || ' ' || u.username || ' ' || u.name ilike ?", "%#{@term}%")
         else
           posts = posts.where("post_search_data.search_data @@ #{ts_query}")
+          exact_terms = @term.scan(/"([^"]+)"/).flatten
+          exact_terms.each do |exact|
+            posts = posts.where("posts.raw ilike ?", "%#{exact}%")
+          end
         end
       end
 
@@ -457,20 +469,25 @@ class Search
     end
 
     def self.ts_query(term, locale = nil, joiner = "&")
+
+      data = Post.exec_sql("SELECT to_tsvector(:locale, :term)",
+                            locale: locale || long_locale,
+                            term: term
+                          ).values[0][0]
+
       locale = Post.sanitize(locale) if locale
-      all_terms = term.gsub(/[\p{P}\p{S}]+/, ' ').squish.split
-      query = Post.sanitize(all_terms.map {|t| "#{PG::Connection.escape_string(t)}:*"}.join(" #{joiner} "))
+      all_terms = data.scan(/'([^']+)'\:\d+/).flatten
+      all_terms.map! do |t|
+        t.split(/[\)\(&']/)[0]
+      end.compact!
+
+      query = Post.sanitize(all_terms.map {|t| "'#{PG::Connection.escape_string(t)}':*"}.join(" #{joiner} "))
       "TO_TSQUERY(#{locale || query_locale}, #{query})"
     end
 
     def ts_query(locale=nil)
-      if !locale
-        @ts_query ||= begin
-          Search.ts_query(@term, locale)
-        end
-      else
-        Search.ts_query(@term, locale)
-      end
+      @ts_query_cache ||= {}
+      @ts_query_cache[(locale || query_locale) + " " + @term] ||= Search.ts_query(@term, locale)
     end
 
     def aggregate_search(opts = {})

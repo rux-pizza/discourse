@@ -128,24 +128,25 @@ pl_PL:
       google+: 'udostępnij ten odnośnik na Google+'
       email: 'wyślij ten odnośnik przez email'
     action_codes:
+      split_topic: "podziel ten temat"
       autoclosed:
-        enabled: 'zamknięcie tematu %{when}'
-        disabled: 'otworzenie tematu %{when}'
+        enabled: 'zamknięcie %{when}'
+        disabled: 'otworzenie %{when}'
       closed:
-        enabled: 'zamknięcie tematu %{when}'
-        disabled: 'otwarcie tematu %{when}'
+        enabled: 'zamknięcie %{when}'
+        disabled: 'otworzenie %{when}'
       archived:
-        enabled: 'archiwizacja tematu %{when}'
-        disabled: 'dearchiwizacja tematu %{when}'
+        enabled: 'archiwizacja %{when}'
+        disabled: 'dearchiwizacja %{when}'
       pinned:
-        enabled: 'przypięcie tematu %{when}'
-        disabled: 'odpięcie tematu %{when}'
+        enabled: 'przypięcie %{when}'
+        disabled: 'odpięcie %{when}'
       pinned_globally:
-        enabled: 'globalne przypięcie tematu %{when}'
-        disabled: 'globalne odprzypięcie tematu %{when}'
+        enabled: 'globalne przypięcie %{when}'
+        disabled: 'globalne odpięcie %{when}'
       visible:
-        enabled: 'listowanie tematu %{when}'
-        disabled: 'odlistowanie tematu %{when}'
+        enabled: 'wylistowanie %{when}'
+        disabled: 'odlistowanie %{when}'
     topic_admin_menu: "akcje administratora"
     emails_are_disabled: "Wysyłanie e-maili zostało globalnie wyłączone przez administrację. Powiadomienia e-mail nie będą dostarczane."
     edit: 'edytuj tytuł i kategorię tego tematu'
@@ -401,6 +402,17 @@ pl_PL:
       invited_by: "Zaproszono przez"
       trust_level: "Poziom zaufania"
       notifications: "Powiadomienia"
+      desktop_notifications:
+        label: "Powiadomienia systemowe"
+        not_supported: "Powiadomienia nie są wspierane przez tę przeglądarkę. Przepraszamy."
+        perm_default: "Włącz powiadomienia"
+        perm_denied_btn: "Brak uprawnień"
+        perm_denied_expl: "Wyświetlanie powiadomień jest zablokowane. Użyj ustawień swojej przeglądarki, aby odblokować powiadomienia dla tej domeny."
+        disable: "Wyłącz powiadomienia"
+        currently_enabled: "(aktualnie włączone)"
+        enable: "Włącz powiadomienia"
+        currently_disabled: "(aktualnie wyłączone)"
+        each_browser_note: "Uwaga: to ustawienie musisz zmienić w każdej przeglądarce której używasz."
       dismiss_notifications: "Oznacz jako przeczytane"
       dismiss_notifications_tooltip: "Oznacz wszystkie powiadomienia jako przeczytane"
       disable_jump_reply: "Po odpowiedzi nie przechodź do nowego wpisu"
@@ -413,6 +425,7 @@ pl_PL:
       admin: "{{user}} jest adminem"
       moderator_tooltip: "Ten użytkownik jest moderatorem"
       admin_tooltip: "Ten użytkownik jest administratorem"
+      blocked_tooltip: "Ten użytkownik jest zablokowany"
       suspended_notice: "ten użytkownik jest zawieszony do {{date}}."
       suspended_reason: "Powód: "
       github_profile: "Github"
@@ -473,7 +486,7 @@ pl_PL:
         upload_title: "Wyślij swoją grafikę"
         upload_picture: "Wyślij grafikę"
         image_is_not_a_square: "Uwaga: grafika została przycięta ponieważ jej wysokość i szerokość nie były równe. "
-        cache_notice: "Twój awatar został pomyślnie zmieniony, ale nowa wersja może pojawić się za jakiś czas z uwagi na cache przeglądarki."
+        cache_notice: "Twój awatar został pomyślnie zmieniony, ale z uwagi na cache przeglądarki nowa wersja może pojawić się dopiero za jakiś czas."
       change_profile_background:
         title: "Tło profilu"
         instructions: "Tła w profilach są wycentrowane i posiadają domyślną szerokość 850px."
@@ -564,6 +577,7 @@ pl_PL:
         search: "wpisz aby szukać zaproszeń…"
         title: "Zaproszenia"
         user: "Zaproszony(-a) użytkownik(-czka)"
+        sent: "Wysłane"
         none: "Jeszcze nikt nie został przez ciebie zaproszony."
         truncated: "Pokaż pierwsze {{count}} zaproszeń."
         redeemed: "Cofnięte zaproszenia"
@@ -858,7 +872,7 @@ pl_PL:
         category: "Szukaj w kategorii \"{{category}}\""
         topic: "Szukaj w tym temacie"
         private_messages: "Wyszukiwanie wiadomości"
-    site_map: "przejdź do innej listy tematów lub kategorii"
+    hamburger_menu: "przejdź do innej listy tematów lub kategorii"
     go_back: 'wróć'
     not_logged_in_user: 'strona użytkownika z podsumowaniem bieżących działań i ustawień'
     current_user: 'idź do swojej strony użytkowanika'
@@ -910,6 +924,9 @@ pl_PL:
         bookmarks: "Nie ma więcej zakładek."
         search: "Nie znaleziono więcej wyników."
     topic:
+      unsubscribe:
+        stop_notifications: "Będziesz otrzymywać mniej powiadomień o <strong>{{title}}</strong>"
+        change_notification_state: "Twój aktualny stan powiadomień to"
       filter_to: "{{post_count}} wpisów w temacie"
       create: 'Nowy temat'
       create_long: 'Utwórz nowy temat'
@@ -1139,6 +1156,10 @@ pl_PL:
           few: "Wybierz nowego właściciela dla {{count}} wpisów autorstwa <b>{{old_user}}</b>."
           other: "Wybierz nowego właściciela dla {{count}} wpisów autorstwa <b>{{old_user}}</b>."
         instructions_warn: "Przeszłe powiadomienia dla tego wpisu nie zostaną przypisane do nowego użytkownika. <br>Uwaga: Aktualnie, żadne dane uzależnione od wpisu nie są przenoszone do nowego użytkownika. Zachowaj ostrożność."
+      change_timestamp:
+        title: "Zmień znacznik czasu"
+        action: "zmień znacznik czasu"
+        invalid_timestamp: "Znacznik czasu nie może wskazywać na przyszłość."
       multi_select:
         select: 'wybierz'
         selected: 'wybrano ({{count}})'
@@ -1152,8 +1173,8 @@ pl_PL:
           few: Wybrano <b>{{count}}</b> wpisy.
           other: Wybrano <b>{{count}}</b> wpisów.
     post:
-      reply: "Odpowiedź na  {{link}} {{replyAvatar}} {{username}}"
-      reply_topic: "Odpowiedź na {{link}}"
+      reply: "<i class='fa fa-mail-forward'></i> {{replyAvatar}} {{usernameLink}}"
+      reply_topic: "<i class='fa fa-mail-forward'></i> {{link}}"
       quote_reply: "odpowiedz na ten cytat"
       edit: "Edycja {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Powód"
@@ -1853,6 +1874,7 @@ pl_PL:
         header: "Nagłówki"
         top: "Nagłówek"
         footer: "Stopka"
+        embedded_css: "Osadzony CSS"
         head_tag:
           text: "</head>"
           title: "Kod HTML, który zostanie umieszczony przed tagiem </head>"
@@ -2402,7 +2424,7 @@ pl_PL:
         title: 'Aplikacja'
         create: '<b>c</b> utwórz nowy temat'
         notifications: '<b>n</b> pokaż powiadomienia'
-        site_map_menu: '<b>=</b> menu strony'
+        hamburger_menu: '<b>=</b> menu strony'
         user_profile_menu: '<b>p</b> menu użytkownika'
         show_incoming_updated_topics: '<b>.</b> nowe zmiany w tematach'
         search: '<b>/</b> wyszukaj'
@@ -2540,7 +2562,7 @@ pl_PL:
           name: Czytelnik
           description: Przeczytanie każdego wpisu w temacie z ponad 100 wpisami
     google_search: |
-      <h2>Szukaj z Google</h2>
+      <h3>Wyszukaj z Google</h3>
       <p>
         <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
           <input type="text" id='user-query' value="">

@@ -7,8 +7,9 @@ class TopicUser < ActiveRecord::Base
 
   scope :tracking, lambda { |topic_id|
     where(topic_id: topic_id)
-        .where("COALESCE(topic_users.notification_level, :regular) >= :tracking",
-                regular: TopicUser.notification_levels[:regular], tracking: TopicUser.notification_levels[:tracking])
+   .where("COALESCE(topic_users.notification_level, :regular) >= :tracking",
+     regular: TopicUser.notification_levels[:regular],
+     tracking: TopicUser.notification_levels[:tracking])
   }
 
   # Class methods
@@ -58,13 +59,9 @@ class TopicUser < ActiveRecord::Base
 
     def create_lookup(topic_users)
       topic_users = topic_users.to_a
-
       result = {}
       return result if topic_users.blank?
-
-      topic_users.each do |ftu|
-        result[ftu.topic_id] = ftu
-      end
+      topic_users.each { |ftu| result[ftu.topic_id] = ftu }
       result
     end
 
@@ -100,7 +97,7 @@ class TopicUser < ActiveRecord::Base
         if rows == 0
           now = DateTime.now
           auto_track_after = User.select(:auto_track_topics_after_msecs).find_by(id: user_id).auto_track_topics_after_msecs
-          auto_track_after ||= SiteSetting.auto_track_topics_after
+          auto_track_after ||= SiteSetting.default_other_auto_track_topics_after_msecs
 
           if auto_track_after >= 0 && auto_track_after <= (attrs[:total_msecs_viewed] || 0)
             attrs[:notification_level] ||= notification_levels[:tracking]
@@ -113,10 +110,8 @@ class TopicUser < ActiveRecord::Base
       end
 
       if attrs[:notification_level]
-        MessageBus.publish("/topic/#{topic_id}",
-                         {notification_level_change: attrs[:notification_level]}, user_ids: [user_id])
+        MessageBus.publish("/topic/#{topic_id}", { notification_level_change: attrs[:notification_level] }, user_ids: [user_id])
       end
-
 
     rescue ActiveRecord::RecordNotUnique
       # In case of a race condition to insert, do nothing
@@ -127,7 +122,7 @@ class TopicUser < ActiveRecord::Base
       user_id = user.is_a?(User) ? user.id : topic
 
       now = DateTime.now
-      rows = TopicUser.where({topic_id: topic_id, user_id: user_id}).update_all({last_visited_at: now})
+      rows = TopicUser.where(topic_id: topic_id, user_id: user_id).update_all(last_visited_at: now)
       if rows == 0
         TopicUser.create(topic_id: topic_id, user_id: user_id, last_visited_at: now, first_visited_at: now)
       else
@@ -148,7 +143,7 @@ class TopicUser < ActiveRecord::Base
         now: DateTime.now,
         msecs: msecs,
         tracking: notification_levels[:tracking],
-        threshold: SiteSetting.auto_track_topics_after
+        threshold: SiteSetting.default_other_auto_track_topics_after_msecs
       }
 
       # In case anyone seens "highest_seen_post_number" and gets confused, like I do.
@@ -196,14 +191,14 @@ class TopicUser < ActiveRecord::Base
         end
 
         if before != after
-          MessageBus.publish("/topic/#{topic_id}", {notification_level_change: after}, user_ids: [user.id])
+          MessageBus.publish("/topic/#{topic_id}", { notification_level_change: after }, user_ids: [user.id])
         end
       end
 
       if rows.length == 0
         # The user read at least one post in a topic that they haven't viewed before.
         args[:new_status] = notification_levels[:regular]
-        if (user.auto_track_topics_after_msecs || SiteSetting.auto_track_topics_after) == 0
+        if (user.auto_track_topics_after_msecs || SiteSetting.default_other_auto_track_topics_after_msecs) == 0
           args[:new_status] = notification_levels[:tracking]
         end
         TopicTrackingState.publish_read(topic_id, post_number, user.id, args[:new_status])
@@ -220,7 +215,7 @@ class TopicUser < ActiveRecord::Base
                                    WHERE ftu.user_id = :user_id and ftu.topic_id = :topic_id)",
                   args)
 
-        MessageBus.publish("/topic/#{topic_id}", {notification_level_change: args[:new_status]}, user_ids: [user.id])
+        MessageBus.publish("/topic/#{topic_id}", { notification_level_change: args[:new_status] }, user_ids: [user.id])
       end
     end
 

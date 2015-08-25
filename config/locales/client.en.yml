@@ -122,23 +122,23 @@ en:
     action_codes:
       split_topic: "split this topic"
       autoclosed:
-        enabled: 'closed this topic %{when}'
-        disabled: 'opened this topic %{when}'
+        enabled: 'closed %{when}'
+        disabled: 'opened %{when}'
       closed:
-        enabled: 'closed this topic %{when}'
-        disabled: 'opened this topic %{when}'
+        enabled: 'closed %{when}'
+        disabled: 'opened %{when}'
       archived:
-        enabled: 'archived this topic %{when}'
-        disabled: 'unarchived this topic %{when}'
+        enabled: 'archived %{when}'
+        disabled: 'unarchived %{when}'
       pinned:
-        enabled: 'pinned this topic %{when}'
-        disabled: 'unpinned this topic %{when}'
+        enabled: 'pinned %{when}'
+        disabled: 'unpinned %{when}'
       pinned_globally:
-        enabled: 'pinned globally this topic %{when}'
-        disabled: 'unpinned this topic %{when}'
+        enabled: 'pinned globally %{when}'
+        disabled: 'unpinned %{when}'
       visible:
-        enabled: 'listed this topic %{when}'
-        disabled: 'unlisted this topic %{when}'
+        enabled: 'listed %{when}'
+        disabled: 'unlisted %{when}'
 
     topic_admin_menu: "topic admin actions"
 
@@ -158,7 +158,7 @@ en:
     admin_title: "Admin"
     flags_title: "Flags"
     show_more: "show more"
-    show_help: "help"
+    show_help: "options"
     links: "Links"
     links_lowercase:
       one: "link"
@@ -583,35 +583,37 @@ en:
         label: "Consider topics new when"
         not_viewed: "I haven't viewed them yet"
         last_here: "created since I was here last"
-        after_n_days:
-          one: "created in the last day"
-          other: "created in the last {{count}} days"
-        after_n_weeks:
-          one: "created in the last week"
-          other: "created in the last {{count}} weeks"
+        after_1_day: "created in the last day"
+        after_2_days: "created in the last 2 days"
+        after_1_week: "created in the last week"
+        after_2_weeks: "created in the last 2 weeks"
 
       auto_track_topics: "Automatically track topics I enter"
       auto_track_options:
         never: "never"
         immediately: "immediately"
-        after_n_seconds:
-          one: "after 1 second"
-          other: "after {{count}} seconds"
-        after_n_minutes:
-          one: "after 1 minute"
-          other: "after {{count}} minutes"
+        after_30_seconds: "after 30 seconds"
+        after_1_minute: "after 1 minute"
+        after_2_minutes: "after 2 minutes"
+        after_3_minutes: "after 3 minutes"
+        after_4_minutes: "after 4 minutes"
+        after_5_minutes: "after 5 minutes"
+        after_10_minutes: "after 10 minutes"
 
       invited:
         search: "type to search invites..."
         title: "Invites"
         user: "Invited User"
+        sent: "Sent"
         none: "You haven't invited anyone here yet."
         truncated: "Showing the first {{count}} invites."
         redeemed: "Redeemed Invites"
         redeemed_tab: "Redeemed"
+        redeemed_tab_with_count: "Redeemed ({{count}})"
         redeemed_at: "Redeemed"
         pending: "Pending Invites"
         pending_tab: "Pending"
+        pending_tab_with_count: "Pending ({{count}})"
         topics_entered: "Topics Viewed"
         posts_read_count: "Posts Read"
         expired: "This invite has expired."
@@ -928,12 +930,13 @@ en:
         topic: "Search this topic"
         private_messages: "Search messages"
 
-    site_map: "go to another topic list or category"
+    hamburger_menu: "go to another topic list or category"
     go_back: 'go back'
     not_logged_in_user: 'user page with summary of current activity and preferences'
     current_user: 'go to your user page'
 
     topics:
+      too_many_tracked: "Warning: you have too many tracked new and unread topics, clear some using \"Dismiss New\" or \"Dismiss Posts\""
       bulk:
         reset_read: "Reset Read"
         delete: "Delete Topics"
@@ -980,6 +983,9 @@ en:
         search: "There are no more search results."
 
     topic:
+      unsubscribe:
+        stop_notifications: "You will now receive less notifications for <strong>{{title}}</strong>"
+        change_notification_state: "Your current notification state is "
       filter_to: "{{post_count}} posts in topic"
       create: 'New Topic'
       create_long: 'Create a new Topic'
@@ -1013,7 +1019,6 @@ en:
       new_posts:
         one: "there is 1 new post in this topic since you last read it"
         other: "there are {{count}} new posts in this topic since you last read it"
-
       likes:
         one: "A single fuck was given in this topic"
         other: "{{count}} fucks were given in this topic"
@@ -1094,10 +1099,10 @@ en:
           title: "Tracking"
           description: "A count of new replies will be shown for this topic. You will be notified if someone mentions your @name or replies to you. "
         regular:
-          title: "Regular"
+          title: "Normal"
           description: "You will be notified if someone mentions your @name or replies to you."
         regular_pm:
-          title: "Regular"
+          title: "Normal"
           description: "You will be notified if someone mentions your @name or replies to you."
         muted_pm:
           title: "Muted"
@@ -1237,6 +1242,13 @@ en:
           one: "Please choose the new owner of the post by <b>{{old_user}}</b>."
           other: "Please choose the new owner of the {{count}} posts by <b>{{old_user}}</b>."
         instructions_warn: "Note that any notifications about this post will not be transferred to the new user retroactively.<br>Warning: Currently, no post-dependent data is transferred over to the new user. Use with caution."
+
+      change_timestamp:
+        title: "Change Timestamp"
+        action: "change timestamp"
+        invalid_timestamp: "Timestamp cannot be in the future."
+        error: "There was an error changing the timestamp of the topic."
+        instructions: "Please select the new timestamp of the topic. Posts in the topic will be updated to have the same time difference."
 
       multi_select:
         select: 'select'
@@ -1973,6 +1985,7 @@ en:
         header: "Header"
         top: "Top"
         footer: "Footer"
+        embedded_css: "Embedded CSS"
         head_tag:
           text: "</head>"
           title: "HTML that will be inserted before the </head> tag"
@@ -2066,7 +2079,7 @@ en:
         sent_test: "sent!"
         delivery_method: "Delivery Method"
         preview_digest: "Preview Digest"
-        preview_digest_desc: "Preview the content of the weekly digest emails sent to inactive users."
+        preview_digest_desc: "Preview the content of the digest emails sent to inactive users."
         refresh: "Refresh"
         format: "Format"
         html: "html"
@@ -2411,6 +2424,7 @@ en:
           backups: "Backups"
           login: "Login"
           plugins: "Plugins"
+          user_preferences: "User Preferences"
 
       badges:
         title: Badges
@@ -2487,6 +2501,31 @@ en:
         image: "Image"
         delete_confirm: "Are you sure you want to delete the :%{name}: emoji?"
 
+      embedding:
+        get_started: "If you'd like to embed Discourse on another website, begin by adding its host."
+        confirm_delete: "Are you sure you want to delete that host?"
+        sample: "Use the following HTML code into your site to create and embed discourse topics. Replace <b>REPLACE_ME</b> with the canonical URL of the page you are embedding it on."
+        title: "Embedding"
+        host: "Allowed Hosts"
+        edit: "edit"
+        category: "Post to Category"
+        add_host: "Add Host"
+        settings: "Embedding Settings"
+        feed_settings: "Feed Settings"
+        feed_description: "Providing an RSS/ATOM feed for your site can improve Discourse's ability to import your content."
+        crawling_settings: "Crawler Settings"
+        crawling_description: "When Discourse creates topics for your posts, if no RSS/ATOM feed is present it will attempt to parse your content out of your HTML. Sometimes it can be challenging to extract your content, so we provide the ability to specify CSS rules to make extraction easier."
+
+        embed_by_username: "Username for topic creation"
+        embed_post_limit: "Maximum number of posts to embed"
+        embed_username_key_from_feed: "Key to pull discourse username from feed"
+        embed_truncate: "Truncate the embedded posts"
+        embed_whitelist_selector: "CSS selector for elements that are allowed in embeds"
+        embed_blacklist_selector: "CSS selector for elements that are removed from embeds"
+        feed_polling_enabled: "Import posts via RSS/ATOM"
+        feed_polling_url: "URL of RSS/ATOM feed to crawl"
+        save: "Save Embedding Settings"
+
       permalink:
         title: "Permalinks"
         url: "URL"
@@ -2531,7 +2570,7 @@ en:
         title: 'Application'
         create: '<b>c</b> Create a new topic'
         notifications: '<b>n</b> Open notifications'
-        site_map_menu: '<b>=</b> Open site menu'
+        hamburger_menu: '<b>=</b> Open hamburger menu'
         user_profile_menu: '<b>p</b> Open user menu'
         show_incoming_updated_topics: '<b>.</b> Show updated topics'
         search: '<b>/</b> Search'
@@ -2668,7 +2707,7 @@ en:
           description: Read every post in a topic with more than 100 posts
 
     google_search: |
-      <h2>Search with Google</h2>
+      <h3>Search with Google</h3>
       <p>
         <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
           <input type="text" id='user-query' value="">

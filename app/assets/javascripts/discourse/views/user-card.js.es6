@@ -1,15 +1,15 @@
+import { setting } from 'discourse/lib/computed';
 import CleansUp from 'discourse/mixins/cleans-up';
-
 import afterTransition from 'discourse/lib/after-transition';
 
 const clickOutsideEventName = "mousedown.outside-user-card",
   clickDataExpand = "click.discourse-user-card",
   clickMention = "click.discourse-user-mention";
 
-export default Discourse.View.extend(CleansUp, {
+export default Ember.View.extend(CleansUp, {
   elementId: 'user-card',
   classNameBindings: ['controller.visible:show', 'controller.showBadges', 'controller.hasCardBadgeImage'],
-  allowBackgrounds: Discourse.computed.setting('allow_profile_backgrounds'),
+  allowBackgrounds: setting('allow_profile_backgrounds'),
 
   addBackground: function() {
     const url = this.get('controller.user.card_background');

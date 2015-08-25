@@ -1,3 +1,6 @@
+import ScreenTrack from 'discourse/lib/screen-track';
+import DiscourseURL from 'discourse/lib/url';
+
 let isTransitioning = false,
     scheduledReplace = null,
     lastScrollPos = null;
@@ -55,6 +58,10 @@ const TopicRoute = Discourse.Route.extend({
     showAutoClose() {
       showModal('edit-topic-auto-close', { model: this.modelFor('topic'), title: 'topic.auto_close_title' });
       this.controllerFor('modal').set('modalClass', 'edit-auto-close-modal');
+    },
+
+    showChangeTimestamp() {
+      showModal('change-timestamp', { model: this.modelFor('topic'), title: 'topic.change_timestamp.title' });
     },
 
     showFeatureTopic() {
@@ -126,7 +133,7 @@ const TopicRoute = Discourse.Route.extend({
   _replaceUnlessScrolling(url) {
     const currentPos = parseInt($(document).scrollTop(), 10);
     if (currentPos === lastScrollPos) {
-      Discourse.URL.replaceState(url);
+      DiscourseURL.replaceState(url);
       return;
     }
     lastScrollPos = currentPos;
@@ -185,7 +192,7 @@ const TopicRoute = Discourse.Route.extend({
     topicController.set('multiSelect', false);
     topicController.unsubscribe();
     this.controllerFor('composer').set('topic', null);
-    Discourse.ScreenTrack.current().stop();
+    ScreenTrack.current().stop();
 
     const headerController = this.controllerFor('header');
     if (headerController) {
@@ -226,7 +233,7 @@ const TopicRoute = Discourse.Route.extend({
 
     this.controllerFor('topic-progress').set('model', model);
     // We reset screen tracking every time a topic is entered
-    Discourse.ScreenTrack.current().start(model.get('id'), controller);
+    ScreenTrack.current().start(model.get('id'), controller);
   }
 
 });

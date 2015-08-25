@@ -104,7 +104,6 @@ tr_TR:
     admin_title: "Yönetici"
     flags_title: "Bayraklar"
     show_more: "devamını göster"
-    show_help: "yardım"
     links: "Bağlantılar"
     links_lowercase:
       other: "bağlantılar"
@@ -392,7 +391,6 @@ tr_TR:
         upload_title: "Resminizi yükleyin"
         upload_picture: "Resim Yükle"
         image_is_not_a_square: "Uyarı: resminizi kırptık; genişlik ve yükseklik eşit değildi."
-        cache_notice: "Profil görselinizi başarıyla değiştirdiniz, fakat tarayıcınızın önbelleklemesinden ötürü gözükmesi biraz zaman alabilir."
       change_profile_background:
         title: "Profil Arkaplanı"
         instructions: "Profil arkaplanları ortalanacak ve genişlikleri 850px olacak. "
@@ -765,7 +763,7 @@ tr_TR:
         category: "\"{{category}}\" kategorisinde ara"
         topic: "Bu konuda ara"
         private_messages: "Mesajlarda ara"
-    site_map: "başka bir konu listesine veya kategoriye git"
+    hamburger_menu: "başka bir konu listesine veya kategoriye git"
     go_back: 'geri dön'
     not_logged_in_user: 'güncel aktivitelerin ve ayarların özetinin bulunduğu kullanıcı sayfası'
     current_user: 'kendi kullanıcı sayfana git'
@@ -900,10 +898,8 @@ tr_TR:
           title: "Takip Ediliyor"
           description: "Okunmamış ve yeni gönderi sayısı başlığın yanında belirecek. Birisi @isim şeklinde sizden bahsederse ya da gönderinize cevap verirse bildirim alacaksınız."
         regular:
-          title: "Standart"
           description: "Birisi @isim şeklinde sizden bahsederse ya da gönderinize cevap verirse bildirim alacaksınız."
         regular_pm:
-          title: "Standart"
           description: "Birisi @isim şeklinde sizden bahsederse ya da gönderinize mesajla cevap verirse bildirim alacaksınız."
         muted_pm:
           title: "Susturuldu"
@@ -1030,8 +1026,6 @@ tr_TR:
         description:
           other: <b>{{count}}</b> gönderi seçtiniz.
     post:
-      reply: "{{link}} {{replyAvatar}} {{username}} cevaplanıyor"
-      reply_topic: "Cevapla {{link}}"
       quote_reply: "alıntıyla cevapla"
       edit: "{{link}} {{replyAvatar}} {{username}} düzenleniyor"
       edit_reason: "Neden: "
@@ -2201,7 +2195,7 @@ tr_TR:
         title: 'Uygulama'
         create: '<b>c</b> Yeni konu aç'
         notifications: '<b>n</b> Bildirileri aç'
-        site_map_menu: '<b>=</b> Site menüsünü aç'
+        hamburger_menu: '<b>=</b> Site menüsünü aç'
         user_profile_menu: '<b>p</b> Kullanıcı menüsünü aç'
         show_incoming_updated_topics: '<b>.</b> Güncellenmiş konuları göster'
         search: '<b>/</b> Arama'
@@ -2332,12 +2326,3 @@ tr_TR:
         reader:
           name: Okuyucu
           description: 100'den fazla gönderiye sahip bir konudaki tüm gönderileri oku
-    google_search: |
-      <h2>Google ile arayın</h2>
-      <p>
-      <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-      <input type="text" id='user-query' value="">
-      <input type='hidden' id='google-query' name="q">
-      <button class="btn btn-primary">Google</button>
-      </form>
-      </p>

@@ -1,11 +1,20 @@
 import RestModel from 'discourse/models/rest';
 import { popupAjaxError } from 'discourse/lib/ajax-error';
 import ActionSummary from 'discourse/models/action-summary';
+import { url, fmt, propertyEqual } from 'discourse/lib/computed';
+import Quote from 'discourse/lib/quote';
+import computed from 'ember-addons/ember-computed-decorators';
 
 const Post = RestModel.extend({
 
   init() {
     this.set('replyHistory', []);
+  },
+
+  @computed()
+  siteSettings() {
+    // TODO: Remove this once one instantiate all `Discourse.Post` models via the store.
+    return Discourse.SiteSettings;
   },
 
   shareUrl: function() {
@@ -52,12 +61,12 @@ const Post = RestModel.extend({
   }.property('post_number', 'topic_id', 'topic.slug'),
 
   // Don't drop the /1
-  urlWithNumber: function() {
-    const url = this.get('url');
-    return (this.get('post_number') === 1) ? url + "/1" : url;
-  }.property('post_number', 'url'),
+  @computed('post_number', 'url')
+  urlWithNumber(postNumber, postUrl) {
+    return postNumber === 1 ? postUrl + "/1" : postUrl;
+  },
 
-  usernameUrl: Discourse.computed.url('username', '/users/%@'),
+  usernameUrl: url('username', '/users/%@'),
 
   showUserReplyTab: function() {
     return this.get('reply_to_user') && (
@@ -66,9 +75,9 @@ const Post = RestModel.extend({
     );
   }.property('reply_to_user', 'reply_to_post_number', 'post_number'),
 
-  topicOwner: Discourse.computed.propertyEqual('topic.details.created_by.id', 'user_id'),
+  topicOwner: propertyEqual('topic.details.created_by.id', 'user_id'),
   hasHistory: Em.computed.gt('version', 1),
-  postElementId: Discourse.computed.fmt('post_number', 'post_%@'),
+  postElementId: fmt('post_number', 'post_%@'),
 
   canViewRawEmail: function() {
     return this.get("user_id") === Discourse.User.currentProp("id") || Discourse.User.currentProp('staff');
@@ -95,7 +104,7 @@ const Post = RestModel.extend({
   },
 
   internalLinks: function() {
-    if (this.blank('link_counts')) return null;
+    if (Ember.isEmpty(this.get('link_counts'))) return null;
     return this.get('link_counts').filterProperty('internal').filterProperty('title');
   }.property('link_counts.@each.internal'),
 
@@ -110,7 +119,7 @@ const Post = RestModel.extend({
   }.property('actions_summary.@each.can_act'),
 
   actionsWithoutLikes: function() {
-    if (!this.present('actions_summary')) return null;
+    if (!!Ember.isEmpty(this.get('actions_summary'))) return null;
 
     return this.get('actions_summary').filter(function(i) {
       if (i.get('count') === 0) return false;
@@ -159,7 +168,9 @@ const Post = RestModel.extend({
 
   // Recover a deleted post
   recover() {
-    const post = this;
+    const post = this,
+          initProperties = post.getProperties('deleted_at', 'deleted_by', 'user_deleted', 'can_delete');
+
     post.setProperties({
       deleted_at: null,
       deleted_by: null,
@@ -175,6 +186,9 @@ const Post = RestModel.extend({
         can_delete: true,
         version: data.version
       });
+    }).catch(function(error) {
+      popupAjaxError(error);
+      post.setProperties(initProperties);
     });
   },
 
@@ -217,6 +231,7 @@ const Post = RestModel.extend({
         cooked: this.get('oldCooked'),
         version: this.get('version') - 1,
         can_recover: false,
+        can_delete: true,
         user_deleted: false
       });
     }
@@ -417,7 +432,7 @@ Post.reopenClass({
   loadQuote(postId) {
     return Discourse.ajax("/posts/" + postId + ".json").then(function (result) {
       const post = Discourse.Post.create(result);
-      return Discourse.Quote.build(post, post.get('raw'), {raw: true, full: true});
+      return Quote.build(post, post.get('raw'), {raw: true, full: true});
     });
   },
 

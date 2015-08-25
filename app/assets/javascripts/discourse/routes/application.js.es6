@@ -1,3 +1,4 @@
+import { setting } from 'discourse/lib/computed';
 import showModal from 'discourse/lib/show-modal';
 import OpenComposer from "discourse/mixins/open-composer";
 
@@ -12,8 +13,7 @@ function unlessReadOnly(method) {
 }
 
 const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
-
-  siteTitle: Discourse.computed.setting('title'),
+  siteTitle: setting('title'),
 
   actions: {
     _collectTitleTokens(tokens) {
@@ -74,7 +74,7 @@ const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
       }
       exceptionController.setProperties({ lastTransition: transition, thrown: err });
 
-      this.transitionTo('exception');
+      this.intermediateTransitionTo('exception');
     },
 
     showLogin: unlessReadOnly('handleShowLogin'),
@@ -133,12 +133,12 @@ const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
       });
     },
 
-    deleteSpammer: function (user) {
+    deleteSpammer(user) {
       this.send('closeModal');
       user.deleteAsSpammer(function() { window.location.reload(); });
     },
 
-    checkEmail: function (user) {
+    checkEmail(user) {
       user.checkEmail();
     },
 
@@ -149,7 +149,7 @@ const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
       this.render(w, {into: 'modal/topic-bulk-actions', outlet: 'bulkOutlet', controller: factory ? controllerName : 'topic-bulk-actions'});
     },
 
-    createNewTopicViaParams: function(title, body, category_id, category) {
+    createNewTopicViaParams(title, body, category_id, category) {
       this.openComposerWithParams(this.controllerFor('discovery/topics'), title, body, category_id, category);
     }
   },

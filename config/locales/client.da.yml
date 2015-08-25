@@ -123,7 +123,6 @@ da:
     admin_title: "Admin"
     flags_title: "Flag"
     show_more: "vis mere"
-    show_help: "hjælp"
     links: "Links"
     links_lowercase:
       one: "link"
@@ -422,7 +421,6 @@ da:
         upload_title: "Upload dit profil billede"
         upload_picture: "Upload et billede"
         image_is_not_a_square: "Advarsel: vi har klippet i billedet; bredde og højde var ikke ens."
-        cache_notice: "Du har ændret din avatar, men det kan godt tage lidt tid før ændringen kan ses."
       change_profile_background:
         title: "Profil baggrundsbillede"
         instructions: "Profil baggrunde vil blive centrerede og have en standard bredde på 850 pixels"
@@ -800,7 +798,7 @@ da:
         category: "Søg i kategorien \"{{category}}\""
         topic: "Søg i dette emne"
         private_messages: "Søg i beskeder"
-    site_map: "gå til en anden emneoversigt eller kategori"
+    hamburger_menu: "gå til en anden emneoversigt eller kategori"
     go_back: 'gå tilbage'
     not_logged_in_user: 'bruger side, med oversigt over aktivitet og indstillinger'
     current_user: 'gå til brugerside'
@@ -942,10 +940,8 @@ da:
           title: "Følger"
           description: "En optælling af nye svar vil blive vist for denne tråd. Du vil modtage en notifikation, hvis nogen nævner dit @name eller svarer dig."
         regular:
-          title: "Standard"
           description: "Du vil modtage en notifikation, hvis nogen nævner dit @name eller svarer dig."
         regular_pm:
-          title: "Standard"
           description: "Du vil modtage en notifikation, hvis nogen nævner dit @name eller svarer dig."
         muted_pm:
           title: "Lydløs"
@@ -1077,8 +1073,6 @@ da:
           one: Du har valgt <b>1</b> indlæg.
           other: Du har valgt <b>{{count}}</b> indlæg.
     post:
-      reply: "Svarer til {{link}} {{replyAvatar}} {{username}}"
-      reply_topic: "Svar til {{link}}"
       quote_reply: "citér svar"
       edit: "Redigerer {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Reason: "
@@ -1488,6 +1482,8 @@ da:
           title: "Alt"
         yearly:
           title: "Årligt"
+        quarterly:
+          title: "Kvartalvis"
         monthly:
           title: "Månedligt"
         weekly:
@@ -1496,6 +1492,7 @@ da:
           title: "Dagligt"
         all_time: "Alt"
         this_year: "År"
+        this_quarter: "Kvartal"
         this_month: "Måned"
         this_week: "Uge"
         today: "I dag"
@@ -2125,6 +2122,7 @@ da:
         delete: "Slet"
         cancel: "Afbryd"
         delete_confirm: "Er du sikker på at du vil slette det brugerfelt?"
+        options: "Indstillinger"
         required:
           title: "Krævet ved registrering?"
           enabled: "krævet"
@@ -2287,7 +2285,7 @@ da:
         title: 'Applikation'
         create: '<b>c</b> Opret et nyt emne'
         notifications: '<b>n</b> Åbn notifikationer'
-        site_map_menu: '<b>=</b> Åben site menu'
+        hamburger_menu: '<b>=</b> Åben site menu'
         user_profile_menu: '<b>p</b> Åben bruger menu'
         show_incoming_updated_topics: '<b>.</b> Vis opdaterede emner'
         search: '<b>/</b> Søg'
@@ -2421,12 +2419,3 @@ da:
         reader:
           name: Læser
           description: Har læst hver eneste indlæg i et emne med mere end 100 posts
-    google_search: |
-      <h2>Søg med Google</h2>
-      <p>
-        <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-          <input type="text" id='user-query' value="">
-          <input type='hidden' id='google-query' name="q">
-          <button class="btn btn-primary">Google</button>
-        </form>
-      </p>

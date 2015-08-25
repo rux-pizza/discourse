@@ -109,24 +109,25 @@ pt:
       google+: 'partilhar esta hiperligação no Google+'
       email: 'enviar esta hiperligação por email'
     action_codes:
+      split_topic: "dividir este tópico"
       autoclosed:
-        enabled: 'fechou este tópico %{when}'
-        disabled: 'abriu este tópico %{when}'
+        enabled: 'fechado %{when}'
+        disabled: 'aberto %{when}'
       closed:
-        enabled: 'fechou este tópico %{when}'
-        disabled: 'abriu este tópico %{when}'
+        enabled: 'fechado %{when}'
+        disabled: 'aberto %{when}'
       archived:
-        enabled: 'arquivou este tópico %{when}'
-        disabled: 'removeu este tópico do arquivo %{when}'
+        enabled: 'arquivado %{when}'
+        disabled: 'removido do arquivo %{when}'
       pinned:
-        enabled: 'fixou este tópico %{when}'
-        disabled: 'desafixou este tópico %{when}'
+        enabled: 'fixado %{when}'
+        disabled: 'desafixado %{when}'
       pinned_globally:
-        enabled: 'fixou este tópico globalmente %{when}'
-        disabled: 'desafixou este tópico %{when}'
+        enabled: 'fixado globalmente %{when}'
+        disabled: 'desafixado %{when}'
       visible:
-        enabled: 'listou este tópico %{when}'
-        disabled: 'removeu este tópico da lista %{when}'
+        enabled: 'listado %{when}'
+        disabled: 'removido da lista %{when}'
     topic_admin_menu: "Ações administrativas dos Tópicos"
     emails_are_disabled: "Todos os envios de e-mail foram globalmente desativados por um administrador. Nenhum e-mail de notificação será enviado."
     edit: 'editar o título e a categoria deste tópico'
@@ -142,7 +143,7 @@ pt:
     admin_title: "Administração"
     flags_title: "Sinalizações"
     show_more: "mostrar mais"
-    show_help: "Ajuda"
+    show_help: "opções"
     links: "Hiperligações"
     links_lowercase:
       one: "hiperligação"
@@ -371,6 +372,17 @@ pt:
       invited_by: "Convidado Por"
       trust_level: "Nível de Confiança"
       notifications: "Notificações"
+      desktop_notifications:
+        label: "Notificações de Desktop"
+        not_supported: "Não são suportadas notificações neste navegador. Desculpe."
+        perm_default: "Ligar Notificações"
+        perm_denied_btn: "Permissão Negada"
+        perm_denied_expl: "Tem permissões negadas para notificações. Utilize o seu navegador para ativar notificações, de seguida clique no botão quando concluir. (Desktop: O ícone mais à esquerda na barra de endereço. Móvel: 'Info do Sítio'.)"
+        disable: "Desativar Notificações"
+        currently_enabled: "(atualmente ativo)"
+        enable: "Ativar Notificações"
+        currently_disabled: "(atualmente inativo)"
+        each_browser_note: "Nota: Tem que alterar esta configuração em todos os navegadores de internet que utiliza."
       dismiss_notifications: "Marcar tudo como lido"
       dismiss_notifications_tooltip: "Marcar como lidas todas as notificações por ler"
       disable_jump_reply: "Não voltar para a minha mensagem após ter respondido"
@@ -383,6 +395,7 @@ pt:
       admin: "{{user}} é um administrador"
       moderator_tooltip: "Este utilizador é um moderador"
       admin_tooltip: "Este utilizador é um administrador"
+      blocked_tooltip: "Este utilizador está bloqueado"
       suspended_notice: "Este utilizador está suspenso até {{date}}."
       suspended_reason: "Motivo: "
       github_profile: "Github"
@@ -443,7 +456,7 @@ pt:
         upload_title: "Carregar a sua foto"
         upload_picture: "Carregar Imagem"
         image_is_not_a_square: "Alerta: cortámos a sua imagem; o comprimento e a altura não eram iguais."
-        cache_notice: "Alterou o seu avatar com sucesso mas poderá demorar algum tempo até este aparecer devido à cache do navegador de internet."
+        cache_notice: "Alterou a sua fotografia de perfil com sucesso mas poderá demorar algum tempo até esta aparecer devido à cache do navegador de internet."
       change_profile_background:
         title: "Fundo de Perfil"
         instructions: "O fundo do perfil será centrado e terá por defeito uma largura de 850px."
@@ -530,6 +543,7 @@ pt:
         search: "digite para procurar convites..."
         title: "Convites"
         user: "Utilizadores Convidados"
+        sent: "Enviado"
         none: "Ainda não convidou ninguém."
         truncated: "A mostrar os primeiros {{count}} convites."
         redeemed: "Convites Resgatados"
@@ -823,7 +837,7 @@ pt:
         category: "Procurar na categoria \"{{category}}\""
         topic: "Pesquisar este tópico"
         private_messages: "Pesquisar mensagens"
-    site_map: "ir para outra lista de tópicos ou categorias"
+    hamburger_menu: "ir para outra lista de tópicos ou categorias"
     go_back: 'voltar atrás'
     not_logged_in_user: 'página de utilizador com resumo da atividade atual e preferências  '
     current_user: 'ir para a sua página de utilizador'
@@ -872,6 +886,9 @@ pt:
         bookmarks: "Não há mais tópicos marcados."
         search: "Não há mais resultados na pesquisa."
     topic:
+      unsubscribe:
+        stop_notifications: "Irá passar a receber menos notificações para <strong>{{title}}</strong>"
+        change_notification_state: "O seu estado de notificação atual é"
       filter_to: "{{post_count}} mensagens no tópico"
       create: 'Novo Tópico'
       create_long: 'Criar um novo Tópico'
@@ -1092,6 +1109,12 @@ pt:
           one: "Por favor seleccione o novo titular da mensagem de <b>{{old_user}}</b>."
           other: "Por favor selecione o novo titular das {{count}} mensagens de <b>{{old_user}}</b>."
         instructions_warn: "Note que quaisquer notificações relacionadas com esta mensagem serão transferidas retroativamente para o novo utilizador. <br>Aviso: Atualmente nenhum dado dependente da mensagem é transferido para o novo utilizador. Usar com cautela."
+      change_timestamp:
+        title: "Alterar Selo Temporal"
+        action: "alterar selo temporal"
+        invalid_timestamp: "O selo temporal não pode ser no futuro."
+        error: "Ocorreu um erro ao alterar o selo temporal do tópico."
+        instructions: "Por favor selecione o novo selo temporal do tópico. Mensagens no tópico serão atualizadas para terem a mesma diferença temporal."
       multi_select:
         select: 'selecionar'
         selected: '({{count}}) selecionados'
@@ -1104,8 +1127,8 @@ pt:
           one: Selecionou <b>1</b> mensagem.
           other: Selecionou <b>{{count}}</b> mensagens.
     post:
-      reply: "Em resposta a {{link}} {{replyAvatar}} {{username}}"
-      reply_topic: "Responder a {{link}}"
+      reply: "<i class='fa fa-mail-forward'></i> {{replyAvatar}} {{usernameLink}}"
+      reply_topic: "<i class='fa fa-mail-forward'></i> {{link}}"
       quote_reply: "citar resposta"
       edit: "Editar {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Motivo:"
@@ -1778,6 +1801,7 @@ pt:
         header: "Cabeçalho"
         top: "Topo"
         footer: "Rodapé"
+        embedded_css: "CSS incorporado"
         head_tag:
           text: "</head>"
           title: "HTML que será introduzido antes da tag </head>"
@@ -2279,6 +2303,29 @@ pt:
         name: "Nome"
         image: "Imagem"
         delete_confirm: "Tem a certeza que deseja eliminar o emoji :%{name}:?"
+      embedding:
+        get_started: "Se deseja incorporar o Discourse noutro sítio, comece por adicionar o seu servidor."
+        confirm_delete: "Tem certeza que deseja eliminar este servidor?"
+        sample: "Utilize o seguinte código HTML no seu sítio para criar e incorporar tópicos do discourse. Substitua <b>REPLACE_ME</b> pelo URL canónico da página onde está a incorporá-los."
+        title: "Incorporação"
+        host: "Servidores Permitidos"
+        edit: "editar"
+        category: "Mensagem para Categoria"
+        add_host: "Adicionar Servidor"
+        settings: "Configurações de Incorporação"
+        feed_settings: "Configurações do Feed"
+        feed_description: "Fornecer um fed RSS/ATOM para o seu sítio pode melhorar a habilidade do Discourse de importar o seu conteúdo."
+        crawling_settings: "Configurações de Rastreio"
+        crawling_description: "Quando o Discourse cria tópicos para as suas mensagens, se nenhum feed RSS/ATOM está presente o Discourse irá tentar analisar o seu conteúdo fora do seu HTML. Algumas vezes pode ser um desafio extrair o seu conteúdo, por isso temos a habilidade de especificar regras CSS para tornar a extração mais fácil. "
+        embed_by_username: "Nome de uilizador para criação do tópico"
+        embed_post_limit: "Número máximo de mensagens a incorporar"
+        embed_username_key_from_feed: "Chave para puxar o nome de utilizador discouse do feed"
+        embed_truncate: "Truncar as mensagens incorporadas"
+        embed_whitelist_selector: "Seletor CSS para elementos que são permitidos nas incorporações"
+        embed_blacklist_selector: "Seletor CSS para elementos que são removidos das incorporações"
+        feed_polling_enabled: "Importar mensagens através de RSS/ATOM"
+        feed_polling_url: "URL do feed RSS/ATOM para rastreio"
+        save: "Guardar Configurações de Incorporação"
       permalink:
         title: "Hiperligações Permanentes"
         url: "URL"
@@ -2320,7 +2367,7 @@ pt:
         title: 'Aplicação'
         create: '<b>c</b> Criar um novo tópico'
         notifications: '<b>n</b> Abrir notificações'
-        site_map_menu: '<b>=</b> Abrir menu do sítio'
+        hamburger_menu: '<b>=</b> Abrir menu do sítio'
         user_profile_menu: '<b>p</b> Abrir menu do utilizador'
         show_incoming_updated_topics: '<b>.</b> Mostrar tópicos atualizados'
         search: '<b>/</b> Pesquisar'
@@ -2455,7 +2502,7 @@ pt:
           name: Leitor
           description: Ler todas as mensagens num tópico com mais de 100 mensagens
     google_search: |
-      <h2>Pesquisar com o Google</h2>
+      <h3>Pesquise com o Google</h3>
       <p>
       <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
       <input type="text" id='user-query' value="">

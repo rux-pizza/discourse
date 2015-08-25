@@ -121,7 +121,6 @@ ro:
     admin_title: "Admin"
     flags_title: "Semnalare"
     show_more: "Detaliază"
-    show_help: "ajutor"
     links: "Adrese"
     links_lowercase:
       one: "adresă"
@@ -423,7 +422,6 @@ ro:
         upload_title: "Încarcă poza personală"
         upload_picture: "Încarcă poza"
         image_is_not_a_square: "Atenţie: poză este decupată, dar înălţimea şi lăţimea nu sunt egale."
-        cache_notice: "Aţi schimbat cu success avatarul, dar poate dura ceva până la afişare datorită tehnologiilor cache ale navigatorului."
       change_profile_background:
         title: "Datele Profilului"
         instructions: "Fundalul profilului va fi centrat şi va avea o dimensiune standard de 850px."
@@ -798,7 +796,7 @@ ro:
         category: "Caută în categoria\"{{category}}\" "
         topic: "Caută în această discuție"
         private_messages: "Caută mesaje"
-    site_map: "mergi la o altă listă de discuții sau categorii"
+    hamburger_menu: "mergi la o altă listă de discuții sau categorii"
     go_back: 'înapoi'
     not_logged_in_user: 'pagina utilizatorului cu sumarul activităților și preferințelor'
     current_user: 'mergi la pagina proprie de utilizator'
@@ -938,10 +936,6 @@ ro:
           title: "Urmărind"
         tracking:
           title: "Urmărind"
-        regular:
-          title: "Normal"
-        regular_pm:
-          title: "Normal"
         muted_pm:
           title: "Silențios"
           description: "Nu veţi fi niciodată notificat despre acest mesaj."
@@ -1074,8 +1068,6 @@ ro:
           few: Aţi selectat <b>{{count}}</b> mesaje.
           other: Aţi selectat <b>{{count}}</b> mesaje.
     post:
-      reply: "Răspunde la {{link}} {{replyAvatar}} {{username}}"
-      reply_topic: "Răspunde la {{link}}"
       quote_reply: "răspunde prin citat"
       edit: "Editează {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Motivul: "
@@ -2258,7 +2250,7 @@ ro:
         title: 'Applicația'
         create: '<b>c</b> Crează discuție nouă'
         notifications: '<b>n</b> Deschide notificare'
-        site_map_menu: '<b>=</b> Deschide meniu sit'
+        hamburger_menu: '<b>=</b> Deschide meniu sit'
         user_profile_menu: '<b>p</b> Deschide meniu utilizator'
         show_incoming_updated_topics: '<b>.</b> Arată discuţiile actualizate'
         search: '<b>/</b> Caută'
@@ -2392,12 +2384,3 @@ ro:
         reader:
           name: Cititorul
           description: Citeşte fiecare mesaj dintr-o discuție cu mai mult de 100 de mesaje
-    google_search: |
-      <h2>Căutare cu Google</h2>
-      <p>
-        <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-          <input type="text" id='user-query' value="">
-          <input type='hidden' id='google-query' name="q">
-          <button class="btn btn-primary">Google</button>
-        </form>
-      </p>

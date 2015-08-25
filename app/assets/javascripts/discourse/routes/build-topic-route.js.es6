@@ -1,3 +1,4 @@
+import ScreenTrack from 'discourse/lib/screen-track';
 import { queryParams } from 'discourse/controllers/discovery-sortable';
 
 // A helper to build a topic route for a filter
@@ -82,12 +83,12 @@ export default function(filter, extras) {
 
     model(data, transition) {
       // attempt to stop early cause we need this to be called before .sync
-      Discourse.ScreenTrack.current().stop();
+      ScreenTrack.current().stop();
 
       const findOpts = filterQueryParams(transition.queryParams),
-            extras = { cached: this.isPoppedState(transition) };
+            findExtras = { cached: this.isPoppedState(transition) };
 
-      return findTopicList(this.store, filter, findOpts, extras);
+      return findTopicList(this.store, filter, findOpts, findExtras);
     },
 
     titleToken() {

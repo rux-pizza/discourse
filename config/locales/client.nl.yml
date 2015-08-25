@@ -123,7 +123,6 @@ nl:
     admin_title: "Beheer"
     flags_title: "Meldingen"
     show_more: "meer..."
-    show_help: "help"
     links: "Links"
     links_lowercase:
       one: "link"
@@ -424,7 +423,6 @@ nl:
         upload_title: "Upload je afbeelding"
         upload_picture: "Upload afbeelding"
         image_is_not_a_square: "Let op: we hebben je afbeelding bijgesneden; breedte en hoogte waren niet gelijk."
-        cache_notice: "Je hebt je avatar succesvol veranderd, maar het kan even duren voordat deze zichtbaar is wegens browser caching."
       change_profile_background:
         title: "Profielachtergrond"
         instructions: "Profielachtergronden worden gecentreerd en hebben een standaard breedte van 850px."
@@ -802,7 +800,7 @@ nl:
         category: "Doorzoek de \"{{category}}\" categorie"
         topic: "Zoek in deze topic"
         private_messages: "Zoek berichten"
-    site_map: "ga naar een andere topiclijst of categorie"
+    hamburger_menu: "ga naar een andere topiclijst of categorie"
     go_back: 'ga terug'
     not_logged_in_user: 'gebruikerspagina met samenvatting van huidige activiteit en voorkeuren'
     current_user: 'ga naar je gebruikerspagina'
@@ -944,10 +942,8 @@ nl:
           title: "Volgen"
           description: "Het aantal nieuwe reacties op dit bericht wordt weergegeven. Je krijgt een notificatie als iemand je @name noemt of reageert."
         regular:
-          title: "Normaal"
           description: "Je krijgt een notificatie als iemand je @naam noemt of reageert op een bericht van jou."
         regular_pm:
-          title: "Normaal"
           description: "Je krijgt een notificatie als iemand je @naam noemt of reageert op een bericht van jou."
         muted_pm:
           title: "Negeren"
@@ -1079,8 +1075,6 @@ nl:
           one: Je hebt <b>één</b> bericht geselecteerd.
           other: Je hebt <b>{{count}}</b> berichten geselecteerd.
     post:
-      reply: "Reageren op {{link}} door {{replyAvatar}} {{username}}"
-      reply_topic: "Reageer op {{link}}"
       quote_reply: "citeer"
       edit: "Bewerken van {{link}} door {{replyAvatar}} {{username}}"
       edit_reason: "Reden: "
@@ -2291,7 +2285,7 @@ nl:
         title: 'Applicatie'
         create: '<b>c</b> Maak nieuwe topic'
         notifications: '<b>n</b> Open notificaties'
-        site_map_menu: '<b>=</b> Open site menu'
+        hamburger_menu: '<b>=</b> Open site menu'
         user_profile_menu: '<b>p</b> Open gebruikersmenu'
         show_incoming_updated_topics: '<b>.</b> Toon gewijzigde topics'
         search: '<b>/</b> Zoek'
@@ -2425,12 +2419,3 @@ nl:
         reader:
           name: Lezer
           description: Lees elk bericht in een topic met meer dan 100 berichten.
-    google_search: |
-      <h2>Zoek met Google</h2>
-      <p>
-        <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-          <input type="text" id='user-query' value="">
-          <input type='hidden' id='google-query' name="q">
-          <button class="btn btn-primary">Google</button>
-        </form>
-      </p>

@@ -109,7 +109,6 @@ bs_BA:
     admin_title: "Admin"
     flags_title: "Opomene"
     show_more: "pokaži još"
-    show_help: "Pomoć"
     links: "Linkovi"
     links_lowercase:
       one: "Link"
@@ -697,7 +696,7 @@ bs_BA:
         user: "Traži postove od @{{username}}"
         category: "Traži \"{{category}}\" kategoriju"
         topic: "Pretraži ovu temu"
-    site_map: "go to another topic list or category"
+    hamburger_menu: "go to another topic list or category"
     go_back: 'go back'
     not_logged_in_user: 'user page with summary of current activity and preferences'
     current_user: 'go to your user page'
@@ -805,10 +804,6 @@ bs_BA:
           title: "Praćenje"
         tracking:
           title: "Praćenje"
-        regular:
-          title: "Regularno"
-        regular_pm:
-          title: "Regularno"
         muted_pm:
           title: "Mutirano"
           description: "You will never be notified of anything about this private message."
@@ -888,8 +883,6 @@ bs_BA:
         select_all: select all
         deselect_all: deselect all
     post:
-      reply: "Odgovori na {{link}} od {{replyAvatar}} {{username}}"
-      reply_topic: "Odgovori na {{link}}"
       quote_reply: "citiraj odgovor"
       edit: "Editing {{link}} by {{replyAvatar}} {{username}}"
       edit_reason: "Razlog: "
@@ -1801,7 +1794,7 @@ bs_BA:
         title: 'Aplikacija'
         create: '<b>c</b> Započni novu temu'
         notifications: '<b>n</b> Otvori notifikacije'
-        site_map_menu: '<b>=</b> Otvori meni sajta'
+        hamburger_menu: '<b>=</b> Otvori meni sajta'
         user_profile_menu: '<b>p</b> Otvori meni korisnika'
         show_incoming_updated_topics: '<b>.</b> Pročitaj promjenje teme'
         search: '<b>/</b> Tragaj'

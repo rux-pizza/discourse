@@ -142,7 +142,6 @@ cs:
     admin_title: "Administrace"
     flags_title: "Nahlášení"
     show_more: "zobrazit více"
-    show_help: "pomoc"
     links: "Odkazy"
     links_lowercase:
       one: "odkaz"
@@ -452,7 +451,6 @@ cs:
         upload_title: "Nahrát obrázek"
         upload_picture: "Nahrát obrázek"
         image_is_not_a_square: "Varování: Ořízli jsme váš avatar; šířka a délka nebyla stejná."
-        cache_notice: "Úspěšně jste změnili avatar, ale může chvíli trvat než se změna projeví."
       change_profile_background:
         title: "Pozadí profilu"
         instructions: "Pozadí profilu je zarovnáno doprostřed a má výchozí šířku 850px."
@@ -831,7 +829,7 @@ cs:
         category: "Vyhledat v kategorii „{{category}}“"
         topic: "Vyhledat v tomto tématu"
         private_messages: "Hledat ve zprávách"
-    site_map: "přejít na jiný seznam témat nebo kategorii"
+    hamburger_menu: "přejít na jiný seznam témat nebo kategorii"
     go_back: 'jít zpět'
     not_logged_in_user: 'stránka uživatele s přehledem o aktuální činnosti a nastavení'
     current_user: 'jít na vaši uživatelskou stránku'
@@ -979,10 +977,8 @@ cs:
           title: "Sledované"
           description: "U tohoto tématu se zobrazí počet nových příspěvků. Budete upozorněni, pokud někdo zmíní vaše @jméno nebo odpoví na váš příspěvek."
         regular:
-          title: "Klasicky"
           description: "Budete informováni pokud někdo zmíní vaše @jméno nebo odpoví na váš příspěvek."
         regular_pm:
-          title: "Normální"
           description: "Budete informováni pokud někdo zmíní vaše @jméno nebo odpoví na váš příspěvek."
         muted_pm:
           title: "Ztišení"
@@ -1119,8 +1115,6 @@ cs:
           few: Máte označeny <b>{{count}}</b> příspěvky.
           other: Máte označeno <b>{{count}}</b> příspěvků.
     post:
-      reply: "Odpovídáte na {{link}} {{replyAvatar}} {{username}}"
-      reply_topic: "Odpověď na {{link}}"
       quote_reply: "odpověď s citací"
       edit: "Editujete {{link}} {{replyAvatar}} {{username}}"
       edit_reason: "Důvod: "
@@ -2328,7 +2322,7 @@ cs:
         title: 'Application'
         create: '<b>c</b> Create a new topic'
         notifications: '<b>n</b> Open notifications'
-        site_map_menu: '<b>=</b> Otevře hlavní menu'
+        hamburger_menu: '<b>=</b> Otevře hlavní menu'
         user_profile_menu: '<b>p</b> Otevře uživatelské menu'
         show_incoming_updated_topics: '<b>.</b> Ukáže aktualizovaná témata'
         search: '<b>/</b> Search'
@@ -2455,12 +2449,3 @@ cs:
         reader:
           name: Čtenář
           description: Přečíst každý příspěvek v tématu s více než 100 příspěvky
-    google_search: |
-      <h2>Vyhledání v Google</h2>
-      <p>
-        <form action='//google.com/search' id='google-search' onsubmit="document.getElementById('google-query').value = 'site:' + window.location.host + ' ' + document.getElementById('user-query').value; return true;">
-          <input type="text" id='user-query' value="">
-          <input type='hidden' id='google-query' name="q">
-          <button class="btn btn-primary">Google</button>
-        </form>
-      </p>
