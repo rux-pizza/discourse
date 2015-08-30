@@ -1,6 +1,5 @@
-{{#if visible}}
-  <a href {{action "close"}} class='close-hamburger'>{{fa-icon 'times'}}</a>
-  <ul class="location-links">
+{{#menu-panel visible=visible}}
+  <ul class="menu-links">
     {{#if currentUser.staff}}
       <li>
         {{#link-to "admin" class="admin-link"}}
@@ -61,7 +60,7 @@
   </ul>
 
   {{#if categories}}
-    <ul class="category-links">
+    <ul class="category-links clearfix">
       <li class="heading" title={{i18n 'filters.categories.help'}}>
         {{#link-to "discovery.categories" class="categories-link"}}{{i18n 'filters.categories.title'}}{{/link-to}}
       </li>
@@ -71,6 +70,4 @@
       {{/each}}
     </ul>
   {{/if}}
-
-  <br>
-{{/if}}
+{{/menu-panel}}

@@ -625,6 +625,8 @@ en:
         days_visited: "Days Visited"
         account_age_days: "Account age in days"
         create: "Send an Invite"
+        generate_link: "Copy Invite Link"
+        generated_link_message: '<p>Invite link generated successfully!</p><p><input class="invite-link-input" style="width: 75%;" type="text" value="%{inviteLink}"></p><p>Invite link is only valid for this email address: <b>%{invitedEmail}</b></p>'
         bulk_invite:
           none: "You haven't invited anyone here yet. You can send individual invites, or invite a bunch of people at once by <a href='https://meta.discourse.org/t/send-bulk-invites/16468'>uploading a bulk invite file</a>."
           text: "Bulk Invite from File"
@@ -686,7 +688,7 @@ en:
     read_only_mode:
       enabled: "Read-only mode is enabled. You can continue to browse the site but interactions may not work."
       login_disabled: "Login is disabled while the site is in read only mode."
-    too_few_topics_notice: "Create at least 5 public topics and %{posts} public replies to get discussion started. New users cannot earn trust levels unless there's content for them to read. This message appears only to staff."
+    too_few_topics_notice: "Let's <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>get this discussion started!</a> There are currently <strong>%{currentTopics} / %{requiredTopics}</strong> topics and <strong>%{currentPosts} / %{requiredPosts}</strong> posts. New visitors need some conversations to read and respond to."
 
     learn_more: "learn more..."
 
@@ -1157,6 +1159,7 @@ en:
         unpin: "Remove this topic from the top of the {{categoryLink}} category."
         unpin_until: "Remove this topic from the top of the {{categoryLink}} category or wait until <strong>%{until}</strong>."
         pin_note: "Users can unpin the topic individually for themselves."
+        pin_validation: "A date is required to pin this topic."
         already_pinned:
           zero: "There are no topics pinned in {{categoryLink}}."
           one: "Topics currently pinned in {{categoryLink}}: <strong class='badge badge-notification unread'>1</strong>."
@@ -2705,6 +2708,15 @@ en:
         reader:
           name: Reader
           description: Read every post in a topic with more than 100 posts
+        popular_link:
+          name: Popular Link
+          description: Posted an external link with at least 50 clicks
+        hot_link:
+          name: Hot Link
+          description: Posted an external link with at least 300 clicks
+        famous_link:
+          name: Famous Link
+          description: Posted an external link with at least 1000 clicks
 
     google_search: |
       <h3>Search with Google</h3>

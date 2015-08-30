@@ -23,7 +23,11 @@ Discourse::Application.routes.draw do
     mount Logster::Web => "/logs", constraints: AdminConstraint.new
   end
 
-  resources :about
+  resources :about do
+    collection do
+      get "live_post_counts"
+    end
+  end
 
   resources :directory_items
 
@@ -494,6 +498,7 @@ Discourse::Application.routes.draw do
     end
   end
   post "invites/reinvite" => "invites#resend_invite"
+  post "invites/link" => "invites#create_invite_link"
   post "invites/disposable" => "invites#create_disposable_invite"
   get "invites/redeem/:token" => "invites#redeem_disposable_invite"
   delete "invites" => "invites#destroy"

@@ -291,6 +291,7 @@ module SiteSettingExtension
     end
 
     if type == types[:enum]
+      val = val.to_i if Fixnum === defaults[name.to_sym]
       if enum_class(name)
         raise Discourse::InvalidParameters.new(:value) unless enum_class(name).valid_value?(val)
       else
@@ -335,7 +336,7 @@ module SiteSettingExtension
       valid = false unless value.to_i.is_a?(Fixnum)
     end
 
-    return valid
+    valid
   end
 
   def filter_value(name, value)

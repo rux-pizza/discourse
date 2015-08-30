@@ -27,7 +27,6 @@ const PATH_BINDINGS = {
       'x r': '#dismiss-new,#dismiss-new-top,#dismiss-posts,#dismiss-posts-top', // dismiss new/posts
       'x t': '#dismiss-topics,#dismiss-topics-top',                             // dismiss topics
       '.': '.alert.alert-info.clickable',                                       // show incoming/updated topics
-      'n': '#user-notifications',                                               // open notifications menu
       'o,enter': '.topic-list tr.selected a.title',                             // open selected topic
       'shift+s': '#topic-footer-buttons button.share',                          // share topic
       's': '.topic-post.selected a.post-date'                                   // share post
@@ -62,6 +61,9 @@ export default {
     this.keyTrapper = keyTrapper;
     this.container = container;
     this._stopCallback();
+
+
+    this.searchService = this.container.lookup('search-service:main');
 
     _.each(PATH_BINDINGS, this._bindToPath, this);
     _.each(CLICK_BINDINGS, this._bindToClick, this);
@@ -131,10 +133,7 @@ export default {
   },
 
   showBuiltinSearch() {
-    if ($('#search-dropdown').is(':visible')) {
-      this._toggleSearch(false);
-      return true;
-    }
+    this.searchService.set('searchContextEnabled', false);
 
     const currentPath = this.container.lookup('controller:application').get('currentPath'),
           blacklist = [ /^discovery\.categories/ ],
@@ -144,11 +143,12 @@ export default {
 
     // If we're viewing a topic, only intercept search if there are cloaked posts
     if (showSearch && currentPath.match(/^topic\./)) {
-      showSearch = $('.cooked').length < this.container.lookup('controller:topic').get('postStream.stream.length');
+      showSearch = $('.cooked').length < this.container.lookup('controller:topic').get('model.postStream.stream.length');
     }
 
     if (showSearch) {
-      this._toggleSearch(true);
+      this.searchService.set('searchContextEnabled', true);
+      this.showSearch();
       return false;
     }
 
@@ -168,17 +168,15 @@ export default {
   },
 
   showSearch() {
-    this._toggleSearch(false);
-    return false;
+    this.container.lookup('controller:header').toggleProperty('searchVisible');
   },
 
   toggleHamburgerMenu() {
-    this.container.lookup('controller:application').send('toggleHamburgerMenu');
+    this.container.lookup('controller:header').toggleProperty('hamburgerVisible');
   },
 
   showCurrentUser() {
-    $('#current-user').click();
-    $('#user-dropdown a:first').focus();
+    this.container.lookup('controller:header').toggleProperty('userMenuVisible');
   },
 
   showHelpModal() {
@@ -370,12 +368,5 @@ export default {
 
       return oldStopCallback(e, element, combo);
     };
-  },
-
-  _toggleSearch(selectContext) {
-    $('#search-button').click();
-    if (selectContext) {
-      this.container.lookup('controller:search').set('searchContextEnabled', true);
-    }
-  },
+  }
 };

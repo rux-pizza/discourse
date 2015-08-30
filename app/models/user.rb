@@ -149,7 +149,7 @@ class User < ActiveRecord::Base
 
   def self.username_available?(username)
     lower = username.downcase
-    User.where(username_lower: lower).blank?
+    User.where(username_lower: lower).blank? && !SiteSetting.reserved_usernames.split("|").include?(username)
   end
 
   def effective_locale
@@ -579,7 +579,7 @@ class User < ActiveRecord::Base
   end
 
   def treat_as_new_topic_start_date
-    duration = new_topic_duration_minutes || SiteSetting.default_other_new_topic_duration_minutes
+    duration = new_topic_duration_minutes || SiteSetting.default_other_new_topic_duration_minutes.to_i
     [case duration
       when User::NewTopicDuration::ALWAYS
         created_at
