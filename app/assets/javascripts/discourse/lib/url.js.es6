@@ -37,7 +37,7 @@ const DiscourseURL = Ember.Object.createWithMixins({
       const lockon = new LockOn(holderId, {offsetCalculator: offset});
       const holder = $(holderId);
 
-      if(holder.length > 0 && opts && opts.skipIfOnScreen){
+      if (holder.length > 0 && opts && opts.skipIfOnScreen){
 
         // if we are on screen skip
         const elementTop = lockon.elementTop(),
@@ -105,7 +105,7 @@ const DiscourseURL = Ember.Object.createWithMixins({
     It contains the logic necessary to route within a topic using replaceState to
     keep the history intact.
   **/
-  routeTo: function(path, opts) {
+  routeTo(path, opts) {
     if (Em.isEmpty(path)) { return; }
 
     if (Discourse.get('requiresRefresh')) {
@@ -122,6 +122,7 @@ const DiscourseURL = Ember.Object.createWithMixins({
     // Scroll to the same page, different anchor
     if (path.indexOf('#') === 0) {
       this.scrollToId(path);
+      history.replaceState(undefined, undefined, path);
       return;
     }
 
@@ -220,7 +221,7 @@ const DiscourseURL = Ember.Object.createWithMixins({
             postStream = topicController.get('model.postStream');
 
         if (newMatches[3]) opts.nearPost = newMatches[3];
-        if (path.match(/last$/)) { opts.nearPost = topicController.get('highest_post_number'); }
+        if (path.match(/last$/)) { opts.nearPost = topicController.get('model.highest_post_number'); }
         const closest = opts.nearPost || 1;
 
         const self = this;
@@ -271,7 +272,7 @@ const DiscourseURL = Ember.Object.createWithMixins({
 
   // This has been extracted so it can be tested.
   origin: function() {
-    return window.location.origin;
+    return window.location.origin + (Discourse.BaseUri === "/" ? '' : Discourse.BaseUri);
   },
 
   /**

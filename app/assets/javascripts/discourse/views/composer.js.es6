@@ -1,10 +1,10 @@
 import userSearch from 'discourse/lib/user-search';
 import afterTransition from 'discourse/lib/after-transition';
 import loadScript from 'discourse/lib/load-script';
-import avatarTemplate from 'discourse/lib/avatar-template';
 import positioningWorkaround from 'discourse/lib/safari-hacks';
 import debounce from 'discourse/lib/debounce';
 import { linkSeenMentions, fetchUnseenMentions } from 'discourse/lib/link-mentions';
+import { headerHeight } from 'discourse/views/header';
 
 const ComposerView = Ember.View.extend(Ember.Evented, {
   _lastKeyTimeout: null,
@@ -60,23 +60,22 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
   },
 
   resize: function() {
-    const self = this;
-    Ember.run.scheduleOnce('afterRender', function() {
-      const h = $('#reply-control').height() || 0;
-      self.movePanels.apply(self, [h + "px"]);
+    Ember.run.scheduleOnce('afterRender', () => {
+      let h = $('#reply-control').height() || 0;
+      this.movePanels(h + "px");
 
       // Figure out the size of the fields
-      const $fields = self.$('.composer-fields');
+      const $fields = this.$('.composer-fields');
       let pos = $fields.position();
 
       if (pos) {
-        self.$('.wmd-controls').css('top', $fields.height() + pos.top + 5);
+        this.$('.wmd-controls').css('top', $fields.height() + pos.top + 5);
       }
 
       // get the submit panel height
-      pos = self.$('.submit-panel').position();
+      pos = this.$('.submit-panel').position();
       if (pos) {
-        self.$('.wmd-controls').css('bottom', h - pos.top + 7);
+        this.$('.wmd-controls').css('bottom', h - pos.top + 7);
       }
 
     });
@@ -117,20 +116,21 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
   },
 
   _enableResizing: function() {
-    const $replyControl = $('#reply-control'),
-        self = this;
+    const $replyControl = $('#reply-control');
 
-    const resizer = function() {
-      Ember.run(function() {
-        self.resize();
-      });
+    const runResize = () => {
+      Ember.run(() => this.resize());
     };
 
     $replyControl.DivResizer({
-      resize: resizer,
-      onDrag(sizePx) { self.movePanels.apply(self, [sizePx]); }
+      maxHeight(winHeight) {
+        return winHeight - headerHeight();
+      },
+      resize: runResize,
+      onDrag: (sizePx) => this.movePanels(sizePx)
     });
-    afterTransition($replyControl, resizer);
+
+    afterTransition($replyControl, runResize);
     this.set('controller.view', this);
 
     positioningWorkaround(this.$());
@@ -219,6 +219,8 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
     // but if you start replying to another topic it will get the avatars wrong
     let $wmdInput;
     const self = this;
+    const controller = this.get('controller');
+
     this.wmdInput = $wmdInput = this.$('.wmd-input');
     if ($wmdInput.length === 0 || $wmdInput.data('init') === true) return;
 
@@ -233,7 +235,7 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
       dataSource(term) {
         return userSearch({
           term: term,
-          topicId: self.get('controller.controllers.topic.model.id'),
+          topicId: controller.get('controllers.topic.model.id'),
           includeGroups: true
         });
       },
@@ -243,21 +245,40 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
       }
     });
 
-    this.editor = Discourse.Markdown.createEditor({
+
+    const options ={
       containerElement: this.element,
       lookupAvatarByPostNumber(postNumber, topicId) {
-        const posts = self.get('controller.controllers.topic.model.postStream.posts');
-        if (posts && topicId === self.get('controller.controllers.topic.model.id')) {
+        const posts = controller.get('controllers.topic.model.postStream.posts');
+        if (posts && topicId === controller.get('controllers.topic.model.id')) {
           const quotedPost = posts.findProperty("post_number", postNumber);
           if (quotedPost) {
-            const username = quotedPost.get('username'),
-                  uploadId = quotedPost.get('uploaded_avatar_id');
-
-            return Discourse.Utilities.tinyAvatar(avatarTemplate(username, uploadId));
+            return Discourse.Utilities.tinyAvatar(quotedPost.get('avatar_template'));
           }
         }
       }
-    });
+    };
+
+    const showOptions = controller.get('canWhisper');
+    if (showOptions) {
+      options.appendButtons = [{
+        id: 'wmd-composer-options',
+        description: I18n.t("composer.options"),
+        execute() {
+          const toolbarPos = self.$('.wmd-controls').position();
+          const pos = self.$('.wmd-composer-options').position();
+
+          const location = {
+            position: "absolute",
+            left: toolbarPos.left + pos.left,
+            top: toolbarPos.top + pos.top,
+          };
+          controller.send('showOptions', location);
+        }
+      }];
+    }
+
+    this.editor = Discourse.Markdown.createEditor(options);
 
     // HACK to change the upload icon of the composer's toolbar
     if (!Discourse.Utilities.allowsAttachments()) {
@@ -268,7 +289,7 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
 
     this.editor.hooks.insertImageDialog = function(callback) {
       callback(null);
-      self.get('controller').send('showUploadSelector', self);
+      controller.send('showUploadSelector', self);
       return true;
     };
 
@@ -281,7 +302,7 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
     this.loadingChanged();
 
     const saveDraft = debounce((function() {
-      return self.get('controller').saveDraft();
+      return controller.saveDraft();
     }), 2000);
 
     $wmdInput.keyup(function() {
@@ -321,8 +342,9 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
     this.messageBus.subscribe("/uploads/composer", upload => {
       if (!cancelledByTheUser) {
         if (upload && upload.url) {
-          const markdown = Discourse.Utilities.getUploadMarkdown(upload);
-          this.addMarkdown(markdown + " ");
+          const old = Discourse.Utilities.getUploadPlaceholder(upload.original_filename),
+                markdown = Discourse.Utilities.getUploadMarkdown(upload);
+          this.replaceMarkdown(old, markdown);
         } else {
           Discourse.Utilities.displayErrorForUpload(upload);
         }
@@ -346,9 +368,13 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
 
     $uploadTarget.on("fileuploadsend", (e, data) => {
       // hide the "file selector" modal
-      this.get("controller").send("closeModal");
+      controller.send("closeModal");
       // deal with cancellation
       cancelledByTheUser = false;
+      // add upload placeholder
+      const markdown = Discourse.Utilities.getUploadPlaceholder(data.files[0].name);
+      this.addMarkdown(markdown);
+
       if (data["xhr"]) {
         const jqHXR = data.xhr();
         if (jqHXR) {
@@ -470,7 +496,7 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
     }
 
     if (Discourse.Mobile.mobileView) {
-      $(".mobile-file-upload").on("click", function () {
+      $(".mobile-file-upload").on("click.uploader", function () {
         // redirect the click on the hidden file input
         $("#mobile-uploader").click();
       });
@@ -499,6 +525,11 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
     Em.run.schedule('afterRender', function() {
       Discourse.Utilities.setCaretPosition(ctrl, caretPosition + text.length);
     });
+  },
+
+  replaceMarkdown(old, text) {
+    const reply = this.get("model.reply");
+    this.set("model.reply", reply.replace(old, text));
   },
 
   // Uses javascript to get the image sizes from the preview, if present

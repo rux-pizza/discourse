@@ -100,6 +100,19 @@ sv:
       facebook: 'dela denna länk på Facebook'
       google+: 'dela denna länk på Google+'
       email: 'skicka denna länk i ett email'
+    action_codes:
+      split_topic: "Dela upp denna tråd"
+      autoclosed:
+        enabled: 'stängdes %{when}'
+        disabled: 'öppnades %{when}'
+      closed:
+        enabled: 'stängdes %{when}'
+        disabled: 'öppnades %{when}'
+      archived:
+        enabled: 'arkiverades %{when}'
+        disabled: 'avarkiverades %{when}'
+      pinned:
+        enabled: 'klistrades %{when}'
     topic_admin_menu: "ämne admin åtgärder"
     emails_are_disabled: "All utgående e-post har blivit globalt deaktiverad av en administratör. Inga e-postnotifikationer av något slag kommer att skickas ut."
     edit: 'redigera titel och kategori för denna tråd'
@@ -277,6 +290,8 @@ sv:
         mods_and_admins: "Bara moderatorer och administratörer"
         members_mods_and_admins: "Bara gruppmedlemmar, moderatorer och administratörer"
         everyone: "Alla"
+      trust_levels:
+        none: "Inga"
     user_action_groups:
       '1': "Gillningar givna"
       '2': "Gillningar mottagna"
@@ -296,6 +311,11 @@ sv:
       all_subcategories: "alla"
       no_subcategory: "ingen"
       category: "Kategori"
+      reorder:
+        title: "Sortera kategorier"
+        title_long: "Sortera litan av katergorier"
+        apply_all: "Tillämpa"
+        position: "Position"
       posts: "Inlägg"
       topics: "Ämnen"
       latest: "Senaste"
@@ -353,6 +373,7 @@ sv:
       admin: "{{user}} är en admin"
       moderator_tooltip: "Den här användaren är moderator"
       admin_tooltip: "Den här användaren är administrator"
+      blocked_tooltip: "Den här användaren är blockerad"
       suspended_notice: "Den här användaren är avstängd till {{date}}."
       suspended_reason: "Anledning:"
       github_profile: "Github"
@@ -478,27 +499,17 @@ sv:
         label: "Betrakta ämnen som nya när"
         not_viewed: "Jag har inte tittat dom än"
         last_here: "skapade sen mitt senaste besök"
-        after_n_days:
-          one: "skapad det senaste dygnet"
-          other: "skapad de senaste {{count}} dagarna"
-        after_n_weeks:
-          one: "skapad den senaste veckan"
-          other: "skapad de senaste {{count}} veckorna"
+        after_1_day: "skapade de senaste dagarna"
+        after_2_days: "skapade de senaste 2 dagarna"
+        after_1_week: "skapade den senaste veckan"
       auto_track_topics: "Följ automatiskt nya ämnen jag går in i"
       auto_track_options:
         never: "aldrig"
         immediately: "genast"
-        after_n_seconds:
-          one: "efter 1 sekund"
-          other: "efter {{count}} sekunder"
-        after_n_minutes:
-          one: "efter 1 minut"
-          other: "efter {{count}} minuter"
       invited:
         search: "sök efter inbjudningar..."
         title: "Inbjudningar"
         user: "Inbjuden Användare"
-        none: "Du har inte bjudit in någon här ännu."
         truncated: "Visar de första {{count}} inbjudningarna."
         redeemed: "Inlösta Inbjudnignar"
         redeemed_at: "Inlöst"
@@ -570,7 +581,6 @@ sv:
     read_only_mode:
       enabled: "Skrivskyddat läge är aktiverat. Du kan fortsätta visa sidan men interaktioner kanske inte fungerar."
       login_disabled: "Det går inte att logga in medan siten är i skrivskyddat läge."
-    too_few_topics_notice: "Skapa minst 5 publika ämnen och %{posts} publika inlägg för att få igång diskussionen. Nya användare kan inte uppnå nya förtroendenivåer om det inte finns innehåll för dem att läsa. Detta meddelande syns enbart för administratörer."
     learn_more: "lär dig mer..."
     year: 'år'
     year_desc: 'diskussioner skapade de senaste 365 dagarna'
@@ -694,7 +704,6 @@ sv:
       title_placeholder: "Vad handlar denna diskussion om i en kort mening?"
       edit_reason_placeholder: "varför redigerar du?"
       show_edit_reason: "(lägg till anledningar för redigering)"
-      reply_placeholder: "Skriv här. Använd Markdown, BBCode eller HTML för formatering. Dra och släpp en bild här för att ladda upp den."
       view_new_post: "Visa ditt nya inlägg."
       saving: "Sparar..."
       saved: "Sparat!"
@@ -783,7 +792,6 @@ sv:
         category: "Sök i kategorin \"{{category}}\""
         topic: "Sök i denna diskussion"
         private_messages: "Sök meddelanden"
-    hamburger_menu: "gå till en annan ämneslista eller kategori"
     go_back: 'gå tillbaka'
     not_logged_in_user: 'användarsida med sammanställning av aktuell aktivitet och inställningar'
     current_user: 'gå till din användarsida'
@@ -1358,6 +1366,8 @@ sv:
         help: "Du bokmärkte nu detta ämnet."
       locked:
         help: "Det här ämnet är stängt; det går inte längre att svara på inlägg"
+      archived:
+        help: "Det här ämnet är arkiverat; det är fryst och kan inte ändras"
       unpinned:
         title: "Avklistrat"
         help: "Detta ämne är oklistrat för dig. Det visas i vanlig ordning"
@@ -1367,8 +1377,6 @@ sv:
       pinned:
         title: "Klistrat"
         help: "Detta ämne är klistrat för dig. Det visas i toppen av dess kategori"
-      archived:
-        help: "Det här ämnet är arkiverat; det är fryst och kan inte ändras"
       invisible:
         help: "Det här ämnet är olistat; det kommer inte visas i ämneslistorna och kan bara nås via en direktlänk"
     posts: "Inlägg"
@@ -1808,7 +1816,6 @@ sv:
         sent_test: "skickat!"
         delivery_method: "Leveransmetod"
         preview_digest: "Sammandrag"
-        preview_digest_desc: "Förhandsgrandska innehållet i sammanfattningen som veckovis skickas till inaktiva användare."
         refresh: "Uppdatera"
         format: "Format"
         html: "html"
@@ -2222,7 +2229,6 @@ sv:
       application:
         create: '<b>s</b> Skapa ett nytt ämne'
         notifications: '<b>n</b> Öppna notifikationer'
-        hamburger_menu: '<b>=</b> Öppna webbplatsmeny'
         user_profile_menu: '<b>p</b> Öppna användarmeny'
         show_incoming_updated_topics: '<b>.</b> Visa uppdaterade ämnen'
         search: 'Sök'
@@ -2339,3 +2345,7 @@ sv:
         reader:
           name: Läsare
           description: Läs varje inlägg i en diskussion med över 100 inlägg
+        popular_link:
+          name: Populär länk
+        hot_link:
+          name: Het länk

@@ -3,12 +3,16 @@
 import Singleton from 'discourse/mixins/singleton';
 
 const PAUSE_UNLESS_SCROLLED = 1000 * 60 * 3,
-      MAX_TRACKING_TIME = 1000 * 60 * 6;
+      MAX_TRACKING_TIME = 1000 * 60 * 6,
+      ANON_MAX_TOPIC_IDS = 5;
 
 const ScreenTrack = Ember.Object.extend({
 
   init() {
     this.reset();
+
+    // TODO: Move `ScreenTrack` to injection and remove this
+    this.set('topicTrackingState', Discourse.__container__.lookup('topic-tracking-state:main'));
   },
 
   start(topicId, topicController) {
@@ -27,7 +31,7 @@ const ScreenTrack = Ember.Object.extend({
         self.tick();
       }, 1000));
 
-      $(window).on('scroll.screentrack', function(){self.scrolled()});
+      $(window).on('scroll.screentrack', function(){self.scrolled();});
     }
 
     this.set('topicId', topicId);
@@ -82,9 +86,6 @@ const ScreenTrack = Ember.Object.extend({
   flush() {
     if (this.get('cancelled')) { return; }
 
-    // We don't log anything unless we're logged in
-    if (!Discourse.User.current()) return;
-
     const newTimings = {},
         totalTimings = this.get('totalTimings'),
         self = this;
@@ -112,29 +113,55 @@ const ScreenTrack = Ember.Object.extend({
       highestSeenByTopic[topicId] = highestSeen;
     }
 
-    Discourse.TopicTrackingState.current().updateSeen(topicId, highestSeen);
+    this.topicTrackingState.updateSeen(topicId, highestSeen);
 
     if (!$.isEmptyObject(newTimings)) {
-      Discourse.ajax('/topics/timings', {
-        data: {
-          timings: newTimings,
-          topic_time: this.get('topicTime'),
-          topic_id: topicId
-        },
-        cache: false,
-        type: 'POST',
-        headers: {
-          'X-SILENCE-LOGGER': 'true'
+      if (Discourse.User.current()) {
+        Discourse.ajax('/topics/timings', {
+          data: {
+            timings: newTimings,
+            topic_time: this.get('topicTime'),
+            topic_id: topicId
+          },
+          cache: false,
+          type: 'POST',
+          headers: {
+            'X-SILENCE-LOGGER': 'true'
+          }
+        }).then(function() {
+          const controller = self.get('topicController');
+          if (controller) {
+            const postNumbers = Object.keys(newTimings).map(function(v) {
+              return parseInt(v, 10);
+            });
+            controller.readPosts(topicId, postNumbers);
+          }
+        });
+      } else if (this.get('anonFlushCallback')) {
+        // Anonymous viewer - save to localStorage
+        const storage = this.get('keyValueStore');
+
+        // Save total time
+        const existingTime = storage.getInt('anon-topic-time');
+        storage.setItem('anon-topic-time', existingTime + this.get('topicTime'));
+
+        // Save unique topic IDs up to a max
+        let topicIds = storage.get('anon-topic-ids');
+        if (topicIds) {
+          topicIds = topicIds.split(',').map(e => parseInt(e));
+        } else {
+          topicIds = [];
         }
-      }).then(function(){
-        const controller = self.get('topicController');
-        if(controller){
-          const postNumbers = Object.keys(newTimings).map(function(v){
-            return parseInt(v,10);
-          });
-          controller.readPosts(topicId, postNumbers);
+        if (topicIds.indexOf(topicId) === -1 && topicIds.length < ANON_MAX_TOPIC_IDS) {
+          topicIds.push(topicId);
+          storage.setItem('anon-topic-ids', topicIds.join(','));
         }
-      });
+
+        // Inform the observer
+        this.get('anonFlushCallback')();
+
+        // No need to call controller.readPosts()
+      }
 
       this.set('topicTime', 0);
     }

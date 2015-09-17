@@ -41,10 +41,6 @@ const TopicRoute = Discourse.Route.extend({
 
   actions: {
 
-    showTopicAdminMenu() {
-      this.controllerFor("topic-admin-menu").send("show");
-    },
-
     showFlags(model) {
       showModal('flag', { model });
       this.controllerFor('flag').setProperties({ selected: null });
@@ -56,7 +52,7 @@ const TopicRoute = Discourse.Route.extend({
     },
 
     showAutoClose() {
-      showModal('edit-topic-auto-close', { model: this.modelFor('topic'), title: 'topic.auto_close_title' });
+      showModal('edit-topic-auto-close', { model: this.modelFor('topic') });
       this.controllerFor('modal').set('modalClass', 'edit-auto-close-modal');
     },
 
@@ -175,14 +171,12 @@ const TopicRoute = Discourse.Route.extend({
 
     const topic = this.modelFor('topic');
     this.session.set('lastTopicIdViewed', parseInt(topic.get('id'), 10));
-    this.controllerFor('search').set('searchContext', topic.get('searchContext'));
   },
 
   deactivate() {
     this._super();
 
-    // Clear the search context
-    this.controllerFor('search').set('searchContext', null);
+    this.searchService.set('searchContext', null);
     this.controllerFor('user-card').set('visible', false);
 
     const topicController = this.controllerFor('topic'),
@@ -205,13 +199,6 @@ const TopicRoute = Discourse.Route.extend({
     // In case we navigate from one topic directly to another
     isTransitioning = false;
 
-    if (Discourse.Mobile.mobileView) {
-      // close the dropdowns on mobile
-      $('.d-dropdown').hide();
-      $('header ul.icons li').removeClass('active');
-      $('[data-toggle="dropdown"]').parent().removeClass('open');
-    }
-
     controller.setProperties({
       model,
       editingTopic: false,
@@ -220,15 +207,11 @@ const TopicRoute = Discourse.Route.extend({
 
     Discourse.TopicRoute.trigger('setupTopicController', this);
 
-    this.controllerFor('header').setProperties({
-      topic: model,
-      showExtraInfo: false
-    });
-
-    this.controllerFor('topic-admin-menu').set('model', model);
+    this.controllerFor('header').setProperties({ topic: model, showExtraInfo: false });
+    this.searchService.set('searchContext', model.get('searchContext'));
 
     this.controllerFor('composer').set('topic', model);
-    Discourse.TopicTrackingState.current().trackIncoming('all');
+    this.topicTrackingState.trackIncoming('all');
     controller.subscribe();
 
     this.controllerFor('topic-progress').set('model', model);

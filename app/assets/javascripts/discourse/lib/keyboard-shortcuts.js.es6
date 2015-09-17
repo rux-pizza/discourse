@@ -1,60 +1,53 @@
 import DiscourseURL from 'discourse/lib/url';
 
-const PATH_BINDINGS = {
-      'g h': '/',
-      'g l': '/latest',
-      'g n': '/new',
-      'g u': '/unread',
-      'g c': '/categories',
-      'g t': '/top',
-      'g b': '/bookmarks'
-    },
-
-    SELECTED_POST_BINDINGS = {
-      'd': 'deletePost',
-      'e': 'editPost',
-      'l': 'toggleLike',
-      'r': 'replyToPost',
-      '!': 'showFlags',
-      't': 'replyAsNewTopic'
-    },
-
-    CLICK_BINDINGS = {
-      'm m': 'div.notification-options li[data-id="0"] a',                      // mark topic as muted
-      'm r': 'div.notification-options li[data-id="1"] a',                      // mark topic as regular
-      'm t': 'div.notification-options li[data-id="2"] a',                      // mark topic as tracking
-      'm w': 'div.notification-options li[data-id="3"] a',                      // mark topic as watching
-      'x r': '#dismiss-new,#dismiss-new-top,#dismiss-posts,#dismiss-posts-top', // dismiss new/posts
-      'x t': '#dismiss-topics,#dismiss-topics-top',                             // dismiss topics
-      '.': '.alert.alert-info.clickable',                                       // show incoming/updated topics
-      'n': '#user-notifications',                                               // open notifications menu
-      'o,enter': '.topic-list tr.selected a.title',                             // open selected topic
-      'shift+s': '#topic-footer-buttons button.share',                          // share topic
-      's': '.topic-post.selected a.post-date'                                   // share post
-    },
-
-    FUNCTION_BINDINGS = {
-      'c': 'createTopic',                                                       // create new topic
-      'home': 'goToFirstPost',
-      '#': 'toggleProgress',
-      'end': 'goToLastPost',
-      'shift+j': 'nextSection',
-      'j': 'selectDown',
-      'shift+k': 'prevSection',
-      'shift+p': 'pinUnpinTopic',
-      'k': 'selectUp',
-      'u': 'goBack',
-      '/': 'showSearch',
-      '=': 'toggleHamburgerMenu',
-      'p': 'showCurrentUser',                                                   // open current user menu
-      'ctrl+f': 'showBuiltinSearch',
-      'command+f': 'showBuiltinSearch',
-      '?': 'showHelpModal',                                                     // open keyboard shortcut help
-      'q': 'quoteReply',
-      'b': 'toggleBookmark',
-      'f': 'toggleBookmarkTopic',
-      'shift+r': 'replyToTopic'
-    };
+const bindings = {
+  '!':               {postAction: 'showFlags'},
+  '#':               {handler: 'toggleProgress', anonymous: true},
+  '/':               {handler: 'showSearch', anonymous: true},
+  '=':               {handler: 'toggleHamburgerMenu', anonymous: true},
+  '?':               {handler: 'showHelpModal', anonymous: true},
+  '.':               {click: '.alert.alert-info.clickable', anonymous: true}, // show incoming/updated topics
+  'b':               {handler: 'toggleBookmark'},
+  'c':               {handler: 'createTopic'},
+  'ctrl+f':          {handler: 'showBuiltinSearch', anonymous: true},
+  'command+f':       {handler: 'showBuiltinSearch', anonymous: true},
+  'd':               {postAction: 'deletePost'},
+  'e':               {postAction: 'editPost'},
+  'end':             {handler: 'goToLastPost', anonymous: true},
+  'f':               {handler: 'toggleBookmarkTopic'},
+  'g h':             {path: '/', anonymous: true},
+  'g l':             {path: '/latest', anonymous: true},
+  'g n':             {path: '/new'},
+  'g u':             {path: '/unread'},
+  'g c':             {path: '/categories', anonymous: true},
+  'g t':             {path: '/top', anonymous: true},
+  'g b':             {path: '/bookmarks'},
+  'g p':             {path: '/my/activity'},
+  'g m':             {path: '/my/messages'},
+  'home':            {handler: 'goToFirstPost', anonymous: true},
+  'j':               {handler: 'selectDown', anonymous: true},
+  'k':               {handler: 'selectUp', anonymous: true},
+  'l':               {postAction: 'toggleLike'},
+  'm m':             {click: 'div.notification-options li[data-id="0"] a'}, // mark topic as muted
+  'm r':             {click: 'div.notification-options li[data-id="1"] a'}, // mark topic as regular
+  'm t':             {click: 'div.notification-options li[data-id="2"] a'}, // mark topic as tracking
+  'm w':             {click: 'div.notification-options li[data-id="3"] a'}, // mark topic as watching
+  'o,enter':         {click: '.topic-list tr.selected a.title', anonymous: true}, // open selected topic
+  'p':               {handler: 'showCurrentUser'},
+  'q':               {handler: 'quoteReply'},
+  'r':               {postAction: 'replyToPost'},
+  's':               {click: '.topic-post.selected a.post-date', anonymous: true}, // share post
+  'shift+j':         {handler: 'nextSection', anonymous: true},
+  'shift+k':         {handler: 'prevSection', anonymous: true},
+  'shift+p':         {handler: 'pinUnpinTopic'},
+  'shift+r':         {handler: 'replyToTopic'},
+  'shift+s':         {click: '#topic-footer-buttons button.share', anonymous: true}, // share topic
+  'shift+z shift+z': {handler: 'logout'},
+  't':               {postAction: 'replyAsNewTopic'},
+  'u':               {handler: 'goBack', anonymous: true},
+  'x r':             {click: '#dismiss-new,#dismiss-new-top,#dismiss-posts,#dismiss-posts-top'}, // dismiss new/posts
+  'x t':             {click: '#dismiss-topics,#dismiss-topics-top'} // dismiss topics
+};
 
 
 export default {
@@ -63,31 +56,49 @@ export default {
     this.container = container;
     this._stopCallback();
 
-    _.each(PATH_BINDINGS, this._bindToPath, this);
-    _.each(CLICK_BINDINGS, this._bindToClick, this);
-    _.each(SELECTED_POST_BINDINGS, this._bindToSelectedPost, this);
-    _.each(FUNCTION_BINDINGS, this._bindToFunction, this);
+    this.searchService = this.container.lookup('search-service:main');
+    this.appEvents = this.container.lookup('app-events:main');
+    this.currentUser = this.container.lookup('current-user:main');
+
+    Object.keys(bindings).forEach(key => {
+      const binding = bindings[key];
+      if (!binding.anonymous && !this.currentUser) { return; }
+
+      if (binding.path) {
+        this._bindToPath(binding.path, key);
+      } else if (binding.handler) {
+        this._bindToFunction(binding.handler, key);
+      } else if (binding.postAction) {
+        this._bindToSelectedPost(binding.postAction, key);
+      } else if (binding.click) {
+        this._bindToClick(binding.click, key);
+      }
+    });
   },
 
-  toggleBookmark(){
+  toggleBookmark() {
     this.sendToSelectedPost('toggleBookmark');
     this.sendToTopicListItemView('toggleBookmark');
   },
 
-  toggleBookmarkTopic(){
+  toggleBookmarkTopic() {
     const topic = this.currentTopic();
     // BIG hack, need a cleaner way
-    if(topic && $('.posts-wrapper').length > 0) {
+    if (topic && $('.posts-wrapper').length > 0) {
       topic.toggleBookmark();
     } else {
       this.sendToTopicListItemView('toggleBookmark');
     }
   },
 
-  quoteReply(){
+  logout() {
+    this.container.lookup('route:application').send('logout');
+  },
+
+  quoteReply() {
     $('.topic-post.selected button.create').click();
     // lazy but should work for now
-    setTimeout(function(){
+    setTimeout(function() {
       $('#wmd-quote-post').click();
     }, 500);
   },
@@ -131,10 +142,7 @@ export default {
   },
 
   showBuiltinSearch() {
-    if ($('#search-dropdown').is(':visible')) {
-      this._toggleSearch(false);
-      return true;
-    }
+    this.searchService.set('searchContextEnabled', false);
 
     const currentPath = this.container.lookup('controller:application').get('currentPath'),
           blacklist = [ /^discovery\.categories/ ],
@@ -144,11 +152,12 @@ export default {
 
     // If we're viewing a topic, only intercept search if there are cloaked posts
     if (showSearch && currentPath.match(/^topic\./)) {
-      showSearch = $('.cooked').length < this.container.lookup('controller:topic').get('postStream.stream.length');
+      showSearch = $('.cooked').length < this.container.lookup('controller:topic').get('model.postStream.stream.length');
     }
 
     if (showSearch) {
-      this._toggleSearch(true);
+      this.searchService.set('searchContextEnabled', true);
+      this.showSearch();
       return false;
     }
 
@@ -168,42 +177,40 @@ export default {
   },
 
   showSearch() {
-    this._toggleSearch(false);
-    return false;
+    this.container.lookup('controller:header').send('toggleMenuPanel', 'searchVisible');
   },
 
   toggleHamburgerMenu() {
-    this.container.lookup('controller:application').send('toggleHamburgerMenu');
+    this.container.lookup('controller:header').send('toggleMenuPanel', 'hamburgerVisible');
   },
 
   showCurrentUser() {
-    $('#current-user').click();
-    $('#user-dropdown a:first').focus();
+    this.container.lookup('controller:header').send('toggleMenuPanel', 'userMenuVisible');
   },
 
   showHelpModal() {
     this.container.lookup('controller:application').send('showKeyboardShortcutsHelp');
   },
 
-  sendToTopicListItemView(action){
+  sendToTopicListItemView(action) {
     const elem = $('tr.selected.topic-list-item.ember-view')[0];
-    if(elem){
+    if (elem) {
       const view = Ember.View.views[elem.id];
       view.send(action);
     }
   },
 
-  currentTopic(){
+  currentTopic() {
     const topicController = this.container.lookup('controller:topic');
-    if(topicController) {
+    if (topicController) {
       const topic = topicController.get('model');
-      if(topic){
+      if (topic) {
         return topic;
       }
     }
   },
 
-  sendToSelectedPost(action){
+  sendToSelectedPost(action) {
     const container = this.container;
     // TODO: We should keep track of the post without a CSS class
     const selectedPostId = parseInt($('.topic-post.selected article.boxed').data('post-id'), 10);
@@ -217,17 +224,11 @@ export default {
   },
 
   _bindToSelectedPost(action, binding) {
-    const self = this;
-
-    this.keyTrapper.bind(binding, function() {
-      self.sendToSelectedPost(action);
-    });
+    this.keyTrapper.bind(binding, () => this.sendToSelectedPost(action));
   },
 
-  _bindToPath(path, binding) {
-    this.keyTrapper.bind(binding, function() {
-      DiscourseURL.routeTo(path);
-    });
+  _bindToPath(path, key) {
+    this.keyTrapper.bind(key, () => DiscourseURL.routeTo(path));
   },
 
   _bindToClick(selector, binding) {
@@ -266,7 +267,7 @@ export default {
     const $selected = $articles.filter('.selected');
     let index = $articles.index($selected);
 
-    if($selected.length !== 0){ //boundries check
+    if ($selected.length !== 0) { //boundries check
       // loop is not allowed
       if (direction === -1 && index === 0) { return; }
       if (direction === 1 && index === ($articles.size()-1) ) { return; }
@@ -277,15 +278,15 @@ export default {
       const scrollTop = $(document).scrollTop();
 
       index = 0;
-      $articles.each(function(){
+      $articles.each(function() {
         const top = $(this).position().top;
-        if(top > scrollTop) {
+        if (top > scrollTop) {
           return false;
         }
         index += 1;
       });
 
-      if(index >= $articles.length){
+      if (index >= $articles.length) {
         index = $articles.length - 1;
       }
 
@@ -299,7 +300,7 @@ export default {
       $articles.removeClass('selected');
       $article.addClass('selected');
 
-      if($article.is('.topic-list-item')){
+      if ($article.is('.topic-list-item')) {
         this.sendToTopicListItemView('select');
       }
 
@@ -355,7 +356,7 @@ export default {
         active = $('#navigation-bar li.active'),
         index = $sections.index(active) + direction;
 
-    if(index >= 0 && index < $sections.length){
+    if (index >= 0 && index < $sections.length) {
       $sections.eq(index).find('a').click();
     }
   },
@@ -370,12 +371,5 @@ export default {
 
       return oldStopCallback(e, element, combo);
     };
-  },
-
-  _toggleSearch(selectContext) {
-    $('#search-button').click();
-    if (selectContext) {
-      this.container.lookup('controller:search').set('searchContextEnabled', true);
-    }
-  },
+  }
 };

@@ -369,7 +369,6 @@ ro:
     please_continue: "Continuă cu %{site_name}"
     error: "S-a semnalat o eroare la schimbarea adresei de Email. Poate adresa deja e folosită?"
   activation:
-    action: "Activați contul dvs"
     already_done: "Ne pare rău, această adresă pentru confirmarea contului nu mai este valabilă. Poate contul dvs este deja activ?"
     please_continue: "Noul dvs cont este confirmat, iar acum sunteți autentificat."
     continue_button: "Continuă cu %{site_name}"
@@ -630,7 +629,6 @@ ro:
     post_excerpt_maxlength: "Lungimea maximă a unui extras / sumar dintr-o postare."
     post_onebox_maxlength: "Lungimea maximă a postării discursului-scurt în caractere."
     onebox_domains_whitelist: "O listă de domenii permise pentru discursul-scurt; aceste domenii ar trebuii să permită OpenGraph sau oEmbed. Testați-le la http://iframely.com/debug"
-    favicon_url: "O iconiță-favorită pentru site, verificați http://en.wikipedia.org/wiki/Favicon"
     apple_touch_icon_url: "Iconiță folosită pentru dispozitivele Apple. Mărimea recomandată este 144px pe 144px."
     notification_email: "Adresa autorului emailu-ului este folosită când se trimit emailuri esențiale de sistem. Domeniul specificat aici trebuie să aibă SPF, DKIM și rapoarte PTR inversate, setate corect pentru că email-ul să ajungă la destinație."
     email_custom_headers: "O listă delimitată vertical a capetelor de email preferențiale"
@@ -643,8 +641,6 @@ ro:
     long_polling_interval: "Intervalul înainte de sondaj este dat în milisecunde "
     polling_interval: "Cât de des e intervalul de sondaj în milisecunde al utilizatorilor autentificați"
     anon_polling_interval: "Cat de des e intervalul de sondaj în milisecunde al clienților anonimi"
-    auto_track_topics_after: "Intervalul global de milisecunde până ce o discuție să fie urmărită automat, utilizatorii pot schimba (0 pt totdeauna, -1 pt niciodată)"
-    new_topic_duration_minutes: "Intervalul global oficial de minute cât o discuție e considerată nouă, utilizatorii pot schimba (-1 pt totdeauna, -2 pt ultima vizită)"
     cooldown_minutes_after_hiding_posts: "Numărul de minute pr care un utilizator trebuie să le aștepte până când poate edita sau ascunde o postare prin marcajele comune"
     num_flags_to_block_new_user: "Dacă postarea unui utilizator nou primește atâtea marcaje de spam de la num_utilizatori_blocare_utilizator_nou dferiti utilizatori, se vor ascunde toate postările respectivului și va fi incapacitat să mai posteze. 0 pt dezactivare."
     num_users_to_block_new_user: "Dacă postarea unui utilizator nou primește num_flags_to_block_new_user marcaje de spam de la atâția utilizatori, se vor ascunde toate postările respectivului și va fi incapacitat să mai posteze. 0 pt dezactivare."
@@ -677,8 +673,6 @@ ro:
     invite_passthrough_hours: "Cât timp un utilizator poate folosii o cheie de invitație recuperată anterior pentru autentificare, în ore"
     invite_only: "Înregistrarea publică este dezactivată, toți utilizatorii noi trebuie să fie exclusiv invitați de un alt membru sau personalul site-ului."
     login_required: "Autentificarea e necesară pentru a citii conținutul site-ului, nu permite accesul anonim."
-    min_username_length: "Minimul de caractere pentru numele de utilizator. ATENȚIE: ORICE UTILIZATOR EXISTENT CU NUMELE MAI SCURT DE ATÂT NU VA PUTEA ACCESA SITE-UL."
-    max_username_length: "Maximul de carcatere pentru numele de utilizator. ATENȚIE: ORICE UTILIZATOR EXISTENT CU NUMELE MAI LUNG DE ATÂT NU VA PUTEA ACCESA SITE-UL.."
     min_password_length: "Lungimea minimă de caractere pentru parolă."
     block_common_passwords: "nu permite parole ce sunt în cele 10,000 cele mai cunoscute parole."
     sso_url: "URL-ul semnului singular în punctul de sfârșit"
@@ -770,7 +764,6 @@ ro:
     automatically_download_gravatars: "Descarcă Gravatare pentru utilizatori la crearea contului sau schimbarea email-ului."
     digest_topics: "Numărul maxim de discuții arătate în email-ul rezumat."
     digest_min_excerpt_length: "Numărul minimum de extrase din postări din email-ul rezumat, în caractere."
-    default_email_digest_frequency: "Cat de des utliziatorii primesc emailuri rezumat din oficiu. Utilizatorii pot schimba această opțiune în preferințe."
     max_daily_gravatar_crawls: "Numărul maxim de verificări făcute de Discourse pentru existența unui gravatar preferențial într-o zi"
     allow_profile_backgrounds: "Permite utilizatorilor să încarce fundaluri de profil."
     sequential_replies_threshold: "Numărul de postări la rând într-o discuție până să-i fie amintit utilizatorului că sunt prea multe răspunsuri secvențiale. "
@@ -790,7 +783,6 @@ ro:
     embed_by_username: "Numele de utilizator Discourse al utilizatorului ce crează discuții încorporate."
     embed_username_key_from_feed: "Discourse username of the user who creates the embedded topics.."
     embed_truncate: "Truncate the embedded posts."
-    embed_category: "categoria discuțiilor încorporate."
     embed_post_limit: "Numărul maxim de postări de încorporat."
     embed_whitelist_selector: "Selector CSS pentru elementele ce sunt permise în încorporări."
     embed_blacklist_selector: "Selector CSS pentru elementele ce sunt scoase din încorporări"
@@ -866,7 +858,6 @@ ro:
       characters: "trebuie să includă doar numere, litere și underscor-uri"
       unique: "trebuie să fie unice"
       blank: "trebuie să fie completat"
-      must_begin_with_alphanumeric: "trebuie să înceapă cu o literă sau un număr"
     email:
       not_allowed: "nu este permis din partea acelui furnizor de servicii email. Vă rugăm folosiți altă adresă email."
       blocked: "nu este permis."
@@ -1190,87 +1181,6 @@ ro:
     title: "Acordul de servicii"
   privacy_topic:
     title: "Politica de confidențialitate"
-    body: |
-      <a name="collect"></a>
-
-      ## [Ce informații colectăm?](#colectăm)
-
-      Colectăm informații de la dvs. când vă înregistrati pe site-ul nostru și colectăm date când participați la forum citind, scriind, și evaluând conținutul distribuit aici.
-
-      Când va înregistrați pe site, vi se va cere numele și adresa e email. Puteți, totuși să vizitați site-ul fără a fi înregistrat. Emailul va fi verificat de un email ce conține o adresă unică. Dacă acea adresa e vizitată, știm că sunteți în controlul adresei de email respective.
-
-      Când postați și sunteți autentificat, îregistrăm adresa IP a originii postării. Tot odată păstrăm și rapoarte de server ce includ adrese IP a orcăror cerințe de pe server.
-
-      <a name="uz"></a>
-
-      ## [La ce folosim informația?](#uz)
-
-      Orice informație obținută de la dumneavoastră poate fi folosită în următoarele moduri:
-
-      *   Să personalizăm experienta dvs. &mdash; informația data de dvs. ne ajută să răspundem cerințelor dvs. individuale.
-      *   Să îmbunătățim site-ul &mdash; încercat continuu să îmbunătățim site-ul pe baza informației și feed-back-ului oferit de dvs.
-      *   Să îmbunătățim serviciul de clienți &mdash; informația dvs ne ajută să răspundem eficient în oferirea suportului necesar.
-      *   Să trimitem periodic email-uri &mdash; Adresa de email data de dvs. poate fi flosita pentru a vă trimite informații,notificări cerute despre schimbări de discuție direct către numele de utiliztor, pentru a răspunde la întrebări, sau alte rugăminți și întrebări.
-
-      <a name="protecție"></a>
-
-      ## [Cum protejăm informațiile?](#protecție)
-
-      Am implementat o varietate de măsuri de protecție pentru a menține siguranța informațiilor personale când le introduceți, sau accesați.
-
-      <a name="retentie-date"></a>
-
-      ## [Care este politica de retenție de date?](#retentie-date)
-
-      Vom face un efort de bună credință să:
-
-      *   Păstrăm jurnalele de server care conțin adresa IP a tuturor cererilor de acest pe server nu mai mult de 90 zile.
-      *   Păstrăm adresele IP asociate cu utilizatorii înregistrați și posturile lor, nu mai mult de 5 ani.
-
-      <a name="cookie-uri"></a>
-
-      ## [Folosim cookie-uri?](#cookie-uri)
-
-      Da. Cookie-urile sunt mici fișiere trimise de site sau provider către hardul dvs. prin intermediul browser-ului de net (dacă este permis). Aceste cookie-uri permite site-ului să recunoască borwserul dvs., iar dacă aveți un cont, sa îl asocieze cu acesta.
-
-      Folosim cookie-urile pentru a înțelege și a salva preferințele dvs. pe viitor și pentru a compila date despre traficul site-ului pentru a oferii o mai bună experiența pe site în viitor. Este posibil să contractăm o parte-terta ce oferă servicii pentru a înțelege mai bine vizitatorii site-ulu. Acestor provideri de servicii nu le este permis să folosească informațiile colectate în contul nostru cu excepția ajutorului oferit nouă pentru a îmbunătății experiență.
-
-      <a name="disclose"></a>
-
-      ## [Dezvăluim informații partilor-terțe?](#Dezvăluire)
-
-      Nu vindem , schimbăm, sau transferăm oricărei alte terțe-părți informații identificabile ce aparțin utilizatorilor. Aici nu se includ terțe-părți de încredere ce oferă asistentă în funcționarea site-ului nostru, buna funcționare a afacerilor , sau serviciile dedicate dvs., atât timp cât acele terțe-părți și-au asumat responsabilitatea de a menține acele informații confidențiale. Am putea oferii informații doar în cazul în care această acțiune este în limitele legale, în limitele politicii noastre, sau pentru a proteja alte drepturi ce ne aparțin, proprietăți, sau siguranțe. Totuși, informații non-personale identificabile despre vizitatori vor fi oferite părților terțe în scopuri de marketing, reclame, sau alte scopuri.
-
-      <a name="third-party"></a>
-
-      ## [Adresele părților-terțe](#părți-terțe)
-
-      Occazional, la discreția noastră, vom include sau oferii părților-terțe produse sau servicii pe site-ul nostru. Aceste site-uri ale partilor-terțe au politici de organizare separate și independente. Deci nu ne asumăm responsabilitatea sau vina pentru contextul și activitățile acestor site-uri. În orice caz, intenția noastră este de a proteja integritatea site-ului nostru și orice feed-back despre acestea este bine venit.
-
-      <a name="coppa"></a>
-
-      ## [Actul de protecție online pentru copii](#coppa)
-
-      Site-ul nostru, produsele și serviciile sunt menite să fie folosite de persoanele ce au depășit vârsta de 13 ani. Dacă serverul nu se află în USA, iar dvs. aveți vârstă sub 13 ani, conform actului COPPA ([Actul de protecție online pentru copii](http://en.wikipedia.org/wiki/Children)), nu folosiți serviciile acestui site.
-      <a name="online"></a>
-
-      ## [Politica de confidențialitate online](#online)
-
-      Această politică de confidențialitate se aplică doar informațiilor colectate prin intermediul site-ului și nu offline.
-
-      <a name="Consimțământ"></a>
-
-      ## [Consimțământul dvs.](#Consimțământ)
-
-      Folosind site-ul nosrtu, vă dați consimțământul în ceea ce privește politica de confidențialitate a site-ului.
-
-      <a name="schimbări"></a>
-
-      ## [Schimbări în politica de confidențialitate](#schimbări)
-
-      Dacă decidem să schimbăm politica de confidențialitate, schimbările vor fi postate pe această pagină.
-
-      Acest document este CC-BY-SA. A fost ultima oară actualizat la 31 mai 2013.
   admin_login:
     success: "Mesajul a fost trimis"
     error: "Eroare!"

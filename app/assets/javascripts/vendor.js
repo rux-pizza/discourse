@@ -22,7 +22,6 @@
 //= require div_resizer
 //= require caret_position
 //= require favcount.js
-//= require jquery.ba-replacetext.js
 //= require jquery.ba-resize.min.js
 //= require jquery.color.js
 //= require jquery.cookie.js
@@ -42,4 +41,3 @@
 //= require buffered-proxy
 //= require jquery.autoellipsis-1.0.10.min.js
 //= require_tree ./discourse/ember
-//= require jquery.detect_swipe.js

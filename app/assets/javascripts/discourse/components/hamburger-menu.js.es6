@@ -1,8 +1,12 @@
-import { default as computed, on } from 'ember-addons/ember-computed-decorators';
-
+import computed from 'ember-addons/ember-computed-decorators';
 export default Ember.Component.extend({
-  classNameBindings: ['visible::slideright'],
-  elementId: 'hamburger-menu',
+  classNames: ['hamburger-panel'],
+
+  @computed('currentUser.read_faq')
+  prioritizeFaq(readFaq) {
+    // If it's a custom FAQ never prioritize it
+    return Ember.isEmpty(this.siteSettings.faq_url) && !readFaq;
+  },
 
   @computed()
   showKeyboardShortcuts() {
@@ -24,30 +28,19 @@ export default Ember.Component.extend({
     return this.siteSettings.faq_url ? this.siteSettings.faq_url : Discourse.getURL('/faq');
   },
 
-  @on('didInsertElement')
-  _bindEvents() {
-    this.$().on('click.discourse-hamburger', 'a', () => {
-      this.set('visible', false);
-    });
-
-    $('body').on('keydown.discourse-hambuger', (e) => {
-      if (e.which === 27) {
-        this.set('visible', false);
-      }
-    });
-
-    if (this.capabilities.touch) {
-      $('body').on('swipeleft.discourse-hamburger', () => this.set('visible', true));
-      $('body').on('swiperight.discourse-hamburger', () => this.set('visible', false));
-    }
+  _lookupCount(type) {
+    const state = this.get('topicTrackingState');
+    return state ? state.lookupCount(type) : 0;
   },
 
-  @on('willDestroyElement')
-  _removeEvents() {
-    this.$().off('click.discourse-hamburger');
-    $('body').off('keydown.discourse-hambuger');
-    $('body').off('swipeleft.discourse-hamburger');
-    $('body').off('swiperight.discourse-hamburger');
+  @computed('topicTrackingState.messageCount')
+  newCount() {
+    return this._lookupCount('new');
+  },
+
+  @computed('topicTrackingState.messageCount')
+  unreadCount() {
+    return this._lookupCount('unread');
   },
 
   @computed()
@@ -64,9 +57,6 @@ export default Ember.Component.extend({
   },
 
   actions: {
-    close() {
-      this.set('visible', false);
-    },
     keyboardShortcuts() {
       this.sendAction('showKeyboardAction');
     },

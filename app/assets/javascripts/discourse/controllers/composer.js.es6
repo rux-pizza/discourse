@@ -2,6 +2,45 @@ import { setting } from 'discourse/lib/computed';
 import DiscourseURL from 'discourse/lib/url';
 import Quote from 'discourse/lib/quote';
 import Draft from 'discourse/models/draft';
+import Composer from 'discourse/models/composer';
+import computed from 'ember-addons/ember-computed-decorators';
+
+function loadDraft(store, opts) {
+  opts = opts || {};
+
+  let draft = opts.draft;
+  const draftKey = opts.draftKey;
+  const draftSequence = opts.draftSequence;
+
+  try {
+    if (draft && typeof draft === 'string') {
+      draft = JSON.parse(draft);
+    }
+  } catch (error) {
+    draft = null;
+    Draft.clear(draftKey, draftSequence);
+  }
+  if (draft && ((draft.title && draft.title !== '') || (draft.reply && draft.reply !== ''))) {
+    const composer = store.createRecord('composer');
+    composer.open({
+      draftKey,
+      draftSequence,
+      action: draft.action,
+      title: draft.title,
+      categoryId: draft.categoryId || opts.categoryId,
+      postId: draft.postId,
+      archetypeId: draft.archetypeId,
+      reply: draft.reply,
+      metaData: draft.metaData,
+      usernames: draft.usernames,
+      draft: true,
+      composerState: Composer.DRAFT,
+      composerTime: draft.composerTime,
+      typingTime: draft.typingTime
+    });
+    return composer;
+  }
+}
 
 export default Ember.Controller.extend({
   needs: ['modal', 'topic', 'composer-messages', 'application'],
@@ -16,6 +55,7 @@ export default Ember.Controller.extend({
   similarTopics: null,
   similarTopicsMessage: null,
   lastSimilaritySearch: null,
+  optionsVisible: false,
 
   topic: null,
 
@@ -25,6 +65,12 @@ export default Ember.Controller.extend({
   _initializeSimilar: function() {
     this.set('similarTopics', []);
   }.on('init'),
+
+  @computed('model.action')
+  canWhisper(action) {
+    const currentUser = this.currentUser;
+    return currentUser && currentUser.get('staff') && this.siteSettings.enable_whispers && action === Composer.REPLY;
+  },
 
   showWarning: function() {
     if (!Discourse.User.currentProp('staff')) { return false; }
@@ -39,6 +85,20 @@ export default Ember.Controller.extend({
   }.property('model.creatingPrivateMessage', 'model.targetUsernames'),
 
   actions: {
+
+    toggleWhisper() {
+      this.toggleProperty('model.whisper');
+    },
+
+    showOptions(loc) {
+      this.appEvents.trigger('popup-menu:open', loc);
+      this.set('optionsVisible', true);
+    },
+
+    hideOptions() {
+      this.set('optionsVisible', false);
+    },
+
     // Toggle the reply view
     toggle() {
       this.toggle();
@@ -94,7 +154,6 @@ export default Ember.Controller.extend({
     },
 
     hitEsc() {
-
       const messages = this.get('controllers.composer-messages.model');
       if (messages.length) {
         messages.popObject();
@@ -398,8 +457,7 @@ export default Ember.Controller.extend({
 
         // If we're already open, we don't have to do anything
         if (composerModel.get('composeState') === Discourse.Composer.OPEN &&
-            composerModel.get('draftKey') === opts.draftKey &&
-            composerModel.get('action') === opts.action ) {
+            composerModel.get('draftKey') === opts.draftKey && !opts.action) {
           return resolve();
         }
 
@@ -407,7 +465,7 @@ export default Ember.Controller.extend({
         if (composerModel.get('composeState') === Discourse.Composer.DRAFT &&
             composerModel.get('draftKey') === opts.draftKey) {
           composerModel.set('composeState', Discourse.Composer.OPEN);
-          if (composerModel.get('action') === opts.action) return resolve();
+          if (!opts.action) return resolve();
         }
 
         // If it's a different draft, cancel it and try opening again.
@@ -433,7 +491,7 @@ export default Ember.Controller.extend({
   // Given a potential instance and options, set the model for this composer.
   _setModel(composerModel, opts) {
     if (opts.draft) {
-      composerModel = Discourse.Composer.loadDraft(opts);
+      composerModel = loadDraft(this.store, opts);
       if (composerModel) {
         composerModel.set('topic', opts.topic);
       }

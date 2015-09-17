@@ -130,6 +130,9 @@ div.ac-wrap {
     input[type=text] {
       width: 50px;
     }
+    label {
+      font-size: .929em;
+    }
   }
 }
 
@@ -138,6 +141,25 @@ div.ac-wrap {
     position: absolute;
     left: 48%;
     top: 20%;
+  }
+  .whisper {
+    margin-left: 1em;
+    font-style: italic;
+  }
+}
+
+#cancel-file-upload {
+  font-size: 1.6em;
+}
+
+#draft-status, #file-uploading {
+  color: dark-light-choose(scale-color($primary, $lightness: 50%), scale-color($secondary, $lightness: 50%));
+}
+
+.composer-bottom-right {
+  .spinner.small {
+    width: 6px;
+    height: 6px;
   }
 }
 
@@ -149,3 +171,5 @@ div.ac-wrap {
 .cooked > *:first-child {
   margin-top: 0;
 }
+
+

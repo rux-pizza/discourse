@@ -27,12 +27,19 @@ export default Ember.Controller.extend({
     ];
   }.property(),
 
+  trustLevelOptions: function() {
+    return [
+      { name: I18n.t("groups.trust_levels.none"), value: 0 },
+      { name: 1, value: 1 }, { name: 2, value: 2 }, { name: 3, value: 3 }, { name: 4, value: 4 }
+    ];
+  }.property(),
+
   actions: {
     next() {
       if (this.get("showingLast")) { return; }
 
       const group = this.get("model"),
-            offset = Math.min(group.get("offset") + group.get("model.limit"), group.get("user_count"));
+            offset = Math.min(group.get("offset") + group.get("limit"), group.get("user_count"));
 
       group.set("offset", offset);
 
@@ -43,7 +50,7 @@ export default Ember.Controller.extend({
       if (this.get("showingFirst")) { return; }
 
       const group = this.get("model"),
-            offset = Math.max(group.get("offset") - group.get("model.limit"), 0);
+            offset = Math.max(group.get("offset") - group.get("limit"), 0);
 
       group.set("offset", offset);
 
@@ -68,13 +75,14 @@ export default Ember.Controller.extend({
 
     save() {
       const group = this.get('model'),
-            groupsController = this.get("controllers.adminGroupsType");
+            groupsController = this.get("controllers.adminGroupsType"),
+            groupType = groupsController.get("type");
 
       this.set('disableSave', true);
 
       let promise = group.get("id") ? group.save() : group.create().then(() => groupsController.addObject(group));
 
-      promise.then(() => this.transitionToRoute("adminGroup", group))
+      promise.then(() => this.transitionToRoute("adminGroup", groupType, group.get('name')))
              .catch(popupAjaxError)
              .finally(() => this.set('disableSave', false));
     },
@@ -83,6 +91,11 @@ export default Ember.Controller.extend({
       const group = this.get('model'),
             groupsController = this.get('controllers.adminGroupsType'),
             self = this;
+
+      if (!group.get('id')) {
+        self.transitionToRoute('adminGroupsType.index', 'custom');
+        return;
+      }
 
       this.set('disableSave', true);
 
