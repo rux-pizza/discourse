@@ -197,7 +197,6 @@ bs_BA:
     revert: "Revert"
     failed: "Failed"
     switch_to_anon: "Anonimni mod"
-    switch_from_anon: "Napustite anonimni mod"
     banner:
       close: "Dismiss this banner."
       edit: "Uredite ovaj baner >>"
@@ -1045,11 +1044,8 @@ bs_BA:
           title: "Motrenje"
         tracking:
           title: "Praćenje"
-        regular:
-          title: "Regularno"
         muted:
           title: "Mutirano"
-          description: "You will not be notified of anything about new topics in these categories, and they will not appear on your unread tab."
     flagging:
       title: 'Zašto prijavljujete ovaj post?'
       action: 'Opomeni Post'

@@ -283,6 +283,14 @@ SQL
     set_permissions(permissions)
   end
 
+  def permissions_params
+    hash = {}
+    category_groups.includes(:group).each do |category_group|
+      hash[category_group.group_name] = category_group.permission_type
+    end
+    hash
+  end
+
   def apply_permissions
     if @permissions
       category_groups.destroy_all
@@ -455,6 +463,8 @@ end
 #  allow_badges                  :boolean          default(TRUE), not null
 #  name_lower                    :string(50)       not null
 #  auto_close_based_on_last_post :boolean          default(FALSE)
+#  topic_template                :text
+#  suppress_from_homepage        :boolean          default(FALSE)
 #
 # Indexes
 #

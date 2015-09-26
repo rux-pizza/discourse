@@ -89,8 +89,6 @@ ja:
       facebook: 'Facebook でこのリンクを共有する'
       google+: 'Google+ でこのリンクを共有する'
       email: 'メールでこのリンクを送る'
-    action_codes:
-      split_topic: "トピックを分割"
     topic_admin_menu: "トピック管理"
     emails_are_disabled: "全てのメールアドレスの送信が管理者によって無効化されています。全ての種類のメール通知は行われません"
     edit: 'このトピックのタイトルとカテゴリを編集'
@@ -184,7 +182,6 @@ ja:
     revert: "戻す"
     failed: "失敗"
     switch_to_anon: "匿名モード"
-    switch_from_anon: "匿名モード停止"
     banner:
       close: "バナーを閉じる。"
       edit: "このバナーを編集 >>"
@@ -1264,16 +1261,12 @@ ja:
       notifications:
         watching:
           title: "カテゴリ参加中"
-          description: "これらのカテゴリに新しく投稿されたトピックを自動的に参加します。これらのカテゴリに対して新しい投稿があった場合、登録されたメールアドレスと、コミュニティ内の通知ボックスに通知が届き、トピック一覧に新しい回答数がつきます。"
         tracking:
           title: "トラック中"
-          description: "これらのカテゴリの新規トピックを自動的にトラックします。トピックに対して新しい投稿があった場合、トピック一覧に新しい回答数がつきます。"
         regular:
-          title: "通常"
           description: "他ユーザからタグ付けをされた場合、またはあなたの投稿に回答が付いた場合に通知されます。"
         muted:
           title: "ミュート中"
-          description: "このカテゴリに投稿されたトピックについての通知を受け取りません。また、未読タブにも通知されません。"
     flagging:
       title: '私達のコミュニティの維持を助けてくれてありがとうごうざいます'
       private_reminder: 'フラグはプライベートです。スタッフ<b>のみ</b>が参照できます'

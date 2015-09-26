@@ -38,27 +38,29 @@ describe PostCreator do
       expect { creator.create }.to raise_error(Discourse::InvalidAccess)
     end
 
+    context "reply to post number" do
+      it "omits reply to post number if received on a new topic" do
+        p = PostCreator.new(user, basic_topic_params.merge(reply_to_post_number: 3)).create
+        expect(p.reply_to_post_number).to be_nil
+      end
+    end
 
     context "invalid title" do
-
       let(:creator_invalid_title) { PostCreator.new(user, basic_topic_params.merge(title: 'a')) }
 
       it "has errors" do
         creator_invalid_title.create
         expect(creator_invalid_title.errors).to be_present
       end
-
     end
 
     context "invalid raw" do
-
       let(:creator_invalid_raw) { PostCreator.new(user, basic_topic_params.merge(raw: '')) }
 
       it "has errors" do
         creator_invalid_raw.create
         expect(creator_invalid_raw.errors).to be_present
       end
-
     end
 
     context "success" do
@@ -269,6 +271,30 @@ describe PostCreator do
         post = PostCreator.new(user, basic_topic_params.merge(auto_close_time: 2)).create
         expect(post.topic.auto_close_at).to eq(nil)
       end
+    end
+  end
+
+  context 'whisper' do
+    let!(:topic) { Fabricate(:topic, user: user) }
+
+    it 'forces replies to whispers to be whispers' do
+      whisper = PostCreator.new(user,
+                                topic_id: topic.id,
+                                reply_to_post_number: 1,
+                                post_type: Post.types[:whisper],
+                                raw: 'this is a whispered reply').create
+
+      expect(whisper).to be_present
+      expect(whisper.post_type).to eq(Post.types[:whisper])
+
+      whisper_reply = PostCreator.new(user,
+                                      topic_id: topic.id,
+                                      reply_to_post_number: whisper.post_number,
+                                      post_type: Post.types[:regular],
+                                      raw: 'replying to a whisper this time').create
+
+      expect(whisper_reply).to be_present
+      expect(whisper_reply.post_type).to eq(Post.types[:whisper])
     end
   end
 

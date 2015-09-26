@@ -109,7 +109,6 @@ da:
       google+: 'del dette link på Google+'
       email: 'send dette link i en e-mail'
     action_codes:
-      split_topic: "split dette emne op"
       autoclosed:
         enabled: 'lukket %{when}'
         disabled: 'åbnet %{when}'
@@ -217,7 +216,6 @@ da:
     revert: "Gendan"
     failed: "Fejlet"
     switch_to_anon: "Anonym tilstand"
-    switch_from_anon: "Afbryd anonym tilstand"
     banner:
       close: "Afvis denne banner."
       edit: "Rediger dette banner >>"
@@ -1353,16 +1351,12 @@ da:
       notifications:
         watching:
           title: "Kigger"
-          description: "Du overvåger automatisk alle emner i disse kategorier. Du vil få en notifikation ved alle nye indlæg og emner, og antallet af nye svar vil stå ved siden af emnerne."
         tracking:
           title: "Følger"
-          description: "Du vil automatisk følge alle nye emner i disse kategorier. En optælling af nye svar vises ved emnerne."
         regular:
-          title: "Standard"
           description: "Du vil modtage en notifikation, hvis nogen nævner dit @name eller svarer dig."
         muted:
           title: "Ignoreret"
-          description: "Du ignorerer automatisk alle emner i disse kategorier. De vil heller ikke stå i sin \"ulæste\" indikation."
     flagging:
       title: 'Tak fordi du hjælper med at holde vores forum civiliseret!'
       private_reminder: 'flag er private, de er <b>kun</p> synlige for personalet'
