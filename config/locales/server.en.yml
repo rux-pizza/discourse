@@ -1089,7 +1089,7 @@ en:
     newuser_spam_host_threshold: "How many times a new user can post a link to the same host within their `newuser_spam_host_posts` posts before being considered spam."
 
     white_listed_spam_host_domains: "A list of domains excluded from spam host testing. New users will never be restricted from creating posts with links to these domains."
-    staff_like_weight: "How much extra weighting factor to give staff fucks.”
+    staff_like_weight: "How much extra weighting factor to give staff fucks."
     topic_view_duration_hours: "Count a new topic view once per IP/User every N hours"
     user_profile_view_duration_hours: "Count a new user profile view once per IP/User every N hours"
 
