@@ -51,7 +51,8 @@ class PostAlerter
   end
 
   def unread_posts(user, topic)
-    Post.where('post_number > COALESCE((
+    Post.secured(Guardian.new(user))
+        .where('post_number > COALESCE((
                SELECT last_read_post_number FROM topic_users tu
                WHERE tu.user_id = ? AND tu.topic_id = ? ),0)',
                 user.id, topic.id)
@@ -199,7 +200,7 @@ class PostAlerter
   def notify_users(users, type, post)
     users = [users] unless users.is_a?(Array)
 
-    if post.topic.private_message?
+    if post.topic.try(:private_message?)
       whitelist = allowed_users(post)
       users.reject! {|u| !whitelist.include?(u)}
     end
@@ -223,10 +224,11 @@ class PostAlerter
     exclude_user_ids << reply_to_user.id if reply_to_user.present?
     exclude_user_ids.flatten!
 
-    TopicUser
-      .where(topic_id: post.topic_id, notification_level: TopicUser.notification_levels[:watching])
-      .includes(:user).each do |tu|
-        create_notification(tu.user, Notification.types[:posted], post) unless exclude_user_ids.include?(tu.user_id)
+    TopicUser.where(topic_id: post.topic_id)
+             .where(notification_level: TopicUser.notification_levels[:watching])
+             .where("user_id NOT IN (?)", exclude_user_ids)
+             .includes(:user).each do |tu|
+        create_notification(tu.user, Notification.types[:posted], post)
       end
   end
 end

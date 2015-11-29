@@ -52,9 +52,6 @@ class User < ActiveRecord::Base
   has_many :groups, through: :group_users
   has_many :secure_categories, through: :groups, source: :categories
 
-  has_many :group_managers, dependent: :destroy
-  has_many :managed_groups, through: :group_managers, source: :group
-
   has_many :muted_user_records, class_name: 'MutedUser'
   has_many :muted_users, through: :muted_user_records
 
@@ -475,6 +472,7 @@ class User < ActiveRecord::Base
       url.gsub! "{color}", letter_avatar_color(username.downcase)
       url.gsub! "{username}", username
       url.gsub! "{first_letter}", username[0].downcase
+      url.gsub! "{hostname}", Discourse.current_hostname
       url
     else
       "#{Discourse.base_uri}/letter_avatar/#{username.downcase}/{size}/#{LetterAvatar.version}.png"
@@ -950,6 +948,8 @@ class User < ActiveRecord::Base
     set_default_other_disable_jump_reply
     set_default_other_edit_history_public
 
+    set_default_topics_automatic_unpin
+
     # needed, otherwise the callback chain is broken...
     true
   end
@@ -1033,6 +1033,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def set_default_topics_automatic_unpin
+    self.automatically_unpin_topics = SiteSetting.default_topics_automatic_unpin
+  end
+
 end
 
 # == Schema Information
@@ -1081,13 +1085,14 @@ end
 #  uploaded_avatar_id            :integer
 #  email_always                  :boolean          default(FALSE), not null
 #  mailing_list_mode             :boolean          default(FALSE), not null
-#  locale                        :string(10)
 #  primary_group_id              :integer
+#  locale                        :string(10)
 #  registration_ip_address       :inet
 #  last_redirected_to_top_at     :datetime
 #  disable_jump_reply            :boolean          default(FALSE), not null
 #  edit_history_public           :boolean          default(FALSE), not null
 #  trust_level_locked            :boolean          default(FALSE), not null
+#  staged                        :boolean          default(FALSE), not null
 #
 # Indexes
 #

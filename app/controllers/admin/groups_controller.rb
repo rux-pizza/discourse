@@ -19,6 +19,42 @@ class Admin::GroupsController < Admin::AdminController
     render nothing: true
   end
 
+  def bulk
+    render nothing: true
+  end
+
+  def bulk_perform
+    group = Group.find(params[:group_id].to_i)
+    if group.present?
+      users = (params[:users] || []).map {|u| u.downcase}
+      user_ids = User.where("username_lower in (:users) OR email IN (:users)", users: users).pluck(:id)
+
+      if user_ids.present?
+        Group.exec_sql("INSERT INTO group_users
+                                    (group_id, user_id, created_at, updated_at)
+                       SELECT #{group.id},
+                              u.id,
+                              CURRENT_TIMESTAMP,
+                              CURRENT_TIMESTAMP
+                       FROM users AS u
+                       WHERE u.id IN (#{user_ids.join(', ')})
+                         AND NOT EXISTS(SELECT 1 FROM group_users AS gu
+                                        WHERE gu.user_id = u.id AND
+                                              gu.group_id = #{group.id})")
+
+        if group.primary_group?
+          User.where(id: user_ids).update_all(primary_group_id: group.id)
+        end
+
+        if group.title.present?
+          User.where(id: user_ids).update_all(title: group.title)
+        end
+      end
+    end
+
+    render json: success_json
+  end
+
   def create
     group = Group.new
 
@@ -71,58 +107,30 @@ class Admin::GroupsController < Admin::AdminController
     render json: success_json
   end
 
-  def add_members
+  def add_owners
     group = Group.find(params.require(:id))
-
     return can_not_modify_automatic if group.automatic
 
-    if params[:usernames].present?
-      users = User.where(username: params[:usernames].split(","))
-    elsif params[:user_ids].present?
-      users = User.find(params[:user_ids].split(","))
-    elsif params[:user_emails].present?
-      users = User.where(email: params[:user_emails].split(","))
-    else
-      raise Discourse::InvalidParameters.new('user_ids or usernames or user_emails must be present')
-    end
+    users = User.where(username: params[:usernames].split(","))
 
     users.each do |user|
       if !group.users.include?(user)
         group.add(user)
-      else
-        return render_json_error I18n.t('groups.errors.member_already_exist', username: user.username)
       end
+      group.group_users.where(user_id: user.id).update_all(owner: true)
     end
 
-    if group.save
-      render json: success_json
-    else
-      render_json_error(group)
-    end
+    render json: success_json
   end
 
-  def remove_member
+  def remove_owner
     group = Group.find(params.require(:id))
-
     return can_not_modify_automatic if group.automatic
 
-    if params[:user_id].present?
-      user = User.find(params[:user_id])
-    elsif params[:username].present?
-      user = User.find_by_username(params[:username])
-    else
-      raise Discourse::InvalidParameters.new('user_id or username must be present')
-    end
+    user = User.find(params[:user_id].to_i)
+    group.group_users.where(user_id: user.id).update_all(owner: false)
 
-    user.primary_group_id = nil if user.primary_group_id == group.id
-
-    group.users.delete(user.id)
-
-    if group.save && user.save
-      render json: success_json
-    else
-      render_json_error(group)
-    end
+    render json: success_json
   end
 
   protected

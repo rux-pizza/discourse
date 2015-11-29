@@ -1,17 +1,20 @@
 import { propertyNotEqual } from 'discourse/lib/computed';
 import { popupAjaxError } from 'discourse/lib/ajax-error';
+import ApiKey from 'admin/models/api-key';
+import Group from 'discourse/models/group';
+import TL3Requirements from 'admin/models/tl3-requirements';
 
 const AdminUser = Discourse.User.extend({
 
-  customGroups: Em.computed.filter("groups", (g) => !g.automatic && Discourse.Group.create(g)),
-  automaticGroups: Em.computed.filter("groups", (g) => g.automatic && Discourse.Group.create(g)),
+  customGroups: Em.computed.filter("groups", (g) => !g.automatic && Group.create(g)),
+  automaticGroups: Em.computed.filter("groups", (g) => g.automatic && Group.create(g)),
 
   generateApiKey() {
     const self = this;
     return Discourse.ajax("/admin/users/" + this.get('id') + "/generate_api_key", {
       type: 'POST'
     }).then(function (result) {
-      const apiKey = Discourse.ApiKey.create(result.api_key);
+      const apiKey = ApiKey.create(result.api_key);
       self.set('api_key', apiKey);
       return apiKey;
     });
@@ -228,7 +231,7 @@ const AdminUser = Discourse.User.extend({
       type: 'POST',
       data: { username_or_email: this.get('username') }
     }).then(function() {
-      document.location = Discourse.BaseUri;
+      document.location = Discourse.getURL("/");
     }).catch(function(e) {
       if (e.status === 404) {
         bootbox.alert(I18n.t('admin.impersonate.not_found'));
@@ -288,10 +291,7 @@ const AdminUser = Discourse.User.extend({
       data: { username: this.get('username') }
     }).then(function() {
       bootbox.alert( I18n.t('admin.user.activation_email_sent') );
-    }).catch(function(e) {
-      var error = I18n.t('admin.user.send_activation_email_failed', { error: "http: " + e.status + " - " + e.body });
-      bootbox.alert(error);
-    });
+    }).catch(popupAjaxError);
   },
 
   anonymizeForbidden: Em.computed.not("can_be_anonymized"),
@@ -380,7 +380,7 @@ const AdminUser = Discourse.User.extend({
           }
         }
       }).catch(function() {
-        Discourse.AdminUser.find( user.get('username') ).then(function(u){ user.setProperties(u); });
+        AdminUser.find( user.get('username') ).then(function(u){ user.setProperties(u); });
         bootbox.alert(I18n.t("admin.user.delete_failed"));
       });
     };
@@ -453,7 +453,7 @@ const AdminUser = Discourse.User.extend({
 
     if (user.get('loadedDetails')) { return Ember.RSVP.resolve(user); }
 
-    return Discourse.AdminUser.find(user.get('username_lower')).then(function (result) {
+    return AdminUser.find(user.get('username_lower')).then(function (result) {
       user.setProperties(result);
       user.set('loadedDetails', true);
     });
@@ -461,19 +461,19 @@ const AdminUser = Discourse.User.extend({
 
   tl3Requirements: function() {
     if (this.get('tl3_requirements')) {
-      return Discourse.TL3Requirements.create(this.get('tl3_requirements'));
+      return TL3Requirements.create(this.get('tl3_requirements'));
     }
   }.property('tl3_requirements'),
 
   suspendedBy: function() {
     if (this.get('suspended_by')) {
-      return Discourse.AdminUser.create(this.get('suspended_by'));
+      return AdminUser.create(this.get('suspended_by'));
     }
   }.property('suspended_by'),
 
   approvedBy: function() {
     if (this.get('approved_by')) {
-      return Discourse.AdminUser.create(this.get('approved_by'));
+      return AdminUser.create(this.get('approved_by'));
     }
   }.property('approved_by')
 
@@ -514,7 +514,7 @@ AdminUser.reopenClass({
   find(username) {
     return Discourse.ajax("/admin/users/" + username + ".json").then(function (result) {
       result.loadedDetails = true;
-      return Discourse.AdminUser.create(result);
+      return AdminUser.create(result);
     });
   },
 
@@ -522,7 +522,7 @@ AdminUser.reopenClass({
     return Discourse.ajax("/admin/users/list/" + query + ".json", {
       data: filter
     }).then(function(users) {
-      return users.map((u) => Discourse.AdminUser.create(u));
+      return users.map((u) => AdminUser.create(u));
     });
   }
 });

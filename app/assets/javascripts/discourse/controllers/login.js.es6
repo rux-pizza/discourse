@@ -78,9 +78,15 @@ export default Ember.Controller.extend(ModalFunctionality, {
           const $hidden_login_form = $('#hidden-login-form');
           const destinationUrl = $.cookie('destination_url');
           const shouldRedirectToUrl = self.session.get("shouldRedirectToUrl");
+          const ssoDestinationUrl = $.cookie('sso_destination_url');
           $hidden_login_form.find('input[name=username]').val(self.get('loginName'));
           $hidden_login_form.find('input[name=password]').val(self.get('loginPassword'));
-          if (destinationUrl) {
+          
+          if (ssoDestinationUrl) {
+            $.cookie('sso_destination_url', null);
+            window.location.assign(ssoDestinationUrl);
+            return;
+          } else if (destinationUrl) {
             // redirect client to the original URL
             $.cookie('destination_url', null);
             $hidden_login_form.find('input[name=redirect]').val(destinationUrl);
@@ -90,7 +96,14 @@ export default Ember.Controller.extend(ModalFunctionality, {
           } else {
             $hidden_login_form.find('input[name=redirect]').val(window.location.href);
           }
-          $hidden_login_form.submit();
+
+          if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) && navigator.userAgent.match(/Safari/g)) {
+            // In case of Safari on iOS do not submit hidden login form
+            window.location.href = $hidden_login_form.find('input[name=redirect]').val();
+          } else {
+            $hidden_login_form.submit();
+          }
+          return;
         }
 
       }, function(e) {

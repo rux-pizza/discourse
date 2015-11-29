@@ -90,9 +90,9 @@ module PrettyText
     ctx_load(ctx,
       "vendor/assets/javascripts/better_markdown.js",
       "app/assets/javascripts/defer/html-sanitizer-bundle.js",
+      "app/assets/javascripts/discourse/lib/utilities.js",
       "app/assets/javascripts/discourse/dialects/dialect.js",
       "app/assets/javascripts/discourse/lib/censored-words.js",
-      "app/assets/javascripts/discourse/lib/utilities.js",
       "app/assets/javascripts/discourse/lib/markdown.js",
     )
 
@@ -141,7 +141,7 @@ module PrettyText
   def self.decorate_context(context)
     context.eval("Discourse.CDN = '#{Rails.configuration.action_controller.asset_host}';")
     context.eval("Discourse.BaseUrl = '#{RailsMultisite::ConnectionManagement.current_hostname}'.replace(/:[\d]*$/,'');")
-    context.eval("Discourse.BaseUri = '#{Discourse::base_uri("/")}';")
+    context.eval("Discourse.BaseUri = '#{Discourse::base_uri}';")
     context.eval("Discourse.SiteSettings = #{SiteSetting.client_settings_json};")
 
     context.eval("Discourse.getURL = function(url) {
@@ -189,10 +189,14 @@ module PrettyText
         end
       end
 
+      # reset emojis (v8 context is shared amongst multisites)
+      context.eval("Discourse.Dialect.resetEmojis();")
       # custom emojis
       Emoji.custom.each do |emoji|
         context.eval("Discourse.Dialect.registerEmoji('#{emoji.name}', '#{emoji.url}');")
       end
+      # plugin emojis
+      context.eval("Discourse.Emoji.applyCustomEmojis();")
 
       context.eval('opts["mentionLookup"] = function(u){return helpers.is_username_valid(u);}')
       context.eval('opts["lookupAvatar"] = function(p){return Discourse.Utilities.avatarImg({size: "tiny", avatarTemplate: helpers.avatar_template(p)});}')

@@ -21,7 +21,7 @@ zh_TW:
   purge_reason: "自動刪除被遺棄、未啟用賬戶"
   disable_remote_images_download_reason: "磁盤空間不足，圖像下載已被禁用。"
   anonymous: "匿名"
-  errors:
+  errors: &errors
     format: '%{attribute} %{message}'
     messages:
       too_long_validation: "限制 %{max} 個字元，你已經輸入了 %{length} 個字元"
@@ -89,26 +89,6 @@ zh_TW:
     in_reply_to: "▶ %{username}"
     replies:
       other: "%{count} 個回覆"
-  too_many_mentions:
-    zero: "抱歉，你無法提及 (@) 其他用戶。"
-    one: "抱歉，你在一篇文章裡只能提及 (@) 一個用戶。"
-    other: "抱歉, 你在一篇文章裡只能提及 (@) %{count} 個用戶。"
-  too_many_mentions_newuser:
-    zero: "抱歉，新用戶無法提及 (@) 其他用戶。"
-    one: "抱歉，新用戶在一篇文章裡只能提及 (@) 一個用戶。"
-    other: "抱歉, 新用戶在一篇文章裡只能提及 (@) %{count} 個用戶。"
-  too_many_images:
-    zero: "抱歉, 訪客無法貼圖。"
-    one: "抱歉, 訪客每次只能張貼一張圖片。"
-    other: "抱歉, 訪客每次只能張貼 %{count} 張圖片。"
-  too_many_attachments:
-    zero: "抱歉，新用戶不可添加附件於文章中。"
-    one: "抱歉，新用戶在每篇文章中只能添加 1 個附件。"
-    other: "抱歉，新用戶在每篇文章中只能添加 %{count} 個附件。"
-  too_many_links:
-    zero: "抱歉, 訪客無法分享連結。"
-    one: "抱歉, 訪客每次只能貼一條連結。"
-    other: "抱歉, 訪客每次只能貼 %{count} 條連結。"
   spamming_host: "抱歉，你不能張貼該網站之連結。"
   user_is_suspended: "被停權的用戶無法張貼文章。"
   topic_not_found: "出現問題。也許這個話題被關閉或刪除。"
@@ -170,9 +150,6 @@ zh_TW:
       user_profile:
         bio_raw: "關於我"
     errors:
-      messages:
-        is_invalid: "無效，請嘗試寫得更明確"
-        has_already_been_used: "已經被使用"
       models:
         topic:
           attributes:
@@ -193,6 +170,7 @@ zh_TW:
           attributes:
             hex:
               invalid: "不是一個有效顏色"
+      <<: *errors
   user_profile:
     no_info_me: "<div class='missing-profile'>你的自我簡介中，“關於我” 部分目前還沒有內容，<a href='/users/%{username_lower}/preferences/about-me'>不如來自我介紹一下？</a></div>"
     no_info_other: "<div class='missing-profile'>%{name} 尚未在他/她自我簡介中的“關於我”部分填寫任何資訊</div>"
@@ -205,8 +183,6 @@ zh_TW:
     title: "歡迎來到貴賓室"
   category:
     topic_prefix: "對於分類：%{category} 的定義"
-    replace_paragraph: "[ 將此首段文字替換為描述新分類的簡短說明。說明將會出現在分類選擇區裡，故請盡量少於 200 個字元。在你編輯此處文字或者新增討論話題之前，此分類將不會顯示在分類頁面上。]"
-    post_template: "%{replace_paragraph}\n\n在下面的空格輸入分類的詳細描述, 可以包括在此分類下討論的規則、內容主題等等。"
     errors:
       uncategorized_parent: "未分類不能有一個父分類"
       self_parent: "一個子分類的上層不能是自己"
@@ -322,7 +298,6 @@ zh_TW:
       description: '此帖內容包含對他人的攻擊、侮辱、仇視語言或違反了<a href="/guidelines">我們的社群准則</a>。'
       long_form: '投訴為不當內容'
     notify_user:
-      title: '訊息 @{{username}}'
       description: '此帖包含一些我想與該用戶私下直接交流的內容。不能執行標記操作。'
       email_title: '你的文章在"%{title}"'
       email_body: "%{link}\n\n%{message}"
@@ -572,7 +547,7 @@ zh_TW:
     download_remote_images_to_local: "下載外部鏈接的圖片到本機；以防圖片損壞。"
     download_remote_images_threshold: "可用來下載外部圖片到本機最少的空間（百分比）"
     disabled_image_download_domains: "在此列表的網域名稱的遠端圖片將不會進行下載，用 | 分割多個域名"
-    ninja_edit_window: "在 (n) 秒內 ，文章的編輯不產生新的文章版本歷史"
+    editing_grace_period: "在 (n) 秒內 ，文章的編輯不產生新的文章版本歷史"
     post_edit_time_limit: "作者可以在發表文章後的 ( n ) 分鐘內編輯或刪除他們的文章，設 0 為永遠"
     edit_history_visible_to_public: "允許任何人查看編輯過的帖子的舊版本。當禁用時，只有職員才能查看。"
     delete_removed_posts_after: "帖子被作者刪除，將在 (n) 小時後被自動刪除。如果設置為 0，帖子將被立即刪除。"
@@ -1129,3 +1104,6 @@ zh_TW:
     error: "錯誤"
     email_input: "管理者郵件"
     submit_button: "送出電子郵件"
+  activemodel:
+    errors:
+      <<: *errors

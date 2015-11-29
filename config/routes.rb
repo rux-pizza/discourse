@@ -60,10 +60,13 @@ Discourse::Application.routes.draw do
     resources :groups, constraints: AdminConstraint.new do
       collection do
         post "refresh_automatic_groups" => "groups#refresh_automatic_groups"
+        get 'bulk'
+        get 'bulk-complete' => 'groups#bulk'
+        put 'bulk' => 'groups#bulk_perform'
       end
       member do
-        put "members" => "groups#add_members"
-        delete "members" => "groups#remove_member"
+        put "owners" => "groups#add_owners"
+        delete "owners" => "groups#remove_owner"
       end
     end
 
@@ -120,6 +123,7 @@ Discourse::Application.routes.draw do
         get "sent"
         get "skipped"
         get "preview-digest" => "email#preview_digest"
+        post "handle_mail"
       end
     end
 
@@ -150,10 +154,19 @@ Discourse::Application.routes.draw do
     post "flags/defer/:id" => "flags#defer"
     resources :site_customizations, constraints: AdminConstraint.new
     scope "/customize" do
-      resources :site_texts, constraints: AdminConstraint.new
-      resources :site_text_types, constraints: AdminConstraint.new
       resources :user_fields, constraints: AdminConstraint.new
       resources :emojis, constraints: AdminConstraint.new
+
+      # They have periods in their URLs often:
+      get 'site_texts' => 'site_texts#index'
+      match 'site_texts/(:id)' => 'site_texts#show', :constraints => { :id => /[0-9a-z\_\.\-]+/ }, via: :get
+      match 'site_texts/(:id)' => 'site_texts#update', :constraints => { :id => /[0-9a-z\_\.\-]+/ }, via: :put
+      match 'site_texts/(:id)' => 'site_texts#revert', :constraints => { :id => /[0-9a-z\_\.\-]+/ }, via: :delete
+
+      get 'email_templates' => 'email_templates#index'
+      match 'email_templates/(:id)' => 'email_templates#show', :constraints => { :id => /[0-9a-z\_\.]+/ }, via: :get
+      match 'email_templates/(:id)' => 'email_templates#update', :constraints => { :id => /[0-9a-z\_\.]+/ }, via: :put
+      match 'email_templates/(:id)' => 'email_templates#revert', :constraints => { :id => /[0-9a-z\_\.]+/ }, via: :delete
     end
 
     resources :embeddable_hosts, constraints: AdminConstraint.new
@@ -204,6 +217,7 @@ Discourse::Application.routes.draw do
 
     get "memory_stats"=> "diagnostics#memory_stats", constraints: AdminConstraint.new
     get "dump_heap"=> "diagnostics#dump_heap", constraints: AdminConstraint.new
+    get "dump_statement_cache"=> "diagnostics#dump_statement_cache", constraints: AdminConstraint.new
 
   end # admin namespace
 
@@ -303,6 +317,9 @@ Discourse::Application.routes.draw do
   get "letter_avatar/:username/:size/:version.png" => "user_avatars#show_letter", format: false, constraints: { hostname: /[\w\.-]+/, size: /\d+/, username: USERNAME_ROUTE_FORMAT}
   get "user_avatar/:hostname/:username/:size/:version.png" => "user_avatars#show", format: false, constraints: { hostname: /[\w\.-]+/, size: /\d+/, username: USERNAME_ROUTE_FORMAT }
 
+  # in most production settings this is bypassed
+  get "letter_avatar_proxy/:version/letter/:letter/:color/:size.png" => "user_avatars#show_proxy_letter"
+
   get "highlight-js/:hostname/:version.js" => "highlight_js#show", format: false, constraints: { hostname: /[\w\.-]+/ }
 
   get "stylesheets/:name.css" => "stylesheets#show", constraints: { name: /[a-z0-9_]+/ }
@@ -327,9 +344,15 @@ Discourse::Application.routes.draw do
     get 'posts'
     get 'counts'
 
-    put "members" => "groups#add_members"
-    delete "members/:username" => "groups#remove_member"
+    member do
+      put "members" => "groups#add_members"
+      delete "members" => "groups#remove_member"
+    end
   end
+
+  # aliases so old API code works
+  delete "admin/groups/:id/members" => "groups#remove_member", constraints: AdminConstraint.new
+  put "admin/groups/:id/members" => "groups#add_members", constraints: AdminConstraint.new
 
   # In case people try the wrong URL
   get '/group/:id', to: redirect('/groups/%{id}')
@@ -446,6 +469,7 @@ Discourse::Application.routes.draw do
   get 'embed/info' => 'embed#info'
 
   get "new-topic" => "list#latest"
+  get "new-message" => "list#latest"
 
   # Topic routes
   get "t/id_for/:slug" => "topics#id_for_slug"

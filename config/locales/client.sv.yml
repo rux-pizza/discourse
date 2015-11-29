@@ -381,7 +381,6 @@ sv:
       tracked_categories: "Bevakade"
       tracked_categories_instructions: "Du kommer automatiskt att följa alla nya ämnen i dessa kategorier. Antalet nya inlägg visas bredvid ämnet."
       muted_categories: "Tystad"
-      muted_categories_instructions: "Du kommer inte att få notifieringar om nya ämnen inom dessa kategorier, och de kommer inte att visas under din \"oläst\"-flik."
       delete_account: "Radera mitt konto"
       delete_account_confirm: "Är du säker på att du vill ta bort ditt konto permanent? Denna åtgärd kan inte ångras!"
       deleted_yourself: "Ditt konto har tagits bort."
@@ -444,10 +443,6 @@ sv:
         ok: "Vi skickar e-post till dig för bekräftelse"
         invalid: "Vänligen ange en giltig e-postadress"
         authenticated: "Din e-postadress har blivit verifierad av {{provider}}"
-        frequency:
-          zero: "Vi kommer att skicka e-post till dig omedelbart om du inte har läst det som vi skickar e-post till dig om."
-          one: "Vi skickar bara e-post om du inte synts till den senaste minuten."
-          other: "Vi skickar bara e-post om du inte synts till de senaste {{count}} minuterna."
       name:
         title: "Namn"
         instructions: "Ditt fullständiga namn (valfritt)"
@@ -702,7 +697,6 @@ sv:
       edit_reason_placeholder: "varför redigerar du?"
       show_edit_reason: "(lägg till anledningar för redigering)"
       view_new_post: "Visa ditt nya inlägg."
-      saving: "Sparar..."
       saved: "Sparat!"
       saved_draft: "Utkast för inlägg. Välj för att fortsätta."
       uploading: "Laddar upp..."
@@ -729,8 +723,6 @@ sv:
       heading_title: "Rubrik"
       heading_text: "Rubrik"
       hr_title: "Horisontell linje"
-      undo_title: "Ångra"
-      redo_title: "Återställ"
       help: "Markdown Redigeringshjälp"
       toggler: "Dölj eller visa composer-panelen"
       admin_options_title: "Valfria personalinställningar för detta ämne"
@@ -774,7 +766,6 @@ sv:
       from_my_computer: "Från min enhet"
       from_the_web: "Från webben"
       remote_tip: "länk till bild"
-      remote_tip_with_attachments: "länk till bild eller fil ({{authorized_extensions}})"
       hint: "(du kan också dra & släppa in i redigeraren för att ladda upp dem)"
       uploading: "Laddar upp bild"
       select_file: "Välj fil"
@@ -796,10 +787,6 @@ sv:
       bulk:
         reset_read: "Återställ Lästa"
         delete: "Ta bort diskussioner"
-        dismiss_posts: "Avfärda inlägg"
-        dismiss_posts_tooltip: "Nollställ räknaren för olästa i dessa diskussioner men fortsätt visa mig dem på min olästalista när nya inlägg har gjorts. "
-        dismiss_topics: "Avfärda Diskussioner"
-        dismiss_topics_tooltip: "Sluta visa mig dessa diskussioner i min olästalista när nya inlägg har gjorts"
         dismiss_new: "Avfärda Nya"
         toggle: "toggla val av multipla ämnen"
         actions: "Massändringar"
@@ -938,7 +925,6 @@ sv:
           description: "Du kommer aldrig bli notifierad om något gällande detta meddelande."
         muted:
           title: "Dämpad"
-          description: "Du kommer aldrig meddelas om detta ämne alls, och den kommer inte visas i din \"oläst\"-flik."
       actions:
         recover: "Återställ ämne"
         delete: "Radera ämne"
@@ -977,23 +963,12 @@ sv:
         confirm_pin: "Du har redan {{count}} klistrade ämnen. För många klistrade ämnen kan vara störande för nya och anonyma användare. Är du säker på att du vill klistra ytterligare ett ämne i denna kategori?"
         unpin: "Ta bort detta ämne från toppen av kategorin {{categoryLink}}."
         pin_note: "Användare kan avklistra ämnet individuellt för sig själva."
-        already_pinned:
-          zero: "Det finns inga klistrade ämnen i {{categoryLink}}."
-          one: "Klistrade ämnen i {{categoryLink}} just nu: <strong class='badge badge-notification unread'>1</strong>."
-          other: "Klistrade ämnen i {{categoryLink}} just nu: <strong class='badge badge-notification unread'>{{count}}</strong>."
         confirm_pin_globally: "Du har redan {{count}} globalt klistrade ämnen. För många klistrade ämnen kan vara störande för nya och anonyma användare. Är du säker på att du vill klistra ytterligare ett ämne globalt?"
         unpin_globally: "Ta bort detta ämne från toppen av alla ämneslistor."
         global_pin_note: "Användare kan avklistra ämnet individuellt för sig själva."
-        already_pinned_globally:
-          zero: "Det finns inga globalt klistrade ämnen."
-          one: "Globalt klistrade ämnen just nu: <strong class='badge badge-notification unread'>1</strong>."
-          other: "Globalt klistrade ämnen just nu: <strong class='badge badge-notification unread'>{{count}}</strong>."
         make_banner: "Gör detta ämne till en banner som dyker upp i toppen av alla sidor."
         remove_banner: "Ta bort bannern som dyker upp i toppen av alla sidor."
         banner_note: "Användare kan avfärda bannern genom att stänga det. Endast ett ämne kan agera banner åt gången."
-        already_banner:
-          zero: "Inget ämne är banner."
-          one: "Det <strong class='badge badge-notification unread'>är</strong> förnärvarande ett ämne som banner."
       inviting: "Bjuder in..."
       automatically_add_to_groups_optional: "Denna inbjudan inkluderar även tillgång till dessa grupper: (valfritt, enbart för administratörer)"
       automatically_add_to_groups_required: "Denna inbjudan inkluderar även tillgång till dessa grupper: (<b>Krävs</b>, enbart för admninistörer)"
@@ -1090,10 +1065,6 @@ sv:
       has_likes_title:
         one: "1 person gillade detta inlägg"
         other: "{{count}} personer gillade detta inlägg"
-      has_likes_title_you:
-        zero: "Du gillade detta inlägg"
-        one: "du och 1 annan person gillade detta inlägg"
-        other: "du och {{count}} andra personer gillade detta inlägg"
       errors:
         create: "Tyvärr, det uppstod ett fel under skapandet av ditt inlägg. Var god försök igen."
         edit: "Tyvärr, det uppstod ett fel under ändringen av ditt inlägg. Var god försök igen."
@@ -1231,10 +1202,6 @@ sv:
           vote:
             one: "1 person röstade för detta inlägg"
             other: "{{count}} personer röstade för detta inlägg"
-      edits:
-        one: 1 ändring
-        other: "{{count}} ändringar"
-        zero: inga ändringar
       delete:
         confirm:
           one: "Är du säker på att du vill radera detta inlägg?"
@@ -1366,7 +1333,6 @@ sv:
         help: "Detta ämne är oklistrat för dig. Det visas i vanlig ordning"
       pinned_globally:
         title: "Klistrat Globalt"
-        help: "Det här ämnet är klistrat globalt; det kommer att visas högst upp i alla listor"
       pinned:
         title: "Klistrat"
         help: "Detta ämne är klistrat för dig. Det visas i toppen av dess kategori"
@@ -1409,10 +1375,6 @@ sv:
       with_topics: "%{filter} ämnen"
       with_category: "%{filter} %{category} ämnen"
       latest:
-        title:
-          zero: "Senaste"
-          one: "Senaste (1)"
-          other: "Senaste ({{count}})"
         help: "ämnen med nya inlägg"
       hot:
         title: "Hett"
@@ -1428,23 +1390,9 @@ sv:
         title_in: "Kategori - {{categoryName}}"
         help: "alla ämnen grupperade efter kategori"
       unread:
-        title:
-          zero: "Olästa"
-          one: "Olästa (1)"
-          other: "Olästa ({{count}})"
         help: "ämnen som du bevakar eller följer med olästa inlägg"
-        lower_title_with_count:
-          one: "1 oläst"
-          other: "{{count}} olästa"
       new:
-        lower_title_with_count:
-          one: "1 ny"
-          other: "{{count}} nya"
         lower_title: "ny"
-        title:
-          zero: "Nya"
-          one: "Nya (1)"
-          other: "Nya ({{count}})"
         help: "ämnen skapade de senaste dagarna"
       posted:
         title: "Mina Inlägg"
@@ -1453,10 +1401,6 @@ sv:
         title: "Bokmärken"
         help: "Ämnen du har bokmärkt"
       category:
-        title:
-          zero: "{{categoryName}}"
-          one: "{{categoryName}} (1)"
-          other: "{{categoryName}} ({{count}})"
         help: "senaste ämnena i kategorin {{categoryName}}"
       top:
         title: "Topp"
@@ -2180,10 +2124,6 @@ sv:
           link_text: "Förhandsvisa utfärdade utmärkelser"
           bad_count_warning:
             header: "VARNING!"
-          grant_count:
-            zero: "Inga utmärkelser som ska tilldelas."
-            one: "<b>1</b> utmärkelse som ska tilldelas."
-            other: "<b>%{count}</b> utmärkelser som ska tilldelas."
           sample: "Exempel:"
           grant:
             with: <span class="username">%{username}</span>

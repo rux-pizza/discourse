@@ -129,6 +129,8 @@ module ApplicationHelper
     if opts[:image].present? && opts[:image].start_with?("//")
       uri = URI(Discourse.base_url)
       opts[:image] = "#{uri.scheme}:#{opts[:image]}"
+    elsif opts[:image].present? && opts[:image].start_with?("/uploads/")
+      opts[:image] = "#{Discourse.base_url}#{opts[:image]}"
     end
 
     # Add opengraph tags
@@ -145,18 +147,6 @@ module ApplicationHelper
     end
 
     result.join("\n")
-  end
-
-  # Look up site content for a key. If the key is blank, you can supply a block and that
-  # will be rendered instead.
-  def markdown_content(key, replacements=nil)
-    result = PrettyText.cook(SiteText.text_for(key, replacements || {})).html_safe
-    if result.blank? && block_given?
-      yield
-      nil
-    else
-      result
-    end
   end
 
   def application_logo_url

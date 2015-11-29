@@ -1,9 +1,6 @@
 //= require ./discourse/mixins/ajax
 //= require ./discourse
 
-// Pagedown customizations
-//= require ./pagedown_custom.js
-
 // Stuff we need to load first
 //= require_tree ./ember-addons/utils
 //= require ./ember-addons/decorator-alias
@@ -31,7 +28,6 @@
 //= require ./discourse/models/badge-grouping
 //= require ./discourse/models/badge
 //= require ./discourse/models/category
-//= require_tree ./discourse/mixins
 //= require ./discourse/lib/ajax-error
 //= require ./discourse/lib/markdown
 //= require ./discourse/lib/search
@@ -55,6 +51,7 @@
 //= require ./discourse/models/user-action
 //= require ./discourse/models/draft
 //= require ./discourse/models/composer
+//= require_tree ./discourse/mixins
 //= require ./discourse/models/invite
 //= require ./discourse/models/user-badge
 //= require ./discourse/controllers/discovery-sortable
@@ -73,9 +70,12 @@
 //= require ./discourse/components/topic-notifications-button
 //= require ./discourse/lib/link-mentions
 //= require ./discourse/views/header
+//= require ./discourse/lib/utilities
 //= require ./discourse/dialects/dialect
 //= require ./discourse/lib/emoji/emoji
+//= require ./discourse/lib/emoji/emoji-groups
 //= require ./discourse/lib/emoji/emoji-toolbar
+//= require ./discourse/components/d-editor
 //= require ./discourse/views/composer
 //= require ./discourse/lib/show-modal
 //= require ./discourse/lib/screen-track

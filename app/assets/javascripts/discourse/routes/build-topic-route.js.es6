@@ -80,22 +80,15 @@ export default function(filter, extras) {
     titleToken() {
       if (filter === Discourse.Utilities.defaultHomepage()) { return; }
 
-      const filterText = I18n.t('filters.' + filter.replace('/', '.') + '.title', {count: 0});
+      const filterText = I18n.t('filters.' + filter.replace('/', '.') + '.title');
       return I18n.t('filters.with_topics', {filter: filterText});
     },
 
-    setupController(controller, model, trans) {
-      if (trans) {
-        controller.setProperties(Em.getProperties(trans, _.keys(queryParams).map(function(v){
-          return 'queryParams.' + v;
-        })));
-      }
-
-      const period = model.get('for_period') || (filter.indexOf('/') > 0 ? filter.split('/')[1] : '');
+    setupController(controller, model) {
       const topicOpts = {
         model,
         category: null,
-        period,
+        period: model.get('for_period') || (filter.indexOf('/') > 0 ? filter.split('/')[1] : ''),
         selected: [],
         expandGloballyPinned: true
       };
@@ -113,6 +106,12 @@ export default function(filter, extras) {
 
       this.openTopicDraft(model);
       this.controllerFor('navigation/default').set('canCreateTopic', model.get('can_create_topic'));
+    },
+
+    resetController(controller, isExiting) {
+      if (isExiting) {
+        controller.setProperties({ order: "default", ascending: false });
+      }
     },
 
     renderTemplate() {

@@ -30,7 +30,6 @@ gem 'onebox'
 
 gem 'ember-rails'
 gem 'ember-source', '1.12.1'
-gem 'handlebars-source', '2.0.0'
 gem 'barber'
 gem 'babel-transpiler'
 
@@ -120,6 +119,7 @@ group :test, :development do
   gem 'simplecov', require: false
   gem 'timecop'
   gem 'rspec-given'
+  gem 'rspec-html-matchers'
   gem 'pry-nav'
   gem 'spork-rails'
   gem 'byebug', require: ENV['RM_INFO'].nil?

@@ -18,7 +18,7 @@ class UserNotifications < ActionMailer::Base
     build_email(user.email,
                 template: 'user_notifications.signup_after_approval',
                 email_token: opts[:email_token],
-                new_user_tips: SiteText.text_for(:usage_tips, base_url: Discourse.base_url))
+                new_user_tips: I18n.t('system_messages.usage_tips.text_body_template', base_url: Discourse.base_url))
   end
 
   def authorize_email(user, opts={})
@@ -42,7 +42,11 @@ class UserNotifications < ActionMailer::Base
   end
 
   def short_date(dt)
-    I18n.l(dt, format: :short)
+    if dt.year == Time.now.year
+      I18n.l(dt, format: :short_no_year)
+    else
+      I18n.l(dt, format: :short)
+    end
   end
 
   def digest(user, opts={})
@@ -289,7 +293,7 @@ class UserNotifications < ActionMailer::Base
       topic_id: post.topic_id,
       context: context,
       username: username,
-      add_unsubscribe_link: true,
+      add_unsubscribe_link: !user.staged,
       unsubscribe_url: post.topic.unsubscribe_url,
       allow_reply_by_email: allow_reply_by_email,
       use_site_subject: use_site_subject,

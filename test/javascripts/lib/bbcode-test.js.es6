@@ -1,4 +1,5 @@
 import Quote from 'discourse/lib/quote';
+import Post from 'discourse/models/post';
 
 module("Discourse.BBCode");
 
@@ -48,15 +49,6 @@ test('code', function() {
          "it doesn't trim leading whitespace");
 });
 
-test('spoiler', function() {
-  format("[spoiler]it's a sled[/spoiler]", "<span class=\"spoiler\">it's a sled</span>", "supports spoiler tags on text");
-  format("[spoiler]<img src='http://eviltrout.com/eviltrout.png' width='50' height='50'>[/spoiler]",
-         "<span class=\"spoiler\"><img src=\"http://eviltrout.com/eviltrout.png\" width=\"50\" height=\"50\"></span>", "supports spoiler tags on images");
-  format("[spoiler] This is the **bold** :smiley: [/spoiler]", "<span class=\"spoiler\"> This is the <strong>bold</strong> <img src=\"/images/emoji/emoji_one/smiley.png?v=0\" title=\":smiley:\" class=\"emoji\" alt=\":smiley:\"> </span>", "supports spoiler tags on emojis");
-  format("[spoiler] Why not both <img src='http://eviltrout.com/eviltrout.png' width='50' height='50'>?[/spoiler]", "<span class=\"spoiler\"> Why not both <img src=\"http://eviltrout.com/eviltrout.png\" width=\"50\" height=\"50\">?</span>", "supports images and text");
-  format("In a p tag a spoiler [spoiler] <img src='http://eviltrout.com/eviltrout.png' width='50' height='50'>[/spoiler] can work.", "In a p tag a spoiler <span class=\"spoiler\"> <img src=\"http://eviltrout.com/eviltrout.png\" width=\"50\" height=\"50\"></span> can work.", "supports images and text in a p tag");
-});
-
 test('lists', function() {
   format("[ul][li]option one[/li][/ul]", "<ul><li>option one</li></ul>", "creates an ul");
   format("[ol][li]option one[/li][/ol]", "<ol><li>option one</li></ol>", "creates an ol");
@@ -87,7 +79,7 @@ test("size tags", function() {
 
 test("quotes", function() {
 
-  var post = Discourse.Post.create({
+  var post = Post.create({
     cooked: "<p><b>lorem</b> ipsum</p>",
     username: "eviltrout",
     post_number: 1,
@@ -176,5 +168,3 @@ test("quotes with trailing formatting", function() {
         "<div class=\"quote-controls\"></div>EvilTrout:</div><blockquote><p>hello</p></blockquote></aside>\n\n<p><em>Test</em></p>",
         "it allows trailing formatting");
 });
-
-

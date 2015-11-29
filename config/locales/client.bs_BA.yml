@@ -338,7 +338,6 @@ bs_BA:
       watched_categories: "Watched"
       tracked_categories: "Tracked"
       muted_categories: "Muted"
-      muted_categories_instructions: "You will not be notified of anything about new topics in these categories, and they will not appear on your unread tab."
       delete_account: "Delete My Account"
       delete_account_confirm: "Are you sure you want to permanently delete your account? This action cannot be undone!"
       deleted_yourself: "Your account has been deleted successfully."
@@ -620,7 +619,6 @@ bs_BA:
       edit_reason_placeholder: "zašto pravite izmjenu?"
       show_edit_reason: "(dodaj razlog izmjene)"
       view_new_post: "Pogledaj svoj novi post."
-      saving: "Čuvam..."
       saved: "Sačuvano!"
       saved_draft: "Imate sačuvan post. Kliknite ovdje da nastavite sa izmjenama"
       uploading: "Uplodujem..."
@@ -647,8 +645,6 @@ bs_BA:
       heading_title: "Naslov"
       heading_text: "Naslov"
       hr_title: "Horizontalna Crta"
-      undo_title: "Poništi"
-      redo_title: "Povrati"
       help: "Markdown Editing Help"
       toggler: "sakrij ili pokaži komposer"
       admin_options_title: "Optional staff settings for this topic"
@@ -684,7 +680,6 @@ bs_BA:
       from_my_computer: "Sa mog uređaja"
       from_the_web: "Sa neta"
       remote_tip: "link do slike http://primjer.com/slika.jpg"
-      remote_tip_with_attachments: "link to image or file http://primjer.com/file.ext (allowed extensions: {{authorized_extensions}})."
       hint: "(možete i mišom prenijeti vaše slike direktno iz vašeg foldera ovdje)"
       uploading: "Uplodujem"
       image_link: "link do vaše slike će pokazivati"
@@ -704,10 +699,6 @@ bs_BA:
       bulk:
         reset_read: "Reset Read"
         delete: "Delete Topics"
-        dismiss_posts: "Dismiss Posts"
-        dismiss_posts_tooltip: "Clear unread counts on these topics but continue to show them on my unread list when new posts are made"
-        dismiss_topics: "Dismiss Topics"
-        dismiss_topics_tooltip: "Stop showing these topics in my unread list when new posts are made"
         dismiss_new: "Dismiss New"
         toggle: "toggle bulk selection of topics"
         actions: "Bulk Actions"
@@ -817,7 +808,6 @@ bs_BA:
           description: "You will never be notified of anything about this private message."
         muted:
           title: "Mutirano"
-          description: "Obaviještenja za ovu temu su isključena i sistem vam neće prikazivati nove postove za ovu temu."
       actions:
         recover: "Un-Delete Topic"
         delete: "Delete Topic"
@@ -988,10 +978,6 @@ bs_BA:
           bookmark: "You bookmarked this post"
           like: "Lajkovao si ovo"
           vote: "Glasao si za ovaj post"
-      edits:
-        one: 1 edit
-        other: "{{count}} edits"
-        zero: no edits
       revisions:
         controls:
           first: "First revision"
@@ -1105,7 +1091,6 @@ bs_BA:
         help: "This topic is unpinned; it will display in default order"
       pinned_globally:
         title: "Zakačena Globalno"
-        help: "Ova tema je zakačena globalno; biće na vrhu svih listi"
       pinned:
         title: "Zakačena"
         help: "Ova tema je zakačena; biće na vrhu svoje kategorije"
@@ -1148,32 +1133,14 @@ bs_BA:
         title_in: "Kategorija - {{categoryName}}"
         help: "sve teme grupisane po kategoriji"
       unread:
-        title:
-          zero: "Nepročitane"
-          one: "Nepročitane (1)"
-          other: "Nepročitane ({{count}})"
         help: "teme koje trenutno pratite i motrite sa nepročitanim postovima"
-        lower_title_with_count:
-          one: "1 nepročitana"
-          other: "{{count}} nepročitanih"
       new:
-        lower_title_with_count:
-          one: "1 nova"
-          other: "{{count}} novih"
         lower_title: "nova"
-        title:
-          zero: "Nove Teme"
-          one: "Nova Tema (1)"
-          other: "Nove Teme ({{count}})"
         help: "teme kreirane u zadnjih nekoliko dana"
       posted:
         title: "Moji Odgovori"
         help: "teme u kojima imate postove"
       category:
-        title:
-          zero: "{{categoryName}}"
-          one: "{{categoryName}} (1)"
-          other: "{{categoryName}} ({{count}})"
         help: "zadnje teme u {{categoryName}} kategoriji"
       top:
         title: "Popularne"
@@ -1773,10 +1740,6 @@ bs_BA:
           bad_count_warning:
             header: "WARNING!"
             text: "There are missing grant samples. This happens when the badge query returns user IDs or post IDs that do not exist. This may cause unexpected results later on - please double-check your query."
-          grant_count:
-            zero: "No badges to be assigned."
-            one: "<b>1</b> badge to be assigned."
-            other: "<b>%{count}</b> badges to be assigned."
           sample: "Sample:"
           grant:
             with: <span class="username">%{username}</span>

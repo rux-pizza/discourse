@@ -898,6 +898,18 @@ describe TopicsController do
           end
         end
 
+        context 'when topic is in support category' do
+          let(:another_category) { Fabricate(:category) }
+
+          it "cannot change the category of a topic that is in a support category" do
+            @topic.category = Fabricate(:category, contains_messages: true)
+            @topic.save!
+            xhr :put, :update, topic_id: @topic.id, slug: @topic.title, category_id: another_category.id
+            expect(response).not_to be_success
+          end
+
+        end
+
         context "allow_uncategorized_topics is false" do
           before do
             SiteSetting.stubs(:allow_uncategorized_topics).returns(false)
@@ -939,7 +951,7 @@ describe TopicsController do
 
     describe 'when logged in as group manager' do
       let(:group_manager) { log_in }
-      let(:group) { Fabricate(:group).tap { |g| g.add(group_manager); g.appoint_manager(group_manager) } }
+      let(:group) { Fabricate(:group).tap { |g| g.add_owner(group_manager) } }
       let(:private_category)  { Fabricate(:private_category, group: group) }
       let(:group_private_topic) { Fabricate(:topic, category: private_category, user: group_manager) }
       let(:recipient) { 'jake@adventuretime.ooo' }

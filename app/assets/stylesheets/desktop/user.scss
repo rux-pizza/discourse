@@ -39,18 +39,6 @@
     }
   }
 
-  .pagedown-editor {
-    width: 450px;
-
-    textarea {
-      width: 440px;
-    }
-  }
-
-  .bio-composer #wmd-quote-post {
-    display: none;
-  }
-
   .static {
     color: $primary;
     display: inline-block;
@@ -113,6 +101,21 @@
 .user-main {
   margin-bottom: 50px;
 
+  // name hacky so lastpass does not freak out
+  // -search- means it is bypassed
+  #add-user-to-group {
+      button, .ac-wrap {
+        float: left;
+      }
+      button {
+        margin-top: 3px;
+        margin-left: 10px;
+      }
+      #user-search-selector {
+        width: 400px;
+      }
+   }
+
   table.group-members {
     width: 100%;
     p {
@@ -128,6 +131,16 @@
     }
     td.avatar {
       width: 60px;
+      position: relative;
+      .is-owner {
+        position: absolute;
+        right: 0;
+        top: 20px;
+        color: dark-light-diff($primary, $secondary, 50%, -50%);
+      }
+    }
+    td.remove-user {
+      text-align: right;
     }
     td {
       padding: 0.5em;

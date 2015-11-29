@@ -2,9 +2,7 @@
 //= require ./env
 //= require probes.js
 
-//= require handlebars.js
-//= require jquery_include.js
-//= require ember_include.js
+//= require template_include.js
 //= require i18n-patches
 
 //= require loader

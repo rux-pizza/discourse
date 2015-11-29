@@ -20,17 +20,21 @@ en:
     short_date: "D MMM, YYYY"
     long_date: "MMMM D, YYYY h:mma"
 
-  datetime: &datetime
-    month_names:
-      [~, January, February, March, April, May, June, July, August, September, October, November, December]
+  datetime_formats: &datetime_formats
     formats:
+      # Format directives: http://ruby-doc.org/core-2.2.0/Time.html#method-i-strftime
       short: "%m-%d-%Y"
+      # Format directives: http://ruby-doc.org/core-2.2.0/Time.html#method-i-strftime
       short_no_year: "%B %-d"
+      # Format directives: http://ruby-doc.org/core-2.2.0/Time.html#method-i-strftime
       date_only: "%B %-d, %Y"
   date:
-    <<: *datetime
+    # Do not remove the brackets and commas and do not translate the first month name. It should be "null".
+    month_names:
+      [~, January, February, March, April, May, June, July, August, September, October, November, December]
+    <<: *datetime_formats
   time:
-    <<: *datetime
+    <<: *datetime_formats
 
   title: "Discourse"
   topics: "Topics"
@@ -62,8 +66,10 @@ en:
       exclusion: is reserved
       greater_than: must be greater than %{count}
       greater_than_or_equal_to: must be greater than or equal to %{count}
+      has_already_been_used: "has already been used"
       inclusion: is not included in the list
       invalid: is invalid
+      is_invalid: "is invalid; try to be a little more descriptive"
       less_than: must be less than %{count}
       less_than_or_equal_to: must be less than or equal to %{count}
       not_a_number: is not a number
@@ -101,9 +107,6 @@ en:
   activemodel:
     errors:
       <<: *errors
-  activerecord:
-    errors:
-      <<: *errors
 
   bulk_invite:
     file_should_be_csv: "The uploaded file should be of csv or txt format."
@@ -137,26 +140,27 @@ en:
       one: "1 reply"
       other: "%{count} replies"
 
+  no_mentions_allowed: "Sorry, you can't mention other users."
   too_many_mentions:
-    zero: "Sorry, you can't mention other users."
     one: "Sorry, you can only mention one other user in a post."
     other: "Sorry, you can only mention %{count} users in a post."
+  no_mentions_allowed_newuser: "Sorry, new users can't mention other users."
   too_many_mentions_newuser:
-    zero: "Sorry, new users can't mention other users."
     one: "Sorry, new users can only mention one other user in a post."
     other: "Sorry, new users can only mention %{count} users in a post."
+  no_images_allowed: "Sorry, new users can't put images in posts."
   too_many_images:
-    zero: "Sorry, new users can't put images in posts."
     one: "Sorry, new users can only put one image in a post."
     other: "Sorry, new users can only put %{count} images in a post."
+  no_attachments_allowed: "Sorry, new users can't put attachments in posts."
   too_many_attachments:
-    zero: "Sorry, new users can't put attachments in posts."
     one: "Sorry, new users can only put one attachment in a post."
     other: "Sorry, new users can only put %{count} attachments in a post."
+  no_links_allowed: "Sorry, new users can't put links in posts."
   too_many_links:
-    zero: "Sorry, new users can't put links in posts."
     one: "Sorry, new users can only put one link in a post."
     other: "Sorry, new users can only put %{count} links in a post."
+
   spamming_host: "Sorry you cannot post a link to that host."
   user_is_suspended: "Suspended users are not allowed to post."
   topic_not_found: "Something has gone wrong. Perhaps this topic was closed or deleted while you were looking at it?"
@@ -192,6 +196,7 @@ en:
     errors:
       can_not_modify_automatic: "You can not modify an automatic group"
       member_already_exist: "'%{username}' is already a member of this group."
+      invalid_domain: "'%{domain}' is not a valid domain."
     default_names:
       everyone: "everyone"
       admins: "admins"
@@ -280,9 +285,7 @@ en:
       user:
         ip_address: ""
     errors:
-      messages:
-        is_invalid: "is invalid; try to be a little more descriptive"
-        has_already_been_used: "has already been used"
+      <<: *errors
       models:
         topic:
           attributes:
@@ -365,11 +368,11 @@ en:
       title: "new user"
     basic:
       title: "basic user"
-    regular:
+    member:
       title: "member"
-    leader:
+    regular:
       title: "regular"
-    elder:
+    leader:
       title: "leader"
     change_failed_explanation: "You attempted to demote %{user_name} to '%{new_trust_level}'. However their trust level is already '%{current_trust_level}'. %{user_name} will remain at '%{current_trust_level}' - if you wish to demote user lock trust level first"
 
@@ -511,7 +514,7 @@ en:
       description: 'This post contains content that a reasonable person would consider offensive, abusive, or a violation of <a href="/guidelines">our community guidelines</a>.'
       long_form: 'flagged this as inappropriate'
     notify_user:
-      title: 'Message @{{username}}'
+      title: 'Contact @{{username}} via private message'
       description: 'This post contains something I want to talk to this person directly and privately about. Does not cast a flag.'
       long_form: 'messaged user'
       email_title: 'Your post in "%{title}"'
@@ -743,38 +746,7 @@ en:
     consumer_email_warning: "Your site is configured to use Gmail (or another consumer email service) to send email. <a href='http://support.google.com/a/bin/answer.py?hl=en&answer=166852' target='_blank'>Gmail limits how many emails you can send</a>. Consider using an email service provider like mandrill.com to ensure email deliverability."
     site_contact_username_warning: "Enter the name of a friendly staff user account to send important automated messages from. Update site_contact_username in <a href='/admin/site_settings'>Site Settings</a>."
     notification_email_warning: "Notification emails are not being sent from a valid email address on your domain; email delivery will be erratic and unreliable. Please set notification_email to a valid local email address in <a href='/admin/site_settings'>Site Settings</a>."
-
-  content_types:
-    education_new_reply:
-      title: "New User Education: First Replies"
-      description: "Pop up just-in-time guidance automatically displayed above the composer when new users begin typing their first two new replies."
-    education_new_topic:
-      title: "New User Education: First Topics"
-      description: "Pop up just-in-time guidance automatically displayed above the composer when new users begin typing their first two new topics."
-    usage_tips:
-      title: "New User Guidance"
-      description: "Guidance and essential information for new users."
-    welcome_user:
-      title: "Welcome: New User"
-      description: "A message automatically sent to all new users when they sign up."
-    welcome_invite:
-      title: "Welcome: Invited User"
-      description: "A message automatically sent to all new invited users when they accept the invitation from another user to participate."
-    login_required_welcome_message:
-      title: "Login Required: Welcome Message"
-      description: "Welcome message that is displayed to logged out users when the 'login required' setting is enabled."
-    login_required:
-      title: "Login Required: Homepage"
-      description: "The text displayed for unauthorized users when login is required on the site."
-    head:
-      title: "HTML head"
-      description: "HTML that will be inserted inside the <head></head> tags."
-    top:
-      title: "Top of the pages"
-      description: "HTML that will be added at the top of every page (after the header, before the navigation or the topic title)."
-    bottom:
-      title: "Bottom of the pages"
-      description: "HTML that will be added before the </body> tag."
+    subfolder_ends_in_slash: "Your subfolder setup is incorrect; the DISCOURSE_RELATIVE_URL_ROOT ends in a slash."
 
   site_settings:
     censored_words: "Words that will be automatically replaced with &#9632;&#9632;&#9632;&#9632;"
@@ -789,6 +761,7 @@ en:
     max_topic_title_length: "Maximum allowed topic title length in characters"
     min_private_message_title_length: "Minimum allowed title length for a message in characters"
     min_search_term_length: "Minimum valid search term length in characters"
+    search_tokenize_chinese_japanese_korean: "Force search to tokenize Chinese/Japanese/Korean even on non CJK sites"
     allow_uncategorized_topics: "Allow topics to be created without a category. WARNING: If there are any uncategorized topics, you must recategorize them before turning this off."
     uncategorized_description: "The description of the uncategorized category. Leave blank for no description."
     allow_duplicate_topic_titles: "Allow topics with identical, duplicate titles."
@@ -803,7 +776,7 @@ en:
     download_remote_images_to_local: "Convert remote images to local images by downloading them; this prevents broken images."
     download_remote_images_threshold: "Minimum disk space necessary to download remote images locally (in percent)"
     disabled_image_download_domains: "Remote images will never be downloaded from these domains. Pipe-delimited list."
-    ninja_edit_window: "For (n) seconds after posting, editing will not create a new version in the post history."
+    editing_grace_period: "For (n) seconds after posting, editing will not create a new version in the post history."
     post_edit_time_limit: "The author can edit or delete their post for (n) minutes after posting. Set to 0 for forever."
     edit_history_visible_to_public: "Allow everyone to see previous versions of an edited post. When disabled, only staff members can view."
     delete_removed_posts_after: "Posts removed by the author will be automatically deleted after (n) hours. If set to 0, posts will be deleted immediately."
@@ -866,6 +839,7 @@ en:
     allow_html_tables: "Allow tables to be entered in Markdown using HTML tags. TABLE, THEAD, TD, TR, TH will be whitelisted (requires full rebake on all old posts containing tables)"
     post_undo_action_window_mins: "Number of minutes users are allowed to undo recent actions on a post (like, flag, etc)."
     must_approve_users: "Staff must approve all new user accounts before they are allowed to access the site. WARNING: enabling this for a live site will revoke access for existing non-staff users!"
+    pending_users_reminder_delay: "Notify moderators if new users have been waiting for approval for longer than this many hours. Set to -1 to disable notifications."
     ga_tracking_code: "Google analytics (ga.js) tracking code code, eg: UA-12345678-9; see http://google.com/analytics"
     ga_domain_name: "Google analytics (ga.js) domain name, eg: mysite.com; see http://google.com/analytics"
     ga_universal_tracking_code: "Google Universal Analytics (analytics.js) tracking code code, eg: UA-12345678-9; see http://google.com/analytics"
@@ -964,6 +938,8 @@ en:
     backup_frequency: "How frequently we create a site backup, in days."
     enable_s3_backups: "Upload backups to S3 when complete. IMPORTANT: requires valid S3 credentials entered in Files settings."
     s3_backup_bucket: "The remote bucket to hold backups. WARNING: Make sure it is a private bucket."
+    backup_time_of_day: "Time of day UTC when the backup should occur."
+    backup_with_uploads: "Include uploads in scheduled backups. Disabling this will only backup the database."
 
     active_user_rate_limit_secs: "How frequently we update the 'last_seen_at' field, in seconds"
     verbose_localization: "Show extended localization tips in the UI"
@@ -1055,6 +1031,7 @@ en:
     title_max_word_length: "The maximum allowed word length, in characters, in a topic title."
     title_min_entropy: "The minimum entropy (unique characters, non-english count for more) required for a topic title."
     body_min_entropy: "The minimum entropy (unique characters, non-english count for more) required for a post body."
+    allow_uppercase_posts: "Allow all caps in a topic title or a post body."
 
     title_fancy_entities: "Convert common ASCII characters to fancy HTML entities in topic titles, ala SmartyPants http://daringfireball.net/projects/smartypants/"
 
@@ -1163,6 +1140,8 @@ en:
     anonymous_posting_min_trust_level: "Minimum trust level required to enable anonymous posting"
     anonymous_account_duration_minutes: "To protect anonymity create a new anonymous account every N minutes for each user. Example: if set to 600, as soon as 600 minutes elapse from last post AND user switches to anon, a new anonymous account is created."
 
+    hide_user_profiles_from_public: "Disable user cards, user profiles and user directory for anonymous users."
+
     allow_profile_backgrounds: "Allow users to upload profile backgrounds."
 
     sequential_replies_threshold: "Number posts a user has to make in a row in a topic before being reminded about too many sequential replies. "
@@ -1180,6 +1159,8 @@ en:
     global_notice: "Display an URGENT, EMERGENCY global banner notice to all visitors, change to blank to hide it (HTML allowed)."
 
     disable_edit_notifications: "Disables edit notifications by the system user when 'download_remote_images_to_local' is active."
+
+    automatically_unpin_topics: "Automatically unpin topics when the user reaches the bottom."
 
     full_name_required: "Full name is a required field of a user's profile."
     enable_names: "Show the user's full name on their profile, user card, and emails. Disable to hide full name everywhere."
@@ -1234,6 +1215,8 @@ en:
     default_other_dynamic_favicon: "Show new/updated topic count on browser icon by default."
     default_other_disable_jump_reply: "Don't jump to user's post after they reply by default."
     default_other_edit_history_public: "Make the post revisions public by default."
+
+    default_topics_automatic_unpin: "Automatically unpin topics when the user reaches the bottom by default."
 
     default_categories_watching: "List of categories that are watched by default."
     default_categories_tracking: "List of categories that are tracked by default."
@@ -2503,8 +2486,12 @@ en:
         <tr><td><code>posts_count:num</code></td><td><code>min_age:days</code></td><td><code>max_age:days</code></td> <td colspan=2></td></tr>
         </table>
       </p>
+      <h3>Examples</h3>
       <p>
-        <code>rainbows category:parks status:open order:latest</code> will search for topics containing the word "rainbows" in the category "parks" that are not closed or archived, ordered by date of last post.
+        <ul>
+          <li><code>rainbows category:parks status:open order:latest</code> will search for topics containing the word "rainbows" in the category "parks" that are not closed or archived, ordered by date of last post.</li>
+          <li><code>rainbows category:"parks and gardens" in:bookmarks</code> will search for topics containing the word "rainbows" in the category "parks and gardens" that are bookmarked by you.</li>
+        </ul>
       </p>
 
   badges:

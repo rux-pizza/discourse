@@ -33,6 +33,16 @@ describe Group do
       group.name = 'This_Is_A_Name'
       expect(group.valid?).to eq false
     end
+
+    it "is invalid for poorly formatted domains" do
+      group.automatic_membership_email_domains = "wikipedia.org|*@example.com"
+      expect(group.valid?).to eq false
+    end
+
+    it "is valid for proper domains" do
+      group.automatic_membership_email_domains = "discourse.org|wikipedia.org"
+      expect(group.valid?).to eq true
+    end
   end
 
   def real_admins
@@ -292,21 +302,21 @@ describe Group do
     let(:group) {Fabricate(:group)}
 
     it "by default has no managers" do
-      expect(group.managers).to be_empty
+      expect(group.group_users.where('group_users.owner')).to be_empty
     end
 
     it "multiple managers can be appointed" do
       2.times do |i|
         u = Fabricate(:user)
-        group.appoint_manager(u)
+        group.add_owner(u)
       end
-      expect(group.managers.count).to eq(2)
+      expect(group.group_users.where('group_users.owner').count).to eq(2)
     end
 
     it "manager has authority to edit membership" do
       u = Fabricate(:user)
       expect(Guardian.new(u).can_edit?(group)).to be_falsy
-      group.appoint_manager(u)
+      group.add_owner(u)
       expect(Guardian.new(u).can_edit?(group)).to be_truthy
     end
   end

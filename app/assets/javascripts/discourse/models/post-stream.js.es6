@@ -205,7 +205,7 @@ const PostStream = RestModel.extend({
     opts = _.merge(opts, self.get('streamFilters'));
 
     // Request a topicView
-    return Discourse.PostStream.loadTopicView(topic.get('id'), opts).then(function (json) {
+    return PostStream.loadTopicView(topic.get('id'), opts).then(function (json) {
       topic.updateFromJson(json);
       self.updateFromJson(json.post_stream);
       self.setProperties({ loadingFilter: false, loaded: true });
@@ -445,8 +445,7 @@ const PostStream = RestModel.extend({
     const url = "/posts/" + postId;
     const store = this.store;
 
-    return Discourse.ajax(url).then((p) =>
-        this.storePost(store.createRecord('post', p)));
+    return Discourse.ajax(url).then(p => this.storePost(store.createRecord('post', p)));
   },
 
   /**

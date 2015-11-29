@@ -291,7 +291,7 @@ describe Guardian do
     let(:admin) { Fabricate(:admin) }
     let(:private_category)  { Fabricate(:private_category, group: group) }
     let(:group_private_topic) { Fabricate(:topic, category: private_category) }
-    let(:group_manager) { group_private_topic.user.tap { |u| group.add(u); group.appoint_manager(u) } }
+    let(:group_owner) { group_private_topic.user.tap { |u| group.add_owner(u) } }
 
     it 'handles invitation correctly' do
       expect(Guardian.new(nil).can_invite_to?(topic)).to be_falsey
@@ -316,12 +316,6 @@ describe Guardian do
       expect(Guardian.new(coding_horror).can_invite_to?(topic)).to be_falsey
     end
 
-    it 'returns false when local logins are disabled' do
-      SiteSetting.stubs(:enable_local_logins).returns(false)
-      expect(Guardian.new(moderator).can_invite_to?(topic)).to be_falsey
-      expect(Guardian.new(user).can_invite_to?(topic)).to be_falsey
-    end
-
     it 'returns false for normal user on private topic' do
       expect(Guardian.new(user).can_invite_to?(private_topic)).to be_falsey
     end
@@ -330,8 +324,8 @@ describe Guardian do
       expect(Guardian.new(admin).can_invite_to?(private_topic)).to be_truthy
     end
 
-    it 'returns true for a group manager' do
-      expect(Guardian.new(group_manager).can_invite_to?(group_private_topic)).to be_truthy
+    it 'returns true for a group owner' do
+      expect(Guardian.new(group_owner).can_invite_to?(group_private_topic)).to be_truthy
     end
   end
 

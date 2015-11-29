@@ -37,7 +37,11 @@ class SessionController < ApplicationController
         sso.external_id = current_user.id.to_s
         sso.admin = current_user.admin?
         sso.moderator = current_user.moderator?
-        redirect_to sso.to_url(sso.return_sso_url)
+        if request.xhr?
+          cookies[:sso_destination_url] = sso.to_url(sso.return_sso_url)
+        else
+          redirect_to sso.to_url(sso.return_sso_url)
+        end
       else
         session[:sso_payload] = request.query_string
         redirect_to path('/login')
@@ -188,7 +192,7 @@ class SessionController < ApplicationController
     RateLimiter.new(nil, "forgot-password-min-#{request.remote_ip}", 3, 1.minute).performed!
 
     user = User.find_by_username_or_email(params[:login])
-    user_presence = user.present? && user.id != Discourse::SYSTEM_USER_ID
+    user_presence = user.present? && user.id != Discourse::SYSTEM_USER_ID && !user.staged
     if user_presence
       email_token = user.email_tokens.create(email: user.email)
       Jobs.enqueue(:user_email, type: :forgot_password, user_id: user.id, email_token: email_token.token)
@@ -266,9 +270,8 @@ class SessionController < ApplicationController
 
     if payload = session.delete(:sso_payload)
       sso_provider(payload)
-    else
-      render_serialized(user, UserSerializer)
     end
+    render_serialized(user, UserSerializer)
   end
 
 end

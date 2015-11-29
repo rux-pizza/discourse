@@ -370,7 +370,6 @@ ro:
       watched_categories: "Văzut"
       tracked_categories: "Tracked"
       muted_categories: "Muted"
-      muted_categories_instructions: "Nu vei fii notificat de dicuțiile apărute în aceste categorii și ele nu vor apărea în tabul necitite."
       delete_account: "Șterge-mi contul"
       delete_account_confirm: "Ești sigur că vrei sa ștergi contul? Această acțiune poate fi anulată!"
       deleted_yourself: "Contul tău a fost șters cu succes."
@@ -433,10 +432,6 @@ ro:
         ok: "Arată bine. Vă trimitem un email pentru confirmare."
         invalid: "introduceți o adresă validă pentru confirmare."
         authenticated: "Emailul dumneavoastră a fost autentificat de către {{provider}}."
-        frequency:
-          zero: "Vă vom trimite un email imediat dacă nu aţi citit încă ce v-am trimis."
-          one: "Va vom trimite un email dacă nu v-am văzut în ultimul minut."
-          other: "Va vom trimite un email doar dacă nu v-am văzut în ultimele {{count}} minute."
       name:
         title: "Nume"
         instructions: "Versiunea lungă a numelui."
@@ -689,7 +684,6 @@ ro:
       edit_reason_placeholder: "de ce editați?"
       show_edit_reason: "(adaugă motivul editării)"
       view_new_post: "Vizualizează noua postare."
-      saving: "Salvează..."
       saved: "Salvat!"
       saved_draft: "Ai o postare în stadiul neterminat. Fă click oriunde pentru a continua editarea."
       uploading: "Încarcă..."
@@ -716,8 +710,6 @@ ro:
       heading_title: "Titlu"
       heading_text: "Titlu"
       hr_title: "Regulă de ordonare orizontală"
-      undo_title: "Anulează schimbările"
-      redo_title: "Refă schimbările"
       help: "Ajutor de editare"
       toggler: "ascunde sau arată panelul de compus"
       admin_options_title: "Setări opționale ale discuției pentru moderatori"
@@ -761,7 +753,6 @@ ro:
       from_my_computer: "din dispozitivul meu"
       from_the_web: "De pe web"
       remote_tip: "adresă către imagine http://example.com/image.jpg"
-      remote_tip_with_attachments: "adresă către imagine sau fișier http://example.com/file.ext (extensii permise: {{authorized_extensions}})."
       hint: "(puteți să trageți și să aruncați în editor pentru a le încărca)"
       uploading: "Încarcă"
       image_link: "Adresa din imagine va duce la"
@@ -782,10 +773,6 @@ ro:
       bulk:
         reset_read: "resetează citirea"
         delete: "Șterge subiectele"
-        dismiss_posts: "Șterge postarea"
-        dismiss_posts_tooltip: "Șterge părțile necitite din această discuție dar continuă afișarea lor în lista de necitite când au loc postări noi"
-        dismiss_topics: "Sterge discuția"
-        dismiss_topics_tooltip: "Nu arăta aceste discuții în lista de necitite când au loc postări noi"
         dismiss_new: "Anulează cele noi"
         toggle: "activează selecția în masă pentru discuții"
         actions: "Acțiuni în masă"
@@ -919,7 +906,6 @@ ro:
           description: "Nu veţi fi niciodată notificat despre acest mesaj."
         muted:
           title: "Silențios"
-          description: "Nu veți fi notificat de nimic în legătură cu această dicuție, nu va apărea în tabul necitite."
       actions:
         recover: "Rescrie discuție"
         delete: "Șterge Discuție"
@@ -958,22 +944,12 @@ ro:
         confirm_pin: "Aveţi deja {{count}} discuţii promovate. Prea multe discuţii promovate pot fi deveni o problemă pentru utilizatorii noi sau anonimi. Sunteţi sigur că vrei să promovaţi o altă discuţie în această categorie?"
         unpin: "Îndepărtează aceast mesaje din top-ul categoriei {{categoryLink}}"
         pin_note: "Utilizatorii pot anula fixarea unui subiect individual pentru ei înșiși."
-        already_pinned:
-          zero: "Nu există subiecte fixate în {{categoryLink}}."
-          one: "Subiecte fixate în acest moment în {{categoryLink}}: <strong class='badge badge-notification unread'>1</strong>."
-          other: "Subiecte fixate în acest moment în {{categoryLink}}: <strong class='badge badge-notification unread'>{{count}}</strong>."
         confirm_pin_globally: "Aveţi deja {{count}} discuţii promovate la nivel global. Prea multe discuţii promovate pot fi deveni o problemă pentru utilizatorii noi sau anonimi. Sunteţi sigur că vrei să promovaţi o altă discuţie la nivel global?"
         unpin_globally: "Eliminați acest subiect din partea de sus a tuturor listelor de discuţii."
         global_pin_note: "Utilizatorii pot anula fixarea unui subiect individual pentru ei înșiși."
-        already_pinned_globally:
-          zero: "Nu există subiecte fixate global."
-          one: "Subiecte fixate în acest moment la nivel global: <strong class='badge badge-notification unread'>1</strong>."
-          other: "Subiecte fixate în acest moment la nivel global: <strong class='badge badge-notification unread'>{{count}}</strong>."
         make_banner: "Transformă acest subiect într-un banner care apare în partea de sus a tuturor paginilor."
         remove_banner: "Îndepărtaţi mesajul banner care apare în partea de sus a fiecărei pagini."
         banner_note: "Utilizatorii pot îndepărta baner-ul închizându-l. Doar un singur mesaj poate fi folosit că bane într-un moment dat."
-        already_banner:
-          zero: "Nu există nici un subiect banner."
       inviting: "Invită..."
       automatically_add_to_groups_optional: "Aceasta invitație include și accesul la grupurile: (opțional, doar admin)"
       automatically_add_to_groups_required: "Aceasta invitație include și accesul la grupurile: (<b>Neapărat</b>, doar admin)"
@@ -1222,10 +1198,6 @@ ro:
             one: "o persoană a votat pentru acest mesaj"
             few: "{{count}} persoane au votat pentru acest mesaj"
             other: "{{count}} persoane au votat pentru acest mesaj"
-      edits:
-        one: o editare
-        other: "{{count}} editari"
-        zero: nicio editare
       delete:
         confirm:
           one: "Sunteți sigur că vreți să ștergeți acest mesaj?"
@@ -1357,7 +1329,6 @@ ro:
         help: "Această discuţie va fi afişată în ordinea iniţială, nici un mesaj nu este promovat la inceputul listei."
       pinned_globally:
         title: "Fixată Global"
-        help: "Această discuție a fost fixată global; va fi afișată în capătul tuturor listelor"
       pinned:
         title: "Fixată"
         help: "Aceast mesaj va fi promovat. Va fi afişat la începutul discuţiei."
@@ -1412,23 +1383,9 @@ ro:
         title_in: "Categoria - {{categoryName}}"
         help: "toate discuțiile grupate pe categorii"
       unread:
-        title:
-          zero: "Necitite"
-          one: "(1) necitită"
-          other: "({{count}}) necitite"
         help: "discuțiile pe care le vizualizați sau urmariți momentan ce includ postări necitite"
-        lower_title_with_count:
-          one: "1 necitită"
-          other: "{{count}} necitite"
       new:
-        lower_title_with_count:
-          one: "o nouă"
-          other: "{{count}} noi"
         lower_title: "noi"
-        title:
-          zero: "Noi"
-          one: "o nouă"
-          other: "({{count}}) noi"
         help: "discuții create în ultimele zile"
       posted:
         title: "Postările mele"
@@ -1437,10 +1394,6 @@ ro:
         title: "Semne de carte"
         help: "discuții cu semne de carte"
       category:
-        title:
-          zero: "{{categoryName}}"
-          one: "{{categoryName}} (1)"
-          other: "{{categoryName}} ({{count}})"
         help: "discuțiile recente din categoria {{categoryName}}"
       top:
         title: "Top"
@@ -2181,10 +2134,6 @@ ro:
           error_help: "Vezi legăturile următoare pentru ajutor referitor la interogări pentru insigne."
           bad_count_warning:
             header: "ATENȚIE!"
-          grant_count:
-            zero: "Nu sunt insigne care pot fi asignate."
-            one: "<b>1</b> insignă  de alocat."
-            other: "<b>%{count}</b> insigne  de alocat."
           sample: "Specimen:"
           grant:
             with: <span class="username">%{username}</span>

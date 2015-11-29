@@ -14,15 +14,12 @@ window.Discourse = Ember.Application.createWithMixins(Discourse.Ajax, {
     if (!url) return url;
 
     // if it's a non relative URL, return it.
-    if (!/^\/[^\/]/.test(url)) return url;
+    if (url !== '/' && !/^\/[^\/]/.test(url)) return url;
 
-    var u = Discourse.BaseUri === undefined ? "/" : Discourse.BaseUri;
+    if (url.indexOf(Discourse.BaseUri) !== -1) return url;
+    if (url[0] !== "/") url = "/" + url;
 
-    if (u[u.length-1] === '/') u = u.substring(0, u.length-1);
-    if (url.indexOf(u) !== -1) return url;
-    if (u.length > 0  && url[0] !== "/") url = "/" + url;
-
-    return u + url;
+    return Discourse.BaseUri + url;
   },
 
   getURLWithCDN: function(url) {

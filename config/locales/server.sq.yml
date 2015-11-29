@@ -21,7 +21,7 @@ sq:
   purge_reason: "Automatically deleted as abandoned, unactivated account"
   disable_remote_images_download_reason: "Remote images download was disabled because there wasn't enough disk space available."
   anonymous: "Anonim"
-  errors:
+  errors: &errors
     format: '%{attribute} %{message}'
     messages:
       too_long_validation: "is limited to %{max} characters; you entered %{length}."
@@ -91,26 +91,6 @@ sq:
     replies:
       one: "1 përgjigje"
       other: "%{count} përgjigje"
-  too_many_mentions:
-    zero: "Na vjen keq, por s'mund të citosh anëtarë të tjerë."
-    one: "Na vjen keq, you can only mention one other user in a post."
-    other: "Na vjen keq, you can only mention %{count} users in a post."
-  too_many_mentions_newuser:
-    zero: "Sorry, new users can't mention other users."
-    one: "Na vjen keq, new users can only mention one other user in a post."
-    other: "Na vjen keq, new users can only mention %{count} users in a post."
-  too_many_images:
-    zero: "Na vjen keq, new users can't put images in posts."
-    one: "Na vjen keq, new users can only put one image in a post."
-    other: "Na vjen keq, new users can only put %{count} images in a post."
-  too_many_attachments:
-    zero: "Na vjen keq, new users can't put attachments in posts."
-    one: "Na vjen keq, new users can only put one attachment in a post."
-    other: "Na vjen keq, new users can only put %{count} attachments in a post."
-  too_many_links:
-    zero: "Na vjen keq, new users can't put links in posts."
-    one: "Na vjen keq, new users can only put one link in a post."
-    other: "Na vjen keq, new users can only put %{count} links in a post."
   spamming_host: "Na vjen keq, you cannot post a link to that host."
   user_is_suspended: "Suspended users are not allowed to post."
   topic_not_found: "Something has gone wrong. Perhaps this topic was closed or deleted while you were looking at it?"
@@ -219,9 +199,6 @@ sq:
       user_profile:
         bio_raw: "Rreth Meje"
     errors:
-      messages:
-        is_invalid: "is invalid; try to be a little more descriptive"
-        has_already_been_used: "është përdorur më parë"
       models:
         topic:
           attributes:
@@ -242,6 +219,7 @@ sq:
           attributes:
             hex:
               invalid: "nuk është një ngjyrë e vlefshme"
+      <<: *errors
   user_profile:
     no_info_me: "<div class='missing-profile'>the About Me field of your profile is currently blank, <a href='/users/%{username_lower}/preferences/about-me'>would you like to fill it out?</a></div>"
     no_info_other: "<div class='missing-profile'>%{name} hasn't entered anything in the About Me field of their profile yet</div>"
@@ -277,8 +255,6 @@ sq:
       [trust]: https://meta.discourse.org/t/what-do-user-trust-levels-do/4924
   category:
     topic_prefix: "Rreth kategorisë %{category}"
-    replace_paragraph: "[Replace this first paragraph with a short description of your new category. This guidance will appear in the category selection area, so try to keep it below 200 characters. Until you edit this text or create topics, this category won't appear on the categories page.]"
-    post_template: "%{replace_paragraph}\n\nUse the following paragraphs for a longer description, as well as to establish any category guidelines or rules.\n\nSome things to consider in any discussion replies below:\n\n- What is this category for? Why should people select this category for their topic?\n\n- How is this different than the other categories we already have?\n\n- Do we need this category?\n\n- Should we merge this with another category, or split it into more categories?\n"
     errors:
       uncategorized_parent: "Uncategorized can't have a parent category"
       self_parent: "A subcategory's parent cannot be itself"
@@ -422,7 +398,6 @@ sq:
       description: 'This post contains content that a reasonable person would consider offensive, abusive, or a violation of <a href="/guidelines">our community guidelines</a>.'
       long_form: 'flagged this as inappropriate'
     notify_user:
-      title: 'Mezazh @{{username}}'
       description: 'This post contains something I want to talk to this person directly and privately about. Does not cast a flag.'
       long_form: 'messaged user'
       email_title: 'Postimi juaj në "%{title}"'
@@ -700,7 +675,7 @@ sq:
     download_remote_images_to_local: "Convert remote images to local images by downloading them; this prevents broken images."
     download_remote_images_threshold: "Minimum disk space necessary to download remote images locally (in percent)"
     disabled_image_download_domains: "Remote images will never be downloaded from these domains. Pipe-delimited list."
-    ninja_edit_window: "For (n) seconds after posting, editing will not create a new version in the post history."
+    editing_grace_period: "For (n) seconds after posting, editing will not create a new version in the post history."
     post_edit_time_limit: "The author can edit or delete their post for (n) minutes after posting. Set to 0 for forever."
     edit_history_visible_to_public: "Allow everyone to see previous versions of an edited post. When disabled, only staff members can view."
     delete_removed_posts_after: "Posts removed by the author will be automatically deleted after (n) hours. If set to 0, posts will be deleted immediately."
@@ -729,7 +704,6 @@ sq:
     summary_likes_required: "Minimum likes in a topic before 'Summarize This Topic' is enabled"
     summary_percent_filter: "When a user clicks 'Summarize This Topic', show the top % of posts"
     summary_max_results: "Maximum posts returned by 'Summary This Topic'"
-    enable_private_messages: "Allow trust level 1 users to create messages and reply to messages"
     enable_long_polling: "Message bus used for notification can use long polling"
     long_polling_base_url: "Base URL used for long polling (when a CDN is serving dynamic content, be sure to set this to origin pull) eg: http://origin.site.com"
     long_polling_interval: "Amount of time the server should wait before responding to clients when there is no data to send (logged on users only)"
@@ -2122,3 +2096,6 @@ sq:
   performance_report:
     initial_post_raw: This topic includes daily performance reports for your site.
     initial_topic_title: Raportet e performancës se faqes
+  activemodel:
+    errors:
+      <<: *errors

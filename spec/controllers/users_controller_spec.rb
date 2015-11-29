@@ -3,71 +3,93 @@ require 'spec_helper'
 describe UsersController do
 
   describe '.show' do
-    let(:user) { log_in }
 
-    it 'returns success' do
-      xhr :get, :show, username: user.username, format: :json
-      expect(response).to be_success
-      json = JSON.parse(response.body)
+    context "anon" do
 
-      expect(json["user"]["has_title_badges"]).to eq(false)
+      let(:user) { Discourse.system_user }
 
-    end
-
-    it "returns not found when the username doesn't exist" do
-      xhr :get, :show, username: 'madeuppity'
-      expect(response).not_to be_success
-    end
-
-    it 'returns not found when the user is inactive' do
-      inactive = Fabricate(:user, active: false)
-      xhr :get, :show, username: inactive.username
-      expect(response).not_to be_success
-    end
-
-    it "raises an error on invalid access" do
-      Guardian.any_instance.expects(:can_see?).with(user).returns(false)
-      xhr :get, :show, username: user.username
-      expect(response).to be_forbidden
-    end
-
-    describe "user profile views" do
-      let(:other_user) { Fabricate(:user) }
-
-      it "should track a user profile view for a signed in user" do
-        UserProfileView.expects(:add).with(other_user.user_profile.id, request.remote_ip, user.id)
-        xhr :get, :show, username: other_user.username
-      end
-
-      it "should not track a user profile view for a user viewing his own profile" do
-        UserProfileView.expects(:add).never
-        xhr :get, :show, username: user.username
-      end
-
-      it "should track a user profile view for an anon user" do
-        UserProfileView.expects(:add).with(other_user.user_profile.id, request.remote_ip, nil)
-        xhr :get, :show, username: other_user.username
-      end
-
-      it "skips tracking" do
-        UserProfileView.expects(:add).never
-        xhr :get, :show, { username: user.username, skip_track_visit: true }
-      end
-    end
-
-    context "fetching a user by external_id" do
-      before { user.create_single_sign_on_record(external_id: '997', last_payload: '') }
-
-      it "returns fetch for a matching external_id" do
-        xhr :get, :show, external_id: '997'
+      it "returns success" do
+        xhr :get, :show, username: user.username, format: :json
         expect(response).to be_success
       end
 
-      it "returns not found when external_id doesn't match" do
-        xhr :get, :show, external_id: '99'
+      it "raises an error for anon when profiles are hidden" do
+        SiteSetting.stubs(:hide_user_profiles_from_public).returns(true)
+        xhr :get, :show, username: user.username, format: :json
         expect(response).not_to be_success
       end
+
     end
+
+    context "logged in" do
+
+      let(:user) { log_in }
+
+      it 'returns success' do
+        xhr :get, :show, username: user.username, format: :json
+        expect(response).to be_success
+        json = JSON.parse(response.body)
+
+        expect(json["user"]["has_title_badges"]).to eq(false)
+      end
+
+      it "returns not found when the username doesn't exist" do
+        xhr :get, :show, username: 'madeuppity'
+        expect(response).not_to be_success
+      end
+
+      it 'returns not found when the user is inactive' do
+        inactive = Fabricate(:user, active: false)
+        xhr :get, :show, username: inactive.username
+        expect(response).not_to be_success
+      end
+
+      it "raises an error on invalid access" do
+        Guardian.any_instance.expects(:can_see?).with(user).returns(false)
+        xhr :get, :show, username: user.username
+        expect(response).to be_forbidden
+      end
+
+      describe "user profile views" do
+        let(:other_user) { Fabricate(:user) }
+
+        it "should track a user profile view for a signed in user" do
+          UserProfileView.expects(:add).with(other_user.user_profile.id, request.remote_ip, user.id)
+          xhr :get, :show, username: other_user.username
+        end
+
+        it "should not track a user profile view for a user viewing his own profile" do
+          UserProfileView.expects(:add).never
+          xhr :get, :show, username: user.username
+        end
+
+        it "should track a user profile view for an anon user" do
+          UserProfileView.expects(:add).with(other_user.user_profile.id, request.remote_ip, nil)
+          xhr :get, :show, username: other_user.username
+        end
+
+        it "skips tracking" do
+          UserProfileView.expects(:add).never
+          xhr :get, :show, { username: user.username, skip_track_visit: true }
+        end
+      end
+
+      context "fetching a user by external_id" do
+        before { user.create_single_sign_on_record(external_id: '997', last_payload: '') }
+
+        it "returns fetch for a matching external_id" do
+          xhr :get, :show, external_id: '997'
+          expect(response).to be_success
+        end
+
+        it "returns not found when external_id doesn't match" do
+          xhr :get, :show, external_id: '99'
+          expect(response).not_to be_success
+        end
+      end
+
+    end
+
   end
 
   describe '.user_preferences_redirect' do
@@ -724,6 +746,17 @@ describe UsersController do
       end
     end
 
+    context "when taking over a staged account" do
+      let!(:staged) { Fabricate(:staged, email: "staged@account.com") }
+
+      it "succeeds" do
+        xhr :post, :create, email: staged.email, username: "zogstrip", password: "P4ssw0rd"
+        result = ::JSON.parse(response.body)
+        expect(result["success"]).to eq(true)
+        expect(User.find_by(email: staged.email).staged).to eq(false)
+      end
+    end
+
   end
 
   context '.username' do
@@ -1341,6 +1374,18 @@ describe UsersController do
         expect(response).to be_forbidden
       end
 
+      it "raises an error when sso_overrides_avatar is disabled" do
+        SiteSetting.stubs(:sso_overrides_avatar).returns(true)
+        xhr :put, :pick_avatar, username: user.username, upload_id: upload.id, type: "custom"
+        expect(response).to_not be_success
+      end
+
+      it "raises an error when selecting the custom/uploaded avatar and allow_uploaded_avatars is disabled" do
+        SiteSetting.stubs(:allow_uploaded_avatars).returns(false)
+        xhr :put, :pick_avatar, username: user.username, upload_id: upload.id, type: "custom"
+        expect(response).to_not be_success
+      end
+
       it 'can successfully pick the system avatar' do
         xhr :put, :pick_avatar, username: user.username
         expect(response).to be_success
@@ -1490,6 +1535,34 @@ describe UsersController do
         expect(json["associated_accounts"]).to be_present
       end
 
+    end
+
+  end
+
+  describe ".is_local_username" do
+
+    let(:user) { Fabricate(:user) }
+
+    it "finds the user" do
+      xhr :get, :is_local_username, username: user.username
+      expect(response).to be_success
+      json = JSON.parse(response.body)
+      expect(json["valid"][0]).to eq(user.username)
+    end
+
+    it "supports multiples usernames" do
+      xhr :get, :is_local_username, usernames: [user.username, "system"]
+      expect(response).to be_success
+      json = JSON.parse(response.body)
+      expect(json["valid"].size).to eq(2)
+    end
+
+    it "never includes staged accounts" do
+      staged = Fabricate(:user, staged: true)
+      xhr :get, :is_local_username, usernames: [staged.username]
+      expect(response).to be_success
+      json = JSON.parse(response.body)
+      expect(json["valid"].size).to eq(0)
     end
 
   end

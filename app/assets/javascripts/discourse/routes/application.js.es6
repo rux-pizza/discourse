@@ -89,13 +89,11 @@ const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
     },
 
     showNotActivated(props) {
-      const controller = showModal('not-activated', {title: 'log_in' });
-      controller.setProperties(props);
+      showModal('not-activated', {title: 'log_in' }).setProperties(props);
     },
 
-    showUploadSelector(composerView) {
-      showModal('uploadSelector');
-      this.controllerFor('upload-selector').setProperties({ composerView: composerView });
+    showUploadSelector(toolbarEvent) {
+      showModal('uploadSelector').setProperties({ toolbarEvent, imageUrl: null, imageLink: null });
     },
 
     showKeyboardShortcutsHelp() {
@@ -147,7 +145,11 @@ const ApplicationRoute = Discourse.Route.extend(OpenComposer, {
     },
 
     createNewTopicViaParams(title, body, category_id, category) {
-      this.openComposerWithParams(this.controllerFor('discovery/topics'), title, body, category_id, category);
+      this.openComposerWithTopicParams(this.controllerFor('discovery/topics'), title, body, category_id, category);
+    },
+
+    createNewMessageViaParams(username, title, body) {
+      this.openComposerWithMessageParams(username, title, body);
     }
   },
 

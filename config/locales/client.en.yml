@@ -153,7 +153,6 @@ en:
     sign_up: "Sign Up"
     log_in: "Log In"
     age: "Age"
-    last_post: "Last Post"
     joined: "Joined"
     admin_title: "Admin"
     flags_title: "Flags"
@@ -331,6 +330,9 @@ en:
         other: "%{count} users"
 
     groups:
+      add: "Add"
+      selector_placeholder: "Add members"
+      owner: "owner"
       visible: "Group is visible to all users"
       title:
         one: "group"
@@ -470,6 +472,8 @@ en:
       users: "Users"
       muted_users: "Muted"
       muted_users_instructions: "Suppress all notifications from these users."
+      muted_topics_link: "Show muted topics"
+      automatically_unpin_topics: "Automatically unpin topics when you reach the bottom."
 
       staff_counters:
         flags_given: "helpful flags"
@@ -534,8 +538,8 @@ en:
         ok: "We will email you to confirm"
         invalid: "Please enter a valid email address"
         authenticated: "Your email has been authenticated by {{provider}}"
+        frequency_immediately: "We'll email you immediately if you haven't read the thing we're emailing you about."
         frequency:
-          zero: "We'll email you immediately if you haven't read the thing we're emailing you about."
           one: "We'll only email you if we haven't seen you in the last minute."
           other: "We'll only email you if we haven't seen you in the last {{count}} minutes."
 
@@ -735,14 +739,6 @@ en:
       hidden_for_session: "OK, I'll ask you tomorrow. You can always use 'Log In' to create an account, too."
       intro: "Hey there! :heart_eyes: Looks like you're enjoying the discussion, but you're not signed up for an account."
       value_prop: "When you create an account, we remember exactly what you've read, so you always come right back where you left off. You also get notifications, here and via email, whenever new posts are made. And you can like posts to share the love. :heartbeat:"
-      methods:
-        sso: "Signing up is easy: all you need is an account on the main site."
-        only_email: "Signing up is easy: all you need is an email and password."
-        only_other: "Use your %{provider} account to sign up."
-        one_and_email: "Use your %{provider} account, or an email and password, to sign up."
-        multiple_no_email: "Signing up is easy: use any of our %{count} social logins."
-        multiple: "Signing up is easy: use any of our %{count} social logins, or an email and password."
-        unknown: "error getting supported login methods"
 
     summary:
       enabled_description: "You're viewing a summary of this topic: the most interesting posts as determined by the community."
@@ -834,6 +830,11 @@ en:
     twitter: "Twitter"
     emoji_one: "Emoji One"
 
+    shortcut_modifier_key:
+      shift: 'Shift'
+      ctrl: 'Ctrl'
+      alt: 'Alt'
+
     composer:
       emoji: "Emoji :smile:"
       more_emoji: "more..."
@@ -889,6 +890,7 @@ en:
       link_description: "enter link description here"
       link_dialog_title: "Insert Hyperlink"
       link_optional_text: "optional title"
+      link_placeholder: "http://example.com \"optional text\""
       quote_title: "Blockquote"
       quote_text: "Blockquote"
       code_title: "Preformatted text"
@@ -901,10 +903,11 @@ en:
       heading_title: "Heading"
       heading_text: "Heading"
       hr_title: "Horizontal Rule"
-      undo_title: "Undo"
-      redo_title: "Redo"
       help: "Markdown Editing Help"
       toggler: "hide or show the composer panel"
+      modal_ok: "OK"
+      modal_cancel: "Cancel"
+      cant_send_pm: "Sorry, you can't send a message to %{username}."
 
       admin_options_title: "Optional staff settings for this topic"
       auto_close:
@@ -966,9 +969,9 @@ en:
       from_my_computer: "From my device"
       from_the_web: "From the web"
       remote_tip: "link to image"
-      remote_tip_with_attachments: "link to image or file ({{authorized_extensions}})"
+      remote_tip_with_attachments: "link to image or file {{authorized_extensions}}"
       local_tip: "select images from your device"
-      local_tip_with_attachments: "select images or files from your device ({{authorized_extensions}})"
+      local_tip_with_attachments: "select images or files from your device {{authorized_extensions}}"
       hint: "(you can also drag & drop into the editor to upload them)"
       hint_for_supported_browsers: "you can also drag and drop or paste images into the editor"
       uploading: "Uploading"
@@ -1007,12 +1010,14 @@ en:
 
     topics:
       bulk:
+        unlist_topics: "Unlist Topics"
         reset_read: "Reset Read"
         delete: "Delete Topics"
-        dismiss_posts: "Dismiss Posts"
-        dismiss_posts_tooltip: "Clear unread counts on these topics but continue to show them on my unread list when new posts are made"
-        dismiss_topics: "Dismiss Topics"
-        dismiss_topics_tooltip: "Stop showing these topics in my unread list when new posts are made"
+        dismiss: "Dismiss"
+        dismiss_read: "Dismiss all unread"
+        dismiss_button: "Dismiss…"
+        dismiss_tooltip: "Dismiss just new posts or stop tracking topics"
+        also_dismiss_topics: "Stop tracking these topics? (Topics will no longer appear in the unread tab)"
         dismiss_new: "Dismiss New"
         toggle: "toggle bulk selection of topics"
         actions: "Bulk Actions"
@@ -1227,25 +1232,24 @@ en:
         unpin_until: "Remove this topic from the top of the {{categoryLink}} category or wait until <strong>%{until}</strong>."
         pin_note: "Users can unpin the topic individually for themselves."
         pin_validation: "A date is required to pin this topic."
+        not_pinned: "There are no topics pinned in {{categoryLink}}."
         already_pinned:
-          zero: "There are no topics pinned in {{categoryLink}}."
-          one: "Topics currently pinned in {{categoryLink}}: <strong class='badge badge-notification unread'>1</strong>."
-          other: "Topics currently pinned in {{categoryLink}}: <strong class='badge badge-notification unread'>{{count}}</strong>."
+          one: "Topics currently pinned in {{categoryLink}}: <strong class='badge badge-notification unread'>1</strong>"
+          other: "Topics currently pinned in {{categoryLink}}: <strong class='badge badge-notification unread'>{{count}}</strong>"
         pin_globally: "Make this topic appear at the top of all topic lists until"
         confirm_pin_globally: "You already have {{count}} globally pinned topics. Too many pinned topics may be a burden for new and anonymous users. Are you sure you want to pin another topic globally?"
         unpin_globally: "Remove this topic from the top of all topic lists."
         unpin_globally_until: "Remove this topic from the top of all topic lists or wait until <strong>%{until}</strong>."
         global_pin_note: "Users can unpin the topic individually for themselves."
+        not_pinned_globally: "There are no topics pinned globally."
         already_pinned_globally:
-          zero: "There are no topics pinned globally."
-          one: "Topics currently pinned globally: <strong class='badge badge-notification unread'>1</strong>."
-          other: "Topics currently pinned globally: <strong class='badge badge-notification unread'>{{count}}</strong>."
+          one: "Topics currently pinned globally: <strong class='badge badge-notification unread'>1</strong>"
+          other: "Topics currently pinned globally: <strong class='badge badge-notification unread'>{{count}}</strong>"
         make_banner: "Make this topic into a banner that appears at the top of all pages."
         remove_banner: "Remove the banner that appears at the top of all pages."
         banner_note: "Users can dismiss the banner by closing it. Only one topic can be bannered at any given time."
-        already_banner:
-          zero: "There is no banner topic."
-          one: "There <strong class='badge badge-notification unread'>is</strong> currently a banner topic."
+        no_banner_exists: "There is no banner topic."
+        banner_exists: "There <strong class='badge badge-notification unread'>is</strong> currently a banner topic."
 
       inviting: "Inviting..."
       automatically_add_to_groups_optional: "This invite also includes access to these groups: (optional, admin only)"
@@ -1366,10 +1370,10 @@ en:
         one: "1 person gave this post a fuck"
         other: "{{count}} people gave this post a fuck"
 
+      has_likes_title_only_you: "you liked this post"
       has_likes_title_you:
-        zero: "you gave this post a fuck"
-        one: "you and 1 other person gave this post a fuck"
-        other: "you and {{count}} other people gave this post a fuck"
+        one: "you and 1 other person gave a fuck"
+        other: "you and {{count}} other people gave a fuck"
 
       errors:
         create: "Sorry, there was an error creating your post. Please try again."
@@ -1517,11 +1521,6 @@ en:
             one: "1 person voted for this post"
             other: "{{count}} people voted for this post"
 
-      edits:
-        one: 1 edit
-        other: "{{count}} edits"
-        zero: no edits
-
       delete:
         confirm:
           one: "Are you sure you want to delete that post?"
@@ -1591,6 +1590,7 @@ en:
       email_in_allow_strangers: "Accept emails from anonymous users with no accounts"
       email_in_disabled: "Posting new topics via email is disabled in the Site Settings. To enable posting new topics via email, "
       email_in_disabled_click: 'enable the "email in" setting.'
+      contains_messages: "Change this category to only contain messages."
       suppress_from_homepage: "Suppress this category from the homepage."
       allow_badges_label: "Allow badges to be awarded in this category"
       edit_permissions: "Edit Permissions"
@@ -1602,8 +1602,6 @@ en:
       position_disabled_click: 'enable the "fixed category positions" setting.'
       parent: "Parent Category"
       notifications:
-        title: ''
-        reasons:
         watching:
           title: "Watching"
           description: "You will automatically watch all new topics in these categories. You will be notified of every new post in every topic, and a count of new replies will be shown."
@@ -1631,6 +1629,7 @@ en:
       submit_tooltip: "Submit the private flag"
       take_action_tooltip: "Reach the flag threshold immediately, rather than waiting for more community flags"
       cant: "Sorry, you can't flag this post at this time."
+      notify_staff: 'Notify Staff'
       formatted_name:
         off_topic: "It's Off-Topic"
         inappropriate: "It's Inappropriate"
@@ -1719,8 +1718,8 @@ en:
       with_topics: "%{filter} topics"
       with_category: "%{filter} %{category} topics"
       latest:
-        title:
-          zero: "Latest"
+        title: "Latest"
+        title_with_count:
           one: "Latest (1)"
           other: "Latest ({{count}})"
         help: "topics with recent posts"
@@ -1738,23 +1737,21 @@ en:
         title_in: "Category - {{categoryName}}"
         help: "all topics grouped by category"
       unread:
-        title:
-          zero: "Unread"
+        title: "Unread"
+        title_with_count:
           one: "Unread (1)"
           other: "Unread ({{count}})"
         help: "topics you are currently watching or tracking with unread posts"
         lower_title_with_count:
-          zero: ""
           one: "1 unread"
           other: "{{count}} unread"
       new:
         lower_title_with_count:
-          zero: ""
           one: "1 new"
           other: "{{count}} new"
         lower_title: "new"
-        title:
-          zero: "New"
+        title: "New"
+        title_with_count:
           one: "New (1)"
           other: "New ({{count}})"
         help: "topics created in the last few days"
@@ -1765,8 +1762,8 @@ en:
         title: "Bookmarks"
         help: "topics you have bookmarked"
       category:
-        title:
-          zero: "{{categoryName}}"
+        title: "{{categoryName}}"
+        title_with_count:
           one: "{{categoryName}} (1)"
           other: "{{categoryName}} ({{count}})"
         help: "latest topics in the {{categoryName}} category"
@@ -1942,15 +1939,23 @@ en:
         delete_confirm: "Delete this group?"
         delete_failed: "Unable to delete group. If this is an automatic group, it cannot be destroyed."
         delete_member_confirm: "Remove '%{username}' from the '%{group}' group?"
+        delete_owner_confirm: "Remove owner privilege for '%{username}'?"
         name: "Name"
         add: "Add"
         add_members: "Add members"
         custom: "Custom"
+        bulk_complete: "The users have been added to the group."
+        bulk: "Bulk Add to Group"
+        bulk_paste: "Paste a list of usernames or emails, one per line:"
+        bulk_select: "(select a group)"
         automatic: "Automatic"
         automatic_membership_email_domains: "Users who register with an email domain that exactly matches one in this list will be automatically added to this group:"
         automatic_membership_retroactive: "Apply the same email domain rule to add existing registered users"
         default_title: "Default title for all users in this group"
         primary_group: "Automatically set as primary group"
+        group_owners: Owners
+        add_owners: Add owners
+
 
       api:
         generate_master: "Generate Master API Key"
@@ -2085,6 +2090,15 @@ en:
         color: "Color"
         opacity: "Opacity"
         copy: "Copy"
+        email_templates:
+          title: "Email Templates"
+          subject: "Subject"
+          multiple_subjects: "This email template has multiple subjects."
+          body: "Body"
+          none_selected: "Select an email template to begin editing."
+          revert: "Revert Changes"
+          revert_confirm: "Are you sure you want to revert your changes?"
+
         css_html:
           title: "CSS/HTML"
           long_title: "CSS and HTML Customizations"
@@ -2292,9 +2306,9 @@ en:
           pending: 'Users Pending Review'
           newuser: 'Users at Trust Level 0 (New User)'
           basic: 'Users at Trust Level 1 (Basic User)'
-          regular: 'Users at Trust Level 2 (Member)'
-          leader: 'Users at Trust Level 3 (Regular)'
-          elder: 'Users at Trust Level 4 (Leader)'
+          member: 'Users at Trust Level 2 (Member)'
+          regular: 'Users at Trust Level 3 (Regular)'
+          leader: 'Users at Trust Level 4 (Leader)'
           staff: "Staff"
           admins: 'Admin Users'
           moderators: 'Moderators'
@@ -2469,8 +2483,14 @@ en:
           dropdown: "Dropdown"
 
       site_text:
-        none: "Choose a type of content to begin editing."
+        description: "You can customize any of the text on your forum. Please start by searching below:"
+        search: "Search for the text you'd like to edit"
         title: 'Text Content'
+        edit: 'edit'
+        revert: "Revert Changes"
+        revert_confirm: "Are you sure you want to revert your changes?"
+        go_back: "Back to Search"
+        recommended: "We recommend customizing the following text to suit your needs:"
 
       site_settings:
         show_overriden: 'Only show overridden'
@@ -2560,8 +2580,8 @@ en:
           bad_count_warning:
             header: "WARNING!"
             text: "There are missing grant samples. This happens when the badge query returns user IDs or post IDs that do not exist. This may cause unexpected results later on - please double-check your query."
+          no_grant_count: "No badges to be assigned."
           grant_count:
-            zero: "No badges to be assigned."
             one: "<b>1</b> badge to be assigned."
             other: "<b>%{count}</b> badges to be assigned."
           sample: "Sample:"
@@ -2599,9 +2619,7 @@ en:
         embed_username_key_from_feed: "Key to pull discourse username from feed"
         embed_truncate: "Truncate the embedded posts"
         embed_whitelist_selector: "CSS selector for elements that are allowed in embeds"
-        whitelist_example: "article, #story, .post"
         embed_blacklist_selector: "CSS selector for elements that are removed from embeds"
-        blacklist_example: ".ad-unit, header"
         feed_polling_enabled: "Import posts via RSS/ATOM"
         feed_polling_url: "URL of RSS/ATOM feed to crawl"
         save: "Save Embedding Settings"

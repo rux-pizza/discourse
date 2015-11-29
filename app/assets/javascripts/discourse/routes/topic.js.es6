@@ -43,7 +43,7 @@ const TopicRoute = Discourse.Route.extend({
 
     showFlags(model) {
       showModal('flag', { model });
-      this.controllerFor('flag').setProperties({ selected: null });
+      this.controllerFor('flag').setProperties({ selected: null, flagTopic: false });
     },
 
     showFlagTopic(model) {
@@ -97,7 +97,7 @@ const TopicRoute = Discourse.Route.extend({
     // Use replaceState to update the URL once it changes
     postChangedRoute(currentPost) {
       // do nothing if we are transitioning to another route
-      if (isTransitioning || Discourse.TopicRoute.disableReplaceState) { return; }
+      if (isTransitioning || TopicRoute.disableReplaceState) { return; }
 
       const topic = this.modelFor('topic');
       if (topic && currentPost) {
@@ -205,7 +205,7 @@ const TopicRoute = Discourse.Route.extend({
       firstPostExpanded: false
     });
 
-    Discourse.TopicRoute.trigger('setupTopicController', this);
+    TopicRoute.trigger('setupTopicController', this);
 
     this.controllerFor('header').setProperties({ topic: model, showExtraInfo: false });
     this.searchService.set('searchContext', model.get('searchContext'));

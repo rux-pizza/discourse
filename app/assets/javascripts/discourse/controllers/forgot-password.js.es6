@@ -17,7 +17,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
       var success = function(data) {
         // don't tell people what happened, this keeps it more secure (ensure same on server)
-        var escaped = Handlebars.Utils.escapeExpression(self.get('accountEmailOrUsername'));
+        var escaped = Discourse.Utilities.escapeExpression(self.get('accountEmailOrUsername'));
         var isEmail = self.get('accountEmailOrUsername').match(/@/);
 
         var key = 'forgot_password.complete_' + (isEmail ? 'email' : 'username');
@@ -25,14 +25,17 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
         if (data.user_found === true) {
           key += '_found';
-        }
+          self.set('accountEmailOrUsername', '');
+          bootbox.alert(I18n.t(key, {email: escaped, username: escaped}));
+          self.send("closeModal");
+        } else {
+          if (data.user_found === false) {
+            key += '_not_found';
+            extraClass = 'error';
+          }
 
-        if (data.user_found === false) {
-          key += '_not_found';
-          extraClass = 'error';
+          self.flash(I18n.t(key, {email: escaped, username: escaped}), extraClass);
         }
-
-        self.flash(I18n.t(key, {email: escaped, username: escaped}), extraClass);
       };
 
       var fail = function(e) {

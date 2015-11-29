@@ -3,9 +3,9 @@ import SelectedPostsCount from 'discourse/mixins/selected-posts-count';
 import { spinnerHTML } from 'discourse/helpers/loading-spinner';
 import Topic from 'discourse/models/topic';
 import Quote from 'discourse/lib/quote';
-import { setting } from 'discourse/lib/computed';
 import { popupAjaxError } from 'discourse/lib/ajax-error';
 import computed from 'ember-addons/ember-computed-decorators';
+import Composer from 'discourse/models/composer';
 
 export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   needs: ['header', 'modal', 'composer', 'quote-button', 'topic-progress', 'application'],
@@ -23,8 +23,6 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
 
   showRecover: Em.computed.and('model.deleted', 'model.details.can_recover'),
   isFeatured: Em.computed.or("model.pinned_at", "model.isBanner"),
-
-  maxTitleLength: setting('max_topic_title_length'),
 
   _titleChanged: function() {
     const title = this.get('model.title');
@@ -80,6 +78,13 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     this.set('selectedReplies', []);
   }.on('init'),
 
+  @computed("model.isPrivateMessage", "model.category_id")
+  showCategoryChooser(isPrivateMessage, categoryId) {
+    const category = Discourse.Category.findById(categoryId);
+    const containsMessages = category && category.get("contains_messages");
+    return !isPrivateMessage && !containsMessages;
+  },
+
   actions: {
     showTopicAdminMenu() {
       this.set('adminMenuVisible', true);
@@ -103,14 +108,14 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       quoteController.set('buffer', '');
 
       if (composerController.get('content.topic.id') === topic.get('id') &&
-          composerController.get('content.action') === Discourse.Composer.REPLY) {
+          composerController.get('content.action') === Composer.REPLY) {
         composerController.set('content.post', post);
-        composerController.set('content.composeState', Discourse.Composer.OPEN);
-        composerController.appendText(quotedText);
+        composerController.set('content.composeState', Composer.OPEN);
+        this.appEvents.trigger('composer:insert-text', quotedText.trim());
       } else {
 
         const opts = {
-          action: Discourse.Composer.REPLY,
+          action: Composer.REPLY,
           draftKey: topic.get('draft_key'),
           draftSequence: topic.get('draft_sequence')
         };
@@ -153,7 +158,7 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       if (user.get('staff') && replyCount > 0) {
         bootbox.dialog(I18n.t("post.controls.delete_replies.confirm", {count: replyCount}), [
           {label: I18n.t("cancel"),
-           'class': 'btn-danger rightg'},
+           'class': 'btn-danger right'},
           {label: I18n.t("post.controls.delete_replies.no_value"),
             callback() {
               post.destroy(user);
@@ -188,7 +193,7 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
             composerModel = composer.get('model'),
             opts = {
               post: post,
-              action: Discourse.Composer.EDIT,
+              action: Composer.EDIT,
               draftKey: post.get('topic.draft_key'),
               draftSequence: post.get('topic.draft_sequence')
             };
@@ -374,10 +379,11 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
 
     togglePinnedForUser() {
       if (this.get('model.pinned_at')) {
-        if (this.get('pinned')) {
-          this.get('content').clearPin();
+        const topic = this.get('content');
+        if (topic.get('pinned')) {
+          topic.clearPin();
         } else {
-          this.get('content').rePin();
+          topic.rePin();
         }
       }
     },
@@ -391,15 +397,16 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       quoteController.deselectText();
 
       composerController.open({
-        action: Discourse.Composer.CREATE_TOPIC,
-        draftKey: Discourse.Composer.REPLY_AS_NEW_TOPIC_KEY,
+        action: Composer.CREATE_TOPIC,
+        draftKey: Composer.REPLY_AS_NEW_TOPIC_KEY,
         categoryId: this.get('category.id')
       }).then(() => {
         return Em.isEmpty(quotedText) ? Discourse.Post.loadQuote(post.get('id')) : quotedText;
       }).then(q => {
-        const postUrl = `${location.protocol}//${location.host}${post.get('url')}`,
-              postLink = `[${Handlebars.escapeExpression(self.get('model.title'))}](${postUrl})`;
-        composerController.appendText(`${I18n.t("post.continue_discussion", { postLink })}\n\n${q}`);
+        const postUrl = `${location.protocol}//${location.host}${post.get('url')}`;
+        const postLink = `[${Handlebars.escapeExpression(self.get('model.title'))}](${postUrl})`;
+
+        this.appEvents.trigger('composer:insert-text', `${I18n.t("post.continue_discussion", { postLink })}\n\n${q}`);
       });
     },
 
@@ -630,20 +637,29 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   }.observes('model.currentPost'),
 
   readPosts(topicId, postNumbers) {
-    const postStream = this.get('model.postStream');
+    const topic = this.get("model"),
+          postStream = topic.get("postStream");
 
-    if (postStream.get('topic.id') === topicId){
-      _.each(postStream.get('posts'), function(post){
-        // optimise heavy loop
-        // TODO identity map for postNumber
-        if(_.include(postNumbers,post.post_number) && !post.read){
+    if (topic.get("id") === topicId) {
+      // TODO identity map for postNumber
+      _.each(postStream.get('posts'), post => {
+        if (_.include(postNumbers, post.post_number) && !post.read) {
           post.set("read", true);
         }
       });
 
       const max = _.max(postNumbers);
-      if(max > this.get('model.last_read_post_number')){
-        this.set('model.last_read_post_number', max);
+      if (max > topic.get("last_read_post_number")) {
+        topic.set("last_read_post_number", max);
+      }
+
+      if (this.siteSettings.automatically_unpin_topics &&
+          this.currentUser &&
+          this.currentUser.automatically_unpin_topics) {
+        // automatically unpin topics when the user reaches the bottom
+        if (topic.get("pinned") && max >= topic.get("highest_post_number")) {
+          Em.run.next(() => topic.clearPin());
+        }
       }
     }
   },

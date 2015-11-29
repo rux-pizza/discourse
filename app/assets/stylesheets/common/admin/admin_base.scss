@@ -43,6 +43,59 @@ td.flaggers td {
   border-top: none;
 }
 
+.site-texts {
+  .search-area {
+    margin-bottom: 2em;
+    p {
+      margin-top: 0;
+    }
+
+    input {
+      padding: 0.5em;
+      font-size: 1em;
+      width: 50%;
+    }
+  }
+  .text-highlight {
+    font-weight: bold;
+  }
+
+  .site-text {
+    cursor: pointer;
+    border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
+    margin-bottom: 0.5em;
+
+    h3 {
+      font-weight: normal;
+      font-size: 1.1em;
+    }
+
+    button.edit {
+      float: right;
+    }
+    .site-text-value {
+      margin: 0.5em 5em 0.5em 0;
+      max-height: 100px;
+      color: dark-light-diff($primary, $secondary, 40%, -10%);
+    }
+
+  }
+
+  .edit-site-text {
+    textarea {
+      width: 80%;
+    }
+
+    .save-messages, .title {
+      margin-bottom: 1em;
+    }
+
+    .go-back {
+      margin-top: 1em;
+    }
+  }
+}
+
 .content-list li a span.count {
   font-size: 0.857em;
   float: right;
@@ -122,6 +175,10 @@ td.flaggers td {
 
 .admin-container .controls {
   @include clearfix;
+
+  .save-messages {
+    margin-top: 1em;
+  }
 }
 
 .admin-title {
@@ -213,6 +270,19 @@ td.flaggers td {
     display: inline-block;
     margin-right: 5px;
   }
+  #last-seen {
+    float: none;
+  }
+  .ac-wrap {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0;
+  }
+}
+
+.paste-users {
+  width: 400px;
+  height: 150px;
 }
 
 .groups, .badges {
@@ -1015,6 +1085,11 @@ table.api-keys {
   }
 }
 
+.groups-bulk {
+  .control {
+    margin-bottom: 1em;
+  }
+}
 
 .commits-widget {
   border: solid 1px dark-light-diff($primary, $secondary, 90%, -60%);
@@ -1165,16 +1240,12 @@ table.api-keys {
     margin-top: 10px;
   }
 
-  .pagedown-editor {
-    width: 98%;
-  }
-
   textarea.plain {
     width: 98%;
     height: 200px;
   }
 
-  .wmd-input {
+  .d-editor-input {
     width: 98%;
     height: 200px;
   }
@@ -1192,6 +1263,16 @@ table.api-keys {
     bottom: 0;
   }
 
+}
+
+.email-template {
+  input {
+    width: 100%;
+  }
+
+  label {
+    font-weight: bold;
+  }
 }
 
 .row.groups {
@@ -1478,9 +1559,6 @@ and (max-width : 500px) {
 
   .content-editor {
     width: 100%;
-      .pagedown-editor {
-        box-sizing: border-box;
-      }
   }
 
   div.ac-wrap {

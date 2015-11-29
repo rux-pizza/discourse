@@ -85,11 +85,35 @@ describe Search do
       expect(result.users.length).to eq(1)
       expect(result.users[0].id).to eq(user.id)
     end
+
+    context 'hiding user profiles' do
+      before { SiteSetting.stubs(:hide_user_profiles_from_public).returns(true) }
+
+      it 'returns no result for anon' do
+        expect(result.users.length).to eq(0)
+      end
+
+      it 'returns a result for logged in users' do
+        result = Search.execute('bruce', type_filter: 'user', guardian: Guardian.new(user))
+        expect(result.users.length).to eq(1)
+      end
+
+    end
+
   end
 
   context 'inactive users' do
     let!(:inactive_user) { Fabricate(:inactive_user, active: false) }
     let(:result) { Search.execute('bruce') }
+
+    it 'does not return a result' do
+      expect(result.users.length).to eq(0)
+    end
+  end
+
+  context 'staged users' do
+    let(:staged) { Fabricate(:staged) }
+    let(:result) { Search.execute(staged.username) }
 
     it 'does not return a result' do
       expect(result.users.length).to eq(0)
@@ -118,7 +142,6 @@ describe Search do
 
        TopicAllowedUser.create!(user_id: reply.user_id, topic_id: topic.id)
        TopicAllowedUser.create!(user_id: post.user_id, topic_id: topic.id)
-
 
        results = Search.execute('mars',
                                 type_filter: 'private_messages',
@@ -369,6 +392,18 @@ describe Search do
       expect(Search.execute('社區指南').posts.first.id).to eq(post.id)
       expect(Search.execute('指南').posts.first.id).to eq(post.id)
     end
+
+    it 'finds chinese topic based on title if tokenization is forced' do
+      skip("skipped until pg app installs the db correctly") if RbConfig::CONFIG["arch"] =~ /darwin/
+
+      SiteSetting.search_tokenize_chinese_japanese_korean = true
+
+      topic = Fabricate(:topic, title: 'My Title Discourse社區指南')
+      post = Fabricate(:post, topic: topic)
+
+      expect(Search.execute('社區指南').posts.first.id).to eq(post.id)
+      expect(Search.execute('指南').posts.first.id).to eq(post.id)
+    end
   end
 
   describe 'Advanced search' do
@@ -389,6 +424,7 @@ describe Search do
 
       expect(Search.execute('user:nobody').posts.length).to eq(0)
       expect(Search.execute("user:#{_post.user.username}").posts.length).to eq(1)
+      expect(Search.execute("user:#{_post.user_id}").posts.length).to eq(1)
     end
 
     it 'supports group' do

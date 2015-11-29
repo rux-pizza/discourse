@@ -395,7 +395,6 @@ nb_NO:
       tracked_categories: "Sporet"
       tracked_categories_instructions: "Du vil automatisk spore alle nye emner i disse kategoriene. Antallet uleste og nye innlegg vil vises ved emnets oppføring."
       muted_categories: "Dempet"
-      muted_categories_instructions: "Du vil ikke bli varslet om nye emner i disse kategoriene og de vil ikke vises i listen over ulest innhold."
       delete_account: "Slett kontoen min"
       delete_account_confirm: "Er du sikker på at du vil slette kontoen din permanent? Denne handlingen kan ikke angres!"
       deleted_yourself: "Slettingen av din konto har vært vellykket."
@@ -458,10 +457,6 @@ nb_NO:
         ok: "Vi sender deg en e-post for å bekrefte"
         invalid: "Vennligst oppgi en gyldig e-postadresse"
         authenticated: "Din e-post har blitt autentisert av {{provider}}"
-        frequency:
-          zero: "Vi sender deg straks en e-post hvis du ikke har lest saken vi sendte deg en e-post om."
-          one: "Du får bare e-post hvis du ikke er blitt sett det siste minuttet."
-          other: "Du får bare e-post hvis du ikke har blitt sett de siste {{count}} minuttene."
       name:
         title: "Navn"
         instructions: "Ditt fulle navn (valgfritt)"
@@ -724,7 +719,6 @@ nb_NO:
       edit_reason_placeholder: "hvorfor endrer du?"
       show_edit_reason: "(legg till endringsbegrunnelse)"
       view_new_post: "Se ditt nye innlegg."
-      saving: "Lagrer..."
       saved: "Lagret!"
       saved_draft: "Innleggsutkast. Velg for å fortsette."
       uploading: "Laster opp..."
@@ -751,8 +745,6 @@ nb_NO:
       heading_title: "Overskrift"
       heading_text: "Overskrift"
       hr_title: "Horisontalt Skille"
-      undo_title: "Angre"
-      redo_title: "Gjenta"
       help: "Hjelp for redigering i Markdown"
       toggler: "gjem eller vis redigeringspanelet"
       admin_options_title: "Valgfrie emne-instillinger for ansatte"
@@ -796,9 +788,7 @@ nb_NO:
       from_my_computer: "Fra Min Enhet"
       from_the_web: "Fra nettet"
       remote_tip: "link til bilde"
-      remote_tip_with_attachments: "link til bilde eller fil ({{authorized_extensions}})"
       local_tip: "velg bilder fra din enhet"
-      local_tip_with_attachments: "velg bilder eller filer fra din enhet ({{authorized_extensions}})"
       hint: "(du kan også drag & drop inn i editoren for å laste dem opp)"
       uploading: "Laster opp bilde"
       select_file: "Velg Fil"
@@ -822,10 +812,6 @@ nb_NO:
       bulk:
         reset_read: "Nullstill lest"
         delete: "Slett Emne"
-        dismiss_posts: "Avvis innlegg"
-        dismiss_posts_tooltip: "Tøm antallet uleste innlegg i disse emnene men fortsett å vis dem i min liste over uleste innlegg når nye innlegg blir lagt inn"
-        dismiss_topics: "Avvis innlegg"
-        dismiss_topics_tooltip: "Ikke vis disse emnene i min ulest-liste når nye innlegg i disse forekommer"
         dismiss_new: "Lest"
         toggle: "Veksle mellom massevelging av emner"
         actions: "Massehandlinger"
@@ -966,7 +952,6 @@ nb_NO:
           description: "Du vil ikke få varslinger om noe i denne meldingnen. "
         muted:
           title: "Dempet"
-          description: "du vil ikke bli varslet om noen ting i dette emnet, og  det vil ikke visest som ulest."
       actions:
         recover: "Gjenopprett emne"
         delete: "slett emne"
@@ -1005,23 +990,12 @@ nb_NO:
         confirm_pin: "Du har allerede {{count}} låste emner. For mange låste emner kan være et problem for nye og anonyme brukere. Er du sikker på at du ønsker å låse et til emne i denne kategorien?"
         unpin: "Fjern dette emnet fra toppen av {{categoryLink}} kategorien."
         pin_note: "Brukere kan låse opp emnet selv."
-        already_pinned:
-          zero: "Det er ingen låste emner i {{categoryLink}}."
-          one: "Emner for øyeblikket låst i {{categoryLink}}: <strong class='badge badge-notification unread'>1</strong>."
-          other: "Emner for øyeblikket låst i {{categoryLink}}: <strong class='badge badge-notification unread'>{{count}}</strong>."
         confirm_pin_globally: "Du har allerede {{count}} globalt låste emner. For mange låste emner kan bli en byrde for nye og anonyme brukere. Er du sikker på at du vil låse et til emne globalt? "
         unpin_globally: "Fjern dette emnet fra toppen av alle emnelister. "
         global_pin_note: "Brukere kan låse opp emner for dem selv. "
-        already_pinned_globally:
-          zero: "Det er ingen låste emner globalt."
-          one: "Emner for øyeblikket låst globalt: <strong class='badge badge-notification unread'>1</strong>."
-          other: "Dette enmnet er låst globalt: <strong class='badge badge-notification unread'>{{count}}</strong>."
         make_banner: "Gjør dette emnet til et banner som dukker opp på toppen av alle sider."
         remove_banner: "Fjern banneret som dukker opp på toppen av alle sider. "
         banner_note: "Brukere kan fjerne banneret ved å lukke det. Kun et emne kan være banner på en og samme tid. "
-        already_banner:
-          zero: "Det er ingen banneremner. "
-          one: "Det <strong class='badge badge-notification unread'>er</strong> for øyeblikket et banneremne. "
       inviting: "Inviterer..."
       automatically_add_to_groups_optional: "Denne invitasjonen inkluderer også tilgang på disse gruppene: (valgfritt, kun for admin)"
       automatically_add_to_groups_required: "Denne invitasjonen inkluderer også tilgang til disse gruppene: (<b>påkrevet</a>, kun for admin)"
@@ -1119,10 +1093,6 @@ nb_NO:
       has_likes_title:
         one: "{{count}} bruker likte dette innlegget"
         other: "{{count}} brukere likte dette innlegget"
-      has_likes_title_you:
-        zero: "du likte dette innlegget"
-        one: "du og 1 annen bruker likte dette innlegget"
-        other: "du og {{count}} andre likte dette innlegget"
       errors:
         create: "Beklager, det oppstod en feil ved å publisere ditt innlegg. Vennligst prøv igjen."
         edit: "Beklager, det oppstod en feil ved redigeringen av ditt innlegg. Vennligst prøv igjen."
@@ -1260,10 +1230,6 @@ nb_NO:
           vote:
             one: "1 bruker stemte på dette innlegget"
             other: "{{count}} brukere stemte på dette innlegget"
-      edits:
-        one: 1 redigering
-        other: "{{count}} redigeringer"
-        zero: ingen redigeringer
       delete:
         confirm:
           one: "Er du sikker på at du vil slette det innlegget?"
@@ -1397,7 +1363,6 @@ nb_NO:
         help: "Dette emnet er ikke lenger fastsatt, det vil vises i vanlig rekkefølge"
       pinned_globally:
         title: "Globalt fastsatt"
-        help: "Dette emnet er globalt fastsatt; det vil vises på toppen av alle lister"
       pinned:
         title: "Fastsatt"
         help: "Dette emnet er fastsatt for deg; det vil vises i toppen av sin kategori"
@@ -1440,10 +1405,6 @@ nb_NO:
       with_topics: "%{filter} emner"
       with_category: "%{filter} %{category} emner"
       latest:
-        title:
-          zero: "Siste"
-          one: "Siste (1)"
-          other: "Siste ({{count}})"
         help: "de sist oppdaterte emnene"
       hot:
         title: "Populære"
@@ -1459,23 +1420,9 @@ nb_NO:
         title_in: "Kategori - {{categoryName}}"
         help: "alle emner sortert etter kategori"
       unread:
-        title:
-          zero: "Ulest"
-          one: "Ulest (1)"
-          other: "Ulest ({{count}})"
         help: "emner du for øyeblikket følger eller sporer med uleste innlegg"
-        lower_title_with_count:
-          one: "919b31115946cb42960c0b286e3d5fae_tr"
-          other: "d17f3dd2f82a108995bff08a2571e0ca_tr"
       new:
-        lower_title_with_count:
-          one: "1 ny"
-          other: "{{count}} nye"
         lower_title: "ny"
-        title:
-          zero: "Nye"
-          one: "Nye (1)"
-          other: "Nye ({{count}})"
         help: "emner opprettet de siste dagene"
       posted:
         title: "Mine Innlegg"
@@ -1484,10 +1431,6 @@ nb_NO:
         title: "Bokmerker"
         help: "emner du har bokmerket"
       category:
-        title:
-          zero: "{{categoryName}}"
-          one: "{{categoryName}} (1)"
-          other: "{{categoryName}} ({{count}})"
         help: "siste emner i {{categoryName}}-kategorien"
       top:
         title: "Aktive"
@@ -2241,10 +2184,6 @@ nb_NO:
           bad_count_warning:
             header: "ADVARSEL!"
             text: "Det er manglende grant samples. Dette skjer når badge søket returnerer bruker-IDer eller post IDer som ikke eksisterer. Dette kan føre til uventede resultater senere - vennligst dobbeltsjekk søket ditt."
-          grant_count:
-            zero: "Ingen merker klare for tildeling"
-            one: "<b>1</b> merke kan bli tildelt."
-            other: "<b>%{count}</b> merker kan bli tildelt."
           sample: "Eksempel:"
           grant:
             with: <span class="username">%{username}</span>

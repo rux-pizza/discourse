@@ -94,7 +94,6 @@ const TopicView = Ember.View.extend(AddCategoryClass, AddArchetypeClass, Scrolli
 
   // The user has scrolled the window, or it is finished rendering and ready for processing.
   scrolled() {
-
     if (this.isDestroyed || this.isDestroying || this._state !== 'inDOM') {
       return;
     }
@@ -155,7 +154,7 @@ const TopicView = Ember.View.extend(AddCategoryClass, AddArchetypeClass, Scrolli
     } else {
       return I18n.t("topic.read_more", opts);
     }
-  }.property('topicTrackingState.messageCount')
+  }.property('topicTrackingState.messageCount', 'controller.content.category')
 });
 
 function highlight(postNumber) {

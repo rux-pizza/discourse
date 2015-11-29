@@ -13,7 +13,7 @@ var parser = window.BetterMarkdown,
     emitters = [],
     hoisted,
     preProcessors = [],
-    escape = Handlebars.Utils.escapeExpression;
+    escape = Discourse.Utilities.escapeExpression;
 
 /**
   Initialize our dialects for processing.
@@ -135,7 +135,7 @@ function invalidBoundary(args, prev) {
   var last = prev[prev.length - 1];
   if (typeof last !== "string") { return false; }
 
-  if (args.wordBoundary && (last.match(/(\w|\/)$/))) { return true; }
+  if (args.wordBoundary && (!last.match(/\W$/))) { return true; }
   if (args.spaceBoundary && (!last.match(/\s$/))) { return true; }
   if (args.spaceOrTagBoundary && (!last.match(/(\s|\>)$/))) { return true; }
 }
