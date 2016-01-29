@@ -34,10 +34,26 @@ module PrettyText
       UrlHelper.schemaless UrlHelper.absolute avatar_template
     end
 
-    def is_username_valid(username)
+    def mention_lookup(username)
       return false unless username
-      username = username.downcase
-      User.exec_sql('SELECT 1 FROM users WHERE username_lower = ?', username).values.length == 1
+      if Group.exec_sql('SELECT 1 FROM groups WHERE name = ?', username).values.length == 1
+        "group"
+      else
+        username = username.downcase
+        if User.exec_sql('SELECT 1 FROM users WHERE username_lower = ?', username).values.length == 1
+          "user"
+        else
+          nil
+        end
+      end
+    end
+
+    def category_hashtag_lookup(category_slug)
+      if category = Category.query_from_hashtag_slug(category_slug)
+        ['category', category.url_with_id]
+      else
+        nil
+      end
     end
 
     def get_topic_info(topic_id)
@@ -57,7 +73,7 @@ module PrettyText
   @ctx_init = Mutex.new
 
   def self.mention_matcher
-    Regexp.new("(\@[a-zA-Z0-9_]{#{User.username_length.begin},#{User.username_length.end}})")
+    Regexp.new("\\W@(\\w{#{SiteSetting.min_username_length},#{SiteSetting.max_username_length}})\\b")
   end
 
   def self.app_root
@@ -179,7 +195,7 @@ module PrettyText
       decorate_context(context)
 
       context_opts = opts || {}
-      context_opts[:sanitize] ||= true
+      context_opts[:sanitize] = true unless context_opts[:sanitize] == false
       context['opts'] = context_opts
       context['raw'] = text
 
@@ -198,7 +214,8 @@ module PrettyText
       # plugin emojis
       context.eval("Discourse.Emoji.applyCustomEmojis();")
 
-      context.eval('opts["mentionLookup"] = function(u){return helpers.is_username_valid(u);}')
+      context.eval('opts["mentionLookup"] = function(u){return helpers.mention_lookup(u);}')
+      context.eval('opts["categoryHashtagLookup"] = function(c){return helpers.category_hashtag_lookup(c);}')
       context.eval('opts["lookupAvatar"] = function(p){return Discourse.Utilities.avatarImg({size: "tiny", avatarTemplate: helpers.avatar_template(p)});}')
       context.eval('opts["getTopicInfo"] = function(i){return helpers.get_topic_info(i)};')
       baked = context.eval('Discourse.Markdown.markdownConverter(opts).makeHtml(raw)')
@@ -244,7 +261,9 @@ module PrettyText
     # we have a minor inconsistency
     options[:topicId] = opts[:topic_id]
 
-    sanitized = markdown(text.dup, options)
+    working_text = text.dup
+    Emoji.sub_unicode!(working_text) if SiteSetting.enable_emoji?
+    sanitized = markdown(working_text, options)
 
     doc = Nokogiri::HTML.fragment(sanitized)
 

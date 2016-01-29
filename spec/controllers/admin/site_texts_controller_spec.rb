@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Admin::SiteTextsController do
 
@@ -74,6 +74,11 @@ describe Admin::SiteTextsController do
       it 'returns not found for missing keys' do
         xhr :put, :update, id: 'made_up_no_key_exists', site_text: {value: 'hello'}
         expect(response).not_to be_success
+      end
+
+      it 'logs the change' do
+        StaffActionLogger.any_instance.expects(:log_site_text_change).once
+        xhr :put, :update, id: 'title', site_text: {value: 'hello'}
       end
     end
   end

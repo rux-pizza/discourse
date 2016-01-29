@@ -3,6 +3,25 @@ import RestModel from 'discourse/models/rest';
 import { propertyEqual } from 'discourse/lib/computed';
 import { longDate } from 'discourse/lib/formatter';
 import computed from 'ember-addons/ember-computed-decorators';
+import ActionSummary from 'discourse/models/action-summary';
+
+export function loadTopicView(topic, args) {
+  const topicId = topic.get('id');
+  const data = _.merge({}, args);
+  const url = Discourse.getURL("/t/") + topicId;
+  const jsonUrl = (data.nearPost ? `${url}/${data.nearPost}` : url) + '.json';
+
+  delete data.nearPost;
+  delete data.__type;
+  delete data.store;
+
+  return PreloadStore.getAndRemove(`topic_${topicId}`, () => {
+    return Discourse.ajax(jsonUrl, {data});
+  }).then(json => {
+    topic.updateFromJson(json);
+    return json;
+  });
+}
 
 const Topic = RestModel.extend({
   message: null,
@@ -15,12 +34,12 @@ const Topic = RestModel.extend({
 
   @computed('posters.@each')
   lastPoster(posters) {
+    var user;
     if (posters && posters.length > 0) {
       const latest = posters.filter(p => p.extras && p.extras.indexOf("latest") >= 0)[0];
-      return latest.user;
-    } else {
-      return this.get("creator");
+      user = latest && latest.user;
     }
+    return user || this.get("creator");
   },
 
   @computed('fancy_title')
@@ -209,8 +228,7 @@ const Topic = RestModel.extend({
     const wordCount = this.get('word_count');
     if (!wordCount) return;
 
-    // Avg for 500 words per minute when you account for skimming
-    return Math.floor(wordCount / 500.0);
+    return Math.floor(wordCount / Discourse.SiteSettings.read_time_word_count);
   }.property('word_count'),
 
   toggleBookmark() {
@@ -318,11 +336,14 @@ const Topic = RestModel.extend({
     keys.removeObject('details');
     keys.removeObject('post_stream');
 
-    const topic = this;
-    keys.forEach(function (key) {
-      topic.set(key, json[key]);
-    });
+    keys.forEach(key => this.set(key, json[key]));
+  },
 
+  reload() {
+    const self = this;
+    return Discourse.ajax('/t/' + this.get('id'), { type: 'GET' }).then(function(topic_json) {
+      self.updateFromJson(topic_json);
+    });
   },
 
   isPinnedUncategorized: function() {
@@ -397,7 +418,35 @@ const Topic = RestModel.extend({
   }.property('excerpt'),
 
   readLastPost: propertyEqual('last_read_post_number', 'highest_post_number'),
-  canClearPin: Em.computed.and('pinned', 'readLastPost')
+  canClearPin: Em.computed.and('pinned', 'readLastPost'),
+
+  archiveMessage() {
+    this.set("archiving", true);
+    var promise = Discourse.ajax(`/t/${this.get('id')}/archive-message`, {type: 'PUT'});
+
+    promise.then((msg)=> {
+      this.set('message_archived', true);
+      if (msg && msg.group_name) {
+        this.set('inboxGroupName', msg.group_name);
+      }
+    }).finally(()=>this.set('archiving', false));
+
+    return promise;
+  },
+
+  moveToInbox() {
+    this.set("archiving", true);
+    var promise = Discourse.ajax(`/t/${this.get('id')}/move-to-inbox`, {type: 'PUT'});
+
+    promise.then((msg)=> {
+      this.set('message_archived', false);
+      if (msg && msg.group_name) {
+        this.set('inboxGroupName', msg.group_name);
+      }
+    }).finally(()=>this.set('archiving', false));
+
+    return promise;
+  }
 
 });
 
@@ -415,7 +464,7 @@ Topic.reopenClass({
       result.actions_summary = result.actions_summary.map(function(a) {
         a.post = result;
         a.actionType = Discourse.Site.current().postActionTypeById(a.id);
-        const actionSummary = Discourse.ActionSummary.create(a);
+        const actionSummary = ActionSummary.create(a);
         lookup.set(a.actionType.get('name_key'), actionSummary);
         return actionSummary;
       });

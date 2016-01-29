@@ -10,6 +10,7 @@ import UserBadge from 'discourse/models/user-badge';
 import UserActionStat from 'discourse/models/user-action-stat';
 import UserAction from 'discourse/models/user-action';
 import Group from 'discourse/models/group';
+import Topic from 'discourse/models/topic';
 
 const User = RestModel.extend({
 
@@ -199,6 +200,15 @@ const User = RestModel.extend({
            ua.action_type === UserAction.TYPES.topics;
   },
 
+  @computed("groups.@each")
+  displayGroups() {
+    const groups = this.get('groups');
+    const filtered = groups.filter(group => {
+      return !group.automatic || group.name === "moderators";
+    });
+    return filtered.length === 0 ? null : filtered;
+  },
+
   // The user's stat count, excluding PMs.
   @computed("statsExcludingPms.@each.count")
   statsCountNonPM() {
@@ -233,8 +243,8 @@ const User = RestModel.extend({
         }));
       }
 
-      if (!Em.isEmpty(json.user.custom_groups)) {
-        json.user.custom_groups = json.user.custom_groups.map(g => Group.create(g));
+      if (!Em.isEmpty(json.user.groups)) {
+        json.user.groups = json.user.groups.map(g => Group.create(g));
       }
 
       if (json.user.invited_by) {
@@ -346,6 +356,38 @@ const User = RestModel.extend({
         });
       }
     });
+  },
+
+  summary() {
+    return Discourse.ajax(`/users/${this.get("username_lower")}/summary.json`)
+           .then(json => {
+              const topicMap = {};
+
+              json.topics.forEach(t => {
+                topicMap[t.id] = Topic.create(t);
+              });
+
+              const badgeMap = {};
+              Badge.createFromJson(json).forEach(b => {
+                badgeMap[b.id] = b;
+              });
+              const summary = json["user_summary"];
+
+              summary.replies.forEach(r => {
+                r.topic = topicMap[r.topic_id];
+                r.url = r.topic.urlForPostNumber(r.post_number);
+                r.createdAt = new Date(r.created_at);
+              });
+
+              summary.topics = summary.topic_ids.map(id => topicMap[id]);
+
+              summary.badges = summary.badges.map(ub => {
+                const badge = badgeMap[ub.badge_id];
+                badge.count = ub.count;
+                return badge;
+              });
+              return summary;
+           });
   }
 
 });

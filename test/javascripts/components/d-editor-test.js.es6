@@ -130,7 +130,7 @@ testCase(`italic button with no selection`, function(assert, textarea) {
   click(`button.italic`);
   andThen(() => {
     const example = I18n.t(`composer.italic_text`);
-    assert.equal(this.get('value'), `hello world.*${example}*`);
+    assert.equal(this.get('value'), `hello world._${example}_`);
 
     assert.equal(textarea.selectionStart, 13);
     assert.equal(textarea.selectionEnd, 13 + example.length);
@@ -143,7 +143,7 @@ testCase(`italic button with a selection`, function(assert, textarea) {
 
   click(`button.italic`);
   andThen(() => {
-    assert.equal(this.get('value'), `hello *world*.`);
+    assert.equal(this.get('value'), `hello _world_.`);
     assert.equal(textarea.selectionStart, 7);
     assert.equal(textarea.selectionEnd, 12);
   });
@@ -166,7 +166,7 @@ testCase(`italic with a multiline selection`, function (assert, textarea) {
 
   click(`button.italic`);
   andThen(() => {
-    assert.equal(this.get('value'), `*hello*\n\n*world*\n\ntest.`);
+    assert.equal(this.get('value'), `_hello_\n\n_world_\n\ntest.`);
     assert.equal(textarea.selectionStart, 0);
     assert.equal(textarea.selectionEnd, 16);
   });
@@ -513,6 +513,26 @@ testCase(`rule with a selection`, function(assert, textarea) {
     assert.equal(this.get('value'), `hello \n\n----------\n.`);
     assert.equal(textarea.selectionStart, 19);
     assert.equal(textarea.selectionEnd, 19);
+  });
+});
+
+testCase(`doesn't jump to bottom with long text`, function(assert, textarea) {
+
+  let longText = 'hello world.';
+  for (let i=0; i<8; i++) {
+    longText = longText + longText;
+  }
+  this.set('value', longText);
+
+  andThen(() => {
+    $(textarea).scrollTop(0);
+    textarea.selectionStart = 3;
+    textarea.selectionEnd = 3;
+  });
+
+  click('button.bold');
+  andThen(() => {
+    assert.equal($(textarea).scrollTop(), 0, 'it stays scrolled up');
   });
 });
 

@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'spec_helper'
+require 'rails_helper'
 require 'composer_messages_finder'
 
 describe ComposerMessagesFinder do
@@ -107,6 +107,21 @@ describe ComposerMessagesFinder do
 
     it "doesn't notify users who have been notified already" do
       UserHistory.create!(action: UserHistory.actions[:notified_about_avatar], target_user_id: user.id )
+      expect(finder.check_avatar_notification).to be_blank
+    end
+
+    it "doesn't notify users if 'disable_avatar_education_message' setting is enabled" do
+      SiteSetting.disable_avatar_education_message = true
+      expect(finder.check_avatar_notification).to be_blank
+    end
+
+    it "doesn't notify users if 'sso_overrides_avatar' setting is enabled" do
+      SiteSetting.sso_overrides_avatar = true
+      expect(finder.check_avatar_notification).to be_blank
+    end
+
+    it "doesn't notify users if 'allow_uploaded_avatars' setting is disabled" do
+      SiteSetting.allow_uploaded_avatars = false
       expect(finder.check_avatar_notification).to be_blank
     end
   end
@@ -313,4 +328,3 @@ describe ComposerMessagesFinder do
   end
 
 end
-

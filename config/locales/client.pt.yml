@@ -294,6 +294,12 @@ pt:
         one: "1 utilizador"
         other: "%{count} utilizadores"
     groups:
+      empty:
+        posts: "Não há nenhuma publicação feita por membros deste grupo."
+        members: "Não há nenhum membro neste grupo."
+        mentions: "Não há nenhuma menção deste grupo."
+        messages: "Não há nenhuma mensagem para este grupo."
+        topics: "Não há nenhum tópico feito por membros deste grupo."
       add: "Adicionar"
       selector_placeholder: "Adicionar membros"
       owner: "proprietário"
@@ -304,7 +310,7 @@ pt:
       members: "Membros"
       posts: "Mensagens"
       alias_levels:
-        title: "Quem pode usar este grupo como pseudónimo?"
+        title: "Quem pode mandar mensagens e @mencionar este grupo?"
         nobody: "Ninguém"
         only_admins: "Apenas administradores"
         mods_and_admins: "Apenas moderadores e Administradores"
@@ -313,6 +319,19 @@ pt:
       trust_levels:
         title: "Nível de confiança concedido automaticamente a membros quando são adicionados:"
         none: "Nenhum"
+      notifications:
+        watching:
+          title: "A vigiar"
+          description: "Será notificado de cada nova publicação em todas as mensagens, e uma contagem de novas respostas será exibida."
+        tracking:
+          title: "A Acompanhar"
+          description: "Será notificado se alguém mencionar o seu @nome ou lhe responder, e uma contagem de novas respostas será exibida."
+        regular:
+          title: "Habitual"
+          description: "Será notificado se alguém mencionar o seu @nome ou responder-lhe."
+        muted:
+          title: "Mudo"
+          description: "Não será notificado de nada relacionado com novos tópicos neste grupo."
     user_action_groups:
       '1': "Gostos Dados"
       '2': "Gostos Recebidos"
@@ -322,7 +341,6 @@ pt:
       '6': "Respostas"
       '7': "Menções"
       '9': "Citações"
-      '10': "Favoritos"
       '11': "Edições"
       '12': "Itens Enviados"
       '13': "Caixa de Entrada"
@@ -332,6 +350,7 @@ pt:
       all_subcategories: "todas"
       no_subcategory: "nenhuma"
       category: "Categoria"
+      category_list: "Exibir lista de categorias"
       reorder:
         title: "Re-organizar Categorias"
         title_long: "Re-organizar a lista de categorias"
@@ -388,6 +407,7 @@ pt:
       invited_by: "Convidado Por"
       trust_level: "Nível de Confiança"
       notifications: "Notificações"
+      statistics: "Estatísticas"
       desktop_notifications:
         label: "Notificações de Desktop"
         not_supported: "Não são suportadas notificações neste navegador. Desculpe."
@@ -441,8 +461,14 @@ pt:
         warnings_received: "avisos"
       messages:
         all: "Todas"
-        mine: "Minha"
-        unread: "Não lidas"
+        inbox: "Caixa de Entrada"
+        sent: "Enviado"
+        archive: "Arquivo"
+        groups: "Os Meus Grupos"
+        bulk_select: "Selecionar mensagens"
+        move_to_inbox: "Mover para Caixa de Entrada"
+        failed_to_move: "Falha ao mover as mensagens selecionadas (talvez a sua rede esteja em baixo)"
+        select_all: "Selecionar Tudo"
       change_password:
         success: "(email enviado)"
         in_progress: "(a enviar email)"
@@ -641,7 +667,6 @@ pt:
     logout: "A sua sessão estava encerrada."
     refresh: "Atualizar"
     read_only_mode:
-      enabled: "O modo só de leitura está ativo. Pode continuar a navegar no sítio mas as interações podem não funcionar."
       login_disabled: "A função de início de sessão está desativada enquanto o sítio se encontrar no modo só de leitura."
     too_few_topics_and_posts_notice: "Vamos <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>começar esta discussão!</a> Atualmente existem <strong>%{currentTopics} / %{requiredTopics}</strong> tópicos e <strong>%{currentPosts} / %{requiredPosts}</strong> mensagens. Novos visitantes precisam de conversações para ler e responder a."
     too_few_topics_notice: "Vamos <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>começar esta discussão!</a> Atualmente existem <strong>%{currentTopics} / %{requiredTopics}</strong> tópios. Novos visitantes precisam de algumas conversações para ler e responder a."
@@ -756,7 +781,6 @@ pt:
       ctrl: 'Ctrl'
       alt: 'Alt'
     composer:
-      emoji: "Emoji :smile:"
       more_emoji: "mais..."
       options: "Opções"
       whisper: "susurro"
@@ -768,6 +792,7 @@ pt:
       saved_local_draft_tip: "guardado localmente"
       similar_topics: "O seu tópico é similar a..."
       drafts_offline: "rascunhos offline"
+      group_mentioned: "Ao usar {{group}}, estará a notificar <a href='{{group_link}}'>{{count}} pessoas</a>."
       error:
         title_missing: "O título é obrigatório"
         title_too_short: "O título tem que ter pelo menos {{min}} caracteres."
@@ -822,6 +847,7 @@ pt:
       toggler: "esconder ou exibir o painel de composição"
       modal_ok: "OK"
       modal_cancel: "Cancelar"
+      cant_send_pm: "Desculpe, não pode enviar uma mensagem para %{username}."
       admin_options_title: "Configurações opcionais do pessoal para este tópico"
       auto_close:
         label: "Tempo de fecho automático do tópico:"
@@ -838,6 +864,7 @@ pt:
       more: "ver notificações antigas"
       total_flagged: "total de mensagens sinalizadas"
       mentioned: "<i title='mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
+      group_mentioned: "<i title='group mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
       quoted: "<i title='quoted' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
       replied: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
       posted: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
@@ -866,6 +893,7 @@ pt:
         granted_badge: "Distintivo concedido"
       popup:
         mentioned: '{{username}} mencionou-o em "{{topic}}" - {{site_title}}'
+        group_mentioned: '{{username}} mencionou-o em "{{topic}}" - {{site_title}}'
         quoted: '{{username}} citou-o em "{{topic}}" - {{site_title}}'
         replied: '{{username}} respondeu-lhe em "{{topic}}" - {{site_title}}'
         posted: '{{username}} publicou em "{{topic}}" - {{site_title}}'
@@ -921,7 +949,7 @@ pt:
         dismiss_read: "Destituir todos os não lidos"
         dismiss_button: "Destituir..."
         dismiss_tooltip: "Destituir apenas novas mensagens ou parar o acompanhamento de tópicos"
-        also_dismiss_topics: "Parar de acompanhar estes tópicos? (Os tópicos deixarão de aparecer no separador de não lidos)"
+        also_dismiss_topics: "Parar de acompanhar estes tópicos para que estes nunca me apareçam como não lidos novamente"
         dismiss_new: "Destituir Novo"
         toggle: "ativar seleção em massa de tópicos"
         actions: "Ações em Massa"
@@ -966,6 +994,12 @@ pt:
       create: 'Novo Tópico'
       create_long: 'Criar um novo Tópico'
       private_message: 'Iniciar uma mensagem'
+      archive_message:
+        help: 'Mover mensagem para o seu arquivo'
+        title: 'Arquivo'
+      move_to_inbox:
+        title: 'Mover para Caixa de Entrada'
+        help: 'Mover mensagem de volta para a Caixa de Entrada'
       list: 'Tópicos'
       new: 'novo tópico'
       unread: 'não lido'
@@ -1016,6 +1050,7 @@ pt:
       auto_close_title: 'Configurações para Fechar Automaticamente'
       auto_close_save: "Guardar"
       auto_close_remove: "Não Fechar Este Tópico Automaticamente"
+      auto_close_immediate: "A última mensagem neste tópico já tem %{hours} horas, por isso o tópico será fechado imediatamente."
       progress:
         title: progresso do tópico
         go_top: "topo"
@@ -1136,6 +1171,7 @@ pt:
         success: "Convidámos esse utilizador para participar nesta mensagem."
         error: "Pedimos desculpa, ocorreu um erro ao convidar esse utilizador."
         group_name: "nome do grupo"
+      controls: "Controlos de Tópico"
       invite_reply:
         title: 'Convidar'
         username_placeholder: "nome de utilizador"
@@ -1253,7 +1289,7 @@ pt:
       via_email: "esta mensagem chegou por email"
       whisper: "esta mensagem é um susurro privado para os moderadores"
       wiki:
-        about: "esta mensagem é uma wiki; utilizadores comuns podem editá-la"
+        about: "esta mensagem é uma wiki"
       archetypes:
         save: 'Guardar as Opções'
       controls:
@@ -1782,6 +1818,8 @@ pt:
         primary_group: "Definir automaticamente como grupo primário"
         group_owners: Proprietários
         add_owners: Adicionar proprietários
+        incoming_email: "Endereço de email de entrada personalizado"
+        incoming_email_placeholder: "introduza o endereço de email"
       api:
         generate_master: "Gerar Chave Mestra API "
         none: "Não existem chaves API ativas neste momento."
@@ -1913,6 +1951,7 @@ pt:
         email_templates:
           title: "Modelos de Email"
           subject: "Assunto"
+          multiple_subjects: "Este modelo de email tem múltiplos assuntos."
           body: "Corpo"
           none_selected: "Selecione um modelo de email para começar a editar."
           revert: "Reverter Alterações"
@@ -1965,9 +2004,8 @@ pt:
             name: 'wiki'
             description: "Cor base utilizada para o fundo de mensagens wiki"
       email:
-        title: "Email"
         settings: "Configurações"
-        all: "Todos"
+        preview_digest: "Pré-visualizar Resumo"
         sending_test: "A enviar Email de teste..."
         error: "<b>ERRO</b> - %{server_error}"
         test_error: "Occorreu um problema no envio do email de teste. Por favor verifique novamente as suas definições de email, verifique se o seu host não está a bloquear conexões de email, e tente novamente."
@@ -1982,7 +2020,6 @@ pt:
         send_test: "Enviar Email de Teste"
         sent_test: "enviado!"
         delivery_method: "Método de Entrega"
-        preview_digest: "Pré-visualizar Resumo"
         preview_digest_desc: "Pré-visualizar o conteúdo dos emails de resumo enviados aos utilizadores inativos."
         refresh: "Atualizar"
         format: "Formato"
@@ -2040,6 +2077,7 @@ pt:
             change_site_setting: "alterar configurações do sítio"
             change_site_customization: "alterar personalização do sítio"
             delete_site_customization: "remover personalização do sítio"
+            change_site_text: "alterar texto do sítio"
             suspend_user: "utilizador suspenso"
             unsuspend_user: "utilizador não suspenso"
             grant_badge: "conceder distintivo"
@@ -2231,7 +2269,7 @@ pt:
         unlock_trust_level: "Desbloquear Nível de Confiança"
         tl3_requirements:
           title: "Requisitos para o Nível de Confiança 3"
-          table_title: "Nos últimos 100 dias:"
+          table_title: "Nos últimos %{time_period} dias:"
           value_heading: "Valor"
           requirement_heading: "Requisito"
           visits: "Visitas"
@@ -2292,8 +2330,15 @@ pt:
           confirm: 'Confirmação'
           dropdown: "Suspenso"
       site_text:
-        none: "Escolha um tipo de conteúdo para começar a editar."
+        description: "Pode personalizar qualquer texto no seu fórum. Por favor comece por pesquisar abaixo:"
+        search: "Pesquisar o texto que gostaria de editar"
         title: 'Conteúdo do Texto'
+        edit: 'editar'
+        revert: "Reverter Alterações"
+        revert_confirm: "Tem a certeza que quer reverter as suas alterações?"
+        go_back: "De volta à Pesquisa"
+        recommended: "Recomendamos personalizar o seguinte texto para que se aplique às suas necessidades."
+        show_overriden: 'Apenas mostrar valores alterados'
       site_settings:
         show_overriden: 'Apenas mostrar valores alterados'
         title: 'Configurações'

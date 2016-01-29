@@ -35,6 +35,8 @@ class User < ActiveRecord::Base
   has_many :topic_links, dependent: :destroy
   has_many :uploads
   has_many :warnings
+  has_many :user_archived_messages, dependent: :destroy
+
 
   has_one :user_avatar, dependent: :destroy
   has_one :facebook_user_info, dependent: :destroy
@@ -141,10 +143,6 @@ class User < ActiveRecord::Base
     SiteSetting.min_username_length.to_i..SiteSetting.max_username_length.to_i
   end
 
-  def custom_groups
-    groups.where(automatic: false, visible: true)
-  end
-
   def self.username_available?(username)
     lower = username.downcase
     User.where(username_lower: lower).blank? && !SiteSetting.reserved_usernames.split("|").include?(username)
@@ -171,8 +169,7 @@ class User < ActiveRecord::Base
 
   def self.suggest_name(email)
     return "" if email.blank?
-    name = email.split(/[@\+]/)[0].gsub(".", " ")
-    name.titleize
+    email[/\A[^@]+/].tr(".", " ").titleize
   end
 
   def self.find_by_username_or_email(username_or_email)
@@ -297,8 +294,13 @@ class User < ActiveRecord::Base
     User.where("id = ? and seen_notification_id < ?", id, notification_id)
         .update_all ["seen_notification_id = ?", notification_id]
 
-    # mark all "badge granted" and "invite accepted" notifications read
-    Notification.where('user_id = ? AND NOT read AND notification_type IN (?)', id, [Notification.types[:granted_badge], Notification.types[:invitee_accepted]])
+    # some notifications are considered read once seen
+    Notification.where('user_id = ? AND NOT read AND notification_type IN (?)', id, [
+                       Notification.types[:granted_badge],
+                       Notification.types[:invitee_accepted],
+                       Notification.types[:group_message_summary],
+                       Notification.types[:liked]
+    ])
         .update_all ["read = ?", true]
   end
 
@@ -560,7 +562,7 @@ class User < ActiveRecord::Base
   # Takes into account admin, etc.
   def has_trust_level?(level)
     raise "Invalid trust level #{level}" unless TrustLevel.valid?(level)
-    admin? || moderator? || TrustLevel.compare(trust_level, level)
+    admin? || moderator? || staged? || TrustLevel.compare(trust_level, level)
   end
 
   # a touch faster than automatic
@@ -622,7 +624,7 @@ class User < ActiveRecord::Base
     user_badges.select('distinct badge_id').count
   end
 
-  def featured_user_badges
+  def featured_user_badges(limit=3)
     user_badges
         .joins(:badge)
         .order("CASE WHEN badges.id = (SELECT MAX(ub2.badge_id) FROM user_badges ub2
@@ -632,7 +634,7 @@ class User < ActiveRecord::Base
         .includes(:user, :granted_by, badge: :badge_type)
         .where("user_badges.id in (select min(u2.id)
                   from user_badges u2 where u2.user_id = ? group by u2.badge_id)", id)
-        .limit(3)
+        .limit(limit)
   end
 
   def self.count_by_signup_date(start_date, end_date)
@@ -1093,6 +1095,7 @@ end
 #  edit_history_public           :boolean          default(FALSE), not null
 #  trust_level_locked            :boolean          default(FALSE), not null
 #  staged                        :boolean          default(FALSE), not null
+#  automatically_unpin_topics    :boolean          default(TRUE)
 #
 # Indexes
 #

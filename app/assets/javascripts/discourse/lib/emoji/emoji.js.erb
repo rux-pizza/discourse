@@ -1,7 +1,7 @@
 // TODO @robin to move this whole thing to es6
 Discourse.Emoji = {};
 // bump up this number to expire all emojis
-Discourse.Emoji.ImageVersion = "0"
+Discourse.Emoji.ImageVersion = "1"
 
 var emoji = <%= Emoji.standard.map(&:name).flatten.inspect %>;
 var aliases = <%= Emoji.aliases.inspect.gsub("=>", ":") %>;
@@ -99,30 +99,30 @@ function imageFor(code) {
 
 // Also support default emotions
 var translations = {
-  // ':)'   : 'smile',
-  // ':-)'   : 'smile',
-  // ':('   : 'frowning',
-  // ':-('   : 'frowning',
-  // ';)'   : 'wink',
-  // ';-)'   : 'wink',
-  // ':\'(' : 'cry',
-  // ':\'-(' : 'cry',
-  // ':-\'(' : 'cry',
-  // ':p'   : 'stuck_out_tongue',
-  // ':P'   : 'stuck_out_tongue',
-  // ':-P'   : 'stuck_out_tongue',
-  // ':O'   : 'open_mouth',
-  // ':-O'   : 'open_mouth',
-  // ':D'   : 'smiley',
-  // ':-D'   : 'smiley',
-  // ':|'   : 'expressionless',
-  // ':-|'   : 'expressionless',
-  // ':/'   : 'confused',
-  // '8-)'  : 'sunglasses',
-  // ";P"   : 'stuck_out_tongue_winking_eye',
-  // ";-P"   : 'stuck_out_tongue_winking_eye',
-  // ":$"   : 'blush',
-  // ":-$"   : 'blush'
+//  ':)'   : 'slightly_smiling',
+//  ':-)'  : 'slightly_smiling',
+//  ':('   : 'frowning',
+//  ':-('  : 'frowning',
+//  ';)'   : 'wink',
+//  ';-)'  : 'wink',
+//  ':\'(' : 'cry',
+//  ':\'-(': 'cry',
+//  ':-\'(': 'cry',
+//  ':p'   : 'stuck_out_tongue',
+//  ':P'   : 'stuck_out_tongue',
+//  ':-P'  : 'stuck_out_tongue',
+//  ':O'   : 'open_mouth',
+//  ':-O'  : 'open_mouth',
+//  ':D'   : 'smiley',
+//  ':-D'  : 'smiley',
+//  ':|'   : 'expressionless',
+//  ':-|'  : 'expressionless',
+//  ':/'   : 'confused',
+//  '8-)'  : 'sunglasses',
+//  ";P"   : 'stuck_out_tongue_winking_eye',
+//  ";-P"  : 'stuck_out_tongue_winking_eye',
+//  ":$"   : 'blush',
+//  ":-$"  : 'blush'
 };
 
 Discourse.Emoji.translations = translations;

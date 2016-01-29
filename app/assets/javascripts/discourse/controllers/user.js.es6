@@ -1,16 +1,16 @@
-import { exportUserArchive } from 'discourse/lib/export-csv';
 import CanCheckEmails from 'discourse/mixins/can-check-emails';
 import computed from 'ember-addons/ember-computed-decorators';
+import UserAction from 'discourse/models/user-action';
+import User from 'discourse/models/user';
 
 export default Ember.Controller.extend(CanCheckEmails, {
   indexStream: false,
-  pmView: false,
   userActionType: null,
   needs: ['user-notifications', 'user-topics-list'],
 
   @computed("content.username")
   viewingSelf(username) {
-    return username === Discourse.User.currentProp('username');
+    return username === User.currentProp('username');
   },
 
   @computed('indexStream', 'viewingSelf', 'forceExpand')
@@ -26,11 +26,19 @@ export default Ember.Controller.extend(CanCheckEmails, {
   },
 
   @computed('viewingSelf', 'currentUser.admin')
-  canSeePrivateMessages(viewingSelf, isAdmin) {
+  showBookmarks(viewingSelf, isAdmin) {
+    return viewingSelf || isAdmin;
+  },
+
+  @computed('viewingSelf', 'currentUser.admin')
+  showPrivateMessages(viewingSelf, isAdmin) {
     return this.siteSettings.enable_private_messages && (viewingSelf || isAdmin);
   },
 
-  canSeeNotificationHistory: Em.computed.alias('canSeePrivateMessages'),
+  @computed('viewingSelf', 'currentUser.staff')
+  showNotificationsTab(viewingSelf, staff) {
+    return viewingSelf || staff;
+  },
 
   @computed("content.badge_count")
   showBadges(badgeCount) {
@@ -39,13 +47,19 @@ export default Ember.Controller.extend(CanCheckEmails, {
 
   @computed("userActionType")
   privateMessageView(userActionType) {
-    return (userActionType === Discourse.UserAction.TYPES.messages_sent) ||
-           (userActionType === Discourse.UserAction.TYPES.messages_received);
+    return (userActionType === UserAction.TYPES.messages_sent) ||
+           (userActionType === UserAction.TYPES.messages_received);
   },
+
+  @computed("indexStream", "userActionType")
+  showActionTypeSummary(indexStream,userActionType, showPMs) {
+    return (indexStream || userActionType) && !showPMs;
+  },
+
 
   @computed()
   canInviteToForum() {
-    return Discourse.User.currentProp('can_invite_to_forum');
+    return User.currentProp('can_invite_to_forum');
   },
 
   canDeleteUser: Ember.computed.and("model.can_be_deleted", "model.can_delete_all_posts"),
@@ -62,31 +76,17 @@ export default Ember.Controller.extend(CanCheckEmails, {
     }
   },
 
-  privateMessagesActive: Em.computed.equal('pmView', 'index'),
-  privateMessagesMineActive: Em.computed.equal('pmView', 'mine'),
-  privateMessagesUnreadActive: Em.computed.equal('pmView', 'unread'),
-
   actions: {
     expandProfile() {
       this.set('forceExpand', true);
     },
 
     adminDelete() {
-      Discourse.AdminUser.find(this.get('model.username').toLowerCase())
+      // I really want this deferred, don't want to bring in all this code till used
+      const AdminUser = require('admin/models/admin-user').default;
+      AdminUser.find(this.get('model.username').toLowerCase())
                          .then(user => user.destroy({deletePosts: true}));
     },
 
-    exportUserArchive() {
-      bootbox.confirm(
-        I18n.t("admin.export_csv.user_archive_confirm"),
-        I18n.t("no_value"),
-        I18n.t("yes_value"),
-        function(confirmed) {
-          if (confirmed) {
-            exportUserArchive();
-          }
-        }
-      );
-    }
   }
 });

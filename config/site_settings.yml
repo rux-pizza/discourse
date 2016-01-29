@@ -105,7 +105,7 @@ basic:
   post_menu:
     client: true
     type: list
-    default: 'like-count|like|share|flag|edit|bookmark|delete|admin|reply'
+    default: 'like-count|like|share|flag|edit|bookmark|wiki|delete|admin|reply'
     choices:
      - like-count
      - like
@@ -116,10 +116,11 @@ basic:
      - bookmark
      - admin
      - reply
+     - wiki
   post_menu_hidden_items:
     client: true
     type: list
-    default: 'bookmark|edit|delete|admin'
+    default: 'bookmark|edit|wiki|delete|admin'
     choices:
      - like
      - edit
@@ -129,6 +130,7 @@ basic:
      - bookmark
      - admin
      - reply
+     - wiki
   share_links:
     client: true
     type: list
@@ -325,9 +327,11 @@ users:
   show_email_on_profile:
     client: true
     default: false
-  email_token_valid_hours: 24
+  email_token_valid_hours:
+    default: 24
+    min: 1
   email_token_grace_period_hours: 0
-  purge_unactivated_users_grace_period_days: 7
+  purge_unactivated_users_grace_period_days: 14
   public_user_custom_fields:
     type: list
     default: ''
@@ -390,7 +394,6 @@ posting:
     client: true
     default: true
     refresh: true
-  uncategorized_description: "Topics that don't need a category, or don't fit into any other existing category."
   allow_duplicate_topic_titles: false
   min_title_similar_length:
     client: true
@@ -432,6 +435,7 @@ posting:
     client: true
   post_undo_action_window_mins: 10
   max_mentions_per_post: 10
+  max_users_notified_per_group_mention: 100
   newuser_max_replies_per_topic: 3
   newuser_max_mentions_per_post: 2
   title_max_word_length: 30
@@ -505,7 +509,9 @@ email:
   reply_by_email_address:
     default: ''
     validator: "ReplyByEmailAddressValidator"
-  pop3_polling_enabled: false
+  pop3_polling_enabled:
+    default: false
+    validator: "POP3PollingEnabledSettingValidator"
   pop3_polling_ssl: true
   pop3_polling_period_mins: 5
   pop3_polling_host: ''
@@ -526,6 +532,12 @@ email:
     client: true
   strip_images_from_short_emails: true
   short_email_length: 2800
+  display_name_on_email_from:
+    default: true
+  unsubscribe_via_email:
+    default: true
+  unsubscribe_via_email_footer:
+    default: false
 
 files:
   max_image_size_kb: 3072
@@ -618,6 +630,9 @@ trust:
   min_trust_to_edit_wiki_post:
     default: 1
     enum: 'TrustLevelSetting'
+  min_trust_to_allow_self_wiki:
+    default: 3
+    enum: 'TrustLevelSetting'
   min_trust_to_send_messages:
     default: 1
     enum: 'TrustLevelSetting'
@@ -633,10 +648,12 @@ trust:
   tl2_requires_likes_received: 1
   tl2_requires_likes_given: 1
   tl2_requires_topic_reply_count: 3
+  tl3_time_period:
+    default: 100
+    min: 1
   tl3_requires_days_visited:
     default: 50
     min: 0
-    max: 100
   tl3_requires_topics_replied_to:
     default: 10
     min: 0
@@ -785,15 +802,21 @@ developer:
   verbose_localization:
     default: false
     client: true
+  top_topics_formula_log_views_multiplier:
+    default: 2
+    min: 0
+  top_topics_formula_first_post_likes_multiplier:
+    default: 0.5
+    min: 0
+  top_topics_formula_least_likes_per_post_multiplier:
+    default: 3
+    min: 0
   migrate_to_new_scheme:
     hidden: true
     default: false
   max_new_topics:
     default: 500
     client: true
-    hidden: true
-  allow_staged_accounts:
-    default: false
     hidden: true
 
 embedding:
@@ -952,6 +975,7 @@ uncategorized:
   educate_until_posts: 2
   sequential_replies_threshold: 2
   dominating_topic_minimum_percent: 20
+  disable_avatar_education_message: false
 
   # Reporting
   daily_performance_report: false
@@ -1020,6 +1044,10 @@ uncategorized:
 
   automatically_unpin_topics:
     default: true
+    client: true
+
+  read_time_word_count:
+    default: 500
     client: true
 
 user_preferences:

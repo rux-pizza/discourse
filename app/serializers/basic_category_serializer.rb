@@ -11,23 +11,22 @@ class BasicCategorySerializer < ApplicationSerializer
              :description,
              :description_text,
              :topic_url,
+             :logo_url,
+             :background_url,
              :read_restricted,
              :permission,
              :parent_category_id,
              :notification_level,
-             :logo_url,
-             :background_url,
              :can_edit,
              :topic_template,
-             :has_children,
-             :contains_messages
+             :has_children
 
   def include_parent_category_id?
     parent_category_id
   end
 
   def description
-    object.uncategorized? ? SiteSetting.uncategorized_description : object.description
+    object.uncategorized? ? I18n.t('category.uncategorized_description') : object.description
   end
 
   def can_edit
@@ -38,4 +37,7 @@ class BasicCategorySerializer < ApplicationSerializer
     scope && scope.can_edit?(object)
   end
 
+  def notification_level
+    object.notification_level || CategoryUser.where(user: object.user, category: object).first.try(:notification_level)
+  end
 end

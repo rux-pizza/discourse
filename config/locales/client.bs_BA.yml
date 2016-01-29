@@ -267,7 +267,6 @@ bs_BA:
       members: "Članovi"
       posts: "Postovi"
       alias_levels:
-        title: "Who can use this group as an alias?"
         nobody: "Niko"
         only_admins: "Samo admini"
         mods_and_admins: "Samo moderatori i Admini"
@@ -282,7 +281,6 @@ bs_BA:
       '6': "Odgovori"
       '7': "Spemenute"
       '9': "Citirane"
-      '10': "Označene"
       '11': "Izmjenjene"
       '12': "Poslato"
       '13': "Inbox"
@@ -351,8 +349,6 @@ bs_BA:
         warnings_received: "warnings"
       messages:
         all: "Sve"
-        mine: "Moje"
-        unread: "Nepročitane"
       change_password:
         success: "(email poslat)"
         in_progress: "(šaljem email)"
@@ -504,7 +500,6 @@ bs_BA:
     close: "Zatvori"
     assets_changed_confirm: "Ovaj sajt je upravo unaprijeđen. Osvježi stranicu za novu verziju?"
     read_only_mode:
-      enabled: "An administrator enabled read-only mode. You can continue to browse the site but interactions may not work."
       login_disabled: "Login is disabled while the site is in read only mode."
     learn_more: "learn more..."
     year: 'godina'
@@ -915,8 +910,6 @@ bs_BA:
         no_value: "Ne, sačuvaj"
         yes_value: "Da, otkaži"
       via_email: "this post arrived via email"
-      wiki:
-        about: "this post is a wiki; basic users can edit it"
       archetypes:
         save: 'Save Options'
       controls:
@@ -1391,9 +1384,8 @@ bs_BA:
             name: 'wiki'
             description: "Base color used for the background of wiki posts."
       email:
-        title: "Email"
         settings: "Settings"
-        all: "All"
+        preview_digest: "Pregled Sajta"
         sending_test: "Sending test Email..."
         test_error: "There was a problem sending the test email. Please double-check your mail settings, verify that your host is not blocking mail connections, and try again."
         sent: "Sent"
@@ -1407,7 +1399,6 @@ bs_BA:
         send_test: "Send Test Email"
         sent_test: "sent!"
         delivery_method: "Delivery Method"
-        preview_digest: "Pregled Sajta"
         refresh: "Refresh"
         format: "Format"
         html: "html"
@@ -1516,9 +1507,6 @@ bs_BA:
           pending: 'Users Pending Review'
           newuser: 'Users at Trust Level 0 (New User)'
           basic: 'Users at Trust Level 1 (Basic User)'
-          regular: 'Users at Trust Level 2 (Member)'
-          leader: 'Users at Trust Level 3 (Regular)'
-          elder: 'Users at Trust Level 4 (Leader)'
           admins: 'Admin Users'
           moderators: 'Moderators'
           blocked: 'Blocked Users'
@@ -1606,7 +1594,6 @@ bs_BA:
         unlock_trust_level: "Unlock Trust Level"
         tl3_requirements:
           title: "Requirements for Trust Level 3"
-          table_title: "In the last 100 days:"
           value_heading: "Value"
           requirement_heading: "Requirement"
           visits: "Visits"
@@ -1661,7 +1648,6 @@ bs_BA:
           text: 'Text Field'
           confirm: 'Confirmation'
       site_text:
-        none: "Choose a type of content to begin editing."
         title: 'Text Content'
       site_settings:
         show_overriden: 'Only show overridden'

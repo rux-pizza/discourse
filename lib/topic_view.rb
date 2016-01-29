@@ -16,6 +16,10 @@ class TopicView
     20
   end
 
+  def self.default_post_custom_fields
+    @default_post_custom_fields ||= ["action_code_who"]
+  end
+
   def self.post_custom_fields_whitelisters
     @post_custom_fields_whitelisters ||= Set.new
   end
@@ -25,7 +29,8 @@ class TopicView
   end
 
   def self.whitelisted_post_custom_fields(user)
-    post_custom_fields_whitelisters.map { |w| w.call(user) }.flatten.uniq
+    wpcf = default_post_custom_fields + post_custom_fields_whitelisters.map { |w| w.call(user) }
+    wpcf.flatten.uniq
   end
 
   def initialize(topic_id, user=nil, options={})
@@ -157,6 +162,16 @@ class TopicView
     # TODO, this is actually quite slow, should be cached in the post table
     excerpt = desired_post.excerpt(500, strip_links: true, text_entities: true)
     (excerpt || "").gsub(/\n/, ' ').strip
+  end
+
+  def read_time
+    return nil if @post_number.present? && @post_number.to_i != 1 # only show for topic URLs
+    (@topic.word_count/SiteSetting.read_time_word_count).floor if @topic.word_count
+  end
+
+  def like_count
+    return nil if @post_number.present? && @post_number.to_i != 1 # only show for topic URLs
+    @topic.like_count
   end
 
   def image_url

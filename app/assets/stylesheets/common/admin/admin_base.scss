@@ -50,11 +50,19 @@ td.flaggers td {
       margin-top: 0;
     }
 
-    input {
+    .site-text-search {
       padding: 0.5em;
       font-size: 1em;
       width: 50%;
     }
+
+    .extra-options {
+      float: right;
+      input[type=checkbox] {
+        margin-right: 0.5em;
+      }
+    }
+
   }
   .text-highlight {
     font-weight: bold;
@@ -64,6 +72,10 @@ td.flaggers td {
     cursor: pointer;
     border-bottom: 1px solid dark-light-diff($primary, $secondary, 90%, -60%);
     margin-bottom: 0.5em;
+
+    &.overridden {
+      background-color: dark-light-diff($highlight, $secondary, 50%, -60%);
+    }
 
     h3 {
       font-weight: normal;
@@ -648,8 +660,7 @@ section.details {
     width: 100% !important;
     border-color: dark-light-choose(scale-color($primary, $lightness: 75%), scale-color($secondary, $lightness: 25%));
     .item {
-      width: 190px;
-      margin-right: 0 !important;
+      margin-right: 10px;
     }
   }
   .next, .previous {
@@ -1521,7 +1532,7 @@ button.ru {
 
 @media all
 and (max-width : 850px) {
-  .nav-stacked {
+  html:not(.mobile-view) .admin-content .nav-stacked {
     .glyph {width: auto; position: relative;}
     > li > a {padding: 13px}
   }
@@ -1595,10 +1606,9 @@ and (max-width : 500px) {
     border-bottom: 1px solid #dfdfdf;
   }
   .actions {
-    font-size: 1.214em;
     float: right;
-    a {
-      margin-left: 5px;
+    .btn {
+      padding: 3px 6px;
     }
   }
 }
@@ -1755,6 +1765,30 @@ table#user-badges {
     color: dark-light-choose(scale-color($primary, $lightness: 50%), scale-color($secondary, $lightness: 50%));
     margin-bottom: 1em;
     max-width: 700px;
+  }
+}
+
+// Emails
+
+.email-list {
+  .filters input {
+    width: 100%;
+  }
+  .time {
+    width: 50px;
+  }
+  .username div {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .addresses p {
+    margin: 2px 0;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

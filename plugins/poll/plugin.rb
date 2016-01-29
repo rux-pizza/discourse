@@ -74,21 +74,25 @@ after_initialize do
 
           raise StandardError.new I18n.t("poll.requires_at_least_1_valid_option") if options.empty?
 
+          poll["voters"] = 0
+          all_options = Hash.new(0)
+
           post.custom_fields[VOTES_CUSTOM_FIELD] ||= {}
           post.custom_fields[VOTES_CUSTOM_FIELD]["#{user_id}"] ||= {}
           post.custom_fields[VOTES_CUSTOM_FIELD]["#{user_id}"][poll_name] = options
 
-          votes = post.custom_fields[VOTES_CUSTOM_FIELD]
-          poll["voters"] = votes.values.count { |v| v.has_key?(poll_name) }
+          post.custom_fields[VOTES_CUSTOM_FIELD].each do |_, user_votes|
+            next unless votes = user_votes[poll_name]
+            votes.each { |option| all_options[option] += 1 }
+            poll["voters"] += 1 if (available_options & votes.to_set).size > 0
+          end
 
-          all_options = Hash.new(0)
-          votes.map { |_, v| v[poll_name] }.flatten.each { |o| all_options[o] += 1 }
-          poll["options"].each { |option| option["votes"] = all_options[option["id"]] }
+          poll["options"].each { |o| o["votes"] = all_options[o["id"]] }
 
           post.custom_fields[POLLS_CUSTOM_FIELD] = polls
           post.save_custom_fields(true)
 
-          MessageBus.publish("/polls/#{post_id}", { polls: polls })
+          MessageBus.publish("/polls/#{post.topic_id}", { post_id: post_id, polls: polls })
 
           return [poll, options]
         end
@@ -124,7 +128,7 @@ after_initialize do
 
           post.save_custom_fields(true)
 
-          MessageBus.publish("/polls/#{post_id}", { polls: polls })
+          MessageBus.publish("/polls/#{post.topic_id}", {post_id: post.id, polls: polls })
 
           polls[poll_name]
         end
@@ -346,7 +350,7 @@ after_initialize do
           post.save_custom_fields(true)
 
           # publish the changes
-          MessageBus.publish("/polls/#{post.id}", { polls: polls })
+          MessageBus.publish("/polls/#{post.topic_id}", { post_id: post.id, polls: polls })
         end
       end
     else
@@ -366,7 +370,9 @@ after_initialize do
   # tells the front-end we have a poll for that post
   on(:post_created) do |post|
     next if post.is_first_post? || post.custom_fields[POLLS_CUSTOM_FIELD].blank?
-    MessageBus.publish("/polls", { post_id: post.id })
+    MessageBus.publish("/polls/#{post.topic_id}", {
+                         post_id: post.id,
+                         polls: post.custom_fields[POLLS_CUSTOM_FIELD]})
   end
 
   add_to_serializer(:post, :polls, false) { post_custom_fields[POLLS_CUSTOM_FIELD] }

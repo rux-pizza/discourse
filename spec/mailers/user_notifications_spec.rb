@@ -1,4 +1,4 @@
-require "spec_helper"
+require "rails_helper"
 
 describe UserNotifications do
 
@@ -35,6 +35,10 @@ describe UserNotifications do
       expect(subject.body).to be_present
     end
 
+    it "does not use the layout" do
+      expect(subject.html_part.to_s.scan(/<meta name="viewport" content="width=device-width, initial-scale=1.0">/).count).to eq(0)
+    end
+
   end
 
   describe ".forgot_password" do
@@ -46,6 +50,10 @@ describe UserNotifications do
       expect(subject.subject).to be_present
       expect(subject.from).to eq([SiteSetting.notification_email])
       expect(subject.body).to be_present
+    end
+
+    it "does not use the layout" do
+      expect(subject.html_part.to_s.scan(/<meta name="viewport" content="width=device-width, initial-scale=1.0">/).count).to eq(0)
     end
 
   end
@@ -77,6 +85,10 @@ describe UserNotifications do
         expect(subject.text_part.body.to_s).to be_present
       end
 
+      it "uses the layout" do
+        expect(subject.html_part.to_s.scan(/<meta name="viewport" content="width=device-width, initial-scale=1.0">/).count).to eq(1)
+      end
+
       it "includes email_prefix in email subject instead of site title" do
         SiteSetting.email_prefix = "Try Discourse"
         SiteSetting.title = "Discourse Meta"
@@ -99,7 +111,13 @@ describe UserNotifications do
     it 'generates a correct email' do
       SiteSetting.enable_names = true
       SiteSetting.display_name_on_posts = true
-      mail = UserNotifications.user_replied(response.user, post: response, notification: notification)
+      mail = UserNotifications.user_replied(response.user,
+                                             post: response,
+                                             notification_type: notification.notification_type,
+                                             notification_data_hash: notification.data_hash
+                                           )
+      # meta tag should be present from the layout
+      expect(mail.html_part.to_s.scan(/<meta name="viewport" content="width=device-width, initial-scale=1.0">/).count).to eq(1)
 
       # from should include full user name
       expect(mail[:from].display_names).to eql(['John Doe'])
@@ -108,7 +126,7 @@ describe UserNotifications do
       expect(mail.subject).to match(/India/)
 
       # 2 respond to links cause we have 1 context post
-      expect(mail.html_part.to_s.scan(/To respond/).count).to eq(2)
+      expect(mail.html_part.to_s.scan(/to respond/).count).to eq(2)
 
       # 1 unsubscribe
       expect(mail.html_part.to_s.scan(/To unsubscribe/).count).to eq(1)
@@ -119,22 +137,21 @@ describe UserNotifications do
 
       # in mailing list mode user_replies is not sent through
       response.user.mailing_list_mode = true
-      mail = UserNotifications.user_replied(response.user, post: response, notification: notification)
+      mail = UserNotifications.user_replied(response.user, post: response,
+                                              notification_type: notification.notification_type,
+                                              notification_data_hash: notification.data_hash
+                                           )
 
-      if Rails.version >= "4.2.0"
-        expect(mail.message.class).to eq(ActionMailer::Base::NullMail)
-      else
-        expect(mail.class).to eq(ActionMailer::Base::NullMail)
-      end
+      expect(mail.message.class).to eq(ActionMailer::Base::NullMail)
 
       response.user.mailing_list_mode = nil
-      mail = UserNotifications.user_replied(response.user, post: response, notification: notification)
+      mail = UserNotifications.user_replied(response.user,
+                                              post: response,
+                                              notification_type: notification.notification_type,
+                                              notification_data_hash: notification.data_hash
+                                           )
 
-      if Rails.version >= "4.2.0"
-        expect(mail.message.class).not_to eq(ActionMailer::Base::NullMail)
-      else
-        expect(mail.class).not_to eq(ActionMailer::Base::NullMail)
-      end
+      expect(mail.message.class).not_to eq(ActionMailer::Base::NullMail)
     end
   end
 
@@ -147,7 +164,14 @@ describe UserNotifications do
 
     it 'generates a correct email' do
       SiteSetting.enable_names = false
-      mail = UserNotifications.user_posted(response.user, post: response, notification: notification)
+      mail = UserNotifications.user_posted(response.user,
+                                           post: response,
+                                           notification_type: notification.notification_type,
+                                           notification_data_hash: notification.data_hash
+                                          )
+
+      # meta tag should be present from the layout
+      expect(mail.html_part.to_s.scan(/<meta name="viewport" content="width=device-width, initial-scale=1.0">/).count).to eq(1)
 
       # from should not include full user name if "show user full names" is disabled
       expect(mail[:from].display_names).to_not eql(['John Doe'])
@@ -159,7 +183,7 @@ describe UserNotifications do
       expect(mail.subject).not_to match(/Uncategorized/)
 
       # 2 respond to links cause we have 1 context post
-      expect(mail.html_part.to_s.scan(/To respond/).count).to eq(2)
+      expect(mail.html_part.to_s.scan(/to respond/).count).to eq(2)
 
       # 1 unsubscribe link
       expect(mail.html_part.to_s.scan(/To unsubscribe/).count).to eq(1)
@@ -179,7 +203,15 @@ describe UserNotifications do
 
     it 'generates a correct email' do
       SiteSetting.enable_names = true
-      mail = UserNotifications.user_private_message(response.user, post: response, notification: notification)
+      mail = UserNotifications.user_private_message(
+        response.user,
+        post: response,
+        notification_type: notification.notification_type,
+        notification_data_hash: notification.data_hash
+      )
+
+      # meta tag should be present from the layout
+      expect(mail.html_part.to_s.scan(/<meta name="viewport" content="width=device-width, initial-scale=1.0">/).count).to eq(1)
 
       # from should include username if full user name is not provided
       expect(mail[:from].display_names).to eql(['john'])
@@ -188,7 +220,7 @@ describe UserNotifications do
       expect(mail.subject).to match("[PM]")
 
       # 1 respond to link
-      expect(mail.html_part.to_s.scan(/To respond/).count).to eq(1)
+      expect(mail.html_part.to_s.scan(/to respond/).count).to eq(1)
 
       # 1 unsubscribe link
       expect(mail.html_part.to_s.scan(/To unsubscribe/).count).to eq(1)
@@ -201,16 +233,11 @@ describe UserNotifications do
 
   def expects_build_with(condition)
     UserNotifications.any_instance.expects(:build_email).with(user.email, condition)
-    mailer = UserNotifications.send(mail_type, user, notification: notification, post: notification.post)
-
-    if Rails.version >= "4.2.0"
-      # Starting from Rails 4.2, calling MyMailer.some_method no longer result
-      # in an immediate call to MyMailer#some_method. Instead, a "lazy proxy" is
-      # returned (this is changed to support #deliver_later). As a quick hack to
-      # fix the test, calling #message (or anything, really) would force the
-      # Mailer object to be created and the method invoked.
-      mailer.message
-    end
+    mailer = UserNotifications.send(mail_type, user,
+                                    notification_type: Notification.types[notification.notification_type],
+                                    notification_data_hash: notification.data_hash,
+                                    post: notification.post)
+    mailer.message
   end
 
   shared_examples "supports reply by email" do

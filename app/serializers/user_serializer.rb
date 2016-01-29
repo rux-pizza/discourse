@@ -70,7 +70,7 @@ class UserSerializer < BasicUserSerializer
              :automatically_unpin_topics
 
   has_one :invited_by, embed: :object, serializer: BasicUserSerializer
-  has_many :custom_groups, embed: :object, serializer: BasicGroupSerializer
+  has_many :groups, embed: :object, serializer: BasicGroupSerializer
   has_many :featured_user_badges, embed: :ids, serializer: UserBadgeSerializer, root: :user_badges
   has_one  :card_badge, embed: :object, serializer: BadgeSerializer
 
@@ -117,6 +117,14 @@ class UserSerializer < BasicUserSerializer
   ###
   ### ATTRIBUTES
   ###
+
+  def groups
+    if scope.is_admin? || object.id == scope.user.try(:id)
+      object.groups
+    else
+      object.groups.where(visible: true)
+    end
+  end
 
   def include_email?
     object.id && object.id == scope.user.try(:id)
@@ -221,7 +229,7 @@ class UserSerializer < BasicUserSerializer
   end
 
   def bio_excerpt
-    object.user_profile.bio_excerpt(350 , { keep_newlines: true, keep_emojis: true })
+    object.user_profile.bio_excerpt(350 , { keep_newlines: true, keep_emoji_images: true })
   end
 
   def include_suspend_reason?
@@ -333,8 +341,13 @@ class UserSerializer < BasicUserSerializer
   def custom_fields
     fields = nil
 
+    if scope.can_edit?(object)
+      fields = DiscoursePluginRegistry.serialized_current_user_fields.to_a
+    end
+
     if SiteSetting.public_user_custom_fields.present?
-      fields = SiteSetting.public_user_custom_fields.split('|')
+      fields ||= []
+      fields += SiteSetting.public_user_custom_fields.split('|')
     end
 
     if fields.present?

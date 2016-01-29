@@ -1,4 +1,5 @@
 const INVITED_TYPE = 8;
+const GROUP_SUMMARY_TYPE = 16;
 
 export default Ember.Component.extend({
   tagName: 'li',
@@ -29,7 +30,9 @@ export default Ember.Component.extend({
         badgeSlug = badgeName.replace(/[^A-Za-z0-9_]+/g, '-').toLowerCase();
       }
 
-      return Discourse.getURL('/badges/' + badgeId + '/' + badgeSlug);
+      var username = it.get('data.username');
+      username = username ? "?username=" + username.toLowerCase() : "";
+      return Discourse.getURL('/badges/' + badgeId + '/' + badgeSlug + username);
     }
 
     const topicId = it.get('topic_id');
@@ -40,6 +43,11 @@ export default Ember.Component.extend({
     if (it.get('notification_type') === INVITED_TYPE) {
       return Discourse.getURL('/users/' + it.get('data.display_username'));
     }
+
+    if (it.get('data.group_id')) {
+      return Discourse.getURL('/users/' + it.get('data.username') + '/messages/group/' + it.get('data.group_name'));
+    }
+
   }.property("notification.data.{badge_id,badge_name,display_username}", "model.slug", "model.topic_id", "model.post_number"),
 
   description: function() {
@@ -61,7 +69,15 @@ export default Ember.Component.extend({
     const notification = this.get('notification');
     const description = this.get('description');
     const username = notification.get('data.display_username');
-    const text = Discourse.Emoji.unescape(I18n.t(this.get('scope'), {description, username}));
+    var text;
+    if (notification.get('notification_type') === GROUP_SUMMARY_TYPE) {
+      const count = notification.get('data.inbox_count');
+      const group_name = notification.get('data.group_name');
+      text = I18n.t(this.get('scope'), {count, group_name});
+    } else {
+      text = I18n.t(this.get('scope'), {description, username});
+    }
+    text = Discourse.Emoji.unescape(text);
 
     const url = this.get('url');
     if (url) {

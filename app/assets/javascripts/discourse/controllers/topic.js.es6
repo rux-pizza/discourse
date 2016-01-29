@@ -6,6 +6,7 @@ import Quote from 'discourse/lib/quote';
 import { popupAjaxError } from 'discourse/lib/ajax-error';
 import computed from 'ember-addons/ember-computed-decorators';
 import Composer from 'discourse/models/composer';
+import DiscourseURL from 'discourse/lib/url';
 
 export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   needs: ['header', 'modal', 'composer', 'quote-button', 'topic-progress', 'application'],
@@ -17,8 +18,8 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   queryParams: ['filter', 'username_filters', 'show_deleted'],
   loadedAllPosts: Em.computed.or('model.postStream.loadedAllPosts', 'model.postStream.loadingLastPost'),
   enteredAt: null,
-  firstPostExpanded: false,
   retrying: false,
+  firstPostExpanded: false,
   adminMenuVisible: false,
 
   showRecover: Em.computed.and('model.deleted', 'model.details.can_recover'),
@@ -33,6 +34,17 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       this.send('refreshTitle');
     }
   }.observes('model.title', 'category'),
+
+  @computed('model.postStream.posts')
+  postsToRender() {
+    return this.capabilities.isAndroid ? this.get('model.postStream.posts')
+                                       : this.get('model.postStream.postsWithPlaceholders');
+  },
+
+  @computed('model.postStream.loadingFilter')
+  androidLoading(loading) {
+    return this.capabilities.isAndroid && loading;
+  },
 
   @computed('model.postStream.summary')
   show_deleted: {
@@ -78,11 +90,14 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     this.set('selectedReplies', []);
   }.on('init'),
 
-  @computed("model.isPrivateMessage", "model.category_id")
-  showCategoryChooser(isPrivateMessage, categoryId) {
-    const category = Discourse.Category.findById(categoryId);
-    const containsMessages = category && category.get("contains_messages");
-    return !isPrivateMessage && !containsMessages;
+  showCategoryChooser: Ember.computed.not("model.isPrivateMessage"),
+
+  gotoInbox(name) {
+    var url = '/users/' + this.get('currentUser.username_lower') + '/messages';
+    if (name) {
+      url = url + '/group/' + name;
+    }
+    DiscourseURL.routeTo(url);
   },
 
   actions: {
@@ -96,6 +111,21 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
 
     deleteTopic() {
       this.deleteTopic();
+    },
+
+
+    archiveMessage() {
+      const topic = this.get('model');
+      topic.archiveMessage().then(()=>{
+        this.gotoInbox(topic.get("inboxGroupName"));
+      });
+    },
+
+    moveToInbox() {
+      const topic = this.get('model');
+      topic.moveToInbox().then(()=>{
+        this.gotoInbox(topic.get("inboxGroupName"));
+      });
     },
 
     // Post related methods
@@ -148,6 +178,9 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       if (post.get('post_number') === 1) {
         this.deleteTopic();
         return;
+      } else if (!post.can_delete) {
+        // check if current user can delete post
+        return false;
       }
 
       const user = Discourse.User.current(),
@@ -187,6 +220,11 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     editPost(post) {
       if (!Discourse.User.current()) {
         return bootbox.alert(I18n.t('post.controls.edit_anonymous'));
+      }
+
+      // check if current user can edit post
+      if (!post.can_edit) {
+        return false;
       }
 
       const composer = this.get('controllers.composer'),
@@ -401,12 +439,11 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
         draftKey: Composer.REPLY_AS_NEW_TOPIC_KEY,
         categoryId: this.get('category.id')
       }).then(() => {
-        return Em.isEmpty(quotedText) ? Discourse.Post.loadQuote(post.get('id')) : quotedText;
+        return Em.isEmpty(quotedText) ? "" : quotedText;
       }).then(q => {
         const postUrl = `${location.protocol}//${location.host}${post.get('url')}`;
         const postLink = `[${Handlebars.escapeExpression(self.get('model.title'))}](${postUrl})`;
-
-        this.appEvents.trigger('composer:insert-text', `${I18n.t("post.continue_discussion", { postLink })}\n\n${q}`);
+        composerController.get('model').appendText(`${I18n.t("post.continue_discussion", { postLink })}\n\n${q}`);
       });
     },
 
@@ -668,8 +705,8 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   topVisibleChanged(post) {
     if (!post) { return; }
 
-    const postStream = this.get('model.postStream'),
-          firstLoadedPost = postStream.get('firstLoadedPost');
+    const postStream = this.get('model.postStream');
+    const firstLoadedPost = postStream.get('posts.firstObject');
 
     this.set('model.currentPost', post.get('post_number'));
 
@@ -680,15 +717,17 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       // trigger a scroll after a promise resolves in a controller? We need
       // to do this to preserve upwards infinte scrolling.
       const $body = $('body');
-      let $elem = $('#post-cloak-' + post.get('post_number'));
-      const distToElement = $body.scrollTop() - $elem.position().top;
+      const elemId = `#post_${post.get('post_number')}`;
+      const $elem = $(elemId).closest('.post-cloak');
+      const elemPos = $elem.position();
+      const distToElement = elemPos ? $body.scrollTop() - elemPos.top : 0;
 
       postStream.prependMore().then(function() {
         Em.run.next(function () {
-          $elem = $('#post-cloak-' + post.get('post_number'));
+          const $refreshedElem = $(elemId).closest('.post-cloak');
 
           // Quickly going back might mean the element is destroyed
-          const position = $elem.position();
+          const position = $refreshedElem.position();
           if (position && position.top) {
             $('html, body').scrollTop(position.top + distToElement);
           }
@@ -706,8 +745,8 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   bottomVisibleChanged(post) {
     if (!post) { return; }
 
-    const postStream = this.get('model.postStream'),
-        lastLoadedPost = postStream.get('lastLoadedPost');
+    const postStream = this.get('model.postStream');
+    const lastLoadedPost = postStream.get('posts.lastObject');
 
     this.set('controllers.topic-progress.progressPosition', postStream.progressIndexOfPost(post));
 

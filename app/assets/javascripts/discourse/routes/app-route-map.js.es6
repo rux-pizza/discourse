@@ -42,32 +42,47 @@ export default function() {
     this.route('parentCategory', { path: '/c/:slug' });
     this.route('categoryNone', { path: '/c/:slug/none' });
     this.route('category', { path: '/c/:parentSlug/:slug' });
+    this.route('categoryWithID', { path: '/c/:parentSlug/:slug/:id' });
 
     // homepage
     this.route(Discourse.Utilities.defaultHomepage(), { path: '/' });
   });
 
   this.resource('group', { path: '/groups/:name' }, function() {
+    this.route('topics');
+    this.route('mentions');
     this.route('members');
+    this.route('messages');
   });
 
   // User routes
   this.resource('users');
   this.resource('user', { path: '/users/:username' }, function() {
+    this.route('summary');
     this.resource('userActivity', { path: '/activity' }, function() {
-      _.map(Discourse.UserAction.TYPES, (id, userAction) => {
-        this.route(userAction, { path: userAction.replace('_', '-') });
-      });
+      this.route('topics');
+      this.route('replies');
+      this.route('likesGiven', {path: 'likes-given'});
+      this.route('bookmarks');
+      this.route('pending');
+    });
+
+    this.resource('userNotifications', {path: '/notifications'}, function(){
+      this.route('responses');
+      this.route('likesReceived', { path: 'likes-received'});
+      this.route('mentions');
+      this.route('edits');
     });
 
     this.route('badges');
-    this.route('notifications');
     this.route('flaggedPosts', { path: '/flagged-posts' });
     this.route('deletedPosts', { path: '/deleted-posts' });
 
     this.resource('userPrivateMessages', { path: '/messages' }, function() {
-      this.route('mine');
-      this.route('unread');
+      this.route('sent');
+      this.route('archive');
+      this.route('group', { path: 'group/:name'});
+      this.route('groupArchive', { path: 'group/:name/archive'});
     });
 
     this.resource('preferences', function() {
@@ -81,6 +96,7 @@ export default function() {
     this.resource('userInvited', { path: '/invited' }, function() {
       this.route('show', { path: '/:filter' });
     });
+
   });
 
   this.route('signup', {path: '/signup'});

@@ -19,15 +19,15 @@ class Topic < ActiveRecord::Base
   def_delegator :featured_users, :choose, :feature_topic_users
 
   def_delegator :notifier, :watch!, :notify_watch!
-  def_delegator :notifier, :tracking!, :notify_tracking!
+  def_delegator :notifier, :track!, :notify_tracking!
   def_delegator :notifier, :regular!, :notify_regular!
-  def_delegator :notifier, :muted!, :notify_muted!
+  def_delegator :notifier, :mute!, :notify_muted!
   def_delegator :notifier, :toggle_mute, :toggle_mute
 
   attr_accessor :allowed_user_ids
 
   def self.max_sort_order
-    2**31 - 1
+    @max_sort_order ||= (2 ** 31) - 1
   end
 
   def featured_users
@@ -82,6 +82,9 @@ class Topic < ActiveRecord::Base
   has_many :ordered_posts, -> { order(post_number: :asc) }, class_name: "Post"
   has_many :topic_allowed_users
   has_many :topic_allowed_groups
+
+  has_many :group_archived_messages, dependent: :destroy
+  has_many :user_archived_messages, dependent: :destroy
 
   has_many :allowed_group_users, through: :allowed_groups, source: :users
   has_many :allowed_groups, through: :topic_allowed_groups, source: :group
@@ -205,7 +208,7 @@ class Topic < ActiveRecord::Base
   def cancel_auto_close_job
     if (auto_close_at_changed? && !auto_close_at_was.nil?) || (auto_close_user_id_changed? && auto_close_at)
       self.auto_close_started_at ||= Time.zone.now if auto_close_at
-      Jobs.cancel_scheduled_job(:close_topic, { topic_id: id })
+      Jobs.cancel_scheduled_job(:close_topic, topic_id: id)
     end
   end
 
@@ -511,6 +514,12 @@ class Topic < ActiveRecord::Base
     true
   end
 
+  def add_small_action(user, action_code, who=nil)
+    custom_fields = {}
+    custom_fields["action_code_who"] = who if who.present?
+    add_moderator_post(user, nil, post_type: Post.types[:small_action], action_code: action_code, custom_fields: custom_fields)
+  end
+
   def add_moderator_post(user, text, opts=nil)
     opts ||= {}
     new_post = nil
@@ -521,7 +530,8 @@ class Topic < ActiveRecord::Base
                               no_bump: opts[:bump].blank?,
                               skip_notifications: opts[:skip_notifications],
                               topic_id: self.id,
-                              skip_validations: true)
+                              skip_validations: true,
+                              custom_fields: opts[:custom_fields])
     new_post = creator.create
     increment!(:moderator_posts_count) if new_post.persisted?
 
@@ -540,7 +550,6 @@ class Topic < ActiveRecord::Base
 
   def change_category_to_id(category_id)
     return false if private_message?
-    return false if category.try(:contains_messages)
 
     new_category_id = category_id.to_i
     # if the category name is blank, reset the attribute
@@ -554,11 +563,12 @@ class Topic < ActiveRecord::Base
     changed_to_category(cat)
   end
 
-  def remove_allowed_user(username)
+  def remove_allowed_user(removed_by, username)
     if user = User.find_by(username: username)
       topic_user = topic_allowed_users.find_by(user_id: user.id)
       if topic_user
         topic_user.destroy
+        add_small_action(removed_by, "removed_user", user.username)
         return true
       end
     end
@@ -572,6 +582,8 @@ class Topic < ActiveRecord::Base
       # If the user exists, add them to the message.
       user = User.find_by_username_or_email(username_or_email)
       if user && topic_allowed_users.create!(user_id: user.id)
+        # Create a small action message
+        add_small_action(invited_by, "invited_user", user.username)
 
         # Notify the user they've been invited
         user.notifications.create(notification_type: Notification.types[:invited_to_private_message],
@@ -835,10 +847,12 @@ class Topic < ActiveRecord::Base
         self.auto_close_at = utc.local(now.year, now.month, now.day, m[1].to_i, m[2].to_i)
         self.auto_close_at += offset_minutes * 60 if offset_minutes
         self.auto_close_at += 1.day if self.auto_close_at < now
+        self.auto_close_hours = -1
       elsif arg.is_a?(String) && arg.include?("-") && timestamp = utc.parse(arg)
         # a timestamp in client's time zone, like "2015-5-27 12:00"
         self.auto_close_at = timestamp
         self.auto_close_at += offset_minutes * 60 if offset_minutes
+        self.auto_close_hours = -1
         self.errors.add(:auto_close_at, :invalid) if timestamp < Time.zone.now
       else
         num_hours = arg.to_f
@@ -863,6 +877,10 @@ class Topic < ActiveRecord::Base
         self.auto_close_user = by_user
       else
         self.auto_close_user ||= (self.user.staff? || self.user.trust_level == TrustLevel[4] ? self.user : Discourse.system_user)
+      end
+
+      if self.auto_close_at.try(:<, Time.zone.now)
+        auto_close(auto_close_user)
       end
     end
 
@@ -893,6 +911,27 @@ class Topic < ActiveRecord::Base
 
   def expandable_first_post?
     SiteSetting.embed_truncate? && has_topic_embed?
+  end
+
+  def message_archived?(user)
+    return false unless user && user.id
+
+    sql = <<SQL
+SELECT 1 FROM topic_allowed_groups tg
+JOIN group_archived_messages gm
+      ON gm.topic_id = tg.topic_id AND
+         gm.group_id = tg.group_id
+  WHERE tg.group_id IN (SELECT g.group_id FROM group_users g WHERE g.user_id = :user_id)
+    AND tg.topic_id = :topic_id
+
+UNION ALL
+
+SELECT 1 FROM topic_allowed_users tu
+JOIN user_archived_messages um ON um.user_id = tu.user_id AND um.topic_id = tu.topic_id
+WHERE tu.user_id = :user_id AND tu.topic_id = :topic_id
+SQL
+
+    User.exec_sql(sql, user_id: user.id, topic_id: id).to_a.length > 0
   end
 
   TIME_TO_FIRST_RESPONSE_SQL ||= <<-SQL

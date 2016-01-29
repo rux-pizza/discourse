@@ -10,11 +10,11 @@ fi:
     poll:
       voters:
         one: "äänestäjä"
-        other: "äänestäjät"
+        other: "äänestäjää"
       total_votes:
         one: "ääni"
         other: "ääntä"
-      average_rating: "Keskivertoarvio: <strong>%{average}</strong>."
+      average_rating: "Keskiarvo: <strong>%{average}</strong>"
       multiple:
         help:
           at_least_min_options:

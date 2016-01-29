@@ -53,7 +53,8 @@ class TopicViewSerializer < ApplicationSerializer
              :expandable_first_post,
              :is_warning,
              :chunk_size,
-             :bookmarked
+             :bookmarked,
+             :message_archived
 
   # TODO: Split off into proper object / serializer
   def details
@@ -66,14 +67,17 @@ class TopicViewSerializer < ApplicationSerializer
     }
 
     if object.topic.private_message?
-      result[:allowed_users] = object.topic.allowed_users.map do |user|
-        BasicUserSerializer.new(user, scope: scope, root: false)
-      end
-    end
+      allowed_user_ids = Set.new
 
-    if object.topic.private_message?
-      result[:allowed_groups] = object.topic.allowed_groups.map do |ag|
-        BasicGroupSerializer.new(ag, scope: scope, root: false)
+      result[:allowed_groups] = object.topic.allowed_groups.map do |group|
+        allowed_user_ids.merge(GroupUser.where(group: group).pluck(:user_id))
+        BasicGroupSerializer.new(group, scope: scope, root: false)
+      end
+
+      result[:allowed_users] = object.topic.allowed_users.select do |user|
+        !allowed_user_ids.include?(user.id)
+      end.map do |user|
+        BasicUserSerializer.new(user, scope: scope, root: false)
       end
     end
 
@@ -82,7 +86,6 @@ class TopicViewSerializer < ApplicationSerializer
         TopicPostCountSerializer.new({user: object.participants[pc[0]], post_count: pc[1]}, scope: scope, root: false)
       end
     end
-
 
     if object.suggested_topics.try(:topics).present?
       result[:suggested_topics] = object.suggested_topics.topics.map do |user|
@@ -137,6 +140,14 @@ class TopicViewSerializer < ApplicationSerializer
 
   def draft_sequence
     object.draft_sequence
+  end
+
+  def include_message_archived?
+    object.topic.private_message?
+  end
+
+  def message_archived
+    object.topic.message_archived?(scope.user)
   end
 
   def deleted_by

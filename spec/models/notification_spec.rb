@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Notification do
   before do
@@ -10,6 +10,22 @@ describe Notification do
 
   it { is_expected.to belong_to :user }
   it { is_expected.to belong_to :topic }
+
+  describe '#types' do
+    context "verify enum sequence" do
+      before do
+        @types = Notification.types
+      end
+
+      it "'mentioned' should be at 1st position" do
+        expect(@types[:mentioned]).to eq(1)
+      end
+
+      it "'group_mentioned' should be at 15th position" do
+        expect(@types[:group_mentioned]).to eq(15)
+      end
+    end
+  end
 
   describe 'post' do
     let(:topic) { Fabricate(:topic) }
@@ -222,7 +238,7 @@ describe Notification do
       end
       Notification.create!(read: true, user_id: user.id, topic_id: 2, post_number: 4, data: '{}', notification_type: 1)
 
-      expect(Notification.mark_posts_read(user,2,[1,2,3,4])).to eq(3)
+      expect { Notification.mark_posts_read(user,2,[1,2,3,4]) }.to change { Notification.where(read: true).count }.by(3)
     end
   end
 

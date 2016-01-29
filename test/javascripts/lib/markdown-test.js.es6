@@ -202,7 +202,7 @@ test("Quotes", function() {
 
 test("Mentions", function() {
 
-  var alwaysTrue = { mentionLookup: (function() { return true; }) };
+  var alwaysTrue = { mentionLookup: (function() { return "user"; }) };
 
   cookedOptions("Hello @sam", alwaysTrue,
                 "<p>Hello <a class=\"mention\" href=\"/users/sam\">@sam</a></p>",
@@ -287,6 +287,46 @@ test("Mentions", function() {
   cookedOptions("<small>a @sam c</small>", alwaysTrue,
                 "<p><small>a <a class=\"mention\" href=\"/users/sam\">@sam</a> c</small></p>",
                 "it allows mentions within HTML tags");
+});
+
+test("Category hashtags", () => {
+  var alwaysTrue = { categoryHashtagLookup: (function() { return ["category", "http://test.discourse.org/category-hashtag"]; }) };
+
+  cookedOptions("Check out #category-hashtag", alwaysTrue,
+         "<p>Check out <a class=\"hashtag\" href=\"http://test.discourse.org/category-hashtag\">#<span>category-hashtag</span></a></p>",
+         "it translates category hashtag into links");
+
+  cooked("Check out #category-hashtag",
+         "<p>Check out <span class=\"hashtag\">#category-hashtag</span></p>",
+         "it does not translate category hashtag into links if it is not a valid category hashtag");
+
+  cookedOptions("[#category-hashtag](http://www.test.com)", alwaysTrue,
+         "<p><a href=\"http://www.test.com\">#category-hashtag</a></p>",
+         "it does not translate category hashtag within links");
+
+  cooked("```\n# #category-hashtag\n```",
+         "<p><pre><code class=\"lang-auto\"># #category-hashtag</code></pre></p>",
+         "it does not translate category hashtags to links in code blocks");
+
+  cooked("># #category-hashtag\n",
+         "<blockquote><h1><span class=\"hashtag\">#category-hashtag</span></h1></blockquote>",
+         "it handles category hashtags in simple quotes");
+
+  cooked("# #category-hashtag",
+         "<h1><span class=\"hashtag\">#category-hashtag</span></h1>",
+         "it works within ATX-style headers");
+
+  cooked("don't `#category-hashtag`",
+         "<p>don't <code>#category-hashtag</code></p>",
+         "it does not mention in an inline code block");
+
+  cooked("test #hashtag1/#hashtag2",
+         "<p>test <span class=\"hashtag\">#hashtag1</span>/#hashtag2</p>",
+         "it does not convert category hashtag not bounded by spaces");
+
+  cooked("<small>#category-hashtag</small>",
+         "<p><small><span class=\"hashtag\">#category-hashtag</span></small></p>",
+         "it works between HTML tags");
 });
 
 

@@ -1,6 +1,22 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Group do
+
+  describe '#builtin' do
+    context "verify enum sequence" do
+      before do
+        @builtin = Group.builtin
+      end
+
+      it "'moderators' should be at 1st position" do
+        expect(@builtin[:moderators]).to eq(1)
+      end
+
+      it "'trust_level_2' should be at 4th position" do
+        expect(@builtin[:trust_level_2]).to eq(4)
+      end
+    end
+  end
 
   # UGLY but perf is horrible with this callback
   before do
@@ -42,6 +58,16 @@ describe Group do
     it "is valid for proper domains" do
       group.automatic_membership_email_domains = "discourse.org|wikipedia.org"
       expect(group.valid?).to eq true
+    end
+
+    it "is invalid for bad incoming email" do
+      group.incoming_email = "foo.bar.org"
+      expect(group.valid?).to eq(false)
+    end
+
+    it "is valid for proper incoming email" do
+      group.incoming_email = "foo@bar.org"
+      expect(group.valid?).to eq(true)
     end
   end
 

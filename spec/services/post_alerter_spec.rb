@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe PostAlerter do
 
@@ -12,7 +12,7 @@ describe PostAlerter do
   context "unread" do
     it "does not return whispers as unread posts" do
       op = Fabricate(:post)
-      whisper = Fabricate(:post, raw: 'this is a whisper post',
+      _whisper = Fabricate(:post, raw: 'this is a whisper post',
                                  user: Fabricate(:admin),
                                  topic: op.topic,
                                  reply_to_post_number: op.post_number,
@@ -80,15 +80,45 @@ describe PostAlerter do
 
       expect(user.notifications.count).to eq(1)
 
-      create_post(user: user, raw: "my magic topic\n##{Discourse.base_url}#{post1.url}")
+      topic = Fabricate(:topic)
+
+      watcher = Fabricate(:user)
+      TopicUser.create!(user_id: watcher.id, topic_id: topic.id, notification_level: TopicUser.notification_levels[:watching])
+
+      create_post(topic_id: topic.id, user: user, raw: "my magic topic\n##{Discourse.base_url}#{post1.url}")
 
       user.reload
       expect(user.notifications.count).to eq(1)
+
+      expect(watcher.notifications.count).to eq(1)
 
       # don't notify on reflection
       post1.reload
       expect(PostAlerter.new.extract_linked_users(post1).length).to eq(0)
 
+    end
+  end
+
+  context '@group mentions' do
+
+    it 'notifies users correctly' do
+
+      group = Fabricate(:group, name: 'group', alias_level: Group::ALIAS_LEVELS[:everyone])
+      group.add(evil_trout)
+
+      expect {
+        create_post_with_alerts(raw: "Hello @group how are you?")
+      }.to change(evil_trout.notifications, :count).by(1)
+
+      expect(GroupMention.count).to eq(1)
+
+      group.update_columns(alias_level: Group::ALIAS_LEVELS[:members_mods_and_admins])
+
+      expect {
+        create_post_with_alerts(raw: "Hello @group you are not mentionable")
+      }.to change(evil_trout.notifications, :count).by(0)
+
+      expect(GroupMention.count).to eq(2)
     end
   end
 

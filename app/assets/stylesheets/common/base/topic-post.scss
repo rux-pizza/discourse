@@ -1,3 +1,19 @@
+.placeholder-avatar {
+  display: inline-block;
+  background-color: dark-light-diff($primary, $secondary, 90%, -75%);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
+.placeholder-text {
+  display: inline-block;
+  background-color: dark-light-diff($primary, $secondary, 90%, -75%);
+  width: 100%;
+  height: 1.5em;
+  margin-bottom: 0.6em;
+}
+
 .names {
  float: left;
  .username {
@@ -131,13 +147,14 @@ aside.quote {
   }
 }
 
+.topic-avatar .poster-avatar-extra {
+  display: none;
+}
+
 .topic-body {
   &.highlighted {
     background-color: dark-light-diff($tertiary, $secondary, 85%, -65%);
   }
-}
-.wiki .topic-body {
-  background-color: dark-light-diff($wiki, $secondary, 95%, -50%);
 }
 
 // this ensures consistent top margin on topic posts even if the first line of a post

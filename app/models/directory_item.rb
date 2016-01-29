@@ -13,7 +13,12 @@ class DirectoryItem < ActiveRecord::Base
   end
 
   def self.period_types
-    @types ||= Enum.new(:all, :yearly, :monthly, :weekly, :daily, :quarterly)
+    @types ||= Enum.new(all: 1,
+                        yearly: 2,
+                        monthly: 3,
+                        weekly: 4,
+                        daily: 5,
+                        quarterly: 6)
   end
 
   def self.refresh!
@@ -28,8 +33,8 @@ class DirectoryItem < ActiveRecord::Base
     since = case period_type
             when :daily then 1.day.ago
             when :weekly then 1.week.ago
-            when :quarterly then 3.weeks.ago
             when :monthly then 1.month.ago
+            when :quarterly then 3.months.ago
             when :yearly then 1.year.ago
             else 1000.years.ago
             end
@@ -70,6 +75,26 @@ class DirectoryItem < ActiveRecord::Base
                   new_topic_type: UserAction::NEW_TOPIC,
                   reply_type: UserAction::REPLY,
                   regular_post_type: Post.types[:regular]
+
+      if period_type == :all
+        exec_sql <<SQL
+        UPDATE user_stats s
+        SET likes_given         = d.likes_given,
+            likes_received      = d.likes_received,
+            topic_count         = d.topic_count,
+            post_count          = d.post_count
+
+        FROM directory_items d
+        WHERE s.user_id = d.user_id AND
+              d.period_type = 1 AND
+          ( s.likes_given         <> d.likes_given OR
+            s.likes_received      <> d.likes_received OR
+            s.topic_count         <> d.topic_count OR
+            s.post_count          <> d.post_count
+          )
+
+SQL
+      end
     end
   end
 end
