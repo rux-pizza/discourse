@@ -302,7 +302,7 @@ export default Ember.Component.extend({
           showSelector({
             appendTo: self.$(),
             container,
-            onSelect: title => self._addText(self._getSelected(), `${title}:`)
+            onSelect: title => self._addText(self._getSelected(), `${title}&`)
           });
           return "";
         }
@@ -310,7 +310,7 @@ export default Ember.Component.extend({
 
       dataSource(term) {
         return new Ember.RSVP.Promise(resolve => {
-          const full = `:${term}`;
+          const full = `&${term}`;
           term = term.toLowerCase();
 
           if (term === "") {
@@ -511,7 +511,7 @@ export default Ember.Component.extend({
       showSelector({
         appendTo: this.$(),
         container: this.container,
-        onSelect: title => this._addText(this._getSelected(), `:${title}:`)
+        onSelect: title => this._addText(this._getSelected(), `&${title}&`)
       });
     }
   }

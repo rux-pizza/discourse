@@ -136,7 +136,7 @@ class Emoji
   end
 
   def self.sub_unicode!(text)
-    text.gsub!(unicode_regexp) {|m| ":#{unicode_replacements[m]}:"}
+    text.gsub!(unicode_regexp) {|m| "&#{unicode_replacements[m]}&"}
   end
 
 end
