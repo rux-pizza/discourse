@@ -46,11 +46,11 @@ for (var name in aliases) {
 
 Discourse.Emoji.unescape = function(string) {
   //this can be further improved by supporting matches of emoticons that don't begin with a colon
-  if (Discourse.SiteSettings.enable_emoji && string.indexOf(":") >= 0) {
-    string = string.replace(/\B:[^\s:]+:?\B/g, function(m) {
+  if (Discourse.SiteSettings.enable_emoji && string.indexOf("&") >= 0) {
+    string = string.replace(/\B&[^\s&]+&?\B/g, function(m) {
       var isEmoticon = !!Discourse.Emoji.translations[m],
             emoji = isEmoticon ? Discourse.Emoji.translations[m] : m.slice(1, m.length - 1),
-            hasEndingColon = m.lastIndexOf(":") === m.length - 1,
+            hasEndingColon = m.lastIndexOf("&") === m.length - 1,
             url = Discourse.Emoji.urlFor(emoji);
       return url && (isEmoticon || hasEndingColon) ? "<img src='" + url + "' title='" + emoji + "' alt='" + emoji + "' class='emoji'>" : m;
     });

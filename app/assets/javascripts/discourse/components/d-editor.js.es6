@@ -293,11 +293,11 @@ export default Ember.Component.extend({
 
     $editorInput.autocomplete({
       template: template,
-      key: ":",
+      key: "&",
 
       transformComplete(v) {
         if (v.code) {
-          return `${v.code}:`;
+          return `${v.code}&`;
         } else {
           showSelector({
             appendTo: self.$(),
