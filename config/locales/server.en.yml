@@ -568,9 +568,9 @@ en:
       description: 'Bookmark this post'
       long_form: 'bookmarked this post'
     like:
-      title: 'Fuck'
-      description: 'Give a fuck'
-      long_form: 'gave a fuck'
+      title: 'Like'
+      description: 'Like this post'
+      long_form: 'liked this'
     vote:
       title: 'Vote'
       description: 'Vote for this post'
@@ -641,9 +641,9 @@ en:
       xaxis: "Day"
       yaxis: "Number of new posts"
     likes:
-      title: "Fucks"
+      title: "Likes"
       xaxis: "Day"
-      yaxis: "Number of new fucks"
+      yaxis: "Number of new likes"
     flags:
       title: "Flags"
       xaxis: "Day"
@@ -845,10 +845,9 @@ en:
     email_custom_headers: "A pipe-delimited list of custom email headers"
     email_subject: "Customizable subject format for standard emails. See https://meta.discourse.org/t/customize-subject-format-for-standard-emails/20801"
     use_https: "Should the full url for the site (Discourse.base_url) be http or https? DO NOT ENABLE THIS UNLESS HTTPS IS ALREADY SET UP AND WORKING!"
-
     summary_score_threshold: "The minimum score required for a post to be included in 'Summarize This Topic'"
     summary_posts_required: "Minimum posts in a topic before 'Summarize This Topic' is enabled"
-    summary_likes_required: "Minimum fucks in a topic before 'Summarize This Topic' is enabled"
+    summary_likes_required: "Minimum likes in a topic before 'Summarize This Topic' is enabled"
     summary_percent_filter: "When a user clicks 'Summarize This Topic', show the top % of posts"
     summary_max_results: "Maximum posts returned by 'Summary This Topic'"
 
@@ -998,7 +997,7 @@ en:
     rate_limit_new_user_create_topic: "After creating a topic, new users must wait (n) seconds before creating another topic."
     rate_limit_new_user_create_post: "After posting, new users must wait (n) seconds before creating another post."
 
-    max_likes_per_day: "Maximum number of fucks per user per day."
+    max_likes_per_day: "Maximum number of likes per user per day."
     max_flags_per_day: "Maximum number of flags per user per day."
     max_bookmarks_per_day: "Maximum number of bookmarks per user per day."
     max_edits_per_day: "Maximum number of edits per user per day."
@@ -1129,7 +1128,7 @@ en:
     newuser_spam_host_threshold: "How many times a new user can post a link to the same host within their `newuser_spam_host_posts` posts before being considered spam."
 
     white_listed_spam_host_domains: "A list of domains excluded from spam host testing. New users will never be restricted from creating posts with links to these domains."
-    staff_like_weight: "How much extra weighting factor to give staff fucks."
+    staff_like_weight: "How much extra weighting factor to give staff likes."
     topic_view_duration_hours: "Count a new topic view once per IP/User every N hours"
     user_profile_view_duration_hours: "Count a new user profile view once per IP/User every N hours"
 
@@ -1326,7 +1325,7 @@ en:
   notification_types:
     group_mentioned: "%{group_name} was mentioned in %{link}"
     mentioned: "%{display_username} mentioned you in %{link}"
-    liked: "%{display_username} gave you a fuck in %{link}"
+    liked: "%{display_username} liked your post in %{link}"
     replied: "%{display_username} replied to your post in %{link}"
     quoted: "%{display_username} quoted your post in %{link}"
     edited: "%{display_username} edited your post in %{link}"

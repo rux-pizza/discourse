@@ -2918,10 +2918,10 @@ en:
           description: Received 50 likes on a reply
         nice_topic:
           name: Nice Topic
-          description: Received 10 likes on a topic. This badge can be granted multiple times
+          description: Received 10 likes on a topic
         good_topic:
           name: Good Topic
-          description: Received 25 likes on a topic. This badge can be granted multiple times
+          description: Received 25 likes on a topic
         great_topic:
           name: Great Topic
           description: Received 50 likes on a topic
