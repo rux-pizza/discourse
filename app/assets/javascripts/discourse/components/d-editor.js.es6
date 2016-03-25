@@ -304,6 +304,9 @@ export default Ember.Component.extend({
     $editorInput.autocomplete({
       template: template,
       key: "&",
+      afterComplete(text) {
+        self.set('value', text);
+      },
 
       transformComplete(v) {
         if (v.code) {
