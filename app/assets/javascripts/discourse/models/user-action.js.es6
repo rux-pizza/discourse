@@ -112,7 +112,7 @@ const UserAction = RestModel.extend({
     let groups = this.get("childGroups");
     if (!groups) {
       groups = {
-        likes: UserActionGroup.create({ icon: "fa fa-lemon-o" }),
+        likes: UserActionGroup.create({ icon: "fa fa-heart" }),
         stars: UserActionGroup.create({ icon: "fa fa-star" }),
         edits: UserActionGroup.create({ icon: "fa fa-pencil" }),
         bookmarks: UserActionGroup.create({ icon: "fa fa-bookmark" })
