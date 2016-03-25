@@ -4,6 +4,14 @@ export default Ember.Component.extend({
   size: 'medium',
   classNameBindings: [':badge-card', 'size'],
 
+  @computed('count', 'badge.grant_count')
+  displayCount(count, grantCount) {
+    const c = parseInt(count || grantCount || 0);
+    if (c > 1) {
+      return c;
+    }
+  },
+
   @computed('size')
   summary(size) {
     if (size === 'large') {
