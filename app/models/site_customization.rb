@@ -27,6 +27,17 @@ class SiteCustomization < ActiveRecord::Base
     raise e
   end
 
+  def transpile(es6_source, version)
+    template  = Tilt::ES6ModuleTranspilerTemplate.new {}
+    wrapped = <<PLUGIN_API_JS
+Discourse._registerPluginCode('#{version}', api => {
+  #{es6_source}
+});
+PLUGIN_API_JS
+
+    template.babel_transpile(wrapped)
+  end
+
   def process_html(html)
     doc = Nokogiri::HTML.fragment(html)
     doc.css('script[type="text/x-handlebars"]').each do |node|
@@ -41,6 +52,17 @@ class SiteCustomization < ActiveRecord::Base
   Ember.TEMPLATES[#{name.inspect}] = #{precompiled};
 SCRIPT
       node.replace("<script>#{compiled}</script>")
+    end
+
+    doc.css('script[type="text/discourse-plugin"]').each do |node|
+      if node['version'].present?
+        begin
+          code = transpile(node.inner_html, node['version'])
+          node.replace("<script>#{code}</script>")
+        rescue Tilt::ES6ModuleTranspilerTemplate::JavaScriptError => ex
+          node.replace("<script type='text/discourse-js-error'>#{ex.message}</script>")
+        end
+      end
     end
 
     doc.to_s
@@ -217,32 +239,32 @@ end
 # Table name: site_customizations
 #
 #  id                      :integer          not null, primary key
-#  name                    :string(255)      not null
+#  name                    :string           not null
 #  stylesheet              :text
 #  header                  :text
-#  header_baked            :text
 #  user_id                 :integer          not null
 #  enabled                 :boolean          not null
-#  key                     :string(255)      not null
+#  key                     :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  stylesheet_baked        :text             default(""), not null
 #  mobile_stylesheet       :text
+#  mobile_header           :text
 #  mobile_stylesheet_baked :text
 #  footer                  :text
-#  footer_baked            :text
-#  mobile_header           :text
 #  mobile_footer           :text
-#  mobile_header_baked     :text
-#  mobile_footer_baked     :text
 #  head_tag                :text
 #  body_tag                :text
-#  head_tag_baked          :text
-#  body_tag_baked          :text
 #  top                     :text
 #  mobile_top              :text
 #  embedded_css            :text
 #  embedded_css_baked      :text
+#  head_tag_baked          :text
+#  body_tag_baked          :text
+#  header_baked            :text
+#  mobile_header_baked     :text
+#  footer_baked            :text
+#  mobile_footer_baked     :text
 #
 # Indexes
 #

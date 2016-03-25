@@ -5,7 +5,7 @@ import { linkSeenCategoryHashtags, fetchUnseenCategoryHashtags } from 'discourse
 
 export default Ember.Component.extend({
   classNames: ['wmd-controls'],
-  classNameBindings: [':wmd-controls', 'showPreview', 'showPreview::hide-preview'],
+  classNameBindings: ['showToolbar:toolbar-visible', ':wmd-controls', 'showPreview', 'showPreview::hide-preview'],
 
   uploadProgress: 0,
   showPreview: true,
@@ -18,7 +18,7 @@ export default Ember.Component.extend({
 
   @on('init')
   _setupPreview() {
-    const val = (Discourse.Mobile.mobileView ? false : (this.keyValueStore.get('composer.showPreview') || 'true'));
+    const val = (this.site.mobileView ? false : (this.keyValueStore.get('composer.showPreview') || 'true'));
     this.set('showPreview', val === 'true');
   },
 
@@ -91,6 +91,8 @@ export default Ember.Component.extend({
 
   _syncEditorAndPreviewScroll() {
     const $input = this.$('.d-editor-input');
+    if (!$input) { return; }
+
     const $preview = this.$('.d-editor-preview');
 
     if ($input.scrollTop() === 0) {
@@ -216,7 +218,7 @@ export default Ember.Component.extend({
       }
     });
 
-    if (Discourse.Mobile.mobileView) {
+    if (this.site.mobileView) {
       this.$(".mobile-file-upload").on("click.uploader", function () {
         // redirect the click on the hidden file input
         $("#mobile-uploader").click();
@@ -343,12 +345,34 @@ export default Ember.Component.extend({
     },
 
     showOptions() {
+      // long term we want some smart positioning algorithm in popup-menu
+      // the problem is that positioning in a fixed panel is a nightmare
+      // cause offsetParent can end up returning a fixed element and then
+      // using offset() is not going to work, so you end up needing special logic
+      // especially since we allow for negative .top, provided there is room on screen
       const myPos = this.$().position();
       const buttonPos = this.$('.options').position();
 
+      const popupHeight = $('#reply-control .popup-menu').height();
+      const popupWidth = $('#reply-control .popup-menu').width();
+
+      var top = myPos.top + buttonPos.top - 15;
+      var left = myPos.left + buttonPos.left - (popupWidth/2);
+
+      const composerPos = $('#reply-control').position();
+
+      if (composerPos.top + top - popupHeight < 0) {
+        top = top + popupHeight + this.$('.options').height() + 50;
+      }
+
+      var replyWidth = $('#reply-control').width();
+      if (left + popupWidth > replyWidth) {
+        left = replyWidth - popupWidth - 40;
+      }
+
       this.sendAction('showOptions', { position: "absolute",
-                                       left: myPos.left + buttonPos.left,
-                                       top: myPos.top + buttonPos.top });
+                                       left: left,
+                                       top: top });
     },
 
     showUploadModal(toolbarEvent) {

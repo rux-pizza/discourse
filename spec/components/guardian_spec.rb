@@ -202,6 +202,14 @@ describe Guardian do
       it "returns false if target is not staff" do
         expect(Guardian.new(user).can_send_private_message?(another_user)).to be_falsey
       end
+
+      it "returns true if target is a staff group" do
+        Group::STAFF_GROUPS.each do |name|
+          g = Group[name]
+          g.alias_level = Group::ALIAS_LEVELS[:everyone]
+          expect(Guardian.new(user).can_send_private_message?(g)).to be_truthy
+        end
+      end
     end
   end
 
@@ -370,6 +378,57 @@ describe Guardian do
       end
     end
 
+    describe 'a Category' do
+
+      it 'allows public categories' do
+        public_category = build(:category, read_restricted: false)
+        expect(Guardian.new.can_see?(public_category)).to be_truthy
+      end
+
+      it 'correctly handles secure categories' do
+        normal_user = build(:user)
+        staged_user = build(:user, staged: true)
+        admin_user  = build(:user, admin: true)
+
+        secure_category = build(:category, read_restricted: true)
+        expect(Guardian.new(normal_user).can_see?(secure_category)).to be_falsey
+        expect(Guardian.new(staged_user).can_see?(secure_category)).to be_falsey
+        expect(Guardian.new(admin_user).can_see?(secure_category)).to be_truthy
+
+        secure_category = build(:category, read_restricted: true, email_in: "foo@bar.com")
+        expect(Guardian.new(normal_user).can_see?(secure_category)).to be_falsey
+        expect(Guardian.new(staged_user).can_see?(secure_category)).to be_falsey
+        expect(Guardian.new(admin_user).can_see?(secure_category)).to be_truthy
+
+        secure_category = build(:category, read_restricted: true, email_in_allow_strangers: true)
+        expect(Guardian.new(normal_user).can_see?(secure_category)).to be_falsey
+        expect(Guardian.new(staged_user).can_see?(secure_category)).to be_falsey
+        expect(Guardian.new(admin_user).can_see?(secure_category)).to be_truthy
+
+        secure_category = build(:category, read_restricted: true, email_in: "foo@bar.com", email_in_allow_strangers: true)
+        expect(Guardian.new(normal_user).can_see?(secure_category)).to be_falsey
+        expect(Guardian.new(staged_user).can_see?(secure_category)).to be_truthy
+        expect(Guardian.new(admin_user).can_see?(secure_category)).to be_truthy
+      end
+
+      it 'allows members of an authorized group' do
+        user = Fabricate(:user)
+        group = Fabricate(:group)
+
+        secure_category = Fabricate(:category)
+        secure_category.set_permissions(group => :readonly)
+        secure_category.save
+
+        expect(Guardian.new(user).can_see?(secure_category)).to be_falsey
+
+        group.add(user)
+        group.save
+
+        expect(Guardian.new(user).can_see?(secure_category)).to be_truthy
+      end
+
+    end
+
     describe 'a Topic' do
       it 'allows non logged in users to view topics' do
         expect(Guardian.new.can_see?(topic)).to be_truthy
@@ -510,7 +569,7 @@ describe Guardian do
 
         it 'is true if the author has public edit history' do
           public_post_revision = Fabricate(:post_revision)
-          public_post_revision.post.user.edit_history_public = true
+          public_post_revision.post.user.user_option.edit_history_public = true
           expect(Guardian.new.can_see?(public_post_revision)).to be_truthy
         end
       end
@@ -533,7 +592,7 @@ describe Guardian do
 
         it 'is true if the author has public edit history' do
           public_post_revision = Fabricate(:post_revision)
-          public_post_revision.post.user.edit_history_public = true
+          public_post_revision.post.user.user_option.edit_history_public = true
           expect(Guardian.new.can_see?(public_post_revision)).to be_truthy
         end
       end
@@ -2047,7 +2106,7 @@ describe Guardian do
   end
 
   describe 'can_wiki?' do
-    let(:post) { build(:post) }
+    let(:post) { build(:post, created_at: 1.minute.ago) }
 
     it 'returns false for regular user' do
       expect(Guardian.new(coding_horror).can_wiki?(post)).to be_falsey
@@ -2075,6 +2134,26 @@ describe Guardian do
 
     it 'returns true for trust_level_4 user' do
       expect(Guardian.new(trust_level_4).can_wiki?(post)).to be_truthy
+    end
+
+    context 'post is older than post_edit_time_limit' do
+      let(:old_post) { build(:post, user: trust_level_2, created_at: 6.minutes.ago) }
+      before do
+        SiteSetting.min_trust_to_allow_self_wiki = 2
+        SiteSetting.post_edit_time_limit = 5
+      end
+
+      it 'returns false when user satisfies trust level and owns the post' do
+        expect(Guardian.new(trust_level_2).can_wiki?(old_post)).to be_falsey
+      end
+
+      it 'returns true for admin user' do
+        expect(Guardian.new(admin).can_wiki?(old_post)).to be_truthy
+      end
+
+      it 'returns true for trust_level_4 user' do
+        expect(Guardian.new(trust_level_4).can_wiki?(post)).to be_truthy
+      end
     end
   end
 end

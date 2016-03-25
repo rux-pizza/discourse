@@ -588,7 +588,6 @@ zh_TW:
     suppress_reply_directly_above: "當帖子只有一個回覆時，不顯示回覆到該帖的回覆。"
     suppress_reply_when_quoting: "當帖子引用回覆時，不顯示可展開的回覆到某帖的標記。"
     max_reply_history: "擴展回覆到某帖時顯示的最大回覆數量"
-    experimental_reply_expansion: "當展開回覆到某帖時隱藏直接回覆（實驗性）"
     topics_per_period_in_top_summary: "預設推薦話題的顯示數量"
     topics_per_period_in_top_page: "在展開 \"顯示更多\" 推薦話題列表的顯示數量"
     redirect_users_to_top_page: "將新用戶或長時間未使用的用戶自動重新導向至熱門頁面"
@@ -738,7 +737,7 @@ zh_TW:
     automatically_download_gravatars: "當用戶註冊或更改EMail時下載 Gravatars 圖片"
     digest_topics: "EMail 摘要中顯示的最大話題數量"
     digest_min_excerpt_length: "EMail 摘要中每篇文章最少顯示的字元數量"
-    suppress_digest_email_after_days: "不發送摘要郵件給超過 (n) 天閒置的用戶。"
+    delete_digest_email_after_days: "不發送摘要郵件給超過 (n) 天閒置的用戶。"
     disable_digest_emails: "禁用發送摘要郵件給所有用戶。"
     max_daily_gravatar_crawls: "一天內 Discourse 將自動檢查 Gravatar 自訂個人圖示的次數"
     public_user_custom_fields: "用戶可設定公開顯示的自定欄位白名單。"
@@ -904,6 +903,7 @@ zh_TW:
   subject_pm: "[私訊]"
   user_notifications:
     previous_discussion: "之前的回覆"
+    in_reply_to: "回覆給"
     unsubscribe:
       title: "取消訂閱"
       description: "不再對這些郵件感興趣？沒問題！點擊下面按鈕來立即取消訂閱："
@@ -944,7 +944,7 @@ zh_TW:
       subject_template: "[%{site_name}] 設定密碼"
     account_created:
       subject_template: "[%{site_name}] 你的新帳號"
-    authorize_email:
+    confirm_new_email:
       subject_template: "[%{site_name}] 確認你的新電子郵箱位址"
       text_body_template: |
         點擊下面的連結來確認你在 %{site_name} 上的新電子郵箱位址：

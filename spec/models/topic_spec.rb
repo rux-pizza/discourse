@@ -1296,11 +1296,31 @@ describe Topic do
       expect(Topic.for_digest(user, 1.year.ago, top_order: true)).to be_blank
     end
 
+    it "doesn't return topics from suppressed categories" do
+      user = Fabricate(:user)
+      category = Fabricate(:category)
+      Fabricate(:topic, category: category)
+
+      SiteSetting.digest_suppress_categories = "#{category.id}"
+
+      expect(Topic.for_digest(user, 1.year.ago, top_order: true)).to be_blank
+    end
+
     it "doesn't return topics from TL0 users" do
       new_user = Fabricate(:user, trust_level: 0)
       Fabricate(:topic, user_id: new_user.id)
 
       expect(Topic.for_digest(user, 1.year.ago, top_order: true)).to be_blank
+    end
+
+    it "returns topics from TL0 users if enabled in preferences" do
+      new_user = Fabricate(:user, trust_level: 0)
+      topic = Fabricate(:topic, user_id: new_user.id)
+
+      u = Fabricate(:user)
+      u.user_option.include_tl0_in_digests = true
+
+      expect(Topic.for_digest(u, 1.year.ago, top_order: true)).to eq([topic])
     end
 
   end
@@ -1583,5 +1603,21 @@ describe Topic do
     GroupArchivedMessage.create!(topic_id: topic.id, group_id: group.id)
 
     expect(topic.message_archived?(user)).to eq(true)
+  end
+
+  it 'will trigger :topic_status_updated' do
+    topic = Fabricate(:topic)
+    user = topic.user
+    user.admin = true
+    @topic_status_event_triggered = false
+
+    DiscourseEvent.on(:topic_status_updated) do
+      @topic_status_event_triggered = true
+    end
+
+    topic.update_status('closed', true, user)
+    topic.reload
+
+    expect(@topic_status_event_triggered).to eq(true)
   end
 end

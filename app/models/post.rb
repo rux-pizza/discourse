@@ -202,9 +202,9 @@ class Post < ActiveRecord::Base
 
     if post_type == Post.types[:regular]
       if new_cooked != cooked && new_cooked.blank?
-        Rails.logger.warn("Plugin is blanking out post: #{self.url}\nraw: #{self.raw}")
+        Rails.logger.debug("Plugin is blanking out post: #{self.url}\nraw: #{self.raw}")
       elsif new_cooked.blank?
-        Rails.logger.warn("Blank post detected post: #{self.url}\nraw: #{self.raw}")
+        Rails.logger.debug("Blank post detected post: #{self.url}\nraw: #{self.raw}")
       end
     end
 
@@ -220,6 +220,10 @@ class Post < ActiveRecord::Base
 
   def acting_user=(pu)
     @acting_user = pu
+  end
+
+  def last_editor
+    self.last_editor_id ? (User.find_by_id(self.last_editor_id) || user) : user
   end
 
   def whitelisted_spam_hosts
@@ -435,7 +439,12 @@ class Post < ActiveRecord::Base
       new_user: new_user.username_lower
     )
 
-    revise(actor, { raw: self.raw, user_id: new_user.id, edit_reason: edit_reason })
+    revise(actor, {raw: self.raw, user_id: new_user.id, edit_reason: edit_reason}, bypass_bump: true)
+
+    if post_number == topic.highest_post_number
+      topic.update_columns(last_post_user_id: new_user.id)
+    end
+
   end
 
   before_create do
@@ -653,7 +662,7 @@ end
 #  notify_user_count       :integer          default(0), not null
 #  like_score              :integer          default(0), not null
 #  deleted_by_id           :integer
-#  edit_reason             :string(255)
+#  edit_reason             :string
 #  word_count              :integer
 #  version                 :integer          default(1), not null
 #  cook_method             :integer          default(1), not null
@@ -666,7 +675,7 @@ end
 #  via_email               :boolean          default(FALSE), not null
 #  raw_email               :text
 #  public_version          :integer          default(1), not null
-#  action_code             :string(255)
+#  action_code             :string
 #
 # Indexes
 #

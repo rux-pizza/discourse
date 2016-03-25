@@ -10,6 +10,8 @@ ja:
     short_date_no_year: "MMM D"
     short_date: "MMM D, YYYY"
     long_date: "MMMM D, YYYY h:mma"
+  date:
+    month_names: [null, １月, ２月, ３月, ４月, ５月, ６月, ７月, ８月, ９月, １０月, １１月, １２月]
   title: "Discourse"
   topics: "トピック"
   posts: "投稿"
@@ -19,6 +21,9 @@ ja:
   purge_reason: "アクティブでないアカウントは放棄されたとして削除されました"
   disable_remote_images_download_reason: "ディスク容量が不足しているため、リモートでの画像ダウンロードは無効になっています。"
   anonymous: "匿名"
+  emails:
+    incoming:
+      default_subject: "%{email}からメール"
   errors: &errors
     format: '%{attribute} %{message}'
     messages:
@@ -35,8 +40,10 @@ ja:
       exclusion: は予約されています
       greater_than: は%{count}より大きい値にしてください
       greater_than_or_equal_to: は%{count}以上の値にしてください
+      has_already_been_used: "は既に使用されています"
       inclusion: は一覧にありません
       invalid: は不正な値です
+      is_invalid: "は不正です。もう少し説明を追加してください"
       less_than: は%{count}より小さい値にしてください
       less_than_or_equal_to: は%{count}以下の値にしてください
       not_a_number: は数値で入力してください
@@ -168,7 +175,7 @@ ja:
       post:
         raw: "本文"
       user_profile:
-        bio_raw: "About Me"
+        bio_raw: "自己紹介"
     errors:
       models:
         topic:
@@ -624,7 +631,6 @@ ja:
     suppress_reply_directly_above: "ポストに回答が１つしかない場合、ポストのin-reply-toを表示しない"
     suppress_reply_when_quoting: "ポストが引用返信だった場合、ポストのin-reply-toを表示しない"
     max_reply_history: "回答のin-reply-toを展開する最大数"
-    experimental_reply_expansion: "回答を展開するときに、その間にある回答を非表示にする(実験)"
     topics_per_period_in_top_summary: "デフォルトのトピックサマリに表示されるトップトピックの数"
     topics_per_period_in_top_page: "'もっと見る'を展開したときに表示するトップトピックの数"
     redirect_users_to_top_page: "新規ユーザーと長く不在のユーザーをトップページに自動的にリダイレクトさせる"
@@ -815,7 +821,7 @@ ja:
     automatically_download_gravatars: "アカウントの生成時、メールアドレスの変更時にGravatarをダウンロード"
     digest_topics: "ダイジェストメールに表示されるトピックの最大数"
     digest_min_excerpt_length: "ダイジェストメール内の投稿の抜粋の最小文字数"
-    suppress_digest_email_after_days: "(n)日以上ユーザが参照していなければダイジェストメールを抑制します"
+    delete_digest_email_after_days: "(n)日以上ユーザが参照していなければダイジェストメールを抑制します"
     disable_digest_emails: "全てのユーザのダイジェストメールを無効にする"
     detect_custom_avatars: "ユーザがプロフィール画像をアップロードしたか確認する"
     max_daily_gravatar_crawls: "Discourseがプロフィール画像の確認をgravastarに行う回数の上限"
@@ -982,6 +988,9 @@ ja:
     ip_address:
       blocked: "あなたのIPアドレスからの新規登録は許可されていません"
       max_new_accounts_per_registration_ip: "あなたのIPアドレスからの新規登録は許可されていません(最大数に達しました)。スタッフメンバーに連絡してください"
+  flags_reminder:
+    subject_template:
+      other: "%{count} 個のフラグが判断待ちです"
   invite_mailer:
     subject_template: "%{invitee_name} があなたを %{site_domain_name}の'%{topic_title}'に招待しました"
     text_body_template: |
@@ -1313,7 +1322,7 @@ ja:
 
         以下のリンクをクリックしてパスワードを設定してください:
         %{base_url}/users/password-reset/%{email_token}
-    authorize_email:
+    confirm_new_email:
       subject_template: "[%{site_name}] メールアドレスの確認"
       text_body_template: |
         次のリンクをクリックして %{site_name} 用のメールアドレスを確認してください:

@@ -1,4 +1,3 @@
-import ScreenTrack from 'discourse/lib/screen-track';
 import DiscourseURL from 'discourse/lib/url';
 
 let isTransitioning = false,
@@ -74,6 +73,7 @@ const TopicRoute = Discourse.Route.extend({
     showHistory(model) {
       showModal('history', { model });
       this.controllerFor('history').refresh(model.get("id"), "latest");
+      this.controllerFor('history').set('post', model);
       this.controllerFor('modal').set('modalClass', 'history-modal');
     },
 
@@ -186,7 +186,7 @@ const TopicRoute = Discourse.Route.extend({
     topicController.set('multiSelect', false);
     topicController.unsubscribe();
     this.controllerFor('composer').set('topic', null);
-    ScreenTrack.current().stop();
+    this.screenTrack.stop();
 
     const headerController = this.controllerFor('header');
     if (headerController) {
@@ -215,8 +215,9 @@ const TopicRoute = Discourse.Route.extend({
     controller.subscribe();
 
     this.controllerFor('topic-progress').set('model', model);
+
     // We reset screen tracking every time a topic is entered
-    ScreenTrack.current().start(model.get('id'), controller);
+    this.screenTrack.start(model.get('id'), controller);
   }
 
 });

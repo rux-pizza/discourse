@@ -3,7 +3,9 @@ import loadScript from 'discourse/lib/load-script';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import { showSelector } from "discourse/lib/emoji/emoji-toolbar";
 import Category from 'discourse/models/category';
-import { SEPARATOR as categoryHashtagSeparator } from 'discourse/lib/category-hashtags';
+import { SEPARATOR as categoryHashtagSeparator,
+         categoryHashtagTriggerRule
+       } from 'discourse/lib/category-hashtags';
 
 // Our head can be a static string or a function that returns a string
 // based on input (like for numbered lists).
@@ -23,147 +25,173 @@ const OP = {
 
 const _createCallbacks = [];
 
-function Toolbar() {
-  this.shortcuts = {};
+class Toolbar {
 
-  this.groups = [
-    {group: 'fontStyles', buttons: []},
-    {group: 'insertions', buttons: []},
-    {group: 'extras', buttons: [], lastGroup: true}
-  ];
+  constructor(site) {
+    this.shortcuts = {};
 
-  this.addButton({
-    id: 'bold',
-    group: 'fontStyles',
-    shortcut: 'B',
-    perform: e => e.applySurround('**', '**', 'bold_text')
-  });
+    this.groups = [
+      {group: 'fontStyles', buttons: []},
+      {group: 'insertions', buttons: []},
+      {group: 'extras', buttons: []}
+    ];
 
-  this.addButton({
-    id: 'italic',
-    group: 'fontStyles',
-    shortcut: 'I',
-    perform: e => e.applySurround('_', '_', 'italic_text')
-  });
+    this.addButton({
+      trimLeading: true,
+      id: 'bold',
+      group: 'fontStyles',
+      shortcut: 'B',
+      perform: e => e.applySurround('**', '**', 'bold_text')
+    });
 
-  this.addButton({id: 'link', group: 'insertions', shortcut: 'K', action: 'showLinkModal'});
+    this.addButton({
+      trimLeading: true,
+      id: 'italic',
+      group: 'fontStyles',
+      shortcut: 'I',
+      perform: e => e.applySurround('_', '_', 'italic_text')
+    });
 
-  this.addButton({
-    id: 'quote',
-    group: 'insertions',
-    icon: 'quote-right',
-    shortcut: 'Shift+9',
-    perform: e => e.applySurround('> ', '', 'code_text')
-  });
+    this.addButton({id: 'link', group: 'insertions', shortcut: 'K', action: 'showLinkModal'});
 
-  this.addButton({
-    id: 'code',
-    group: 'insertions',
-    shortcut: 'Shift+C',
-    perform(e) {
-      if (e.selected.value.indexOf("\n") !== -1) {
-        e.applySurround('    ', '', 'code_text');
-      } else {
-        e.applySurround('`', '`', 'code_text');
-      }
-    },
-  });
+    this.addButton({
+      id: 'quote',
+      group: 'insertions',
+      icon: 'quote-right',
+      shortcut: 'Shift+9',
+      perform: e => e.applySurround('> ', '', 'code_text')
+    });
 
-  this.addButton({
-    id: 'bullet',
-    group: 'extras',
-    icon: 'list-ul',
-    shortcut: 'Shift+8',
-    title: 'composer.ulist_title',
-    perform: e => e.applyList('* ', 'list_item')
-  });
+    this.addButton({
+      id: 'code',
+      group: 'insertions',
+      shortcut: 'Shift+C',
+      perform(e) {
+        if (e.selected.value.indexOf("\n") !== -1) {
+          e.applySurround('    ', '', 'code_text');
+        } else {
+          e.applySurround('`', '`', 'code_text');
+        }
+      },
+    });
 
-  this.addButton({
-    id: 'list',
-    group: 'extras',
-    icon: 'list-ol',
-    shortcut: 'Shift+7',
-    title: 'composer.olist_title',
-    perform: e => e.applyList(i => !i ? "1. " : `${parseInt(i) + 1}. `, 'list_item')
-  });
+    this.addButton({
+      id: 'bullet',
+      group: 'extras',
+      icon: 'list-ul',
+      shortcut: 'Shift+8',
+      title: 'composer.ulist_title',
+      perform: e => e.applyList('* ', 'list_item')
+    });
 
-  this.addButton({
-    id: 'heading',
-    group: 'extras',
-    icon: 'font',
-    shortcut: 'Alt+1',
-    perform: e => e.applyList('## ', 'heading_text')
-  });
+    this.addButton({
+      id: 'list',
+      group: 'extras',
+      icon: 'list-ol',
+      shortcut: 'Shift+7',
+      title: 'composer.olist_title',
+      perform: e => e.applyList(i => !i ? "1. " : `${parseInt(i) + 1}. `, 'list_item')
+    });
 
-  this.addButton({
-    id: 'rule',
-    group: 'extras',
-    icon: 'minus',
-    shortcut: 'Alt+R',
-    title: 'composer.hr_title',
-    perform: e => e.addText("\n\n----------\n")
-  });
-};
+    this.addButton({
+      id: 'heading',
+      group: 'extras',
+      icon: 'font',
+      shortcut: 'Alt+1',
+      perform: e => e.applyList('## ', 'heading_text')
+    });
 
-Toolbar.prototype.addButton = function(button) {
-  const g = this.groups.findProperty('group', button.group);
-  if (!g) {
-    throw `Couldn't find toolbar group ${button.group}`;
-  }
+    this.addButton({
+      id: 'rule',
+      group: 'extras',
+      icon: 'minus',
+      shortcut: 'Alt+R',
+      title: 'composer.hr_title',
+      perform: e => e.addText("\n\n----------\n")
+    });
 
-  const createdButton = {
-    id: button.id,
-    className: button.className || button.id,
-    icon: button.icon || button.id,
-    action: button.action || 'toolbarButton',
-    perform: button.perform || Ember.K
-  };
+    if (site.mobileView) {
+      this.groups.push({group: 'mobileExtras', buttons: []});
 
-  if (button.sendAction) {
-    createdButton.sendAction = button.sendAction;
-  }
-
-  const title = I18n.t(button.title || `composer.${button.id}_title`);
-  if (button.shortcut) {
-    const mac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-    const mod = mac ? 'Meta' : 'Ctrl';
-    var shortcutTitle = `${mod}+${button.shortcut}`;
-
-    // Mac users are used to glyphs for shortcut keys
-    if (mac) {
-      shortcutTitle = shortcutTitle
-          .replace('Shift', "\u21E7")
-          .replace('Meta', "\u2318")
-          .replace('Alt', "\u2325")
-          .replace(/\+/g, '');
-    } else {
-      shortcutTitle = shortcutTitle
-          .replace('Shift', I18n.t('shortcut_modifier_key.shift'))
-          .replace('Ctrl', I18n.t('shortcut_modifier_key.ctrl'))
-          .replace('Alt', I18n.t('shortcut_modifier_key.alt'));
+      this.addButton({
+        id: 'preview',
+        group: 'mobileExtras',
+        icon: 'television',
+        title: 'composer.hr_preview',
+        perform: e => e.preview()
+      });
     }
 
-    createdButton.title = `${title} (${shortcutTitle})`;
-
-    this.shortcuts[`${mod}+${button.shortcut}`.toLowerCase()] = createdButton;
-  } else {
-    createdButton.title = title;
+    this.groups[this.groups.length-1].lastGroup = true;
   }
 
-  if (button.unshift) {
-    g.buttons.unshift(createdButton);
-  } else {
-    g.buttons.push(createdButton);
+  addButton(button) {
+    const g = this.groups.findProperty('group', button.group);
+    if (!g) {
+      throw `Couldn't find toolbar group ${button.group}`;
+    }
+
+    const createdButton = {
+      id: button.id,
+      className: button.className || button.id,
+      icon: button.icon || button.id,
+      action: button.action || 'toolbarButton',
+      perform: button.perform || Ember.K,
+      trimLeading: button.trimLeading
+    };
+
+    if (button.sendAction) {
+      createdButton.sendAction = button.sendAction;
+    }
+
+    const title = I18n.t(button.title || `composer.${button.id}_title`);
+    if (button.shortcut) {
+      const mac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+      const mod = mac ? 'Meta' : 'Ctrl';
+      var shortcutTitle = `${mod}+${button.shortcut}`;
+
+      // Mac users are used to glyphs for shortcut keys
+      if (mac) {
+        shortcutTitle = shortcutTitle
+            .replace('Shift', "\u21E7")
+            .replace('Meta', "\u2318")
+            .replace('Alt', "\u2325")
+            .replace(/\+/g, '');
+      } else {
+        shortcutTitle = shortcutTitle
+            .replace('Shift', I18n.t('shortcut_modifier_key.shift'))
+            .replace('Ctrl', I18n.t('shortcut_modifier_key.ctrl'))
+            .replace('Alt', I18n.t('shortcut_modifier_key.alt'));
+      }
+
+      createdButton.title = `${title} (${shortcutTitle})`;
+
+      this.shortcuts[`${mod}+${button.shortcut}`.toLowerCase()] = createdButton;
+    } else {
+      createdButton.title = title;
+    }
+
+    if (button.unshift) {
+      g.buttons.unshift(createdButton);
+    } else {
+      g.buttons.push(createdButton);
+    }
   }
-};
+}
+
+export function addToolbarCallback(func) {
+  _createCallbacks.push(func);
+}
 
 export function onToolbarCreate(func) {
-  _createCallbacks.push(func);
+  console.warn('`onToolbarCreate` is deprecated, use the plugin api instead.');
+  addToolbarCallback(func);
 };
 
 export default Ember.Component.extend({
   classNames: ['d-editor'],
   ready: false,
+  forcePreview: false,
   insertLinkHidden: true,
   link: '',
   lastSel: null,
@@ -220,7 +248,7 @@ export default Ember.Component.extend({
 
   @computed
   toolbar() {
-    const toolbar = new Toolbar();
+    const toolbar = new Toolbar(this.site);
     _createCallbacks.forEach(cb => cb(toolbar));
     this.sendAction('extraButtons', toolbar);
     return toolbar;
@@ -262,25 +290,7 @@ export default Ember.Component.extend({
         return Category.search(term);
       },
       triggerRule(textarea, opts) {
-        const result = Discourse.Utilities.caretRowCol(textarea);
-        const row = result.rowNum;
-        var col = result.colNum;
-        var line = textarea.value.split("\n")[row - 1];
-
-        if (opts && opts.backSpace) {
-          col = col - 1;
-          line = line.slice(0, line.length - 1);
-
-          // Don't trigger autocomplete when backspacing into a `#category |` => `#category|`
-          if (/^#{1}\w+/.test(line)) return false;
-        }
-
-        if (col < 6) {
-          // Don't trigger autocomplete when ATX-style headers are used
-          return (line.slice(0, col) !== "#".repeat(col));
-        } else {
-          return true;
-        }
+        return categoryHashtagTriggerRule(textarea, opts);
       }
     });
   },
@@ -302,7 +312,16 @@ export default Ember.Component.extend({
           showSelector({
             appendTo: self.$(),
             container,
-            onSelect: title => self._addText(self._getSelected(), `${title}&`)
+            onSelect: title => {
+              // Remove the previously type characters when a new emoji is selected from the selector.
+              let selected = self._getSelected();
+              let newPre = selected.pre.replace(/&[^&]+$/, "&");
+              let numOfRemovedChars = selected.pre.length - newPre.length;
+              selected.pre = newPre;
+              selected.start -= numOfRemovedChars;
+              selected.end -= numOfRemovedChars;
+              self._addText(selected, `${title}&`);
+            }
           });
           return "";
         }
@@ -314,7 +333,7 @@ export default Ember.Component.extend({
           term = term.toLowerCase();
 
           if (term === "") {
-            return resolve(["slightly_smiling", "smile", "wink", "sunny", "blush"]);
+            return resolve(["slight_smile", "smile", "wink", "sunny", "blush"]);
           }
 
           if (Discourse.Emoji.translations[full]) {
@@ -336,17 +355,24 @@ export default Ember.Component.extend({
     });
   },
 
-  _getSelected() {
+  _getSelected(trimLeading) {
     if (!this.get('ready')) { return; }
 
     const textarea = this.$('textarea.d-editor-input')[0];
     const value = textarea.value;
-    const start = textarea.selectionStart;
+    var start = textarea.selectionStart;
     let end = textarea.selectionEnd;
 
-    // Windows selects the space after a word when you double click
+    // trim trailing spaces cause **test ** would be invalid
     while (end > start && /\s/.test(value.charAt(end-1))) {
       end--;
+    }
+
+    if (trimLeading) {
+      // trim leading spaces cause ** test** would be invalid
+      while(end > start && /\s/.test(value.charAt(start))) {
+        start++;
+      }
     }
 
     const selVal = value.substring(start, end);
@@ -462,14 +488,19 @@ export default Ember.Component.extend({
     Ember.run.scheduleOnce("afterRender", () => this.$("textarea.d-editor-input").focus());
   },
 
+  _togglePreview() {
+    this.toggleProperty('forcePreview');
+  },
+
   actions: {
     toolbarButton(button) {
-      const selected = this._getSelected();
+      const selected = this._getSelected(button.trimLeading);
       const toolbarEvent = {
         selected,
         applySurround: (head, tail, exampleKey) => this._applySurround(selected, head, tail, exampleKey),
         applyList: (head, exampleKey) => this._applyList(selected, head, exampleKey),
-        addText: text => this._addText(selected, text)
+        addText: text => this._addText(selected, text),
+        preview: () => this._togglePreview()
       };
 
       if (button.sendAction) {
@@ -477,6 +508,10 @@ export default Ember.Component.extend({
       } else {
         button.perform(toolbarEvent);
       }
+    },
+
+    hidePreview() {
+      this.set('forcePreview', false);
     },
 
     showLinkModal() {
@@ -488,18 +523,26 @@ export default Ember.Component.extend({
       const link = this.get('link');
       const sel = this._lastSel;
 
+      const autoHttp = function(l){
+        if (l.indexOf("://") === -1) {
+          return "http://" + l;
+        } else {
+          return l;
+        }
+      };
+
       if (Ember.isEmpty(link)) { return; }
       const m = / "([^"]+)"/.exec(link);
       if (m && m.length === 2) {
         const description = m[1];
         const remaining = link.replace(m[0], '');
-        this._addText(sel, `[${description}](${remaining})`);
+        this._addText(sel, `[${description}](${autoHttp(remaining)})`);
       } else {
         if (sel.value) {
-          this._addText(sel, `[${sel.value}](${link})`);
+          this._addText(sel, `[${sel.value}](${autoHttp(link)})`);
         } else {
           const desc = I18n.t('composer.link_description');
-          this._addText(sel, `[${desc}](${link})`);
+          this._addText(sel, `[${desc}](${autoHttp(link)})`);
           this._selectText(sel.start + 1, desc.length);
         }
       }

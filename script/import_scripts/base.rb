@@ -197,20 +197,20 @@ class ImportScripts::Base
   def all_records_exist?(type, import_ids)
     return false if import_ids.empty?
 
-    Post.exec_sql('create temp table import_ids(val varchar(200) primary key)')
+    Post.exec_sql('CREATE TEMP TABLE import_ids(val varchar(200) PRIMARY KEY)')
 
-    import_id_clause = import_ids.map{|id| "('#{PG::Connection.escape_string(id.to_s)}')"}.join(",")
-    Post.exec_sql("insert into import_ids values #{import_id_clause}")
+    import_id_clause = import_ids.map { |id| "('#{PG::Connection.escape_string(id.to_s)}')" }.join(",")
+    Post.exec_sql("INSERT INTO import_ids VALUES #{import_id_clause}")
 
     existing = "#{type.to_s.classify}CustomField".constantize.where(name: 'import_id')
-    existing = existing.joins('JOIN import_ids ON val=value')
+    existing = existing.joins('JOIN import_ids ON val = value')
 
     if existing.count == import_ids.length
       puts "Skipping #{import_ids.length} already imported #{type}"
       return true
     end
   ensure
-    Post.exec_sql('drop table import_ids')
+    Post.exec_sql('DROP TABLE import_ids')
   end
 
   # Iterate through a list of user records to be imported.
@@ -278,7 +278,6 @@ class ImportScripts::Base
     avatar_url = opts.delete(:avatar_url)
 
     # Allow the || operations to work with empty strings ''
-    opts[:name] = nil if opts[:name].blank?
     opts[:username] = nil if opts[:username].blank?
 
     opts[:name] = User.suggest_name(opts[:email]) unless opts[:name]
@@ -287,7 +286,8 @@ class ImportScripts::Base
       opts[:username].length > User.username_length.end ||
       !User.username_available?(opts[:username]) ||
       !UsernameValidator.new(opts[:username]).valid_format?
-      opts[:username] = UserNameSuggester.suggest(opts[:username] || opts[:name] || opts[:email])
+
+      opts[:username] = UserNameSuggester.suggest(opts[:username] || opts[:name].presence || opts[:email])
     end
     opts[:email] = opts[:email].downcase
     opts[:trust_level] = TrustLevel[1] unless opts[:trust_level]
@@ -306,8 +306,8 @@ class ImportScripts::Base
       User.transaction do
         u.save!
         if bio_raw.present? || website.present? || location.present?
-          u.user_profile.bio_raw = bio_raw if bio_raw.present?
-          u.user_profile.website = website if website.present?
+          u.user_profile.bio_raw = bio_raw[0..2999] if bio_raw.present?
+          u.user_profile.website = website unless website.blank? || website !~ UserProfile::WEBSITE_REGEXP
           u.user_profile.location = location if location.present?
           u.user_profile.save!
         end

@@ -38,9 +38,9 @@ describe Jobs::UserEmail do
 
   context 'to_address' do
     it 'overwrites a to_address when present' do
-      UserNotifications.expects(:authorize_email).returns(mailer)
+      UserNotifications.expects(:confirm_new_email).returns(mailer)
       Email::Sender.any_instance.expects(:send)
-      Jobs::UserEmail.new.execute(type: :authorize_email, user_id: user.id, to_address: 'jake@adventuretime.ooo')
+      Jobs::UserEmail.new.execute(type: :confirm_new_email, user_id: user.id, to_address: 'jake@adventuretime.ooo')
       expect(mailer.to).to eq(['jake@adventuretime.ooo'])
     end
   end
@@ -55,7 +55,8 @@ describe Jobs::UserEmail do
     end
 
     it "does send an email to a user that's been recently seen but has email_always set" do
-      user.update_attributes(last_seen_at: 9.minutes.ago, email_always: true)
+      user.update_attributes(last_seen_at: 9.minutes.ago)
+      user.user_option.update_attributes(email_always: true)
       Email::Sender.any_instance.expects(:send)
       Jobs::UserEmail.new.execute(type: :user_replied, user_id: user.id, post_id: post.id)
     end
@@ -63,7 +64,9 @@ describe Jobs::UserEmail do
 
   context "email_log" do
 
-    it "creates an email log when the mail is sent" do
+    before { Fabricate(:post) }
+
+    it "creates an email log when the mail is sent (via Email::Sender)" do
       last_emailed_at = user.last_emailed_at
 
       expect { Jobs::UserEmail.new.execute(type: :digest, user_id: user.id) }.to change { EmailLog.count }.by(1)
@@ -183,19 +186,43 @@ describe Jobs::UserEmail do
         expect(err.skipped_reason).to match(/notification.*already/)
       end
 
-
       it "does send the email if the notification has been seen but the user is set for email_always" do
         Email::Sender.any_instance.expects(:send)
         notification.update_column(:read, true)
-        user.update_column(:email_always, true)
+        user.user_option.update_column(:email_always, true)
         Jobs::UserEmail.new.execute(type: :user_mentioned, user_id: user.id, notification_id: notification.id)
+      end
+
+      it "does not send notification if limit is reached" do
+        SiteSetting.max_emails_per_day_per_user = 2
+
+        user.email_logs.create(email_type: 'blah', to_address: user.email, user_id: user.id)
+        user.email_logs.create(email_type: 'blah', to_address: user.email, user_id: user.id)
+
+        Jobs::UserEmail.new.execute(type: :user_mentioned, user_id: user.id, notification_id: notification.id, post_id: post.id)
+
+        expect(EmailLog.where(user_id: user.id, skipped: true).count).to eq(1)
+      end
+
+      it "doesn't send the mail if the user is using mailing list mode" do
+        Email::Sender.any_instance.expects(:send).never
+        user.user_option.update_column(:mailing_list_mode, true)
+        # sometimes, we pass the notification_id
+        Jobs::UserEmail.new.execute(type: :user_mentioned, user_id: user.id, notification_id: notification.id, post_id: post.id)
+        # other times, we only pass the type of notification
+        Jobs::UserEmail.new.execute(type: :user_mentioned, user_id: user.id, notification_type: "posted", post_id: post.id)
+        # When post is nil
+        Jobs::UserEmail.new.execute(type: :user_mentioned, user_id: user.id, notification_type: "posted")
+        # When post does not have a topic
+        post = Fabricate(:post)
+        post.topic.destroy
+        Jobs::UserEmail.new.execute(type: :user_mentioned, user_id: user.id, notification_type: "posted", post_id: post.id)
       end
 
       it "doesn't send the email if the post has been user deleted" do
         Email::Sender.any_instance.expects(:send).never
         post.update_column(:user_deleted, true)
-        Jobs::UserEmail.new.execute(type: :user_mentioned, user_id: user.id,
-                                      notification_id: notification.id, post_id: post.id)
+        Jobs::UserEmail.new.execute(type: :user_mentioned, user_id: user.id, notification_id: notification.id, post_id: post.id)
       end
 
       context 'user is suspended' do
@@ -273,6 +300,4 @@ describe Jobs::UserEmail do
 
   end
 
-
 end
-

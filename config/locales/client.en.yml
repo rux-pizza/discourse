@@ -109,6 +109,8 @@ en:
         x_years:
           one: "1 year later"
           other: "%{count} years later"
+      previous_month: 'Previous Month'
+      next_month: 'Next Month'
     share:
       topic: 'share a link to this topic'
       post: 'post #%{postNumber}'
@@ -191,6 +193,8 @@ en:
     more: "More"
     less: "Less"
     never: "never"
+    every_30_minutes: "every 30 minutes"
+    every_hour: "every hour"
     daily: "daily"
     weekly: "weekly"
     every_two_weeks: "every two weeks"
@@ -203,6 +207,7 @@ en:
 
     suggested_topics:
       title: "Suggested Topics"
+      pm_title: "Suggested Messages"
 
     about:
       simple_title: "About"
@@ -214,7 +219,7 @@ en:
         all_time: "All Time"
         last_7_days: "Last 7 Days"
         last_30_days: "Last 30 Days"
-      like_count: "Fucks"
+      like_count: "Likes"
       topic_count: "Topics"
       post_count: "Posts"
       user_count: "New Users"
@@ -296,7 +301,7 @@ en:
         other: "This topic has <b>{{count}}</b> posts awaiting approval"
 
       confirm: "Save Changes"
-      delete_prompt: "Are you sure you want to delete <b>%{username}</b>? This will remove all of their posts and block their email and ip address."
+      delete_prompt: "Are you sure you want to delete <b>%{username}</b>? This will remove all of their posts and block their email and IP address."
 
       approval:
         title: "Post Needs Approval"
@@ -359,7 +364,10 @@ en:
         one: "group"
         other: "groups"
       members: "Members"
+      topics: "Topics"
       posts: "Posts"
+      mentions: "Mentions"
+      messages: "Messages"
       alias_levels:
         title: "Who can message and @mention this group?"
         nobody: "Nobody"
@@ -385,8 +393,8 @@ en:
           description: "You will never be notified of anything about new topics in this group."
 
     user_action_groups:
-      "1": "Fucks Given"
-      "2": "Fucks Received"
+      "1": "Likes Given"
+      "2": "Likes Received"
       "3": "Bookmarks"
       "4": "Topics"
       "5": "Replies"
@@ -471,9 +479,9 @@ en:
         perm_denied_btn: "Permission Denied"
         perm_denied_expl: "You denied permission for notifications. Allow notifications via your browser settings."
         disable: "Disable Notifications"
-        currently_enabled: "(currently enabled)"
+        currently_enabled: ""
         enable: "Enable Notifications"
-        currently_disabled: "(currently disabled)"
+        currently_disabled: ""
         each_browser_note: "Note: You have to change this setting on every browser you use."
       dismiss_notifications: "Mark all as Read"
       dismiss_notifications_tooltip: "Mark all unread notifications as read"
@@ -508,7 +516,7 @@ en:
       muted_users: "Muted"
       muted_users_instructions: "Suppress all notifications from these users."
       muted_topics_link: "Show muted topics"
-      automatically_unpin_topics: "Automatically unpin topics when you reach the bottom."
+      automatically_unpin_topics: "Automatically unpin topics when I reach the bottom."
 
       staff_counters:
         flags_given: "helpful flags"
@@ -624,13 +632,28 @@ en:
 
       website: "Web Site"
       email_settings: "Email"
+      like_notification_frequency:
+        title: "Notify when liked"
+        always: "Always"
+        first_time_and_daily: "First time a post is liked and daily"
+        first_time: "First time a post is liked"
+        never: "Never"
+      email_previous_replies:
+        title: "Include previous replies at the bottom of emails"
+        unless_emailed: "unless previously sent"
+        always: "always"
+        never: "never"
       email_digests:
         title: "When I don't visit here, send an email digest of what's new:"
+        every_30_minutes: "every 30 minutes"
+        every_hour: "hourly"
         daily: "daily"
         every_three_days: "every three days"
         weekly: "weekly"
         every_two_weeks: "every two weeks"
 
+      include_tl0_in_digests: "Include posts from new users in digest emails"
+      email_in_reply_to: "Include an excerpt of replied to post in emails"
       email_direct: "Send me an email when someone quotes me, replies to my post, mentions my @username, or invites me to a topic"
       email_private_messages: "Send me an email when someone messages me"
       email_always: "Send me email notifications even when I am active on the site"
@@ -768,9 +791,16 @@ en:
     read_only_mode:
       enabled: "This site is in read only mode. Please continue to browse, but replying, likes, and other actions are disabled for now."
       login_disabled: "Login is disabled while the site is in read only mode."
+      logout_disabled: "Logout is disabled while the site is in read only mode."
     too_few_topics_and_posts_notice: "Let's <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>get this discussion started!</a> There are currently <strong>%{currentTopics} / %{requiredTopics}</strong> topics and <strong>%{currentPosts} / %{requiredPosts}</strong> posts. New visitors need some conversations to read and respond to."
     too_few_topics_notice: "Let's <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>get this discussion started!</a> There are currently <strong>%{currentTopics} / %{requiredTopics}</strong> topics. New visitors need some conversations to read and respond to."
     too_few_posts_notice: "Let's <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>get this discussion started!</a> There are currently <strong>%{currentPosts} / %{requiredPosts}</strong> posts. New visitors need some conversations to read and respond to."
+    logs_error_rate_notice:
+      reached: "%{timestamp}: Current rate of <a href='%{url}' target='_blank'>%{rate}</a> has reached site settings's limit of %{siteSettingRate}."
+      exceeded: "%{timestamp}: Current rate of <a href='%{url}' target='_blank'>%{rate}</a> has exceeded site settings's limit of %{siteSettingRate}."
+      rate:
+        one: "1 error/%{duration}"
+        other: "%{count} errors/%{duration}"
 
     learn_more: "learn more..."
 
@@ -801,8 +831,8 @@ en:
 
     summary:
       enabled_description: "You're viewing a summary of this topic: the most interesting posts as determined by the community."
-      description: "There are <b>{{count}}</b> replies."
-      description_time: "There are <b>{{count}}</b> replies with an estimated read time of <b>{{readingTime}} minutes</b>."
+      description: "There are <b>{{replyCount}}</b> replies."
+      description_time: "There are <b>{{replyCount}}</b> replies with an estimated read time of <b>{{readingTime}} minutes</b>."
       enable: 'Summarize This Topic'
       disable: 'Show All Posts'
 
@@ -874,6 +904,9 @@ en:
       twitter:
         title: "with Twitter"
         message: "Authenticating with Twitter (make sure pop up blockers are not enabled)"
+      instagram:
+        title: "with Instagram"
+        message: "Authenticating with Instagram (make sure pop up blockers are not enabled)"
       facebook:
         title: "with Facebook"
         message: "Authenticating with Facebook (make sure pop up blockers are not enabled)"
@@ -991,9 +1024,13 @@ en:
       group_mentioned: "<i title='group mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
       quoted: "<i title='quoted' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
       replied: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
+      posted: "<i title='posted' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
       edited: "<i title='edited' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
-      liked: "<i title='was given a fuck' class='fa fa-lemon-o'></i><p><span>{{username}}</span> {{description}}</p>"
+      liked: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
+      liked_2: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}}</span> {{description}}</p>"
+      liked_many:
+        one: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} and 1 other</span> {{description}}</p>"
+        other: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}, {{username2}} and {{count}} others</span> {{description}}</p>"
       private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
       invited_to_private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
       invited_to_topic: "<i title='invited to topic' class='fa fa-hand-o-right'></i><p><span>{{username}}</span> {{description}}</p>"
@@ -1110,8 +1147,8 @@ en:
         top: "There are no top topics."
         search: "There are no search results."
         educate:
-          new: '<p>Your new topics appear here.</p><p>By default, topics are considered new and will show a <span class="badge new-topic badge-notification" style="vertical-align:middle;line-height:inherit;">new</span> indicator if they were created in the last 2 days.</p><p>You can change this in your <a href="%{userPrefsUrl}">preferences</a>.</p>'
-          unread: '<p>Your unread topics appear here.</p><p>By default, topics are considered unread and will show unread counts <span class="badge new-posts badge-notification">1</span> if you:</p><ul><li>Created the topic</li><li>Replied to the topic</li><li>Read the topic for more than 4 minutes</li></ul><p>Or if you have explicitly set the topic to Tracked or Watched via the notification control at the bottom of each topic.</p><p>You can change this in your <a href="%{userPrefsUrl}">preferences</a>.</p>'
+          new: '<p>Your new topics appear here.</p><p>By default, topics are considered new and will show a <span class="badge new-topic badge-notification" style="vertical-align:middle;line-height:inherit;">new</span> indicator if they were created in the last 2 days.</p><p>Visit your <a href="%{userPrefsUrl}">preferences</a> to change this.</p>'
+          unread: '<p>Your unread topics appear here.</p><p>By default, topics are considered unread and will show unread counts <span class="badge new-posts badge-notification">1</span> if you:</p><ul><li>Created the topic</li><li>Replied to the topic</li><li>Read the topic for more than 4 minutes</li></ul><p>Or if you have explicitly set the topic to Tracked or Watched via the notification control at the bottom of each topic.</p><p>Visit your <a href="%{userPrefsUrl}">preferences</a> to change this.</p>'
       bottom:
         latest: "There are no more latest topics."
         hot: "There are no more hot topics."
@@ -1168,8 +1205,8 @@ en:
         one: "there is 1 new post in this topic since you last read it"
         other: "there are {{count}} new posts in this topic since you last read it"
       likes:
-        one: "A single fuck was given in this topic"
-        other: "{{count}} fucks were given in this topic"
+        one: "there is 1 like in this topic"
+        other: "there are {{count}} likes in this topic"
       back_to_list: "Back to Topic List"
       options: "Topic Options"
       show_links: "show links within this topic"
@@ -1440,17 +1477,17 @@ en:
         one: "{{count}} Reply"
         other: "{{count}} Replies"
       has_likes:
-        one: "{{count}} Fuck"
-        other: "{{count}} Fucks"
+        one: "{{count}} Like"
+        other: "{{count}} Likes"
 
       has_likes_title:
-        one: "1 person gave this post a fuck"
-        other: "{{count}} people gave this post a fuck"
+        one: "1 person liked this post"
+        other: "{{count}} people liked this post"
 
       has_likes_title_only_you: "you liked this post"
       has_likes_title_you:
-        one: "you and 1 other person gave a fuck"
-        other: "you and {{count}} other people gave a fuck"
+        one: "you and 1 other person liked this post"
+        other: "you and {{count}} other people liked this post"
 
       errors:
         create: "Sorry, there was an error creating your post. Please try again."
@@ -1479,11 +1516,13 @@ en:
       archetypes:
         save: 'Save Options'
 
+      few_likes_left: "Thanks for sharing the love! You only have a few likes left for today."
+
       controls:
         reply: "begin composing a reply to this post"
-        like: "give a fuck to this post"
-        has_liked: "you've given a fuck to this post"
-        undo_like: "undo fuck"
+        like: "like this post"
+        has_liked: "you've liked this post"
+        undo_like: "undo like"
         edit: "edit this post"
         edit_anonymous: "Sorry, but you need to be logged in to edit this post."
         flag: "privately flag this post for attention or send a private notification about it"
@@ -1517,27 +1556,24 @@ en:
           inappropriate: "Flag it too"
           custom_flag: "Flag it too"
           bookmark: "Bookmark it too"
-          like: "Give a fuck too"
+          like: "Like it too"
           vote: "Vote for it too"
         undo:
           off_topic: "Undo flag"
           spam: "Undo flag"
           inappropriate: "Undo flag"
           bookmark: "Undo bookmark"
-          like: "Take your fuck back"
+          like: "Undo like"
           vote: "Undo vote"
         people:
-          off_topic: "{{icons}} flagged this as off-topic"
-          spam: "{{icons}} flagged this as spam"
-          spam_with_url: "{{icons}} flagged <a href='{{postUrl}}'>this as spam</a>"
-          inappropriate: "{{icons}} flagged this as inappropriate"
-          notify_moderators: "{{icons}} notified moderators"
-          notify_moderators_with_url: "{{icons}} <a href='{{postUrl}}'>notified moderators</a>"
-          notify_user: "{{icons}} sent a message"
-          notify_user_with_url: "{{icons}} sent a <a href='{{postUrl}}'>message</a>"
-          bookmark: "{{icons}} bookmarked this"
-          like: "{{icons}} gave a fuck"
-          vote: "{{icons}} voted for this"
+          off_topic: "flagged this as off-topic"
+          spam: "flagged this as spam"
+          inappropriate: "flagged this as inappropriate"
+          notify_moderators: "notified moderators"
+          notify_user: "sent a message"
+          bookmark: "bookmarked this"
+          like: "liked this"
+          vote: "voted for this"
         by_you:
           off_topic: "You flagged this as off-topic"
           spam: "You flagged this as spam"
@@ -1545,7 +1581,7 @@ en:
           notify_moderators: "You flagged this for moderation"
           notify_user: "You sent a message to this user"
           bookmark: "You bookmarked this post"
-          like: "You gave a fuck"
+          like: "You liked this"
           vote: "You voted for this post"
         by_you_and_others:
           off_topic:
@@ -1567,8 +1603,8 @@ en:
             one: "You and 1 other bookmarked this post"
             other: "You and {{count}} other people bookmarked this post"
           like:
-            one: "You and 1 other gave a fuck"
-            other: "You and {{count}} other people gave a fuck"
+            one: "You and 1 other liked this"
+            other: "You and {{count}} other people liked this"
           vote:
             one: "You and 1 other voted for this post"
             other: "You and {{count}} other people voted for this post"
@@ -1592,8 +1628,8 @@ en:
             one: "1 person bookmarked this post"
             other: "{{count}} people bookmarked this post"
           like:
-            one: "A single fuck was given"
-            other: "{{count}} people gave a fuck"
+            one: "1 person liked this"
+            other: "{{count}} people liked this"
           vote:
             one: "1 person voted for this post"
             other: "{{count}} people voted for this post"
@@ -1611,6 +1647,7 @@ en:
           last: "Last revision"
           hide: "Hide revision"
           show: "Show revision"
+          revert: "Revert to this revision"
           comparing_previous_to_current_out_of_total: "<strong>{{previous}}</strong> <i class='fa fa-arrows-h'></i> <strong>{{current}}</strong> / {{total}}"
         displays:
           inline:
@@ -1693,7 +1730,6 @@ en:
 
     flagging:
       title: 'Thanks for helping to keep our community civil!'
-      private_reminder: 'flags are private, <b>only</b> visible to staff'
       action: 'Flag Post'
       take_action: "Take Action"
       notify_action: 'Message'
@@ -1705,7 +1741,7 @@ en:
       submit_tooltip: "Submit the private flag"
       take_action_tooltip: "Reach the flag threshold immediately, rather than waiting for more community flags"
       cant: "Sorry, you can't flag this post at this time."
-      notify_staff: 'Notify Staff'
+      notify_staff: 'Notify staff privately'
       formatted_name:
         off_topic: "It's Off-Topic"
         inappropriate: "It's Inappropriate"
@@ -1759,9 +1795,9 @@ en:
     posts_long: "there are {{number}} posts in this topic"
     posts_likes_MF: |
       This topic has {count, plural, one {1 reply} other {# replies}} {ratio, select,
-        low {with a high fuck to post ratio}
-        med {with a very high fuck to post ratio}
-        high {with an extremely high fuck to post ratio}
+        low {with a high like to post ratio}
+        med {with a very high like to post ratio}
+        high {with an extremely high like to post ratio}
         other {}}
     original_post: "Original Post"
     views: "Views"
@@ -1771,11 +1807,11 @@ en:
     replies: "Replies"
     views_long: "this topic has been viewed {{number}} times"
     activity: "Activity"
-    likes: "Fucks"
+    likes: "Likes"
     likes_lowercase:
-      one: "fuck"
-      other: "fucks"
-    likes_long: "{{number}} fucks were given in this topic"
+      one: "like"
+      other: "likes"
+    likes_long: "there are {{number}} likes in this topic"
     users: "Users"
     users_lowercase:
       one: "user"
@@ -1928,6 +1964,7 @@ en:
           refresh_report: "Refresh Report"
           start_date: "Start Date"
           end_date: "End Date"
+          groups: "All groups"
 
       commits:
         latest_changes: "Latest changes: please update often!"
@@ -2110,11 +2147,11 @@ en:
             is_disabled: "Restore is disabled in the site settings."
             label: "Restore"
             title: "Restore the backup"
-            confirm: "Are your sure you want to restore this backup?"
+            confirm: "Are you sure you want to restore this backup?"
           rollback:
             label: "Rollback"
             title: "Rollback the database to previous working state"
-            confirm: "Are your sure you want to rollback the database to the previous working state?"
+            confirm: "Are you sure you want to rollback the database to the previous working state?"
 
       export_csv:
         user_archive_confirm: "Are you sure you want to download your posts?"
@@ -2221,10 +2258,6 @@ en:
           love:
             name: 'love'
             description: "The like button's color."
-          wiki:
-            name: 'wiki'
-            description: "Base color used for the background of wiki posts."
-
 
       email:
         title: "Emails"
@@ -2262,6 +2295,20 @@ en:
           subject: "Subject"
           error: "Error"
           none: "No incoming emails found."
+          modal:
+            title: "Incoming Email Details"
+            error: "Error"
+            return_path: "Return-Path"
+            message_id: "Message-Id"
+            in_reply_to: "In-Reply-To"
+            references: "References"
+            date: "Date"
+            from: "From"
+            to: "To"
+            cc: "Cc"
+            subject: "Subject"
+            body: "Body"
+            rejection_message: "Rejection Mail"
           filters:
             from_placeholder: "from@example.com"
             to_placeholder: "to@example.com"
@@ -2338,6 +2385,7 @@ en:
             revoke_admin: "revoke admin"
             grant_moderation: "grant moderation"
             revoke_moderation: "revoke moderation"
+            backup_operation: "backup operation"
         screened_emails:
           title: "Screened Emails"
           description: "When someone tries to create a new account, the following email addresses will be checked and the registration will be blocked, or some other action performed."
@@ -2462,7 +2510,7 @@ en:
         reputation: Reputation
         permissions: Permissions
         activity: Activity
-        like_count: Fucks Given / Received
+        like_count: Likes Given / Received
         last_100_days: 'in the last 100 days'
         private_topics_count: Private Topics
         posts_read_count: Posts Read
@@ -2535,10 +2583,10 @@ en:
           posts_read_all_time: "Posts Read (all time)"
           flagged_posts: "Flagged Posts"
           flagged_by_users: "Users Who Flagged"
-          likes_given: "Fucks Given"
-          likes_received: "Fucks Received"
-          likes_received_days: "Fucks Received: unique days"
-          likes_received_users: "Fucks Received: unique users"
+          likes_given: "Likes Given"
+          likes_received: "Likes Received"
+          likes_received_days: "Likes Received: unique days"
+          likes_received_users: "Likes Received: unique users"
           qualifies: "Qualifies for trust level 3."
           does_not_qualify: "Doesn't qualify for trust level 3."
           will_be_promoted: "Will be promoted soon."
@@ -2793,7 +2841,7 @@ en:
         reply_topic: '<b>shift</b>+<b>r</b> Reply to topic'
         reply_post: '<b>r</b> Reply to post'
         quote_post: '<b>q</b> Quote post'
-        like: '<b>l</b> Give a fucking fuck'
+        like: '<b>l</b> Like post'
         flag: '<b>!</b> Flag post'
         bookmark: '<b>b</b> Bookmark post'
         edit: '<b>e</b> Edit post'
@@ -2807,7 +2855,8 @@ en:
       earned_n_times:
         one: "Earned this badge 1 time"
         other: "Earned this badge %{count} times"
-      more_with_badge: "Others with this badge"
+      granted_on: "Granted %{date}"
+      others_count: "Others with this badge (%{count})"
       title: Badges
       allow_title: "can be used as a title"
       multiple_grant: "can be awarded multiple times"
@@ -2842,40 +2891,40 @@ en:
           description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/4">Granted</a> all essential community functions
         member:
           name: Member
-          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/5">Granted</a> invitations
+          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/5">Granted</a> invitations, group messaging, more likes
         regular:
           name: Regular
-          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/6">Granted</a> recategorize, rename, followed links and lounge
+          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/6">Granted</a> recategorize, rename, followed links, wiki, more likes
         leader:
           name: Leader
-          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/7">Granted</a> global edit, pin, close, archive, split and merge
+          description: <a href="https://meta.discourse.org/t/what-do-user-trust-levels-do/4924/7">Granted</a> global edit, pin, close, archive, split and merge, more likes
         welcome:
           name: Welcome
-          description: Was given a fuck
+          description: Received a like
         autobiographer:
           name: Autobiographer
-          description: Filled user <a href="/my/preferences">profile</a> information
+          description: Filled out <a href="/my/preferences">profile</a> information
         anniversary:
           name: Anniversary
           description: Active member for a year, posted at least once
         nice_post:
-          name: Nice Post
-          description: Received 10 fucks on a post. This badge can be granted multiple times
+          name: Nice Reply
+          description: Received 10 likes on a reply
         good_post:
-          name: Good Post
-          description: Received 25 fucks on a post. This badge can be granted multiple times
+          name: Good Reply
+          description: Received 25 likes on a reply
         great_post:
-          name: Great Post
-          description: Received 50 fucks on a post. This badge can be granted multiple times
+          name: Great Reply
+          description: Received 50 likes on a reply
         nice_topic:
           name: Nice Topic
-          description: Received 10 fucks on a topic. This badge can be granted multiple times
+          description: Received 10 likes on a topic. This badge can be granted multiple times
         good_topic:
           name: Good Topic
-          description: Received 25 fucks on a topic. This badge can be granted multiple times
+          description: Received 25 likes on a topic. This badge can be granted multiple times
         great_topic:
           name: Great Topic
-          description: Received 50 fucks on a topic. This badge can be granted multiple times
+          description: Received 50 likes on a topic
         nice_share:
           name: Nice Share
           description: Shared a post with 25 unique visitors
@@ -2886,8 +2935,8 @@ en:
           name: Great Share
           description: Shared a post with 1000 unique visitors
         first_like:
-          name: First Fuck
-          description: Given a fuck to a post
+          name: First Like
+          description: Liked a post
         first_flag:
           name: First Flag
           description: Flagged a post
@@ -2896,34 +2945,61 @@ en:
           description: Invited a user
         campaigner:
           name: Campaigner
-          description: Invited 3 basic users (trust level 1)
+          description: Invited 3 basic users
         champion:
           name: Champion
-          description: Invited 5 members (trust level 2)
+          description: Invited 5 members
         first_share:
           name: First Share
           description: Shared a post
         first_link:
           name: First Link
-          description: Added an internal link to another topic
+          description: Added a link to another topic
         first_quote:
           name: First Quote
-          description: Quoted a user
+          description: Quoted a post
         read_guidelines:
           name: Read Guidelines
           description: Read the <a href="/guidelines">community guidelines</a>
         reader:
           name: Reader
-          description: Read every post in a topic with more than 100 posts
+          description: Read every reply in a topic with more than 100 replies
         popular_link:
           name: Popular Link
-          description: Posted an external link with at least 50 clicks
+          description: Posted an external link with 50 clicks
         hot_link:
           name: Hot Link
-          description: Posted an external link with at least 300 clicks
+          description: Posted an external link with 300 clicks
         famous_link:
           name: Famous Link
-          description: Posted an external link with at least 1000 clicks
+          description: Posted an external link with 1000 clicks
+        appreciated:
+          name: Appreciated
+          description: Received 1 like on 20 posts
+        respected:
+          name: Respected
+          description: Received 2 likes on 100 posts
+        admired:
+          name: Admired
+          description: Received 5 likes on 300 posts
+        out_of_love:
+          name: Out of Love
+          description: Used 50 likes in a day
+        higher_love:
+          name: Higher Love
+          description: Used 50 likes in a day 5 times
+        crazy_in_love:
+          name: Crazy in Love
+          description: Used 50 likes in a day 20 times
+        thank_you:
+          name: Thank You
+          description: Has 20 liked posts and gave 10 likes
+        gives_back:
+          name: Gives Back
+          description: Has 100 liked posts and gave 100 likes
+        empathetic:
+          name: Empathetic
+          description: Has 500 liked posts and gave 1000 likes
 
     google_search: |
       <h3>Search with Google</h3>

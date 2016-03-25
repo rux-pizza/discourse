@@ -112,12 +112,21 @@ class SessionController < ApplicationController
       else
         render text: I18n.t("sso.not_found"), status: 500
       end
+    rescue ActiveRecord::RecordInvalid => e
+      render text: I18n.t("sso.unknown_error"), status: 500
     rescue => e
       details = {}
       SingleSignOn::ACCESSORS.each do |a|
         details[a] = sso.send(a)
       end
-      Rails.logger.error "Failed to create or lookup user: #{e}\n\n#{details.map{|k,v| "#{k}: #{v}"}.join("\n")}"
+
+      message = "Failed to create or lookup user: #{e}."
+      message << "\n\n" << "-" * 100 << "\n\n"
+      message << details.map { |k,v| "#{k}: #{v}" }.join("\n")
+      message << "\n\n" << "-" * 100 << "\n\n"
+      message << e.backtrace.join("\n")
+
+      Rails.logger.error(message)
 
       render text: I18n.t("sso.unknown_error"), status: 500
     end
@@ -261,8 +270,10 @@ class SessionController < ApplicationController
   def failed_to_login(user)
     message = user.suspend_reason ? "login.suspended_with_reason" : "login.suspended"
 
-    render json: { error: I18n.t(message, { date: I18n.l(user.suspended_till, format: :date_only),
-                                            reason: user.suspend_reason}) }
+    render json: {
+      error: I18n.t(message, { date: I18n.l(user.suspended_till, format: :date_only), reason: user.suspend_reason}),
+      reason: 'suspended'
+    }
   end
 
   def login(user)

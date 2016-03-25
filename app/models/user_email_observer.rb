@@ -28,16 +28,20 @@ class UserEmailObserver < ActiveRecord::Observer
       enqueue :user_replied
     end
 
+    def linked
+      enqueue :user_linked
+    end
+
     def private_message
-      enqueue_private(:user_private_message, 0)
+      enqueue_private(:user_private_message)
     end
 
     def invited_to_private_message
-      enqueue(:user_invited_to_private_message, 0)
+      enqueue(:user_invited_to_private_message, private_delay)
     end
 
     def invited_to_topic
-      enqueue(:user_invited_to_topic, 0)
+      enqueue(:user_invited_to_topic, private_delay)
     end
 
     def self.notification_params(notification, type)
@@ -60,25 +64,36 @@ class UserEmailObserver < ActiveRecord::Observer
     EMAILABLE_POST_TYPES ||= Set.new [Post.types[:regular], Post.types[:whisper]]
 
     def enqueue(type, delay=default_delay)
-      return unless notification.user.email_direct?
-      perform_enqueue(type,delay)
+      return unless notification.user.user_option.email_direct?
+      perform_enqueue(type, delay)
     end
 
-    def enqueue_private(type, delay=default_delay)
-      return unless notification.user.email_private_messages?
-      perform_enqueue(type,delay)
+    def enqueue_private(type, delay=private_delay)
+      return unless notification.user.user_option.email_private_messages?
+      perform_enqueue(type, delay)
     end
 
     def perform_enqueue(type, delay)
       return unless notification.user.active? || notification.user.staged?
-      return unless EMAILABLE_POST_TYPES.include? notification.post.try(:post_type)
+      return unless EMAILABLE_POST_TYPES.include?(post_type)
 
       Jobs.enqueue_in(delay, :user_email, self.class.notification_params(notification, type))
     end
 
-
     def default_delay
       SiteSetting.email_time_window_mins.minutes
+    end
+
+    def private_delay
+      SiteSetting.private_email_time_window_seconds
+    end
+
+    def post_type
+      @post_type ||= begin
+        type = notification.data_hash["original_post_type"] if notification.data_hash
+        type ||= notification.post.try(:post_type)
+        type
+      end
     end
 
   end
@@ -91,6 +106,7 @@ class UserEmailObserver < ActiveRecord::Observer
   def self.process_notification(notification)
     email_user   = EmailUser.new(notification)
     email_method = Notification.types[notification.notification_type]
+
     email_user.send(email_method) if email_user.respond_to? email_method
   end
 

@@ -7,7 +7,7 @@ describe PostActionsController do
       expect { xhr :post, :create }.to raise_error(Discourse::NotLoggedIn)
     end
 
-    describe 'logged in' do
+    describe 'logged in as moderator' do
       before do
         @user = log_in(:moderator)
         @post = Fabricate(:post, user: Fabricate(:coding_horror))

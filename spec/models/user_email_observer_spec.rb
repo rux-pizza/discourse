@@ -13,7 +13,6 @@ describe UserEmailObserver do
 
   shared_examples "enqueue" do
 
-
     it "enqueues a job for the email" do
       Jobs.expects(:enqueue_in).with(delay, :user_email, UserEmailObserver::EmailUser.notification_params(notification,type))
       UserEmailObserver.process_notification(notification)
@@ -52,7 +51,7 @@ describe UserEmailObserver do
     include_examples "enqueue"
 
     it "doesn't enqueue a job if the user has mention emails disabled" do
-      notification.user.expects(:email_direct?).returns(false)
+      notification.user.user_option.update_columns(email_direct: false)
       Jobs.expects(:enqueue_in).with(delay, :user_email, has_entry(type: type)).never
       UserEmailObserver.process_notification(notification)
     end
@@ -62,10 +61,11 @@ describe UserEmailObserver do
     include_examples "enqueue"
 
     it "doesn't enqueue a job if the user has private message emails disabled" do
-      notification.user.expects(:email_private_messages?).returns(false)
+      notification.user.user_option.update_columns(email_private_messages: false)
       Jobs.expects(:enqueue_in).with(delay, :user_email, has_entry(type: type)).never
       UserEmailObserver.process_notification(notification)
     end
+
   end
 
   context 'user_mentioned' do
@@ -99,6 +99,14 @@ describe UserEmailObserver do
     include_examples "enqueue_public"
   end
 
+  context 'user_linked' do
+    let(:type) { :user_linked }
+    let(:delay) { SiteSetting.email_time_window_mins.minutes }
+    let!(:notification) { create_notification(11) }
+
+    include_examples "enqueue_public"
+  end
+
   context 'user_posted' do
     let(:type) { :user_posted }
     let(:delay) { SiteSetting.email_time_window_mins.minutes }
@@ -109,15 +117,22 @@ describe UserEmailObserver do
 
   context 'user_private_message' do
     let(:type) { :user_private_message }
-    let(:delay) { 0 }
+    let(:delay) { SiteSetting.private_email_time_window_seconds }
     let!(:notification) { create_notification(6) }
 
     include_examples "enqueue_private"
+
+    it "doesn't enqueue a job for a small action" do
+      notification.data_hash["original_post_type"] = Post.types[:small_action]
+      Jobs.expects(:enqueue_in).with(delay, :user_email, has_entry(type: type)).never
+      UserEmailObserver.process_notification(notification)
+    end
+
   end
 
   context 'user_invited_to_private_message' do
     let(:type) { :user_invited_to_private_message }
-    let(:delay) { 0 }
+    let(:delay) { SiteSetting.private_email_time_window_seconds }
     let!(:notification) { create_notification(7) }
 
     include_examples "enqueue_public"
@@ -125,7 +140,7 @@ describe UserEmailObserver do
 
   context 'user_invited_to_topic' do
     let(:type) { :user_invited_to_topic }
-    let(:delay) { 0 }
+    let(:delay) { SiteSetting.private_email_time_window_seconds }
     let!(:notification) { create_notification(13) }
 
     include_examples "enqueue_public"

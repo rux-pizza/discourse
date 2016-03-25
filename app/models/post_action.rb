@@ -147,10 +147,10 @@ SQL
       # so callback is called
       action.save
       action.add_moderator_post_if_needed(moderator, :agreed, delete_post)
-      @trigger_spam = true if action.post_action_type_id == PostActionType.types[:spam]
+      trigger_spam = true if action.post_action_type_id == PostActionType.types[:spam]
     end
 
-    DiscourseEvent.trigger(:confirmed_spam_post, post) if @trigger_spam
+    DiscourseEvent.trigger(:confirmed_spam_post, post) if trigger_spam
 
     update_flagged_posts_count
   end
@@ -241,7 +241,14 @@ SQL
     PostCreator.new(user, opts).create.try(:id)
   end
 
+  def self.limit_action!(user,post,post_action_type_id)
+    RateLimiter.new(user, "post_action-#{post.id}_#{post_action_type_id}", 4, 1.minute).performed!
+  end
+
   def self.act(user, post, post_action_type_id, opts = {})
+
+    limit_action!(user,post,post_action_type_id)
+
     related_post_id = create_message_for_post_action(user, post, post_action_type_id, opts)
     staff_took_action = opts[:take_action] || false
 
@@ -272,18 +279,18 @@ SQL
       post_action.recover!
       action_attrs.each { |attr, val| post_action.send("#{attr}=", val) }
       post_action.save
+      PostAlertObserver.after_create_post_action(post_action)
     else
       post_action = create(where_attrs.merge(action_attrs))
       if post_action && post_action.errors.count == 0
         BadgeGranter.queue_badge_grant(Badge::Trigger::PostAction, post_action: post_action)
       end
     end
+    GivenDailyLike.increment_for(user.id)
 
     # agree with other flags
     if staff_took_action
       PostAction.agree_flags!(post, user)
-
-      # update counters
       post_action.try(:update_counters)
     end
 
@@ -295,11 +302,15 @@ SQL
   end
 
   def self.remove_act(user, post, post_action_type_id)
+
+    limit_action!(user,post,post_action_type_id)
+
     finder = PostAction.where(post_id: post.id, user_id: user.id, post_action_type_id: post_action_type_id)
     finder = finder.with_deleted.includes(:post) if user.try(:staff?)
     if action = finder.first
       action.remove_act!(user)
       action.post.unhide! if action.staff_took_action
+      GivenDailyLike.decrement_for(user.id)
     end
   end
 
@@ -480,7 +491,7 @@ SQL
     elsif PostActionType.auto_action_flag_types.include?(post_action_type) &&
           SiteSetting.flags_required_to_hide_post > 0
 
-      old_flags, new_flags = PostAction.flag_counts_for(post.id)
+      _old_flags, new_flags = PostAction.flag_counts_for(post.id)
 
       if new_flags >= SiteSetting.flags_required_to_hide_post
         hide_post!(post, post_action_type, guess_hide_reason(post))

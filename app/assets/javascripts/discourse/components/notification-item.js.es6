@@ -1,3 +1,4 @@
+const LIKED_TYPE = 5;
 const INVITED_TYPE = 8;
 const GROUP_SUMMARY_TYPE = 16;
 
@@ -61,12 +62,18 @@ export default Ember.Component.extend({
   _markRead: function(){
     this.$('a').click(() => {
       this.set('notification.read', true);
+      Discourse.setTransientHeader("Discourse-Clear-Notifications", this.get('notification.id'));
+      if (document && document.cookie) {
+        document.cookie = `cn=${this.get('notification.id')}; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+      }
       return true;
     });
   }.on('didInsertElement'),
 
   render(buffer) {
     const notification = this.get('notification');
+    // since we are reusing views now sometimes this can be unset
+    if (!notification) { return; }
     const description = this.get('description');
     const username = notification.get('data.display_username');
     var text;
@@ -74,7 +81,16 @@ export default Ember.Component.extend({
       const count = notification.get('data.inbox_count');
       const group_name = notification.get('data.group_name');
       text = I18n.t(this.get('scope'), {count, group_name});
-    } else {
+    } else if (notification.get('notification_type') === LIKED_TYPE && notification.get("data.count") > 1)  {
+      const count = notification.get('data.count') - 2;
+      const username2 = notification.get('data.username2');
+      if (count===0) {
+        text = I18n.t('notifications.liked_2', {description, username, username2});
+      } else {
+        text = I18n.t('notifications.liked_many', {description, username, username2, count});
+      }
+    }
+    else {
       text = I18n.t(this.get('scope'), {description, username});
     }
     text = Discourse.Emoji.unescape(text);

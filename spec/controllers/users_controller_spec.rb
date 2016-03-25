@@ -104,26 +104,6 @@ describe UsersController do
     end
   end
 
-  describe '.authorize_email' do
-    it 'errors out for invalid tokens' do
-      get :authorize_email, token: 'asdfasdf'
-      expect(response).to be_success
-      expect(flash[:error]).to be_present
-    end
-
-    context 'valid token' do
-      it 'authorizes with a correct token' do
-        user = Fabricate(:user)
-        email_token = user.email_tokens.create(email: user.email)
-
-        get :authorize_email, token: email_token.token
-        expect(response).to be_success
-        expect(flash[:error]).to be_blank
-        expect(session[:current_user_id]).to be_present
-      end
-    end
-  end
-
   describe '.activate_account' do
     before do
       UsersController.any_instance.stubs(:honeypot_or_challenge_fails?).returns(false)
@@ -219,75 +199,6 @@ describe UsersController do
     end
   end
 
-  describe '.change_email' do
-    let(:new_email) { 'bubblegum@adventuretime.ooo' }
-
-    it "requires you to be logged in" do
-      expect { xhr :put, :change_email, username: 'asdf', email: new_email }.to raise_error(Discourse::NotLoggedIn)
-    end
-
-    context 'when logged in' do
-      let!(:user) { log_in }
-
-      it 'raises an error without an email parameter' do
-        expect { xhr :put, :change_email, username: user.username }.to raise_error(ActionController::ParameterMissing)
-      end
-
-      it "raises an error if you can't edit the user's email" do
-        Guardian.any_instance.expects(:can_edit_email?).with(user).returns(false)
-        xhr :put, :change_email, username: user.username, email: new_email
-        expect(response).to be_forbidden
-      end
-
-      context 'when the new email address is taken' do
-        let!(:other_user) { Fabricate(:coding_horror) }
-        it 'raises an error' do
-          xhr :put, :change_email, username: user.username, email: other_user.email
-          expect(response).to_not be_success
-        end
-
-        it 'raises an error if there is whitespace too' do
-          xhr :put, :change_email, username: user.username, email: other_user.email + ' '
-          expect(response).to_not be_success
-        end
-      end
-
-      context 'when new email is different case of existing email' do
-        let!(:other_user) { Fabricate(:user, email: 'case.insensitive@gmail.com')}
-
-        it 'raises an error' do
-          xhr :put, :change_email, username: user.username, email: other_user.email.upcase
-          expect(response).to_not be_success
-        end
-      end
-
-      it 'raises an error when new email domain is present in email_domains_blacklist site setting' do
-        SiteSetting.email_domains_blacklist = "mailinator.com"
-        xhr :put, :change_email, username: user.username, email: "not_good@mailinator.com"
-        expect(response).to_not be_success
-      end
-
-      it 'raises an error when new email domain is not present in email_domains_whitelist site setting' do
-        SiteSetting.email_domains_whitelist = "discourse.org"
-        xhr :put, :change_email, username: user.username, email: new_email
-        expect(response).to_not be_success
-      end
-
-      context 'success' do
-
-        it 'has an email token' do
-          expect { xhr :put, :change_email, username: user.username, email: new_email }.to change(EmailToken, :count)
-        end
-
-        it 'enqueues an email authorization' do
-          Jobs.expects(:enqueue).with(:user_email, has_entries(type: :authorize_email, user_id: user.id, to_address: new_email))
-          xhr :put, :change_email, username: user.username, email: new_email
-        end
-      end
-    end
-
-  end
-
   describe '.password_reset' do
     let(:user) { Fabricate(:user) }
 
@@ -333,7 +244,7 @@ describe UsersController do
         old_token = user.auth_token
 
         get :password_reset, token: token
-        put :password_reset, token: token, password: 'newpassword'
+        put :password_reset, token: token, password: 'hg9ow8yhg98o'
         expect(response).to be_success
         expect(assigns[:error]).to be_blank
 
@@ -372,14 +283,14 @@ describe UsersController do
       end
 
       it "logs in the user" do
-        put :password_reset, token: token, password: 'newpassword'
+        put :password_reset, token: token, password: 'ksjafh928r'
         expect(assigns(:user).errors).to be_blank
         expect(session[:current_user_id]).to be_present
       end
 
       it "doesn't log in the user when not approved" do
         SiteSetting.expects(:must_approve_users?).returns(true)
-        put :password_reset, token: token, password: 'newpassword'
+        put :password_reset, token: token, password: 'ksjafh928r'
         expect(assigns(:user).errors).to be_blank
         expect(session[:current_user_id]).to be_blank
       end
@@ -477,6 +388,15 @@ describe UsersController do
         username: @user.username,
         password: "strongpassword",
         email: @user.email
+    end
+
+    context 'when creating a user' do
+      it 'sets the user locale to I18n.locale' do
+        SiteSetting.stubs(:default_locale).returns('en')
+        I18n.stubs(:locale).returns(:fr)
+        post_user
+        expect(User.find_by(username: @user.username).locale).to eq('fr')
+      end
     end
 
     context 'when creating a non active user (unconfirmed email)' do
@@ -723,7 +643,7 @@ describe UsersController do
       context "with values for the fields" do
         let(:create_params) { {
           name: @user.name,
-          password: 'watwatwat',
+          password: 'watwatwatwat',
           username: @user.username,
           email: @user.email,
           user_fields: {
@@ -773,7 +693,7 @@ describe UsersController do
       context "without values for the fields" do
         let(:create_params) { {
           name: @user.name,
-          password: 'watwatwat',
+          password: 'watwatwatwat',
           username: @user.username,
           email: @user.email,
         } }
@@ -793,7 +713,7 @@ describe UsersController do
       let!(:staged) { Fabricate(:staged, email: "staged@account.com") }
 
       it "succeeds" do
-        xhr :post, :create, email: staged.email, username: "zogstrip", password: "P4ssw0rd"
+        xhr :post, :create, email: staged.email, username: "zogstrip", password: "P4ssw0rd$$"
         result = ::JSON.parse(response.body)
         expect(result["success"]).to eq(true)
         expect(User.find_by(email: staged.email).staged).to eq(false)
@@ -1181,6 +1101,19 @@ describe UsersController do
 
         end
 
+        context 'a locale is chosen that differs from I18n.locale' do
+          it "updates the user's locale" do
+            I18n.stubs(:locale).returns('fr')
+
+            put :update,
+                username: user.username,
+                locale: :fa_IR
+
+            expect(User.find_by(username: user.username).locale).to eq('fa_IR')
+          end
+
+        end
+
         context "with user fields" do
           context "an editable field" do
             let!(:user_field) { Fabricate(:user_field) }
@@ -1229,9 +1162,7 @@ describe UsersController do
         it 'does not allow the update' do
           user = Fabricate(:user, name: 'Billy Bob')
           log_in_user(user)
-          guardian = Guardian.new(user)
-          guardian.stubs(:ensure_can_edit!).with(user).raises(Discourse::InvalidAccess.new)
-          Guardian.stubs(new: guardian).with(user)
+          Guardian.any_instance.expects(:can_edit?).with(user).returns(false)
 
           put :update, username: user.username, name: 'Jim Tom'
 

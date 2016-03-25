@@ -100,6 +100,8 @@ de:
         x_years:
           one: "ein Jahr später"
           other: "%{count} Jahre später"
+      previous_month: 'Vormonat'
+      next_month: 'Nächster Monat'
     share:
       topic: 'Teile einen Link zu diesem Thema'
       post: 'Beitrag #%{postNumber}'
@@ -110,6 +112,8 @@ de:
       email: 'diesen Link per E-Mail senden'
     action_codes:
       split_topic: "Thema aufgeteilt, %{when}"
+      invited_user: "%{who} eingeladen, %{when}"
+      removed_user: "%{who} entfernt, %{when}"
       autoclosed:
         enabled: 'geschlossen, %{when}'
         disabled: 'geöffnet, %{when}'
@@ -130,6 +134,19 @@ de:
         disabled: 'unsichtbar gemacht, {when}'
     topic_admin_menu: "Thema administrieren"
     emails_are_disabled: "Die ausgehende E-Mail-Kommunikation wurde von einem Administrator global deaktiviert. Es werden keinerlei Benachrichtigungen per E-Mail verschickt."
+    s3:
+      regions:
+        us_east_1: "USA Ost (Nord-Virginia)"
+        us_west_1: "USA West (Nordkalifornien)"
+        us_west_2: "USA West (Oregon)"
+        us_gov_west_1: "AWS GovCloud (USA)"
+        eu_west_1: "EU (Irland)"
+        eu_central_1: "EU (Frankfurt)"
+        ap_southeast_1: "Asien-Pazifik (Singapur)"
+        ap_southeast_2: "Asien-Pazifik (Sydney)"
+        ap_northeast_1: "Asien-Pazifik (Tokio)"
+        ap_northeast_2: "Asien-Pazifik (Seoul)"
+        sa_east_1: "Südamerika (São Paulo)"
     edit: 'Titel und Kategorie dieses Themas ändern'
     not_implemented: "Entschuldige, diese Funktion wurde noch nicht implementiert!"
     no_value: "Nein"
@@ -162,6 +179,8 @@ de:
     more: "Mehr"
     less: "Weniger"
     never: "nie"
+    every_30_minutes: "alle 30 Minuten"
+    every_hour: "jede Stunde"
     daily: "täglich"
     weekly: "wöchentlich"
     every_two_weeks: "jede zweite Woche"
@@ -173,6 +192,7 @@ de:
       other: "{{count}} Zeichen"
     suggested_topics:
       title: "Vorgeschlagene Themen"
+      pm_title: "Vorgeschlagene Nachrichten"
     about:
       simple_title: "Über uns"
       title: "Über %{title}"
@@ -251,7 +271,6 @@ de:
         one: "Dieses Thema hat <b>einen</b> Beitrag, der genehmigt werden muss"
         other: "Dieses Thema hat <b>{{count}}</b> Beiträge, die genehmigt werden müssen"
       confirm: "Änderungen speichern"
-      delete_prompt: "Bist du sicher, dass du <b>%{username}</b> löschen möchtest? Es werden alle Beiträge des Benutzers gelöscht und dessen E-Mail- und IP-Adresse geblockt."
       approval:
         title: "Beitrag muss genehmigt werden"
         description: "Wir haben deinen neuen Beitrag erhalten. Dieser muss allerdings zunächst durch einen Moderator freigeschaltet werden. Bitte habe etwas Geduld. "
@@ -308,7 +327,10 @@ de:
         one: "Gruppe"
         other: "Gruppen"
       members: "Mitglieder"
+      topics: "Themen"
       posts: "Beiträge"
+      mentions: "Erwähnungen"
+      messages: "Nachrichten"
       alias_levels:
         title: "Wer kann diese Gruppe kontaktieren und per @Gruppenname erwähnen?"
         nobody: "Niemand"
@@ -354,7 +376,7 @@ de:
       reorder:
         title: "Kategorien neu sortieren"
         title_long: "Neustrukturierung der Kategorieliste"
-        fix_order: "Positionen fixieren"
+        fix_order: "Positionen korrigieren"
         fix_order_tooltip: "Nicht alle Kategorien haben eine eindeutige Positionsnummer, was zu unerwarteten Ergebnissen führen kann."
         save: "Reihenfolge speichern"
         apply_all: "Anwenden"
@@ -413,11 +435,9 @@ de:
         not_supported: "Dieser Browser unterstützt leider keine Benachrichtigungen."
         perm_default: "Benachrichtigungen einschalten"
         perm_denied_btn: "Zugriff verweigert"
-        perm_denied_expl: "Der Zugriff auf Benachrichtigungen wurde verweigert. Verwende Deinen Browser um Benachrichtigungen zu aktivieren. Anschließend klick auf die Schaltfläche. (Desktop: das Symbol ganz links in der Adressfläche. Mobil: \"Seiten Info\".)"
+        perm_denied_expl: "Du hast Benachrichtigungen blockiert. Aktiviere die Benachrichtigungen über deine Browser Einstellungen."
         disable: "Benachrichtigungen deaktivieren"
-        currently_enabled: "(derzeit aktiviert)"
         enable: "Benachrichtigungen aktivieren"
-        currently_disabled: "(derzeit deaktiviert)"
         each_browser_note: "Hinweis: Du musst diese Einstellung in jedem von dir verwendeten Browser ändern."
       dismiss_notifications: "Alle als gelesen markieren"
       dismiss_notifications_tooltip: "Alle ungelesenen Benachrichtigungen als gelesen markieren"
@@ -441,7 +461,7 @@ de:
       tracked_categories: "Verfolgt"
       tracked_categories_instructions: "Du wirst automatisch allen neuen Themen in diesen Kategorien folgen. Die Anzahl der neuen Antworten wird bei den betroffenen Themen angezeigt."
       muted_categories: "Stummgeschaltet"
-      muted_categories_instructions: "Du erhältst keine Benachrichtigungen über neue Themen in dieser Kategorie und die Themen werden auch nicht in der Liste der letzten Themen erscheinen."
+      muted_categories_instructions: "Du erhältst keine Benachrichtigungen über neue Themen in dieser Kategorie und die Themen werden auch nicht in der Liste der aktuellen Themen erscheinen."
       delete_account: "Lösche mein Benutzerkonto"
       delete_account_confirm: "Möchtest du wirklich dein Benutzerkonto permanent löschen? Diese Aktion kann nicht rückgängig gemacht werden!"
       deleted_yourself: "Dein Benutzerkonto wurde erfolgreich gelöscht."
@@ -452,7 +472,6 @@ de:
       muted_users: "Stummgeschaltet"
       muted_users_instructions: "Alle Benachrichtigungen von diesem Benutzer unterdrücken."
       muted_topics_link: "Zeige stummgeschaltete Themen"
-      automatically_unpin_topics: "Themen automatisch loslösen, wenn du das Ende erreichst."
       staff_counters:
         flags_given: "hilfreiche Meldungen"
         flagged_posts: "gemeldete Beiträge"
@@ -467,6 +486,7 @@ de:
         groups: "Meine Gruppen"
         bulk_select: "Nachrichten auswählen"
         move_to_inbox: "In Posteingang verschieben"
+        move_to_archive: "Archivieren"
         failed_to_move: "Die ausgewählten Nachrichten konnten nicht bewegt werden (vielleicht gibt es ein Netzwerkproblem)."
         select_all: "Alle auswählen"
       change_password:
@@ -552,8 +572,16 @@ de:
         title: "Benutzerkarten-Abzeichen"
       website: "Website"
       email_settings: "E-Mail"
+      like_notification_frequency:
+        always: "Immer"
+        never: "Nie"
+      email_previous_replies:
+        always: "immer"
+        never: "nie"
       email_digests:
         title: "Sende eine E-Mail mit Neuigkeiten, wenn ich länger nicht hier bin:"
+        every_30_minutes: "alle 30 Minuten"
+        every_hour: "stündlich"
         daily: "täglich"
         every_three_days: "alle drei Tage"
         weekly: "wöchentlich"
@@ -625,6 +653,21 @@ de:
         same_as_email: "Dein Passwort entspricht deiner E-Mail-Adresse."
         ok: "Dein Passwort sieht in Ordnung aus."
         instructions: "Mindestens %{count} Zeichen."
+      summary:
+        title: "Übersicht"
+        stats: "Statistiken"
+        topic_count: "Erstellte Themen"
+        post_count: "Erstelle Beiträge"
+        likes_given: "Abgegebene Likes"
+        likes_received: "Erhaltene Likes"
+        days_visited: "Besuchstage"
+        posts_read_count: "Gelesene Beiträge"
+        top_replies: "Die besten Beiträge"
+        top_topics: "Die besten Themen"
+        top_badges: "Die besten Abzeichen"
+        more_topics: "weitere Themen"
+        more_replies: "weitere Beiträge"
+        more_badges: "weitere Abzeichen"
       associated_accounts: "Anmeldeinformationen"
       ip_address:
         title: "Letzte IP-Adresse"
@@ -667,7 +710,7 @@ de:
     logout: "Du wurdest abgemeldet."
     refresh: "Aktualisieren"
     read_only_mode:
-      enabled: "Der Nur-Lesen-Modus ist aktiviert. Du kannst die Website weiter durchsuchen und lesen. Einige Funktionen werden jedoch wahrscheinlich nicht funktionieren."
+      enabled: "Diese Seite ist im Nur-Lesen Modus. Du kannst weiterhin die Seite lesen, aber antworten, liken und andere Aktionen sind deaktiviert."
       login_disabled: "Die Anmeldung ist deaktiviert während sich die Website im Nur-Lesen-Modus befindet."
     too_few_topics_and_posts_notice: "Lass' <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>die Diskussionen starten!</a> Es existieren bisher <strong>%{currentTopics} von %{requiredTopics}</strong> benötigten Themen und <strong>%{currentPosts} von %{requiredPosts}</strong> benötigten Beiträgen. Neue Besucher benötigen bestehende Konversationen, die sie lesen und auf die sie antworten können."
     too_few_topics_notice: "Lass' <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'>die Diskussionen starten!</a> Es existieren bisher <strong>%{currentTopics} von %{requiredTopics}</strong> benötigten Themen. Neue Besucher benötigen bestehende Konversationen, die sie lesen und auf die sie antworten können."
@@ -697,8 +740,6 @@ de:
       value_prop: "Wenn du ein Benutzerkonto anlegst, merken wir uns, was du gelesen hast, damit du immer dort fortsetzten kannst, wo du aufgehört hast. Du kannst auch Benachrichtigungen – hier oder per E-Mail – erhalten, wenn neue Beiträge verfasst werden. Beiträge, die dir gefallen, kannst du mit einem Like versehen und diese Freude mit allen teilen. :heartbeat:"
     summary:
       enabled_description: "Du siehst gerade eine Zusammenfassung des Themas: die interessantesten Beiträge, die von der Community bestimmt wurden."
-      description: "Es gibt <b>{{count}}</b> Antworten."
-      description_time: "Es gibt <b>{{count}}</b> Antworten mit einer geschätzten Lesezeit von <b>{{readingTime}} Minuten</b>."
       enable: 'Zusammenfassung vom Thema erstellen'
       disable: 'Alle Beiträge anzeigen'
     deleted_filter:
@@ -764,6 +805,8 @@ de:
       twitter:
         title: "mit Twitter"
         message: "Authentifiziere mit Twitter (stelle sicher, dass keine Pop-up-Blocker aktiviert sind)"
+      instagram:
+        title: "mit Instagram"
       facebook:
         title: "mit Facebook"
         message: "Authentifiziere mit Facebook (stelle sicher, dass keine Pop-up-Blocker aktiviert sind)"
@@ -782,7 +825,7 @@ de:
       ctrl: 'Strg'
       alt: 'Alt'
     composer:
-      emoji: "Emoji :smile:"
+      emoji: "Emoji :)"
       more_emoji: "mehr..."
       options: "Optionen"
       whisper: "flüstern"
@@ -869,7 +912,6 @@ de:
       group_mentioned: "<i title='Gruppe erwähnt' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
       quoted: "<i title='zitiert' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
       replied: "<i title='geantwortet' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='geantwortet' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
       edited: "<i title='bearbeitet' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
       liked: "<i title='gefällt' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
       private_message: "<i title='Nachricht' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
@@ -879,6 +921,9 @@ de:
       moved_post: "<i title='Beitrag verschoben' class='fa fa-sign-out'></i><p><span>{{username}}</span> hat {{description}} verschoben</p>"
       linked: "<i title='Beitrag verlinkt' class='fa fa-arrow-left'></i><p><span>{{username}}</span> {{description}}</p>"
       granted_badge: "<i title='Abzeichen verliehen' class='fa fa-certificate'></i><p>Abzeichen '{{description}}' erhalten</p>"
+      group_message_summary:
+        one: "<i title='messages in group inbox' class='fa fa-group'></i><p> Eine Nachricht in deinem {{group_name}} Postfach</p>"
+        other: "<i title='messages in group inbox' class='fa fa-group'></i><p> {{count}} Nachrichten in deinem {{group_name}} Postfach</p>"
       alt:
         mentioned: "Erwähnt von"
         quoted: "Zitiert von"
@@ -893,6 +938,7 @@ de:
         moved_post: "Dein Beitrag wurde verschoben von"
         linked: "Link zu deinem Beitrag"
         granted_badge: "Abzeichen erhalten"
+        group_message_summary: "Nachrichten in dem Gruppenpostfach"
       popup:
         mentioned: '{{username}} hat dich in "{{topic}}" - {{site_title}} erwähnt'
         group_mentioned: '{{username}} hat dich in "{{topic}}" - {{site_title}} erwähnt'
@@ -974,11 +1020,6 @@ de:
         category: "Es gibt keine Themen in {{category}}."
         top: "Es gibt keine Top-Themen."
         search: "Es wurden keine Suchergebnisse gefunden."
-        educate:
-          new: '<p>Hier werden neue Themen angezeigt.</p><p>Standardmäßig werden jene Themen als neu angesehen und mit dem <span class="badge new-topic badge-notification" style="vertical-align:middle;line-height:inherit;">neu</span> Indikator versehen, die in den letzten 2 Tagen erstellt wurden.</p><p>Du kannst das in deinen <a href="%{userPrefsUrl}">Einstellungen</a> ändern.</p>'
-          unread: '<p>Hier werden deine ungelesenen Themen angezeigt.</p><p>Die Anzahl der ungelesenen Beiträge wird als <span class="badge new-posts badge-notification">1</span> neben den Themen angezeigt.<br/>
-
-            Standardmäßig werden Themen als ungelesen angesehen, wenn du:</p><ul><li>das Thema erstellt hast</li><li>auf das Thema geantwortet hast</li><li>das Thema länger als 4 Minuten gelesen hast</li></ul><p>Außerdem werden jene Themen berücksichtigt, die du in den Benachrichtigungseinstellungen am Ende eines jeden Themas ausdrücklich auf Beobachten oder Verfolgen gesetzt hast.</p><p>Du kannst das in deinen <a href="%{userPrefsUrl}">Einstellungen</a> ändern.</p>'
       bottom:
         latest: "Das waren die aktuellen Themen."
         hot: "Das waren alle beliebten Themen."
@@ -1342,18 +1383,6 @@ de:
           bookmark: "Lesezeichen entfernen"
           like: "Gefällt mir nicht mehr"
           vote: "Stimme widerrufen"
-        people:
-          off_topic: "{{icons}} haben das als „am Thema vorbei“ gemeldet"
-          spam: "{{icons}} haben das als Spam gemeldet"
-          spam_with_url: "{{icons}} haben <a href='{{postUrl}}'>das als Spam</a> gemeldet"
-          inappropriate: "{{icons}} haben das als unangemessen gemeldet"
-          notify_moderators: "{{icons}} haben das den Moderatoren gemeldet"
-          notify_moderators_with_url: "{{icons}} <a href='{{postUrl}}'>haben das den Moderatoren gemeldet</a>"
-          notify_user: "{{icons}} hat eine Nachricht gesendet"
-          notify_user_with_url: "{{icons}} hat eine <a href='{{postUrl}}'>Nachricht</a> gesendet"
-          bookmark: "{{icons}} haben das als Lesezeichen"
-          like: "{{icons}} gefällt dieser Beitrag"
-          vote: "{{icons}} haben dafür gestimmt"
         by_you:
           off_topic: "Du hast das als „am Thema vorbei“ gemeldet"
           spam: "Du hast das als Spam gemeldet"
@@ -1480,7 +1509,6 @@ de:
       email_in_allow_strangers: "Akzeptiere E-Mails von nicht registrierten, anonymen Benutzern"
       email_in_disabled: "Das Erstellen von neuen Themen per E-Mail ist in den Website-Einstellungen deaktiviert. Um das Erstellen von neuen Themen per E-Mail zu erlauben,"
       email_in_disabled_click: 'aktiviere die Einstellung „email in“.'
-      contains_messages: "Ändere diese Kategorie, sodass diese nur noch Nachrichten enthält."
       suppress_from_homepage: "Löse diese Kategorie von der Webseite."
       allow_badges_label: "Erlaube das Verleihen von Abzeichen in dieser Kategorie"
       edit_permissions: "Berechtigungen bearbeiten"
@@ -1506,7 +1534,6 @@ de:
           description: "Du erhältst nie mehr Benachrichtigungen über neue Themen in dieser Kategorie und die Themen werden auch nicht in der Liste der letzten Themen erscheinen."
     flagging:
       title: 'Danke für deine Mithilfe!'
-      private_reminder: 'Meldungen sind vertraulich und <b>nur</b> für Mitarbeiter sichtbar'
       action: 'Beitrag melden'
       take_action: "Reagieren"
       notify_action: 'Nachricht'
@@ -1518,7 +1545,6 @@ de:
       submit_tooltip: "Private Meldung abschicken"
       take_action_tooltip: "Den Meldungsschwellenwert sofort erreichen, anstatt auf weitere Meldungen aus der Community zu warten."
       cant: "Entschuldige, du kannst diesen Beitrag derzeit nicht melden."
-      notify_staff: 'Mitarbeiter benachrichtigen'
       formatted_name:
         off_topic: "Es ist am Thema vorbei"
         inappropriate: "Es ist unangemessen"
@@ -1723,6 +1749,7 @@ de:
           refresh_report: "Bericht aktualisieren"
           start_date: "Startdatum"
           end_date: "Enddatum"
+          groups: "Alle Gruppen"
       commits:
         latest_changes: "Letzte Änderungen: bitte häufig updaten!"
         by: "von"
@@ -1894,11 +1921,9 @@ de:
             is_disabled: "Wiederherstellung ist in den Website-Einstellungen deaktiviert."
             label: "Wiederherstellen"
             title: "Das Backup wiederherstellen"
-            confirm: "Möchtest du wirklich dieses Backup wiederherstellen?"
           rollback:
             label: "Zurücksetzen"
             title: "Die Datenbank auf den letzten funktionierenden Zustand zurücksetzen"
-            confirm: "Möchtest du wirklich die Datenbank auf den letzten funktionierenden Stand zurücksetzen?"
       export_csv:
         user_archive_confirm: "Möchtest du wirklich deine Beiträge herunterladen?"
         success: "Der Export wurde gestartet. Du erhältst eine Nachricht, sobald der Vorgang abgeschlossen ist."
@@ -2001,18 +2026,18 @@ de:
           love:
             name: 'Liebe'
             description: "Die Farbe des Like-Buttons."
-          wiki:
-            name: 'Wiki'
-            description: "Die Standardfarbe wird als Hintergrundfarbe für Wiki-Beiträge genutzt."
       email:
-        title: "E-Mail"
+        title: "E-Mails"
         settings: "Einstellungen"
-        all: "Alle"
+        templates: "Vorlagen"
+        preview_digest: "Vorschau auf Neuigkeiten anzeigen"
         sending_test: "Versende Test-E-Mail..."
         error: "<b>FEHLER</b> - %{server_error}"
         test_error: "Es gab ein Problem beim Senden der Test-E-Mail. Bitte überprüfe nochmals deine E-Mail-Einstellungen, stelle sicher dass dein Anbieter keine E-Mail-Verbindungen blockiert und probiere es erneut."
         sent: "Gesendet"
         skipped: "Übersprungen"
+        received: "Empfangen"
+        rejected: "Abgelehnt"
         sent_at: "Gesendet am"
         time: "Zeit"
         user: "Benutzer"
@@ -2022,15 +2047,37 @@ de:
         send_test: "Test-E-Mail senden"
         sent_test: "Gesendet!"
         delivery_method: "Versandmethode"
-        preview_digest: "Vorschau auf Neuigkeiten anzeigen"
         preview_digest_desc: "Vorschau der Zusammenfassung der letzten Aktivitäten, die als E-Mail an inaktive Nutzer gesendet wird."
         refresh: "Aktualisieren"
         format: "Format"
         html: "HTML"
         text: "Text"
-        last_seen_user: "Letzter Benutzer:"
+        last_seen_user: "Benutzer zuletzt gesehen:"
         reply_key: "Antwort-Schlüssel"
         skipped_reason: "Grund des Überspringens"
+        incoming_emails:
+          from_address: "Von"
+          to_addresses: "An"
+          cc_addresses: "Cc"
+          subject: "Betreff"
+          error: "Fehler"
+          none: "Keine eingehenden E-Mails gefunden."
+          modal:
+            title: "Details der eingehenden E-Mail"
+            error: "Fehler"
+            references: "Referenzen"
+            date: "Datum"
+            from: "Von"
+            to: "An"
+            cc: "Cc"
+            subject: "Betreff"
+            body: "Nachrichtentext"
+          filters:
+            from_placeholder: "von@example.com"
+            to_placeholder: "an@example.com"
+            cc_placeholder: "cc@example.com"
+            subject_placeholder: "Betreff..."
+            error_placeholder: "Fehler"
         logs:
           none: "Keine Protokolleinträge gefunden."
           filters:
@@ -2094,6 +2141,12 @@ de:
             change_category_settings: "Kategorieeinstellungen ändern"
             delete_category: "Kategorie löschen"
             create_category: "Kategorie erstellen"
+            block_user: "Benutzer blockieren"
+            unblock_user: "Blockierung von Benutzer aufheben"
+            grant_admin: "Administration gewähren"
+            revoke_admin: "Administration entziehen"
+            grant_moderation: "Moderation gewähren"
+            revoke_moderation: "Moderation entziehen"
         screened_emails:
           title: "Gefilterte E-Mails"
           description: "Wenn jemand ein Konto erstellt, werden die folgenden E-Mail-Adressen überprüft und es wird die Anmeldung blockiert oder eine andere Aktion ausgeführt."
@@ -2195,6 +2248,7 @@ de:
         moderator: "Moderator?"
         admin: "Administrator?"
         blocked: "Geblockt?"
+        staged: "Vorbereitet?"
         show_admin_profile: "Administration"
         edit_title: "Titel bearbeiten"
         save_title: "Titel speichern"
@@ -2259,9 +2313,12 @@ de:
         deactivate_failed: "Beim Deaktivieren des Benutzers ist ein Fehler aufgetreten."
         unblock_failed: 'Beim Aufheben der Blockierung des Benutzers ist ein Fehler aufgetreten.'
         block_failed: 'Beim Blocken des Benutzers ist ein Fehler aufgetreten.'
+        block_confirm: 'Bust du sicher, dass du diesen Benutzer blockieren willst? Sie werden keine Möglichkeit mehr haben, Themen oder Beiträge zu erstellen.'
+        block_accept: 'Ja, den Nutzer blockieren.'
         deactivate_explanation: "Ein deaktivierter Benutzer muss seine E-Mail-Adresse erneut bestätigen."
         suspended_explanation: "Ein gesperrter Benutzer kann sich nicht anmelden."
         block_explanation: "Ein geblockter Benutzer kann keine Themen erstellen oder Beiträge veröffentlichen."
+        stage_explanation: "Ein vorbereiteter Nutzer kann nur via E-Mail zu gewissen Themen beitragen."
         trust_level_change_failed: "Beim Wechsel der Vertrauensstufe ist ein Fehler aufgetreten."
         suspend_modal_title: "Benutzer sperren"
         trust_level_2_users: "Benutzer mit Vertrauensstufe 2"
@@ -2462,7 +2519,7 @@ de:
         crawling_description: "Wenn Discourse Themen für deine Beiträge erstellt wird es falls kein RSS/ATOM-Feed verfügbar ist versuchen, den Inhalt aus dem HTML-Code zu extrahieren. Dies ist teilweise schwierig, weshalb hier CSS-Regeln angegeben werden können, die die Extraktion erleichtern."
         embed_by_username: "Benutzername für Beitragserstellung"
         embed_post_limit: "Maximale Anzahl der Beiträge, welche eingebettet werden"
-        embed_username_key_from_feed: "Schlüssel, um Discourse-Benutzernamen aus Feed zu extrahieren."
+        embed_username_key_from_feed: "Schlüssel, um Discourse-Benutzernamen aus Feed zu ermitteln."
         embed_truncate: "Kürze die eingebetteten Beiträge"
         embed_whitelist_selector: "CSS Selektor für Elemente, die in Einbettungen erlaubt sind."
         embed_blacklist_selector: "CSS Selektor für Elemente, die in Einbettungen entfernt werden."
@@ -2540,6 +2597,10 @@ de:
         mark_tracking: '<b>m</b>, <b>t</b> Thema verfolgen'
         mark_watching: '<b>m</b>, <b>w</b> Thema beobachten'
     badges:
+      earned_n_times:
+        one: "Einmal dieses Abzeichen erhalten"
+        other: "%{count} mal dieses Abzeichen erhalten"
+      more_with_badge: "Andere mit diesem Abzeichen"
       title: Abzeichen
       allow_title: "kann als Titel verwendet werden"
       multiple_grant: "kann mehrfach verliehen werden"

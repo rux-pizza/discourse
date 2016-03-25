@@ -110,6 +110,8 @@ he:
       email: 'שלח קישור בדוא"ל'
     action_codes:
       split_topic: "פצל את הפוסט %{when}"
+      invited_user: "%{who} הוזמנ/ה ב-%{when}"
+      removed_user: "%{who} הוסר/ה ב-%{when}"
       autoclosed:
         enabled: 'סגר  %{when}'
         disabled: 'פתח %{when}'
@@ -130,6 +132,18 @@ he:
         disabled: 'הוצא מהרשימה %{when}'
     topic_admin_menu: "פעולות ניהול לפוסט"
     emails_are_disabled: "כל הדוא\"ל היוצא נוטרל באופן גורף על ידי מנהל אתר. שום הודעת דוא\"ל, מכל סוג שהוא, תשלח."
+    s3:
+      regions:
+        us_east_1: "מזרח ארה\"ב (צפון וירג'יניה)"
+        us_west_1: "מערב ארה\"ב (צפון קליפורניה)"
+        us_west_2: "מערב ארה\"ב (ארגון)"
+        eu_west_1: "האיחוד האירופי (אירלנד)"
+        eu_central_1: "האיחוד האירופי (פרנקפורט)"
+        ap_southeast_1: "אסיה הפסיפית (סינגפור)"
+        ap_southeast_2: "אסיה הפסיפית (סידני)"
+        ap_northeast_1: "אסיה הפסיפית (טוקיו)"
+        ap_northeast_2: "אסיה הפסיפית (סיאול)"
+        sa_east_1: "דרום אמריקה (סאו פאולו)"
     edit: 'ערוך את הכותרת והקטגוריה של הפוסט'
     not_implemented: "סליחה, תכונה זו עדיין לא מומשה!"
     no_value: "לא"
@@ -251,7 +265,6 @@ he:
         one: " בנושא זה ישנה הודעה אחת הממתינה לאישור"
         other: "בפוסט זה ישנם <b>{{count}}</b>  הודעות הממתינות לאישור"
       confirm: "שמור שינויים"
-      delete_prompt: "אתה בטוח שאתה רוצה למחוק את המשתמש <b>%{username}</b>? פעולה זו תמחק את כל ההודעות , תחסום את הדואר האלקטרוני וכתובת ה-IP של המשתמש."
       approval:
         title: "ההודעה זקוקה לאישור"
         description: "קיבלנו את הודעתך אך נדרש אישור של מנחה לפני שההודעה תוצג, אנא המתן בסבלנות."
@@ -294,6 +307,12 @@ he:
         one: "משתמש/ת 1"
         other: "%{count} משתמשים"
     groups:
+      empty:
+        posts: "אין פרסום של חברים בקבוצה זו"
+        members: "אין חברים בקבוצה זו."
+        mentions: "אין אזכורים של קבוצה זו."
+        messages: "אין מסרים לקבוצה זו."
+        topics: "אין נושא מטעם חברים בקבוצה זו."
       add: "הוספה"
       selector_placeholder: "הוספת חברים וחברות"
       owner: "מנהל"
@@ -304,6 +323,7 @@ he:
       members: "חברים"
       posts: "הודעות"
       alias_levels:
+        title: "מי יכול/ה לשלוח מסרים ו@לאזכר בקבוצה זו?"
         nobody: "אף אחד"
         only_admins: "רק מנהלים"
         mods_and_admins: "רק מנחים ומנהלים"
@@ -312,6 +332,12 @@ he:
       trust_levels:
         title: "רמת אמון הניתנת אוטומטית למשתמשים כשהם נוספים:"
         none: "ללא"
+      notifications:
+        watching:
+          title: "במעקב"
+          description: "תקבל/י הודעה על כל פרסום במסגרת כל מסר, וסך התשובות יוצג."
+        tracking:
+          title: "במעקב"
     user_action_groups:
       '1': "לייקים שניתנו"
       '2': "לייקים שהתקבלו"
@@ -391,11 +417,8 @@ he:
         not_supported: "התראות לא נתמכות בדפדפן זה. מצטערים."
         perm_default: "הדלק התראות"
         perm_denied_btn: "הרשאות נדחו"
-        perm_denied_expl: "נטרלת הראשות עבור התראות. השתמש בדפדפן שלך לאפשר התראות, לאחר מכן לחץ על הכפתור. "
         disable: "כבה התראות"
-        currently_enabled: "(כרגע מאופשר)"
         enable: "אפשר התראות"
-        currently_disabled: "(כרגע לא מאופשר)"
         each_browser_note: "הערה: עליך לשנות הגדרה זו עבור כל דפדפן בנפרד."
       dismiss_notifications: "סימון הכל כנקרא"
       dismiss_notifications_tooltip: "סימון כל ההתראות שלא נקראו כהתראות שנקראו"
@@ -660,8 +683,6 @@ he:
       value_prop: "כשאתה נרשם, אנחנו זוכרים בדיוק מה קראת כך כשאתה חוזר אתה ממשיך בדיוק מאיפה שהפסקת. בנוסף אתה תקבל התראות דרך האתר ודרך הדואר האלקטרוני שלך כשפוסטים חדשים נוצרים ועוד משהו, אתה יכול לעשות לייק לפוסטים שאהבת. :heartbeat:"
     summary:
       enabled_description: "אתם צופים בסיכום פוסט זה: הפרסומים המעניינים ביותר כפי שסומנו על ידי הקהילה."
-      description: "ישנן <b> {{count}}</b> תגובות"
-      description_time: "ישנן  <b>{{count}}</b> תגובות, עם הערכת זמן קריאה של כ- <b>{{readingTime}}  דקות </b>."
       enable: 'סכם פוסט זה'
       disable: 'הצג את כל ההודעות'
     deleted_filter:
@@ -829,7 +850,6 @@ he:
       mentioned: "<i title='mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
       quoted: "<i title='quoted' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
       replied: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
       edited: "<i title='edited' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
       liked: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
       private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
@@ -931,9 +951,6 @@ he:
         category: "אין פוסטים בקטגוריה {{category}}."
         top: "אין פוסטים מובילים."
         search: "אין תוצאות חיפוש"
-        educate:
-          new: '<p>הפוסטים החדשים שלך יופיעו כאן.</p><p> כברירת מחדל, פוסטים נחשבים חדשים ויופיעו עם האינדיקציה <span class="badge new-topic badge-notification" style="vertical-align:middle;line-height:inherit;"> חדש </span> אם הם נוצרו ב-2 הימים האחרונים. .</p><p> תוכלו לשנות זאת ב <a href="%{userPrefsUrl}">העדפות </a>.</p>'
-          unread: '<p> הפוסטים הלא-נקראים שלך מופיעים כאן.</p><p>כברירת מחדל פוסטים נחשבים ככאלה שלא נקראו ויוצגו כ- <span class="badge new-posts badge-notification">1</span> אם את/ה:</p><ul><li> יצרת את הפוסט</li></ul><p>או אם כיוונתם את הנושא הזה להיות תחת מעקב או צפייה באמצעות כפתור ההתראות שבתחתית כל פוסט. </p><p> את/ה יכולים לשנות זאת ב<a href="%{userPrefsUrl}">העדפות</a>.</p>'
       bottom:
         latest: "אין עוד פוסטים מדוברים."
         hot: "אין עוד פוסטים חמים."
@@ -1273,18 +1290,6 @@ he:
           bookmark: "בטל העדפה"
           like: "בטל לייק"
           vote: "בטל הצבעה"
-        people:
-          off_topic: "{{icons}} סומן כמחוץ לנושא הפוסט"
-          spam: "{{icons}} סומן כספאם"
-          spam_with_url: "{{icons}} סימון <a href='{{postUrl}}'> של זה כספאם </a>"
-          inappropriate: "{{icons}} סומן בלתי ראוי"
-          notify_moderators: "{{icons}} הודיעו למנהלים"
-          notify_moderators_with_url: "{{icons}} <a href='{{postUrl}}'>הודיעו למנהלים</a>"
-          notify_user: "{{icons}} שלח הודעה"
-          notify_user_with_url: "{{icons}}  שלח <a href='{{postUrl}}'>הודעה</a>"
-          bookmark: "{{icons}} סימנו כמועדף"
-          like: "{{icons}} נתנו לייק"
-          vote: "{{icons}} הצביעו עבור זה"
         by_you:
           off_topic: "סמנת פרסום זה כמחוץ לנושא הפוסט"
           spam: "סמנת את זה כספאם"
@@ -1436,7 +1441,6 @@ he:
           description: "לא תקבלו התראות על נושאים חדשים בקטגוריות אלו, והם לא יופיעו בעמוד הלא נקראו שלך."
     flagging:
       title: 'תודה על עזרתך לשמירה על תרבות הקהילה שלנו!'
-      private_reminder: 'דגלים הם פרטיים וניתנים לצפייה ע"י הצוות <b>בלבד</b>'
       action: 'סימון פרסום'
       take_action: "בצע פעולה"
       notify_action: 'הודעה'
@@ -1448,7 +1452,6 @@ he:
       submit_tooltip: "שידור הסימון  כ \"פרטי\""
       take_action_tooltip: "הגעה באופן מיידי למספר הסימונים האפשרי, במקום להמתין לסימונים נוספים מן הקהילה"
       cant: "סליחה, לא ניתן לסמן הודעה זו כרגע."
-      notify_staff: 'התרע למשתמש'
       formatted_name:
         off_topic: "מחוץ לנושא הפוסט"
         inappropriate: "לא ראוי"
@@ -1809,11 +1812,9 @@ he:
             is_disabled: "שחזור אינו מאופשר לפי הגדרות האתר."
             label: "שחזר"
             title: "שחזר את הגיבוי"
-            confirm: "אתה בטוח שברצונך לשחזר את הגיבוי הזה?"
           rollback:
             label: "חזור לאחור"
             title: "הזחר את מסד הנתונים למצב עבודה קודם"
-            confirm: "אתה בטוח שברצונך להחזיר את מסד הנתונים למצב עבודה קודם?"
       export_csv:
         user_archive_confirm: "האם את/ה בטוח/ה שאתם רוצים להוריד את הפרסומים שלכם?"
         success: "יצוא החל, תקבלו הודעה כשהתהליך יסתיים"
@@ -1915,9 +1916,6 @@ he:
           love:
             name: 'חבב'
             description: "צבע הרקע של הכפתור \"חבב\""
-          wiki:
-            name: 'ויקי'
-            description: "צבעי יסוד משמשים כצבעי רקע בפרסומי ויקי."
       email:
         settings: "הגדרות"
         preview_digest: "תצוגה מקדימה של סיכום"

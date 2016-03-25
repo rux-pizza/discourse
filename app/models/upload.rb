@@ -14,6 +14,8 @@ class Upload < ActiveRecord::Base
 
   has_many :optimized_images, dependent: :destroy
 
+  attr_accessor :is_attachment_for_group_message
+
   validates_presence_of :filesize
   validates_presence_of :original_filename
 
@@ -62,8 +64,9 @@ class Upload < ActiveRecord::Base
 
   # options
   #   - content_type
-  #   - origin
-  #   - image_type
+  #   - origin (url)
+  #   - image_type ("avatar", "profile_background", "card_background")
+  #   - is_attachment_for_group_message (boolean)
   def self.create_for(user_id, file, filename, filesize, options = {})
     DistributedMutex.synchronize("upload_#{user_id}_#{filename}") do
       # do some work on images
@@ -73,8 +76,8 @@ class Upload < ActiveRecord::Base
           w = svg["width"].to_i
           h = svg["height"].to_i
         else
-          # fix orientation first (but not for GIFs)
-          fix_image_orientation(file.path) unless filename =~ /\.GIF$/i
+          # fix orientation first
+          fix_image_orientation(file.path) if should_optimize?(file.path)
           # retrieve image info
           image_info = FastImage.new(file) rescue nil
           w, h = *(image_info.try(:size) || [0, 0])
@@ -107,8 +110,8 @@ class Upload < ActiveRecord::Base
           end
         end
 
-        # optimize image (but not for GIFs)
-        if filename !~ /\.GIF$/i
+        # optimize image (except GIFs and large PNGs)
+        if should_optimize?(file.path)
           ImageOptim.new.optimize_image!(file.path) rescue nil
           # update the file size
           filesize = File.size(file.path)
@@ -141,6 +144,10 @@ class Upload < ActiveRecord::Base
       upload.height            = height
       upload.origin            = options[:origin][0...1000] if options[:origin]
 
+      if options[:is_attachment_for_group_message]
+        upload.is_attachment_for_group_message = true
+      end
+
       if is_dimensionless_image?(filename, upload.width, upload.height)
         upload.errors.add(:base, I18n.t("upload.images.size_not_found"))
         return upload
@@ -161,6 +168,18 @@ class Upload < ActiveRecord::Base
 
       upload
     end
+  end
+
+  LARGE_PNG_SIZE ||= 3.megabytes
+
+  def self.should_optimize?(path)
+    # don't optimize GIFs
+    return false if path =~ /\.gif$/i
+    return true  if path !~ /\.png$/i
+    image_info = FastImage.new(path) rescue nil
+    w, h = *(image_info.try(:size) || [0, 0])
+    # don't optimize large PNGs
+    w > 0 && h > 0 && w * h < LARGE_PNG_SIZE
   end
 
   def self.is_dimensionless_image?(filename, width, height)
@@ -245,11 +264,11 @@ end
 #
 #  id                :integer          not null, primary key
 #  user_id           :integer          not null
-#  original_filename :string(255)      not null
+#  original_filename :string           not null
 #  filesize          :integer          not null
 #  width             :integer
 #  height            :integer
-#  url               :string(255)      not null
+#  url               :string           not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  sha1              :string(40)

@@ -38,6 +38,12 @@ $mobile-breakpoint: 700px;
   .filters input { margin-bottom: 0; }
 }
 
+.admin-contents .admin-reports-filter {
+  input[type="date"] {
+    width: 140px;
+  }
+}
+
 td.flaggers td {
   border-bottom: none;
   border-top: none;
@@ -1792,6 +1798,42 @@ table#user-badges {
   }
 }
 
+.incoming-emails {
+  .control-group {
+    margin: 8px 0;
+  }
+  .controls {
+    margin-left: 110px;
+  }
+  p {
+    margin: 5px 10px;
+  }
+  .error-description {
+    color: #919191;
+    font-size: 90%;
+  }
+  hr {
+    margin: 0;
+  }
+  label {
+    font-weight: bold;
+    float: left;
+    width: 100px;
+    text-align: right;
+    margin: 0 10px;
+  }
+  ul {
+    list-style: none;
+    margin: 0 10px;
+  }
+  textarea {
+    width: 95%;
+    height: 150px;
+    font-family: monospace;
+    box-shadow: none;
+  }
+}
+
 // Mobile specific styles
 // Mobile view text-inputs need some padding
 .mobile-view .admin-contents {
@@ -1806,6 +1848,12 @@ table#user-badges {
 
 .mobile-view .full-width {
   margin: 0;
+}
+
+// Mobile specific style for Admin IP Lookup box
+.mobile-view .admin-contents .ip-lookup .location-box {
+  width: 300px;
+  left: 20px;
 }
 
 .cboxcontainer {

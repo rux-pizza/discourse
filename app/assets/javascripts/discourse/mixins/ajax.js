@@ -3,8 +3,13 @@
   respect Discourse paths and the run loop.
 **/
 var _trackView = false;
+var _transientHeader = null;
 
 Discourse.Ajax = Em.Mixin.create({
+
+  setTransientHeader: function(k, v) {
+    _transientHeader = {key: k, value: v};
+  },
 
   viewTrackingRequired: function() {
     _trackView = true;
@@ -43,6 +48,11 @@ Discourse.Ajax = Em.Mixin.create({
 
       args.headers = args.headers || {};
 
+      if (_transientHeader) {
+        args.headers[_transientHeader.key] = _transientHeader.value;
+        _transientHeader = null;
+      }
+
       if (_trackView && (!args.type || args.type === "GET")) {
         _trackView = false;
         // DON'T CHANGE: rack is prepending "HTTP_" in the header's name
@@ -54,6 +64,10 @@ Discourse.Ajax = Em.Mixin.create({
           Ember.run(function() {
             Discourse.Site.currentProp('isReadOnly', true);
           });
+        }
+
+        if (args.returnXHR) {
+          data = { result: data, xhr: xhr };
         }
 
         Ember.run(null, resolve, data);

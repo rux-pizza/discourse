@@ -60,7 +60,7 @@ module ApplicationHelper
   end
 
   def rtl_class
-    RTL.new(current_user).css_class
+    rtl? ? 'rtl' : ''
   end
 
   def escape_unicode(javascript)
@@ -74,8 +74,9 @@ module ApplicationHelper
     end
   end
 
-  def unescape_emoji(title)
+  def format_topic_title(title)
     PrettyText.unescape_emoji(title)
+    strip_tags(title)
   end
 
   def with_format(format, &block)
@@ -111,7 +112,7 @@ module ApplicationHelper
   end
 
   def rtl?
-    ["ar", "fa_IR", "he"].include?(user_locale)
+    ["ar", "fa_IR", "he"].include? I18n.locale.to_s
   end
 
   def user_locale
@@ -166,6 +167,10 @@ module ApplicationHelper
 
   def mobile_view?
     MobileDetection.resolve_mobile_view!(request.user_agent,params,session)
+  end
+
+  def include_crawler_content?
+    controller.try(:use_crawler_layout?) || !mobile_view?
   end
 
   def mobile_device?

@@ -586,7 +586,6 @@ sv:
     min_first_post_length: "Minst antal tillåtna tecken i första inlägget (ämnestext)"
     min_private_message_post_length: "Minst antal tillåtna tecken i inlägg för meddelanden"
     min_search_term_length: "Minsta giltiga teckenlängd på sökterm"
-    uncategorized_description: "Beskrivningen av den okategoriserade kategorin. Lämna tomt för ingen beskrivning."
     allow_duplicate_topic_titles: "Tillåt ämnen med identiska rubriker."
     unique_posts_mins: "Hur många minuter innan en användare kan göra ett inlägg med precis samma innehåll igen"
     title: "Namnet på denna webbplats som används i titel-taggen."
@@ -789,6 +788,10 @@ sv:
     ip_address:
       blocked: "Nya registreringar är inte tillåtna från din IP-adress."
       max_new_accounts_per_registration_ip: "Nya registreringar är inte tillåtet från din IP-adress (maxgräns uppnådd). Kontakta personal."
+  flags_reminder:
+    subject_template:
+      one: "1 flagga väntar på att bli hanterad"
+      other: "%{count} flaggor väntar på att bli hanterade"
   invite_mailer:
     subject_template: "%{invitee_name} har bjudit in dig till '%{topic_title}' på %{site_domain_name}"
     text_body_template: |
@@ -984,7 +987,7 @@ sv:
       subject_template: "[%{site_name}] Logga in"
     account_created:
       subject_template: "[%{site_name}] Ditt nya konto"
-    authorize_email:
+    confirm_new_email:
       subject_template: "[%{site_name}] Confirm your new email address"
       text_body_template: |
         Confirm your new email address for %{site_name} by clicking on the following link:

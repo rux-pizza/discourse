@@ -94,6 +94,40 @@ class Search
     data
   end
 
+  def self.word_to_date(str)
+
+    if str =~ /^[0-9]{1,3}$/
+      return Time.zone.now.beginning_of_day.days_ago(str.to_i)
+    end
+
+    if str =~ /^([12][0-9]{3})(-([0-1]?[0-9]))?(-([0-3]?[0-9]))?$/
+      year = $1.to_i
+      month = $2 ? $3.to_i : 1
+      day = $4 ? $5.to_i : 1
+
+      return if day==0 || month==0 || day > 31 || month > 12
+
+      return Time.zone.parse("#{year}-#{month}-#{day}") rescue nil
+    end
+
+    if str.downcase == "yesterday"
+      return Time.zone.now.beginning_of_day.yesterday
+    end
+
+    titlecase = str.downcase.titlecase
+
+    if Date::DAYNAMES.include?(titlecase)
+      return Time.zone.now.beginning_of_week(str.downcase.to_sym)
+    end
+
+    if idx = (Date::MONTHNAMES.find_index(titlecase) ||
+              Date::ABBR_MONTHNAMES.find_index(titlecase))
+      delta = Time.zone.now.month - idx
+      delta += 12 if delta < 0
+      Time.zone.now.beginning_of_month.months_ago(delta)
+    end
+  end
+
   def initialize(term, opts=nil)
     @opts = opts || {}
     @guardian = @opts[:guardian] || Guardian.new
@@ -185,6 +219,18 @@ class Search
     posts.where("posts.post_number = 1")
   end
 
+  advanced_filter(/in:pinned/) do |posts|
+    posts.where("topics.pinned_at IS NOT NULL")
+  end
+
+  advanced_filter(/in:unpinned/) do |posts|
+    if @guardian.user
+      posts.where("topics.pinned_at IS NOT NULL AND topics.id IN (
+                  SELECT topic_id FROM topic_users WHERE user_id = ? AND cleared_pinned_at IS NOT NULL
+                 )", @guardian.user.id)
+    end
+  end
+
   advanced_filter(/badge:(.*)/) do |posts,match|
     badge_id = Badge.where('name ilike ? OR id = ?', match, match.to_i).pluck(:id).first
     if badge_id
@@ -251,14 +297,20 @@ class Search
     end
   end
 
-  advanced_filter(/min_age:(\d+)/) do |posts,match|
-    n = match.to_i
-    posts.where("topics.created_at > ?", n.days.ago)
+  advanced_filter(/before:(.*)/) do |posts,match|
+    if date = Search.word_to_date(match)
+      posts.where("posts.created_at < ?", date)
+    else
+      posts
+    end
   end
 
-  advanced_filter(/max_age:(\d+)/) do |posts,match|
-    n = match.to_i
-    posts.where("topics.created_at < ?", n.days.ago)
+  advanced_filter(/after:(.*)/) do |posts,match|
+    if date = Search.word_to_date(match)
+      posts.where("posts.created_at > ?", date)
+    else
+      posts
+    end
   end
 
   private

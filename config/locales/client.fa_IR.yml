@@ -81,6 +81,8 @@ fa_IR:
           other: "%{count} ماه بعد"
         x_years:
           other: "%{count} سال بعد"
+      previous_month: 'ماه پیشین'
+      next_month: 'ماه بعد'
     share:
       topic: 'پیوندی به این موضوع را به اشتراک بگذارید'
       post: 'ارسال #%{postNumber}'
@@ -226,7 +228,6 @@ fa_IR:
       has_pending_posts:
         other: "این عنوان دارای <b>{{count}}</b> نوشته‌ی در انتظار تایید است"
       confirm: "ذخیره سازی تغییرها"
-      delete_prompt: "آیا مطمئن هستی از پاک کردن این <b>%{username}</b>? این باعث پاک شدن تمام پست ها و منجر به بلاک شدن ایمیل و IP می شود."
       approval:
         title: "نوشته نیاز به تایید دارد"
         description: "ما نوشته شما را دریافت کرده ایم ولی نیاز به تایید آن توسط یکی از مدیران است قبل از اینکه نمایش داده شود. لطفا صبر داشته باشید."
@@ -383,11 +384,8 @@ fa_IR:
         not_supported: "اعلانات بر روی این مرورگر پشتیبانی نمیشوند. با عرض پوزش."
         perm_default: "فعال کردن اعلانات"
         perm_denied_btn: "دسترسی رد شد"
-        perm_denied_expl: "شما دسترسی به اعلانات ندارید. از مرورگر خود برای فعال کردن اعلانات استفاده کنید, سپس بر روی دکمه کلیک کنید. (دسکتاپ: آیکون سمت چپ داخل نوار آدرس. تلفن همراه: 'اطلاعات وبسایت'.)"
         disable: "غیرفعال کردن اعلانات"
-        currently_enabled: "(در حال حاضر فعال است)"
         enable: "فعال کردن اعلانات"
-        currently_disabled: "(در حال حاضر غیرفعال است)"
         each_browser_note: "نکته: شما باید این تنظیمات را در هر مرورگری که استفاده میکنید تغییر دهید."
       dismiss_notifications: "علامت گذاری همه به عنوان خوانده شده"
       dismiss_notifications_tooltip: "علامت گذاری همه اطلاعیه های خوانده نشده به عنوان خوانده شده"
@@ -422,7 +420,6 @@ fa_IR:
       muted_users: "بی صدا شده"
       muted_users_instructions: "متفوقف کردن تمام اطلاعیه ها از طرف این کاربران."
       muted_topics_link: "نمایش مباحث قطع شده"
-      automatically_unpin_topics: "از سنجاق خارج کردن خودکار مباحث وقتی که به پایین میرسید."
       staff_counters:
         flags_given: "پرچم گذاری های مفید"
         flagged_posts: "نوشته های پرچم گذاری شده"
@@ -635,7 +632,6 @@ fa_IR:
     logout: "شما از سایت خارج شده اید"
     refresh: "تازه کردن"
     read_only_mode:
-      enabled: "حالت فقط خواندن را فعال است. می توانید به جستجو در وب سایت ادامه دهید ولی ممکن است تعاملات کار نکند."
       login_disabled: "ورود به سیستم غیر فعال شده همزمان با اینکه سایت در حال فقط خواندنی است."
     too_few_topics_and_posts_notice: "بیا <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'> این بحث را شروع کنیم!</a> در حال حاضر این <strong>%{currentTopics} / %{requiredTopics}</strong> مبحث ها و <strong>%{currentPosts} / %{requiredPosts}</strong> ارسال ها وجود دارد. بازدید کنندگان تازه وارد نیاز دارند به گفتگو هایی برای خواندن و پاسخ دادن."
     too_few_topics_notice: "بیا <a href='http://blog.discourse.org/2014/08/building-a-discourse-community/'> این بحث را شروع کنیم!</a> در حال حاضر این <strong>%{currentTopics} / %{requiredTopics}</strong> مباحث وجود دارد. بازدیدکنندگان تازه وارد نیاز دارند به گفتگوهایی برای خواندن و پاسخ دادن."
@@ -664,8 +660,6 @@ fa_IR:
       value_prop: "وقتی که شما یک حساب کابری ایجاد میکنید, ما به خاطر میسپاریم که شما دقیقا در حال خواندن چه چیزی بودید, بنابراین شما همیشه برمی گردید از جایی که خواندن را رها کردید. همچنین شما اعلانات را دریافت میکنید, اینجا و از طریق ایمیل, هر زمان که ارسال جدیدی فرستاده شود. و شما میتوانید ارسال ها را پسند کنید تا در محبت آن سهیم باشید. :heartbeat:"
     summary:
       enabled_description: "شما خلاصه ای از این موضوع را می بینید:  بالاترین‌ نوشته های  انتخاب شده توسط انجمن."
-      description: "<b>{{count}}</b> پاسخ"
-      description_time: "وجود دارد <b>{{count}}</b> پاسخ ها برا اساس زمان خواندن<b>{{readingTime}} دقیقه</b>."
       enable: 'خلاصه این موضوع'
       disable: 'نمایش همه نوشته‌ها'
     deleted_filter:
@@ -749,7 +743,6 @@ fa_IR:
       ctrl: 'Ctrl'
       alt: 'Alt'
     composer:
-      emoji: "شکلک :smile:"
       more_emoji: "بیشتر..."
       options: "گزینه ها"
       whisper: "نجوا"
@@ -836,7 +829,6 @@ fa_IR:
       group_mentioned: "<i title='group mentioned' class='fa fa-at'></i><p><span>{{username}}</span> {{description}}</p>"
       quoted: "<i title='quoted' class='fa fa-quote-right'></i><p><span>{{username}}</span> {{description}}</p>"
       replied: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
-      posted: "<i title='replied' class='fa fa-reply'></i><p><span>{{username}}</span> {{description}}</p>"
       edited: "<i title='edited' class='fa fa-pencil'></i><p><span>{{username}}</span> {{description}}</p>"
       liked: "<i title='liked' class='fa fa-heart'></i><p><span>{{username}}</span> {{description}}</p>"
       private_message: "<i title='private message' class='fa fa-envelope-o'></i><p><span>{{username}}</span> {{description}}</p>"
@@ -939,9 +931,6 @@ fa_IR:
         category: "هیچ موضوعاتی در {{category}} نیست."
         top: "موضوع برتر وجود ندارد."
         search: " هیچ نتیجه جستجویی وجود ندارد."
-        educate:
-          new: '<p>موضوعات جدید در اینجا قرار می گیرند.</p><p>به طور پیش فرض، موضوعات جدید در نظر گرفته خواهند شد و نشان داده می شوند <span class="badge new-topic badge-notification" style="vertical-align:middle;line-height:inherit;">جدید</span> شاخص اگر آنها در 2 روز گذشته ایجاد شده باشند </p><p>شما می توانید این را برای خود تغییر دهید <a href="%{userPrefsUrl}">تنظیمات</a>.</p>'
-          unread: '<p>موضوعات خوانده نشده شما در اینجا قرار می گیرند.</p><p>به طور پیش فرض، موضوعات خوانده نشده در نظر گرفته خواهند شد و شمارش خوانده نشده ها نشان داده می شود <span class="badge new-posts badge-notification">1</span> اگر شما:</p><ul><li>موضوع ایجاد کرده اید</li><li>به موضوع پاسخ داده اید</li><li>خواندن موضوع  در بیش از 4 دقیقه</li></ul><p>و یا اگر شما به صراحت مجموعه ای از موضوع مورد ردیابی و یا تماشا از طریق کنترل اطلاع رسانی در پایین هر موضوع انتخاب کرده اید.</p><p>شما می توانید این را تغییر دهید. <a href="%{userPrefsUrl}">تنظیمات</a>.</p>'
       bottom:
         latest: "موضوع تازهٔ دیگری نیست."
         hot: "موضوع داغ دیگری نیست."
@@ -1230,8 +1219,6 @@ fa_IR:
         yes_value: "بله، رها کن"
       via_email: "این نوشته از طریق ایمیل ارسال شده است"
       whisper: "این ارسال نجوای خصوصی برای مدیران است"
-      wiki:
-        about: "این یک نوشته ویکی است;کاربران عادی می توانند آن را ویرایش نماییند"
       archetypes:
         save: ' ذخیره تنظیمات'
       controls:
@@ -1278,18 +1265,6 @@ fa_IR:
           bookmark: "برداشتن نشانک"
           like: "خنثی سازی لایک"
           vote: "خنثی سازی امتیاز"
-        people:
-          off_topic: "{{icons}} برای این مورد پرچم آف-‌تاپیک زد"
-          spam: "{{icons}} برای این مورد پرچم هرزنامه زد"
-          spam_with_url: "{{icons}} پرچم گذاری شد<a href='{{postUrl}}'>این یک هرزنامه است</a>"
-          inappropriate: "{{icons}} با پرچم گزاری این مورد را نامناسب بدان"
-          notify_moderators: "{{icons}} مدیران را آگاه کرد"
-          notify_moderators_with_url: "{{icons}} <a href='{{postUrl}}'>مدیران را آگاه کرد</a>"
-          notify_user: "{{icons}} ارسال یک پیام خصوصی"
-          notify_user_with_url: "{{icons}} ارسال <a href='{{postUrl}}'>پیام خصوصی</a>"
-          bookmark: "{{icons}} این را نشانه‌گذاری کرد"
-          like: "{{icons}} این مورد را پسندید"
-          vote: "{{icons}}  رأی داد به این "
         by_you:
           off_topic: "شما برای این مورد پرچم آف-تاپیک زدید"
           spam: "شما برای این مورد پرچم هرزنامه زدید"
@@ -1399,7 +1374,6 @@ fa_IR:
       email_in_allow_strangers: "تایید ایمیل ها از کاربران ناشناس  بدون حساب کاربری"
       email_in_disabled: "ارسال پست با ایمیل در تنظیمات سایت غیر فعال است. برای فعال سازی  موضوعات جدید را با ایمیل ارسال کنید, "
       email_in_disabled_click: 'فعال کردن تنظیمات "email in".'
-      contains_messages: "تغییر این دسته بندی به صورتی که فقط شامل پیام ها شود."
       suppress_from_homepage: "برداشتن این دسته بندی از صفحه اصلی."
       allow_badges_label: "امکان  اهداء مدال در این دسته بندی را بده"
       edit_permissions: "ویرایش پروانه‌ها"
@@ -1425,7 +1399,6 @@ fa_IR:
           description: "شما هیچ وقت از مبحث های تازه در این دسته بندی ها مطلع نمیشوید, و آن ها در آخرین ها نمایش داده نمیشوند."
     flagging:
       title: 'تشکر برای کمک به نگه داشتن جامعه ما  بصورت مدنی !'
-      private_reminder: 'پرچم های خصوصی, <b>فقط</b> قابل مشاهده برای مدیران'
       action: 'پرچم‌گذاری نوشته'
       take_action: "اقدام"
       notify_action: 'پیام'
@@ -1437,7 +1410,6 @@ fa_IR:
       submit_tooltip: "ایجاد پرچم خصوصی"
       take_action_tooltip: "رسیدن سریع به آستانه پرچم، بلافاصله به جای انتظار برای پرچم انجمن"
       cant: "متأسفیم، در این زمان نمی‌توانید  روی این نوشته پرچم بگذارید."
-      notify_staff: 'مطلع کردن مدیران'
       formatted_name:
         off_topic: "آن موضوع قدیمی است"
         inappropriate: "این نامناسب است"
@@ -1802,11 +1774,9 @@ fa_IR:
             is_disabled: "بازگردانی در تنظیمات سایت از کار انداخته شده است."
             label: "بازیابی"
             title: "بازیابی  پشتیبان"
-            confirm: "آیا مطمئنید که می‌خواهید پشتیبان را برگردانید؟"
           rollback:
             label: "عقبگرد"
             title: "عقب گرد پایگاه داده به حالت کار قبلی"
-            confirm: "آیا مطمئن هستید به بازگشت به حالت کار قبلی پایگاه داده ؟"
       export_csv:
         user_archive_confirm: "آیا مطمئنید که می‌خواهید نوشته‌هایتان را دانلود کنید؟"
         success: "فرایند برون ریزی، به شما از طریق پیام اطلاع رسانی خواهد شد وقتی این فرایند تکمیل شود."
@@ -1909,13 +1879,9 @@ fa_IR:
           love:
             name: 'دوست داشتن'
             description: "رنگ دکمه های لایک"
-          wiki:
-            name: 'ویکی'
-            description: "رنگ پایه  استفاده شده برای پس زمینه نوشته ها ی ویکی ."
       email:
-        title: "ایمیل "
         settings: "تنظیمات"
-        all: "همه"
+        preview_digest: "پیشنمایش خلاصه"
         sending_test: "فرستادن ایمیل آزمایشی..."
         error: "<b>خطا</b> - %{server_error}"
         test_error: "در ارسال ایمیل آزمایشی مشکلی وجود داشته است. لطفاً مجدداً تنظیمات ایمیل خود را بررسی کنید، از این که هاستتان اتصالات ایمیل را مسدود نکرده اطمینان حاصل کرده و مجدداً تلاش کنید."
@@ -1930,7 +1896,6 @@ fa_IR:
         send_test: "ارسال ایمیل آزمایشی"
         sent_test: "فرستاده شد!"
         delivery_method: "روش تحویل"
-        preview_digest: "پیشنمایش خلاصه"
         preview_digest_desc: "پیش نمایش محتوای خلاصه ایمیل های ارسال شده به کاربران غیر فعال."
         refresh: "تازه‌سازی"
         format: "قالب"

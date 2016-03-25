@@ -727,7 +727,6 @@ he:
     suppress_reply_directly_above: "אל תציגו את את אפשרות ההרחבה \"בתגובה ל..\" לפרסום כאשר יש רק תגובה אחת ישירה מעל לפרסום זה."
     suppress_reply_when_quoting: "אל תציגו את הפרסום המקורי בפרסומים שמצטטים תגובות"
     max_reply_history: "מספר התגובות המקסימלי להרחבה כאשר מרחיבים \"בתגובה ל\""
-    experimental_reply_expansion: "החבא תגובות ביניים כאשר מרחיבים תגובה (ניסיוני)"
     topics_per_period_in_top_summary: "מספר הנושאים המוצגים בבריכת המחדל של סיכום הנושאים."
     topics_per_period_in_top_page: "מספר הנושאים הראשונים המוצגים בתצוגה המורחבת של \"הצג עוד\"."
     redirect_users_to_top_page: "כוון באופן אוטומטי משתמשים חדשים וכאלה שנעדרו במשך זמן לראש העמוד."
@@ -926,7 +925,7 @@ he:
     automatically_download_gravatars: "הורדת גראווטרים למשתמשים בעת יצירת החשבון או שינוי כתובת הדוא\"ל."
     digest_topics: "מספר הנושאים המקסימלי להצגה במייל סיכום."
     digest_min_excerpt_length: "מספר התווים המינימלי למובאות מתוך הפרסום במייל הסיכום."
-    suppress_digest_email_after_days: "השהיית מיילים מסכמים עבור משתמשים שלא נראו באתר במשך יותר מ(n) ימים."
+    delete_digest_email_after_days: "השהיית מיילים מסכמים עבור משתמשים שלא נראו באתר במשך יותר מ(n) ימים."
     disable_digest_emails: "נטרול דוא\"ל סיכום לכל המשתמשים."
     detect_custom_avatars: "Whether or not to check that users have uploaded custom profile pictures."
     max_daily_gravatar_crawls: "מספר הפעמים המקסימלי ש-Discourse יבדוק אווטרים ב-Gravatar ביום"
@@ -1120,6 +1119,10 @@ he:
     ip_address:
       blocked: "הרשמות חדשות אסורות מכתובת ה-IP שלך. "
       max_new_accounts_per_registration_ip: "הרשמות חדשות אסורות מכתובת ה-IP שלך. (עברת את הסף המותר) צרו קשר עם מנהל."
+  flags_reminder:
+    subject_template:
+      one: "סימון אחד ממתין לטיפול"
+      other: "%{count} סימונים ממתינים לטיפול"
   invite_mailer:
     subject_template: "הוזמנת על ידי %{invitee_name} ל '%{topic_title}' ב%{site_domain_name}"
     text_body_template: |
@@ -1473,7 +1476,7 @@ he:
 
         הקישו על הקישור המצורף כדי להגדיר סיסמא לחשבונך החדש:
         %{base_url}/users/password-reset/%{email_token}
-    authorize_email:
+    confirm_new_email:
       subject_template: "[%{site_name}] Confirm your new email address"
       text_body_template: |
         Confirm your new email address for %{site_name} by clicking on the following link:

@@ -49,6 +49,10 @@ class TopicsController < ApplicationController
     # existing installs.
     return wordpress if params[:best].present?
 
+    # work around people somehow sending in arrays,
+    # arrays are not supported
+    params[:page] = params[:page].to_i rescue 1
+
     opts = params.slice(:username_filters, :filter, :page, :post_number, :show_deleted)
     username_filters = opts[:username_filters]
 
@@ -65,7 +69,7 @@ class TopicsController < ApplicationController
       raise Discourse::NotFound
     end
 
-    page = params[:page].to_i
+    page = params[:page]
     if (page < 0) || ((page - 1) * @topic_view.chunk_size > @topic_view.topic.highest_post_number)
       raise Discourse::NotFound
     end
@@ -289,20 +293,20 @@ class TopicsController < ApplicationController
       allowed_groups = topic.allowed_groups
                           .where('topic_allowed_groups.group_id IN (?)', group_ids).pluck(:id)
       allowed_groups.each do |id|
-        GroupArchivedMessage.where(group_id: id, topic_id: topic.id).destroy_all
-
         if archive
+          GroupArchivedMessage.archive!(id, topic.id)
           group_id = id
-          GroupArchivedMessage.create!(group_id: id, topic_id: topic.id)
+        else
+          GroupArchivedMessage.move_to_inbox!(id, topic.id)
         end
       end
     end
 
     if topic.allowed_users.include?(current_user)
-      UserArchivedMessage.where(user_id: current_user.id, topic_id: topic.id).destroy_all
-
       if archive
-        UserArchivedMessage.create!(user_id: current_user.id, topic_id: topic.id)
+        UserArchivedMessage.archive!(current_user.id, topic.id)
+      else
+        UserArchivedMessage.move_to_inbox!(current_user.id, topic.id)
       end
     end
 
@@ -529,7 +533,7 @@ class TopicsController < ApplicationController
     url << "/#{post_number}" if post_number.to_i > 0
     url << ".json" if request.format.json?
 
-    page = params[:page].to_i
+    page = params[:page]
     url << "?page=#{page}" if page != 0
 
     redirect_to url, status: 301

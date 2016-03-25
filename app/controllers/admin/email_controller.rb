@@ -47,14 +47,27 @@ class Admin::EmailController < Admin::AdminController
 
   def handle_mail
     params.require(:email)
-    Email::Receiver.new(params[:email]).process
+    Email::Receiver.new(params[:email]).process!
     render text: "email was processed"
+  end
+
+  def raw_email
+    params.require(:id)
+    incoming_email = IncomingEmail.find(params[:id].to_i)
+    render json: { raw_email: incoming_email.raw }
+  end
+
+  def incoming
+    params.require(:id)
+    incoming_email = IncomingEmail.find(params[:id].to_i)
+    serializer = IncomingEmailDetailsSerializer.new(incoming_email, root: false)
+    render_json_dump(serializer)
   end
 
   private
 
   def filter_email_logs(email_logs, params)
-    email_logs = email_logs.includes(:user)
+    email_logs = email_logs.includes(:user, { post: :topic })
                            .references(:user)
                            .order(created_at: :desc)
                            .offset(params[:offset] || 0)
