@@ -1,5 +1,6 @@
 import UserBadge from 'discourse/models/user-badge';
 import Badge from 'discourse/models/badge';
+import PreloadStore from 'preload-store';
 
 export default Discourse.Route.extend({
   queryParams: {
@@ -37,7 +38,7 @@ export default Discourse.Route.extend({
   titleToken() {
     const model = this.modelFor("badges.show");
     if (model) {
-      return model.get("displayName");
+      return model.get("name");
     }
   },
 

@@ -2,16 +2,14 @@
   <h1>{{i18n 'badges.title'}}</h1>
 
   <div class='badge-groups'>
-    {{#each bg in badgeGroups}}
+    {{#each badgeGroups as |bg|}}
       <div class='badge-grouping'>
         <div class='title'>
           <h3>{{bg.badgeGrouping.displayName}}</h3>
         </div>
 
         {{#each bg.badges as |b|}}
-          {{#link-to 'badges.show' badge.id badge.slug}}
-            {{badge-card badge=b}}
-          {{/link-to}}
+          {{badge-card badge=b navigateOnClick="true"}}
         {{/each}}
       </div>
     {{/each}}

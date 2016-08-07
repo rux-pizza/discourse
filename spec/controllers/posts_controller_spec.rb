@@ -108,6 +108,24 @@ describe PostsController do
     end
   end
 
+  describe 'user_posts_feed' do
+    let(:user) { log_in }
+    let!(:public_topic) { Fabricate(:topic) }
+    let!(:post) { Fabricate(:post, user: user, topic: public_topic) }
+    let!(:private_topic) { Fabricate(:topic, archetype: Archetype.private_message, category: nil) }
+    let!(:private_post) { Fabricate(:post, user: user, topic: private_topic) }
+    let!(:topicless_post) { Fabricate(:post, user: user, raw: '<p>Car 54, where are you?</p>') }
+
+    it 'returns public posts with topic for rss' do
+      topicless_post.update topic_id: -100
+      xhr :get, :user_posts_feed, username: user.username, format: :rss
+      expect(response).to be_success
+      expect(assigns(:posts)).to include post
+      expect(assigns(:posts)).to_not include private_post
+      expect(assigns(:posts)).to_not include topicless_post
+    end
+  end
+
   describe 'cooked' do
     before do
       post = Post.new(cooked: 'wat')
@@ -128,7 +146,7 @@ describe PostsController do
 
     describe "when logged in" do
       let(:user) { log_in }
-      let(:post) { Fabricate(:post, user: user, raw_email: 'email_content') }
+      let(:post) { Fabricate(:post, deleted_at: 2.hours.ago, user: user, raw_email: 'email_content') }
 
       it "raises an error if the user doesn't have permission to view raw email" do
         Guardian.any_instance.expects(:can_view_raw_email?).returns(false)
@@ -369,8 +387,12 @@ describe PostsController do
       end
 
       it "extracts links from the new body" do
-        TopicLink.expects(:extract_from).with(post)
-        xhr :put, :update, update_params
+        param = update_params
+        param[:post][:raw] =  'I just visited this https://google.com so many cool links'
+
+        xhr :put, :update, param
+        expect(response).to be_success
+        expect(TopicLink.count).to eq(1)
       end
 
       it "doesn't allow updating of deleted posts" do

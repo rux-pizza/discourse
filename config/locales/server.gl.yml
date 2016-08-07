@@ -81,7 +81,6 @@ gl:
       one: "Unha resposta"
       other: "%{count} respostas"
   no_mentions_allowed: "Sentímolo pero non podes mencionar outros usuarios"
-  has_already_been_used: "xa está en uso"
   invalid_characters: "contén caracteres incorrectos"
   next_page: "páxina seguinte →"
   prev_page: "← páxina anterior"
@@ -263,13 +262,6 @@ gl:
       title: "Tema normal"
     banner:
       title: "Tema do báner"
-  unsubscribed:
-    title: 'Dado de baixa'
-    description: "Démoste de baixa. Non contactaremos contigo de novo."
-  resubscribe:
-    action: "Re-subscribir"
-    title: "Subscrito de novo"
-    description: "Subscribícheste de novo"
   reports:
     visits:
       title: "Visitas de usuarios"
@@ -351,18 +343,15 @@ gl:
     page_view_anon_reqs:
       title: "Anónimo"
       xaxis: "Día"
-      yaxis: "Peticións API anónimas"
     page_view_logged_in_reqs:
       title: "Sesión iniciada"
       xaxis: "Día"
     page_view_crawler_reqs:
       title: "Extractores web"
       xaxis: "Día"
-      yaxis: "Peticións API dos extractores web"
     page_view_total_reqs:
       title: "Total"
       xaxis: "Día"
-      yaxis: "Total de peticións API"
     page_view_logged_in_mobile_reqs:
       xaxis: "Día"
     page_view_anon_mobile_reqs:
@@ -417,12 +406,12 @@ gl:
     full_name_required: "O nome completo no perfil do usuario é obrigatorio."
     embed_username_key_from_feed: "Clave para recuperar o nome do usuario desde a fonte."
     enable_emoji: "Activar emojis"
-  notification_types:
-    liked: "A %{display_username} gustoulle a túa publicación en %{link}"
   search:
     types:
       category: 'Categorías'
       user: 'Usuarios'
+  original_poster: "Publicador orixinal"
+  most_recent_poster: "Publicador máis recente"
   frequent_poster: "Publicador frecuente"
   redirected_to_top_reasons:
     new_user: "Benvido/a á nosa comunidade. Estes son os temas recentes máis populares."
@@ -437,8 +426,6 @@ gl:
     deferred_and_deleted: "Grazas por comunicárnolo. Xa eliminamos a publicación."
   temporarily_closed_due_to_flags: "Este tema está pechado temporalmente polo gran número de denuncias da comunidade."
   system_messages:
-    post_hidden:
-      subject_template: "Publicación oculta polas denuncias da comunidade."
     welcome_user:
       subject_template: "Benvido/a a %{site_name}!"
       text_body_template: |
@@ -474,28 +461,6 @@ gl:
     title: "Termos do servizo"
   privacy_topic:
     title: "Política de intimidade"
-  badges:
-    long_descriptions:
-      first_like: |
-        Esta insignia concédese a primeira vez que che gusta unha publicación e usas o botón :heart:. Darlle Gústame a unha publicción e unha gran forma de dicirlles aos membros da comunidade que publicaron algo interesante, útil, riquiño ou divertido. Comparte o amor!
-      first_flag: |
-        Esta insignia concédese por marcar unha publicación. Marcar publicacións é fundamental para a saúde da comunidade. Se ves algunha publicación que
-
-        requira a atención dun moderador, non dubides en marcala. Tamén podes usar o diálogo de marcar para enviar <b>mensaxes</b> a outros usuarios.
-      welcome: |
-        Esta insignia concédese cando recibes o primeiro Gústame nunha publicación. Parabéns, publicaches algo que os membros da comunidade consideraron interesante, riquiño ou útil.
-      nice_post: |
-        Esta insignia concédese por crear unha resposta que recibe 10 gústames. Traballo riquiño.
-      nice_topic: |
-        Esta insignia concédese por crear un tema que recibe 10 gústames. Traballo riquiño.
-      good_post: |
-        Esta insignia concédese por crear unha resposta que recibe 25 gústames. Bo traballo.
-      good_topic: |
-        Esta insignia concédese por crear un tema que recibe 25 gústames. Bo traballo.
-      great_post: |
-        Esta insignia concédese por crear unha publicación que recibe 50 gústames. Moi ben!
-      great_topic: |
-        Esta insignia concédese por crear unha resposta que recibe 50 gústames. Moi ben!
   admin_login:
     error: "Erro!"
     submit_button: "Enviar correo-e"

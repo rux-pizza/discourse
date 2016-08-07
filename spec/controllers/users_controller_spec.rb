@@ -321,7 +321,7 @@ describe UsersController do
 
     context 'enqueues mail' do
       it 'enqueues mail with admin email and sso enabled' do
-        Jobs.expects(:enqueue).with(:user_email, has_entries(type: :admin_login, user_id: admin.id))
+        Jobs.expects(:enqueue).with(:critical_user_email, has_entries(type: :admin_login, user_id: admin.id))
         put :admin_login, email: admin.email
       end
     end
@@ -382,12 +382,15 @@ describe UsersController do
       @user.password = "strongpassword"
     end
 
-    def post_user
-      xhr :post, :create,
-        name: @user.name,
+    let(:post_user_params) do
+      { name: @user.name,
         username: @user.username,
         password: "strongpassword",
-        email: @user.email
+        email: @user.email }
+    end
+
+    def post_user
+      xhr :post, :create, post_user_params
     end
 
     context 'when creating a user' do
@@ -417,7 +420,7 @@ describe UsersController do
       end
 
       it 'creates a user correctly' do
-        Jobs.expects(:enqueue).with(:user_email, has_entries(type: :signup))
+        Jobs.expects(:enqueue).with(:critical_user_email, has_entries(type: :signup))
         User.any_instance.expects(:enqueue_welcome_message).with('welcome_user').never
 
         post_user
@@ -449,6 +452,79 @@ describe UsersController do
         it "shows the 'waiting approval' message" do
           post_user
           expect(JSON.parse(response.body)['message']).to eq(I18n.t 'login.wait_approval')
+        end
+      end
+    end
+
+    context "creating as active" do
+      it "won't create the user as active" do
+        xhr :post, :create, post_user_params.merge(active: true)
+        expect(JSON.parse(response.body)['active']).to be_falsey
+      end
+
+      context "with a regular api key" do
+        let(:user) { Fabricate(:user) }
+        let(:api_key) { Fabricate(:api_key, user: user) }
+
+        it "won't create the user as active with a regular key" do
+          xhr :post, :create, post_user_params.merge(active: true, api_key: api_key.key)
+          expect(JSON.parse(response.body)['active']).to be_falsey
+        end
+      end
+
+      context "with an admin api key" do
+        let(:user) { Fabricate(:admin) }
+        let(:api_key) { Fabricate(:api_key, user: user) }
+
+        it "creates the user as active with a regular key" do
+          xhr :post, :create, post_user_params.merge(active: true, api_key: api_key.key)
+          expect(JSON.parse(response.body)['active']).to be_truthy
+        end
+
+        it "won't create the developer as active" do
+          UsernameCheckerService.expects(:is_developer?).returns(true)
+
+          xhr :post, :create, post_user_params.merge(active: true, api_key: api_key.key)
+          expect(JSON.parse(response.body)['active']).to be_falsy
+        end
+      end
+    end
+
+    context "creating as staged" do
+      it "won't create the user as staged" do
+        xhr :post, :create, post_user_params.merge(staged: true)
+        new_user = User.where(username: post_user_params[:username]).first
+        expect(new_user.staged?).to eq(false)
+      end
+
+      context "with a regular api key" do
+        let(:user) { Fabricate(:user) }
+        let(:api_key) { Fabricate(:api_key, user: user) }
+
+        it "won't create the user as staged with a regular key" do
+          xhr :post, :create, post_user_params.merge(staged: true, api_key: api_key.key)
+          new_user = User.where(username: post_user_params[:username]).first
+          expect(new_user.staged?).to eq(false)
+        end
+      end
+
+      context "with an admin api key" do
+        let(:user) { Fabricate(:admin) }
+        let(:api_key) { Fabricate(:api_key, user: user) }
+
+        it "creates the user as staged with a regular key" do
+          xhr :post, :create, post_user_params.merge(staged: true, api_key: api_key.key)
+
+          new_user = User.where(username: post_user_params[:username]).first
+          expect(new_user.staged?).to eq(true)
+        end
+
+        it "won't create the developer as staged" do
+          UsernameCheckerService.expects(:is_developer?).returns(true)
+          xhr :post, :create, post_user_params.merge(staged: true, api_key: api_key.key)
+
+          new_user = User.where(username: post_user_params[:username]).first
+          expect(new_user.staged?).to eq(false)
         end
       end
     end
@@ -1297,7 +1373,7 @@ describe UsersController do
 
       context 'with a valid email_token' do
         it 'should send the activation email' do
-          Jobs.expects(:enqueue).with(:user_email, has_entries(type: :signup))
+          Jobs.expects(:enqueue).with(:critical_user_email, has_entries(type: :signup))
           xhr :post, :send_activation_email, username: user.username
         end
       end
@@ -1315,7 +1391,7 @@ describe UsersController do
         end
 
         it 'should send an email' do
-          Jobs.expects(:enqueue).with(:user_email, has_entries(type: :signup))
+          Jobs.expects(:enqueue).with(:critical_user_email, has_entries(type: :signup))
           xhr :post, :send_activation_email, username: user.username
         end
       end
@@ -1516,12 +1592,20 @@ describe UsersController do
   describe ".is_local_username" do
 
     let(:user) { Fabricate(:user) }
+    let(:group) { Fabricate(:group, name: "Discourse") }
 
     it "finds the user" do
       xhr :get, :is_local_username, username: user.username
       expect(response).to be_success
       json = JSON.parse(response.body)
       expect(json["valid"][0]).to eq(user.username)
+    end
+
+    it "finds the group" do
+      xhr :get, :is_local_username, username: group.name
+      expect(response).to be_success
+      json = JSON.parse(response.body)
+      expect(json["valid_groups"][0]).to eq(group.name)
     end
 
     it "supports multiples usernames" do

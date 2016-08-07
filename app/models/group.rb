@@ -82,13 +82,15 @@ class Group < ActiveRecord::Base
 
   def incoming_email_validator
     return if self.automatic || self.incoming_email.blank?
+
     incoming_email.split("|").each do |email|
+      escaped = Rack::Utils.escape_html(email)
       if !Email.is_valid?(email)
-        self.errors.add(:base, I18n.t('groups.errors.invalid_incoming_email', email: email))
+        self.errors.add(:base, I18n.t('groups.errors.invalid_incoming_email', email: escaped))
       elsif group = Group.where.not(id: self.id).find_by_email(email)
-        self.errors.add(:base, I18n.t('groups.errors.email_already_used_in_group', email: email, group_name: group.name))
+        self.errors.add(:base, I18n.t('groups.errors.email_already_used_in_group', email: escaped, group_name: Rack::Utils.escape_html(group.name)))
       elsif category = Category.find_by_email(email)
-        self.errors.add(:base, I18n.t('groups.errors.email_already_used_in_category', email: email, category_name: category.name))
+        self.errors.add(:base, I18n.t('groups.errors.email_already_used_in_category', email: escaped, category_name: Rack::Utils.escape_html(category.name)))
       end
     end
   end
@@ -100,6 +102,31 @@ class Group < ActiveRecord::Base
                  .where(user_id: user_ids)
                  .where('topics.archetype <> ?', Archetype.private_message)
                  .where(post_type: Post.types[:regular])
+
+    result = guardian.filter_allowed_categories(result)
+    result = result.where('posts.id < ?', before_post_id) if before_post_id
+    result.order('posts.created_at desc')
+  end
+
+  def messages_for(guardian, before_post_id=nil)
+    result = Post.includes(:user, :topic, topic: :category)
+                 .references(:posts, :topics, :category)
+                 .where('topics.archetype = ?', Archetype.private_message)
+                 .where(post_type: Post.types[:regular])
+                 .where('topics.id IN (SELECT topic_id FROM topic_allowed_groups WHERE group_id = ?)', self.id)
+
+    result = guardian.filter_allowed_categories(result)
+    result = result.where('posts.id < ?', before_post_id) if before_post_id
+    result.order('posts.created_at desc')
+  end
+
+  def mentioned_posts_for(guardian, before_post_id=nil)
+    result = Post.joins(:group_mentions)
+                 .includes(:user, :topic, topic: :category)
+                 .references(:posts, :topics, :category)
+                 .where('topics.archetype <> ?', Archetype.private_message)
+                 .where(post_type: Post.types[:regular])
+                 .where('group_mentions.group_id = ?', self.id)
 
     result = guardian.filter_allowed_categories(result)
     result = result.where('posts.id < ?', before_post_id) if before_post_id
@@ -215,6 +242,17 @@ class Group < ActiveRecord::Base
     Group.reset_counters(group.id, :group_users)
 
     group
+  end
+
+  def self.ensure_consistency!
+    reset_all_counters!
+    refresh_automatic_groups!
+  end
+
+  def self.reset_all_counters!
+    Group.pluck(:id).each do |group_id|
+      Group.reset_counters(group_id, :group_users)
+    end
   end
 
   def self.refresh_automatic_groups!(*args)
@@ -388,7 +426,7 @@ class Group < ActiveRecord::Base
       domains.each do |domain|
         domain.sub!(/^https?:\/\//, '')
         domain.sub!(/\/.*$/, '')
-        self.errors.add :base, (I18n.t('groups.errors.invalid_domain', domain: domain)) unless domain =~ /\A[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?\Z/i
+        self.errors.add :base, (I18n.t('groups.errors.invalid_domain', domain: domain)) unless domain =~ /\A[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,24}(:[0-9]{1,5})?(\/.*)?\Z/i
       end
       self.automatic_membership_email_domains = domains.join("|")
     end
