@@ -29,11 +29,11 @@ Object.keys(aliases).forEach(name => {
 
 export function performEmojiUnescape(string, opts) {
   // this can be further improved by supporting matches of emoticons that don't begin with a colon
-  if (string.indexOf(":") >= 0) {
-    return string.replace(/\B:[^\s:]+:?\B/g, m => {
+  if (string.indexOf("&") >= 0) {
+    return string.replace(/\B&[^\s&]+&?\B/g, m => {
       const isEmoticon = !!translations[m];
       const emojiVal = isEmoticon ? translations[m] : m.slice(1, m.length - 1);
-      const hasEndingColon = m.lastIndexOf(":") === m.length - 1;
+      const hasEndingColon = m.lastIndexOf("&") === m.length - 1;
       const url = buildEmojiUrl(emojiVal, opts);
 
       return url && (isEmoticon || hasEndingColon) ?

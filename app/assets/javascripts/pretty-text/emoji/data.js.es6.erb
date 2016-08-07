@@ -1,6 +1,6 @@
 export const emoji = <%= Emoji.standard.map(&:name).flatten.inspect %>;
 export const aliases = <%= Emoji.aliases.inspect.gsub("=>", ":") %>;
-export const translations = {
+export const translationsDisabled = {
   ':)'   : 'slight_smile',
   ':-)'  : 'slight_smile',
   ':('   : 'frowning',
@@ -26,3 +26,5 @@ export const translations = {
   ":$"   : 'blush',
   ":-$"  : 'blush'
 };
+
+export const translations = {};

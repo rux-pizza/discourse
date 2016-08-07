@@ -40,14 +40,14 @@ export function setup(helper) {
     code = code.toLowerCase();
     const url = buildEmojiUrl(code, helper.getOptions());
     if (url) {
-      const title = `:${code}:`;
+      const title = `&${code}&`;
       return ['img', { href: url, title, 'class': 'emoji', alt: title }];
     }
   }
 
   const translationsWithColon = {};
   Object.keys(translations).forEach(t => {
-    if (t[0] === ':') {
+    if (t[0] === '&') {
       translationsWithColon[t] = translations[t];
     } else {
       const replacement = translations[t];
@@ -58,8 +58,8 @@ export function setup(helper) {
   });
   const translationColonRegexp = new RegExp(Object.keys(translationsWithColon).map(t => `(${escapeRegExp(t)})`).join("|"));
 
-  helper.registerInline(':', (text, match, prev) => {
-    const endPos = text.indexOf(':', 1);
+  helper.registerInline('&', (text, match, prev) => {
+    const endPos = text.indexOf('&', 1);
     const firstSpace = text.search(/\s/);
     if (!checkPrev(prev)) { return; }
 
@@ -93,7 +93,7 @@ export function setup(helper) {
 
       let m;
       while ((m = _unicodeRegexp.exec(text)) !== null) {
-        let replacement = ":" + _unicodeReplacements[m[0]] + ":";
+        let replacement = "&" + _unicodeReplacements[m[0]] + "&";
         const before = text.charAt(m.index-1);
         if (!/\B/.test(before)) {
           replacement = "\u200b" + replacement;
