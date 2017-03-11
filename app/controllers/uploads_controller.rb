@@ -4,10 +4,13 @@ class UploadsController < ApplicationController
 
   def create
     type = params.require(:type)
+
+    raise Discourse::InvalidAccess.new unless type =~ /^[a-z\-\_]{1,100}$/
+
     file = params[:file] || params[:files].try(:first)
     url = params[:url]
     client_id = params[:client_id]
-    synchronous = is_api? && params[:synchronous]
+    synchronous = (current_user.staff? || is_api?) && params[:synchronous]
 
     if type == "avatar"
       if SiteSetting.sso_overrides_avatar || !SiteSetting.allow_uploaded_avatars
@@ -73,6 +76,7 @@ class UploadsController < ApplicationController
       # convert pasted images to HQ jpegs
       if filename == "blob.png" && SiteSetting.convert_pasted_images_to_hq_jpg
         jpeg_path = "#{File.dirname(tempfile.path)}/blob.jpg"
+        OptimizedImage.ensure_safe_paths!(tempfile.path, jpeg_path)
         `convert #{tempfile.path} -quality #{SiteSetting.convert_pasted_images_quality} #{jpeg_path}`
         # only change the format of the image when JPG is at least 5% smaller
         if File.size(jpeg_path) < File.size(tempfile.path) * 0.95

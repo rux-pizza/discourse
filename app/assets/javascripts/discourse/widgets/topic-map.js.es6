@@ -11,7 +11,7 @@ function renderParticipants(userFilters, participants) {
 
   userFilters = userFilters || [];
   return participants.map(p => {
-    return this.attach('topic-participant', p, { state: { toggled: userFilters.contains(p.username) } });
+    return this.attach('topic-participant', p, { state: { toggled: userFilters.includes(p.username) } });
   });
 }
 
@@ -116,7 +116,14 @@ createWidget('topic-map-link', {
   },
 
   html(attrs) {
-    return attrs.title ? replaceEmoji(attrs.title) : attrs.url;
+    let content = attrs.title || attrs.url;
+    const truncateLength = 85;
+
+    if (content.length > truncateLength) {
+      content = `${content.substr(0, truncateLength).trim()}...`;
+    }
+
+    return attrs.title ? replaceEmoji(content) : content;
   }
 });
 

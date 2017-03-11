@@ -9,7 +9,7 @@
   display: inline-block;
   font-weight: normal;
   white-space: nowrap;
-  @include border-radius-all(9px);
+  @include border-radius-all(10px);
 }
 
 // Category badges
@@ -54,7 +54,9 @@
   &.bullet { //bullet category style
     display: inline-flex;
     align-items: baseline;
-    margin-right: 10px;
+    margin-right: 5px;
+    font-size: 12px;
+    line-height: 15px;
 
     span.badge-category {
       color: $primary !important;
@@ -129,6 +131,10 @@
       }
     }
   }
+}
+
+.extra-info-wrapper .title-wrapper .badge-wrapper.bar {
+  margin-top: 6px;
 }
 
 .autocomplete, td.category {
@@ -234,16 +240,13 @@
 
 .badge-notification {
   @extend %badge;
+  padding: 4px 5px 2px 5px;
   vertical-align: middle;
   color: $secondary;
   font-size: 11px;
-  line-height: 18px;
-  min-width: 12px;
-  height: 18px;
-  padding: 0px 3px;
+  line-height: 1;
   text-align: center;
   background-color: dark-light-choose(scale-color($primary, $lightness: 70%), scale-color($secondary, $lightness: 70%));
-
   &[href] {
     color: $secondary;
   }

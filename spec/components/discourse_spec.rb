@@ -118,7 +118,7 @@ describe Discourse do
       context 'user enabled readonly mode' do
         it "adds a key in redis and publish a message through the message bus" do
           expect($redis.get(user_readonly_mode_key)).to eq(nil)
-          message = MessageBus.track_publish { Discourse.enable_readonly_mode(user_enabled: true) }.first
+          message = MessageBus.track_publish { Discourse.enable_readonly_mode(user_readonly_mode_key) }.first
           assert_readonly_mode(message, user_readonly_mode_key)
         end
       end
@@ -157,6 +157,14 @@ describe Discourse do
       it "returns true when Discourse is recently read only" do
         Discourse.received_readonly!
         expect(Discourse.readonly_mode?).to eq(true)
+      end
+
+      it "returns true when user enabled readonly mode key is present in redis" do
+        Discourse.enable_readonly_mode(user_readonly_mode_key)
+        expect(Discourse.readonly_mode?).to eq(true)
+
+        Discourse.disable_readonly_mode(user_readonly_mode_key)
+        expect(Discourse.readonly_mode?).to eq(false)
       end
     end
 
