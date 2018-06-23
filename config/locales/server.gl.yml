@@ -16,7 +16,9 @@ gl:
       short_no_year: "%-d de %B"
       date_only: "%-d de %B, %Y"
   date:
-    month_names: [null, Xaneiro, Febreiro, Marzo, Abril, Maio, Xuño, Xullo, Agosto, Setembro, Outubro, Novembro, Decembro]
+    month_names: [~, Xaneiro, Febreiro, Marzo, Abril, Maio, Xuño, Xullo, Agosto, Setembro, Outubro, Novembro, Decembro]
+    <<: *datetime_formats
+  time:
     <<: *datetime_formats
   title: "Discourse"
   topics: "Temas"
@@ -33,15 +35,15 @@ gl:
       present: debe quedar baleiro
       confirmation: "%{attribute} non coincide"
       empty: non pode quedar baleiro
-      equal_to: debe ser igual a %{count}
+      equal_to: "debe ser igual a %{count}"
       exclusion: está reservado
-      greater_than: debe ser maior de %{count}
-      greater_than_or_equal_to: debe ser igual ou maior de %{count}
+      greater_than: "debe ser maior de %{count}"
+      greater_than_or_equal_to: "debe ser igual ou maior de %{count}"
       has_already_been_used: "xa está en uso"
       inclusion: no está incluído na lista
       invalid: é incorrecto
-      less_than: debe ser menor de %{count}
-      less_than_or_equal_to: debe ser igual ou menor de %{count}
+      less_than: "debe ser menor de %{count}"
+      less_than_or_equal_to: "debe ser igual ou menor de %{count}"
       not_a_number: non é un número
       not_an_integer: debe ser un enteiro
       odd: debe ser impar
@@ -62,6 +64,9 @@ gl:
       load_from_remote: "Produciuse un erro cargando esta publicación."
     site_settings:
       min_username_length_range: "O mínimo non pode ser maior que o máximo."
+  activemodel:
+    errors:
+      <<: *errors
   not_logged_in: "Debes iniciar sesión para facer iso."
   not_found: "Non foi posíbel atopar o recurso ou URL solicitado."
   invalid_access: "Non se che permite ver o recurso solicitado."
@@ -124,11 +129,11 @@ gl:
       user_profile:
         bio_raw: "Verbo de min"
     errors:
+      <<: *errors
       models:
         topic:
           attributes:
             base:
-              warning_requires_pm: "Só podes anexar avisos a mensaxes privadas."
               no_user_selected: "Debes seleccionar un usuario correcto."
         user:
           attributes:
@@ -142,7 +147,6 @@ gl:
           attributes:
             hex:
               invalid: "non é unha cor válida"
-      <<: *errors
   vip_category_name: "Taberna"
   vip_category_description: "Unha categoría exclusiva para membros cun nivel de confianza igual ou maior a 3."
   meta_category_name: "Opinións sobre o sitio"
@@ -206,12 +210,9 @@ gl:
     distance_in_words_verbose:
       half_a_minute: "agora mesmiño"
   password_reset:
-    choose_new: "Selecciona un novo contrasinal"
-    choose: "Selecciona un contrasinal"
     update: 'Actualizar contrasinal'
     save: 'Estabelecer o contrasinal'
     title: 'Contrasinal restabelecido'
-    continue: "Continuar a %{site_name}"
   change_email:
     confirmed: "O teu correo electrónico foi actualizado."
     please_continue: "Continuar a %{site_name}"
@@ -268,9 +269,7 @@ gl:
       xaxis: "Día"
       yaxis: "Número de visitas"
     signups:
-      title: "Novos usuarios"
       xaxis: "Día"
-      yaxis: "Número de novos usuarios"
     profile_views:
       title: "Vistas dos perfís de usuario"
       xaxis: "Día"
@@ -308,7 +307,6 @@ gl:
       xaxis: "Día"
       yaxis: "Número de correos-e enviados"
     user_to_user_private_messages:
-      title: "Entre usuarios"
       xaxis: "Día"
       yaxis: "Número de mensaxes"
     system_private_messages:
@@ -350,7 +348,6 @@ gl:
       title: "Extractores web"
       xaxis: "Día"
     page_view_total_reqs:
-      title: "Total"
       xaxis: "Día"
     page_view_logged_in_mobile_reqs:
       xaxis: "Día"
@@ -384,16 +381,13 @@ gl:
       xaxis: "Día"
       yaxis: "Total"
     mobile_visits:
-      title: "Visitas de usuarios"
       xaxis: "Día"
       yaxis: "Número de visitas"
   site_settings:
     delete_old_hidden_posts: "Eliminar automaticamente as publicacións ocultas durante máis de 30 días."
-    default_locale: "Idioma predeterminado desta instancia (código ISO 639-1)"
     allow_user_locale: "Permitir os usuarios escoller o idioma da interface"
     min_post_length: "Número mínimo de caracteres permitido para unha publicación"
     min_first_post_length: "Número mínimo de caracteres (corpo do tema) permitido para unha primeira publicación"
-    min_private_message_post_length: "Número mínimo de caracteres permitido para unha mensaxe"
     max_post_length: "Número máximo de caracteres permitido para unha publicación"
     post_undo_action_window_mins: "Número de minutos que os usuarios teñen para desfacer accións recentes nunha publicación (gústames, denuncias, etc)."
     enable_badges: "Activar o sistema de insignias"
@@ -404,7 +398,6 @@ gl:
     suppress_uncategorized_badge: "Non mostrar a insignia para temas sen categoría nas listas de temas."
     automatically_unpin_topics: "Despegar os temas automaticamente cando o usuario chega ao fondo."
     full_name_required: "O nome completo no perfil do usuario é obrigatorio."
-    embed_username_key_from_feed: "Clave para recuperar o nome do usuario desde a fonte."
     enable_emoji: "Activar emojis"
   search:
     types:
@@ -424,28 +417,15 @@ gl:
     disagreed: "Grazas por comunicárnolo. Estamos botándolle un ollo."
     deferred: "Grazas por comunicárnolo. Estamos botándolle un ollo."
     deferred_and_deleted: "Grazas por comunicárnolo. Xa eliminamos a publicación."
-  temporarily_closed_due_to_flags: "Este tema está pechado temporalmente polo gran número de denuncias da comunidade."
   system_messages:
     welcome_user:
       subject_template: "Benvido/a a %{site_name}!"
-      text_body_template: |
-        Grazas por unirte %{site_name}, e benvido/a!
-
-        %{new_user_tips}
-
-        Cremos nun [comportamento civilizado da comunidade](%{base_url}/guidelines) en todo momento.
-
-        Goza da túa estancia!
-
-        (Se precisas comunicarte cos [membros do equipo](%{base_url}/about) como novo usuario responde a esta mensaxe.)
     welcome_invite:
       subject_template: "Benvido/a a %{site_name}!"
     backup_succeeded:
       subject_template: "A copia de seguranza completouse correctamente"
     bulk_invite_succeeded:
       subject_template: "O convite en bloque procesouse correctamente"
-    csv_export_succeeded:
-      subject_template: "Completouse a exportación dos datos"
   page_not_found:
     see_more: "Máis"
     search_google: "Google"
@@ -462,10 +442,4 @@ gl:
   privacy_topic:
     title: "Política de intimidade"
   admin_login:
-    error: "Erro!"
     submit_button: "Enviar correo-e"
-  time:
-    <<: *datetime_formats
-  activemodel:
-    errors:
-      <<: *errors

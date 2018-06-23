@@ -18,8 +18,11 @@ class UserOptionSerializer < ApplicationSerializer
              :email_previous_replies,
              :email_in_reply_to,
              :like_notification_frequency,
-             :include_tl0_in_digests
-
+             :include_tl0_in_digests,
+             :theme_key,
+             :theme_key_seq,
+             :allow_private_messages,
+             :homepage_id,
 
   def auto_track_topics_after_msecs
     object.auto_track_topics_after_msecs || SiteSetting.default_other_auto_track_topics_after_msecs
@@ -31,6 +34,10 @@ class UserOptionSerializer < ApplicationSerializer
 
   def new_topic_duration_minutes
     object.new_topic_duration_minutes || SiteSetting.default_other_new_topic_duration_minutes
+  end
+
+  def theme_key
+    object.theme_key || SiteSetting.default_theme_key
   end
 
 end

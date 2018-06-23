@@ -21,6 +21,7 @@ class AdminDashboardData
 
   PRIVATE_MESSAGE_REPORTS ||= [
     'user_to_user_private_messages',
+    'user_to_user_private_messages_with_replies',
     'system_private_messages',
     'notify_moderators_private_messages',
     'notify_user_private_messages',
@@ -31,13 +32,17 @@ class AdminDashboardData
 
   USER_REPORTS ||= ['users_by_trust_level']
 
-  MOBILE_REPORTS ||= ['mobile_visits'] + ApplicationRequest.req_types.keys.select {|r| r =~ /mobile/}.map { |r| r + "_reqs" }
+  MOBILE_REPORTS ||= ['mobile_visits'] + ApplicationRequest.req_types.keys.select { |r| r =~ /mobile/ }.map { |r| r + "_reqs" }
 
   def self.add_problem_check(*syms, &blk)
     @problem_syms.push(*syms) if syms
     @problem_blocks << blk if blk
   end
   class << self; attr_reader :problem_syms, :problem_blocks, :problem_messages; end
+
+  def initialize(opts = {})
+    @opts = opts
+  end
 
   def problems
     problems = []
@@ -90,7 +95,7 @@ class AdminDashboardData
       'dashboard.poll_pop3_auth_error'
     ]
 
-    add_problem_check :rails_env_check, :host_names_check,
+    add_problem_check :rails_env_check, :host_names_check, :force_https_check,
                       :ram_check, :google_oauth2_config_check,
                       :facebook_config_check, :twitter_config_check,
                       :github_config_check, :s3_config_check, :image_magick_check,
@@ -112,15 +117,15 @@ class AdminDashboardData
     'dash-stats'
   end
 
-  def self.fetch_problems
-    AdminDashboardData.new.problems
+  def self.fetch_problems(opts = {})
+    AdminDashboardData.new(opts).problems
   end
 
   def self.problem_message_check(i18n_key)
     $redis.get(problem_message_key(i18n_key)) ? I18n.t(i18n_key) : nil
   end
 
-  def self.add_problem_message(i18n_key, expire_seconds=nil)
+  def self.add_problem_message(i18n_key, expire_seconds = nil)
     if expire_seconds.to_i > 0
       $redis.setex problem_message_key(i18n_key), expire_seconds.to_i, 1
     else
@@ -147,7 +152,7 @@ class AdminDashboardData
       admins: User.admins.count,
       moderators: User.moderators.count,
       suspended: User.suspended.count,
-      blocked: User.blocked.count,
+      silenced: User.silenced.count,
       top_referrers: IncomingLinksReport.find('top_referrers').as_json,
       top_traffic_sources: IncomingLinksReport.find('top_traffic_sources').as_json,
       top_referred_topics: IncomingLinksReport.find('top_referred_topics').as_json,
@@ -169,7 +174,7 @@ class AdminDashboardData
 
   def sidekiq_check
     last_job_performed_at = Jobs.last_job_performed_at
-    I18n.t('dashboard.sidekiq_warning') if Jobs.queued > 0 and (last_job_performed_at.nil? or last_job_performed_at < 2.minutes.ago)
+    I18n.t('dashboard.sidekiq_warning') if Jobs.queued > 0 && (last_job_performed_at.nil? || last_job_performed_at < 2.minutes.ago)
   end
 
   def queue_size_check
@@ -178,7 +183,7 @@ class AdminDashboardData
   end
 
   def ram_check
-    I18n.t('dashboard.memory_warning') if MemInfo.new.mem_total and MemInfo.new.mem_total < 1_000_000
+    I18n.t('dashboard.memory_warning') if MemInfo.new.mem_total && MemInfo.new.mem_total < 1_000_000
   end
 
   def google_oauth2_config_check
@@ -190,23 +195,23 @@ class AdminDashboardData
   end
 
   def twitter_config_check
-    I18n.t('dashboard.twitter_config_warning') if SiteSetting.enable_twitter_logins and (SiteSetting.twitter_consumer_key.blank? or SiteSetting.twitter_consumer_secret.blank?)
+    I18n.t('dashboard.twitter_config_warning') if SiteSetting.enable_twitter_logins && (SiteSetting.twitter_consumer_key.blank? || SiteSetting.twitter_consumer_secret.blank?)
   end
 
   def github_config_check
-    I18n.t('dashboard.github_config_warning') if SiteSetting.enable_github_logins and (SiteSetting.github_client_id.blank? or SiteSetting.github_client_secret.blank?)
+    I18n.t('dashboard.github_config_warning') if SiteSetting.enable_github_logins && (SiteSetting.github_client_id.blank? || SiteSetting.github_client_secret.blank?)
   end
 
   def s3_config_check
-    bad_keys = (SiteSetting.s3_access_key_id.blank? or SiteSetting.s3_secret_access_key.blank?) and !SiteSetting.s3_use_iam_profile
+    bad_keys = (SiteSetting.s3_access_key_id.blank? || SiteSetting.s3_secret_access_key.blank?) && !SiteSetting.s3_use_iam_profile
 
-    return I18n.t('dashboard.s3_config_warning') if SiteSetting.enable_s3_uploads and (bad_keys or SiteSetting.s3_upload_bucket.blank?)
-    return I18n.t('dashboard.s3_backup_config_warning') if SiteSetting.enable_s3_backups and (bad_keys or SiteSetting.s3_backup_bucket.blank?)
+    return I18n.t('dashboard.s3_config_warning') if SiteSetting.enable_s3_uploads && (bad_keys || SiteSetting.s3_upload_bucket.blank?)
+    return I18n.t('dashboard.s3_backup_config_warning') if SiteSetting.enable_s3_backups && (bad_keys || SiteSetting.s3_backup_bucket.blank?)
     nil
   end
 
   def image_magick_check
-    I18n.t('dashboard.image_magick_warning') if SiteSetting.create_thumbnails and !system("command -v convert >/dev/null;")
+    I18n.t('dashboard.image_magick_warning') if SiteSetting.create_thumbnails && !system("command -v convert >/dev/null;")
   end
 
   def failing_emails_check
@@ -232,6 +237,11 @@ class AdminDashboardData
     return unless ActionMailer::Base.smtp_settings[:address]["smtp.mailgun.org"]
     return unless SiteSetting.mailgun_api_key.blank?
     I18n.t('dashboard.missing_mailgun_api_key')
+  end
+
+  def force_https_check
+    return unless @opts[:check_force_https]
+    I18n.t('dashboard.force_https_warning') unless SiteSetting.force_https
   end
 
 end

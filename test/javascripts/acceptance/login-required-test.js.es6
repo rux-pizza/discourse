@@ -6,39 +6,28 @@ acceptance("Login Required", {
   }
 });
 
-test("redirect", () => {
-  visit('/latest');
+QUnit.test("redirect", assert => {
+  visit("/latest");
   andThen(() => {
-    equal(currentPath(), "login", "it redirects them to login");
+    assert.equal(currentPath(), "login", "it redirects them to login");
   });
 
-  click('#site-logo');
+  click("#site-logo");
   andThen(() => {
-    equal(currentPath(), "login", "clicking the logo keeps them on login");
+    assert.equal(
+      currentPath(),
+      "login",
+      "clicking the logo keeps them on login"
+    );
   });
 
-  click('header .login-button');
+  click("header .login-button");
   andThen(() => {
-    ok(exists('.login-modal'), "they can still access the login modal");
+    assert.ok(exists(".login-modal"), "they can still access the login modal");
   });
 
-  click('.modal-header .close');
+  click(".modal-header .close");
   andThen(() => {
-    ok(invisible('.login-modal'), "it closes the login modal");
-  });
-
-  click('#search-button');
-  andThen(() => {
-    ok(exists('.login-modal'), "clicking search opens the login modal");
-  });
-
-  click('.modal-header .close');
-  andThen(() => {
-    ok(invisible('.login-modal'), "it closes the login modal");
-  });
-
-  click('#toggle-hamburger-menu');
-  andThen(() => {
-    ok(exists('.login-modal'), "site map opens the login modal");
+    assert.ok(invisible(".login-modal"), "it closes the login modal");
   });
 });

@@ -3,12 +3,13 @@ require "thread"
 require "fileutils"
 require "autospec/reload_css"
 require "autospec/base_runner"
+require "socket_server"
 
 module Autospec; end
 
 class Autospec::Manager
 
-  def self.run(opts={})
+  def self.run(opts = {})
     self.new(opts).run
   end
 
@@ -29,7 +30,15 @@ class Autospec::Manager
 
   def run
     Signal.trap("HUP") { stop_runners; exit }
-    Signal.trap("INT") { stop_runners; exit }
+
+    Signal.trap("INT") do
+      begin
+        stop_runners
+      rescue => e
+        puts "FAILED TO STOP RUNNERS #{e}"
+      end
+      exit
+    end
 
     ensure_all_specs_will_run
     start_runners
@@ -51,13 +60,8 @@ class Autospec::Manager
   private
 
   def ruby_runner
-    if ENV["SPORK"]
-      require "autospec/spork_runner"
-      Autospec::SporkRunner.new
-    else
-      require "autospec/simple_runner"
-      Autospec::SimpleRunner.new
-    end
+    require "autospec/simple_runner"
+    Autospec::SimpleRunner.new
   end
 
   def javascript_runner
@@ -65,10 +69,17 @@ class Autospec::Manager
     Autospec::QunitRunner.new
   end
 
-  def ensure_all_specs_will_run
+  def ensure_all_specs_will_run(current_runner = nil)
     puts "@@@@@@@@@@@@ ensure_all_specs_will_run" if @debug
+
+    @queue.reject! { |_, s, _| s == "spec" }
+
+    if current_runner
+      @queue.concat [['spec', 'spec', current_runner]]
+    end
+
     @runners.each do |runner|
-      @queue << ['spec', 'spec', runner] unless @queue.any? { |_, s, r| s == "spec" && r == runner }
+      @queue.concat [['spec', 'spec', runner]] unless @queue.any? { |_, s, r| s == "spec" && r == runner }
     end
   end
 
@@ -125,7 +136,7 @@ class Autospec::Manager
       has_failed = true
       if result > 0
         focus_on_failed_tests(current)
-        ensure_all_specs_will_run
+        ensure_all_specs_will_run(runner)
       end
     end
 
@@ -143,14 +154,14 @@ class Autospec::Manager
 
     # try focus tag
     if failed_specs.length > 0
-      filename,_ = failed_specs[0].split(":")
-      if filename
+      filename, _ = failed_specs[0].split(":")
+      if filename && File.exist?(filename) && !File.directory?(filename)
         spec = File.read(filename)
-        start,_ =  spec.split(/\S*#focus\S*$/)
+        start, _ = spec.split(/\S*#focus\S*$/)
         if start.length < spec.length
           line = start.scan(/\n/).length + 1
           puts "Found #focus tag on line #{line}!"
-          failed_specs = ["#{filename}:#{line+1}"]
+          failed_specs = ["#{filename}:#{line + 1}"]
         end
       end
     end
@@ -173,18 +184,43 @@ class Autospec::Manager
 
     path = File.expand_path(File.dirname(__FILE__) + "../../..")
 
+    if ENV['VIM_AUTOSPEC']
+      STDERR.puts "Using VIM file listener"
+
+      socket_path = (Rails.root + "tmp/file_change.sock").to_s
+      FileUtils.rm_f(socket_path)
+      server = SocketServer.new(socket_path)
+      server.start do |line|
+        file, line = line.split(' ')
+        file = file.sub(Rails.root.to_s << "/", "")
+        # process_change can aquire a mutex and block
+        # the acceptor
+        Thread.new do
+          if file =~ /(es6|js)$/
+            process_change([[file]])
+          else
+            process_change([[file, line]])
+          end
+        end
+        "OK"
+      end
+      return
+    end
+
     # to speed up boot we use a thread
     ["spec", "lib", "app", "config", "test", "vendor", "plugins"].each do |watch|
 
       puts "@@@@@@@@@ Listen to #{path}/#{watch} #{options}" if @debug
       Thread.new do
         begin
-          Listen.to("#{path}/#{watch}", options) do |modified, added, _|
+          listener = Listen.to("#{path}/#{watch}", options) do |modified, added, _|
             paths = [modified, added].flatten
             paths.compact!
-            paths.map!{|long| long[(path.length+1)..-1]}
+            paths.map! { |long| long[(path.length + 1)..-1] }
             process_change(paths)
           end
+          listener.start
+          sleep
         rescue => e
           puts "FAILED to listen on changes to #{path}/#{watch}"
           puts e
@@ -202,7 +238,7 @@ class Autospec::Manager
     specs = []
     hit = false
 
-    files.each do |file|
+    files.each do |file, line|
       @runners.each do |runner|
         # reloaders
         runner.reloaders.each do |k|
@@ -213,25 +249,26 @@ class Autospec::Manager
           end
         end
         # watchers
-        runner.watchers.each do |k,v|
+        runner.watchers.each do |k, v|
           if m = k.match(file)
             puts "@@@@@@@@@@@@ #{file} matched a watcher for #{runner}" if @debug
             hit = true
             spec = v ? (v.arity == 1 ? v.call(m) : v.call) : file
-            specs << [file, spec, runner] if File.exists?(spec) || Dir.exists?(spec)
+            with_line = spec
+            if spec == file && line
+              with_line = spec + ":" << line.to_s
+            end
+            if File.exists?(spec) || Dir.exists?(spec)
+              if with_line != spec
+                specs << [file, spec, runner]
+              end
+              specs << [file, with_line, runner]
+            end
           end
         end
       end
-      # special watcher for styles/templates
-      Autospec::ReloadCss::WATCHERS.each do |k, _|
-        matches = []
-        matches << file if k.match(file)
-        Autospec::ReloadCss.run_on_change(matches) if matches.present?
-      end
     end
-
     queue_specs(specs) if hit
-
   rescue => e
     fail(e, "failed in watcher")
   end
@@ -256,17 +293,22 @@ class Autospec::Manager
       puts "@@@@@@@@@@@@ #{@queue}" if @debug
       specs.each do |file, spec, runner|
         # make sure there's no other instance of this spec in the queue
-        @queue.delete_if { |_, s, r| s.strip == spec.strip && r == runner }
+        @queue.delete_if { |_, s, r| s.strip.start_with?(spec.strip) && r == runner }
         # deal with focused specs
         if @queue.first && @queue.first[0] == "focus"
           focus = @queue.shift
           @queue.unshift([file, spec, runner])
-          if focus[1].include?(spec) || file != spec
-            @queue.unshift(focus)
+          unless spec.include?(":") && focus[1].include?(spec.split(":")[0])
+            if focus[1].include?(spec) || file != spec
+              @queue.unshift(focus)
+            end
           end
         else
           @queue.unshift([file, spec, runner])
         end
+
+        # push run all specs to end of queue in correct order
+        ensure_all_specs_will_run(runner)
       end
       puts "@@@@@@@@@@@@ specs queued" if @debug
       puts "@@@@@@@@@@@@ #{@queue}" if @debug

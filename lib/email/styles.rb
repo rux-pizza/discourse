@@ -10,7 +10,7 @@ module Email
 
     delegate :css, to: :fragment
 
-    def initialize(html, opts=nil)
+    def initialize(html, opts = nil)
       @html = html
       @opts = opts || {}
       @fragment = Nokogiri::HTML.fragment(@html)
@@ -37,25 +37,20 @@ module Email
       @fragment.css('img').each do |img|
         next if img['class'] == 'site-logo'
 
-        if img['class'] == "emoji" || img['src'] =~ /(plugins|images)\/emoji/
-          img['width'] = 20
-          img['height'] = 20
+        if (img['class'] && img['class']['emoji']) || (img['src'] && img['src'][/\/_?emoji\//])
+          img['width'] = img['height'] = 20
         else
           # use dimensions of original iPhone screen for 'too big, let device rescale'
-          if img['width'].to_i > 320 or img['height'].to_i > 480
-            img['width'] = 'auto'
-            img['height'] = 'auto'
+          if img['width'].to_i > (320) || img['height'].to_i > (480)
+            img['width'] = img['height'] = 'auto'
           end
         end
 
-        # ensure all urls are absolute
-        if img['src'] =~ /^\/[^\/]/
-          img['src'] = "#{Discourse.base_url}#{img['src']}"
-        end
-
-        # ensure no schemaless urls
-        if img['src'] && img['src'].starts_with?("//")
-          img['src'] = "#{uri.scheme}:#{img['src']}"
+        if img['src']
+          # ensure all urls are absolute
+          img['src'] = "#{Discourse.base_url}#{img['src']}" if img['src'][/^\/[^\/]/]
+          # ensure no schemaless urls
+          img['src'] = "#{uri.scheme}:#{img['src']}" if img['src'][/^\/\//]
         end
       end
 
@@ -97,11 +92,13 @@ module Email
       style('.user-avatar img', nil, width: '45', height: '45')
       style('hr', 'background-color: #ddd; height: 1px; border: 1px;')
       style('.rtl', 'direction: rtl;')
-      style('td.body', 'padding-top:5px;', colspan: "2")
-      style('.whisper td.body', 'font-style: italic; color: #9c9c9c;')
+      style('div.body', 'padding-top:5px;')
+      style('.whisper div.body', 'font-style: italic; color: #9c9c9c;')
       style('.lightbox-wrapper .meta', 'display: none')
       correct_first_body_margin
       correct_footer_style
+      style('div.undecorated-link-footer a', "font-weight: normal;")
+      correct_footer_style_hilight_first
       reset_tables
       onebox_styles
       plugin_styles
@@ -118,6 +115,7 @@ module Email
 
       # Oneboxes
       style('aside.onebox', "border: 5px solid #e9e9e9; padding: 12px 25px 12px 12px;")
+      style('aside.onebox header img.site-icon', "width: 16px; height: 16px; margin-right: 3px;")
       style('aside.onebox header a[href]', "color: #222222; text-decoration: none;")
       style('aside.onebox .onebox-body', "clear: both")
       style('aside.onebox .onebox-body img', "max-height: 80%; max-width: 20%; height: auto; float: left; margin-right: 10px;")
@@ -191,20 +189,19 @@ module Email
     def to_html
       strip_classes_and_ids
       replace_relative_urls
-      @fragment.to_html.tap do |result|
-        result.gsub!(/\[email-indent\]/, "<div style='margin-left: 15px'>")
-        result.gsub!(/\[\/email-indent\]/, "</div>")
-      end
+      @fragment.to_html
     end
 
     def strip_avatars_and_emojis
       @fragment.search('img').each do |img|
-        if img['src'] =~ /_avatar/
-          img.parent['style'] = "vertical-align: top;" if img.parent.name == 'td'
+        next unless img['src']
+
+        if img['src'][/_avatar/]
+          img.parent['style'] = "vertical-align: top;" if img.parent&.name == 'td'
           img.remove
         end
 
-        if img['title'] && (img['src'] =~ /images\/emoji/ || img['src'] =~ /uploads\/default\/_emoji/)
+        if img['title'] && img['src'][/\/_?emoji\//]
           img.add_previous_sibling(img['title'] || "emoji")
           img.remove
         end
@@ -233,7 +230,7 @@ module Email
 
       @fragment.css('[href]').each do |element|
         href = element['href']
-        if href =~ /^\/\/#{host}/
+        if href.start_with?("\/\/#{host}")
           element['href'] = "#{scheme}:#{href}"
         end
       end
@@ -246,27 +243,33 @@ module Email
     end
 
     def correct_footer_style
-      footernum = 0
       @fragment.css('.footer').each do |element|
         element['style'] = "color:#666;"
+        element.css('a').each do |inner|
+          inner['style'] = "color:#666;"
+        end
+      end
+    end
+
+    def correct_footer_style_hilight_first
+      footernum = 0
+      @fragment.css('.footer.hilight').each do |element|
         linknum = 0
         element.css('a').each do |inner|
           # we want the first footer link to be specially highlighted as IMPORTANT
-          if footernum == 0 and linknum == 0
-            inner['style'] = "background-color: #006699; color:#ffffff; border-top: 4px solid #006699; border-right: 6px solid #006699; border-bottom: 4px solid #006699; border-left: 6px solid #006699; display: inline-block;"
-          else
-            inner['style'] = "color:#666;"
+          if footernum == (0) && linknum == (0)
+            inner['style'] = "background-color: #006699; color:#ffffff; border-top: 4px solid #006699; border-right: 6px solid #006699; border-bottom: 4px solid #006699; border-left: 6px solid #006699; display: inline-block; font-weight: bold;"
           end
-          linknum += 1
+          return
         end
-        footernum += 1
+        return
       end
     end
 
     def strip_classes_and_ids
       @fragment.css('*').each do |element|
-        element.delete('class')
-        element.delete('id')
+        element.delete('class'.freeze)
+        element.delete('id'.freeze)
       end
     end
 
@@ -277,7 +280,7 @@ module Email
     def style(selector, style, attribs = {})
       @fragment.css(selector).each do |element|
         add_styles(element, style) if style
-        attribs.each do |k,v|
+        attribs.each do |k, v|
           element[k] = v
         end
       end

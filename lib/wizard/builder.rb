@@ -82,7 +82,10 @@ class Wizard
         username = Discourse.system_user.username if username.blank?
         contact = step.add_field(id: 'site_contact', type: 'dropdown', value: username)
 
-        User.where(admin: true).pluck(:username).each {|c| contact.add_choice(c) }
+        User.human_users.where(admin: true).pluck(:username).each do |c|
+          contact.add_choice(c) unless reserved_usernames.include?(c.downcase)
+        end
+        contact.add_choice(Discourse.system_user.username)
 
         step.on_update do |updater|
           updater.apply_settings(:contact_email, :contact_url)
@@ -114,40 +117,41 @@ class Wizard
       end
 
       @wizard.append_step('colors') do |step|
-        theme_id = ColorScheme.where(via_wizard: true).pluck(:theme_id)
-        theme_id = theme_id.present? ? theme_id[0] : 'default'
+        default_theme = Theme.find_by(key: SiteSetting.default_theme_key)
+        scheme_id = default_theme&.color_scheme&.base_scheme_id || 'default'
 
-        themes = step.add_field(id: 'theme_id', type: 'dropdown', required: true, value: theme_id)
-        ColorScheme.themes.each {|t| themes.add_choice(t[:id], data: t) }
+        themes = step.add_field(id: 'base_scheme_id', type: 'dropdown', required: true, value: scheme_id)
+        ColorScheme.base_color_scheme_colors.each do |t|
+          with_hash = t[:colors].dup
+          with_hash.map { |k, v| with_hash[k] = "##{v}" }
+          themes.add_choice(t[:id], data: { colors: with_hash })
+        end
         step.add_field(id: 'theme_preview', type: 'component')
 
         step.on_update do |updater|
-          scheme_name = updater.fields[:theme_id]
+          scheme_name = updater.fields[:base_scheme_id]
 
-          theme = ColorScheme.themes.find {|s| s[:id] == scheme_name }
+          theme = nil
 
-          colors = []
-          theme[:colors].each do |name, hex|
-            colors << {name: name, hex: hex[1..-1] }
-          end
+          if scheme_name == "dark"
+            scheme = ColorScheme.find_by(base_scheme_id: 'dark', via_wizard: true)
 
-          attrs = {
-            enabled: true,
-            name: I18n.t("wizard.step.colors.fields.theme_id.choices.#{scheme_name}.label"),
-            colors: colors,
-            theme_id: scheme_name
-          }
+            name = I18n.t("wizard.step.colors.fields.theme_id.choices.dark.label")
+            scheme ||= ColorScheme.create_from_base(name: name, via_wizard: true, base_scheme_id: "dark")
 
-          scheme = ColorScheme.where(via_wizard: true).first
-          if scheme.present?
-            attrs[:colors] = colors
-            revisor = ColorSchemeRevisor.new(scheme, attrs)
-            revisor.revise
+            theme = Theme.find_by(color_scheme_id: scheme.id)
+            name = I18n.t('color_schemes.dark_theme_name')
+            theme ||= Theme.create(name: name, color_scheme_id: scheme.id, user_id: @wizard.user.id)
           else
-            attrs[:via_wizard] = true
-            scheme = ColorScheme.new(attrs)
-            scheme.save!
+            themes = Theme.where(color_scheme_id: nil).order(:id).to_a
+            theme = themes.find(&:default?)
+            theme ||= themes.first
+
+            name = I18n.t('color_schemes.light_theme_name')
+            theme ||= Theme.create(name: name, user_id: @wizard.user.id)
           end
+
+          theme.set_default!
         end
       end
 
@@ -165,33 +169,56 @@ class Wizard
         step.add_field(id: 'apple_touch_icon_url', type: 'image', value: SiteSetting.apple_touch_icon_url)
 
         step.on_update do |updater|
-          updater.apply_settings(:favicon_url, :apple_touch_icon_url)
+          updater.apply_settings(:favicon_url)
+
+          if updater.fields[:apple_touch_icon_url] != SiteSetting.apple_touch_icon_url
+            upload = Upload.find_by_url(updater.fields[:apple_touch_icon_url])
+            dimensions = 180 # for apple touch icon
+            if upload && upload.width > dimensions && upload.height > dimensions
+              updater.update_setting(:large_icon_url, updater.fields[:apple_touch_icon_url])
+
+              apple_touch_icon_optimized = OptimizedImage.create_for(upload, dimensions, dimensions, filename: upload.original_filename)
+              original_file = File.new(Discourse.store.path_for(apple_touch_icon_optimized)) rescue nil
+              if original_file
+                apple_touch_icon_upload = UploadCreator.new(original_file, upload.original_filename).create_for(@wizard.user.id)
+                updater.update_setting(:apple_touch_icon_url, apple_touch_icon_upload.url)
+              end
+              apple_touch_icon_optimized.destroy! if apple_touch_icon_optimized.present?
+            else
+              updater.apply_settings(:apple_touch_icon_url)
+            end
+          end
         end
       end
 
       @wizard.append_step('homepage') do |step|
 
-        current = SiteSetting.top_menu.starts_with?("categories") ? "categories" : "latest"
+        current = SiteSetting.top_menu.starts_with?("categories") ? SiteSetting.desktop_category_page_style : "latest"
 
         style = step.add_field(id: 'homepage_style', type: 'dropdown', required: true, value: current)
         style.add_choice('latest')
-        style.add_choice('categories')
+        CategoryPageStyle.values.each do |page|
+          style.add_choice(page[:value])
+        end
+
         step.add_field(id: 'homepage_preview', type: 'component')
 
         step.on_update do |updater|
-          top_menu = "latest|new|unread|top|categories"
-          top_menu = "categories|latest|new|unread|top" if updater.fields[:homepage_style] == 'categories'
+          if updater.fields[:homepage_style] == 'latest'
+            top_menu = "latest|new|unread|top|categories"
+          else
+            top_menu = "categories|latest|new|unread|top"
+            updater.update_setting(:desktop_category_page_style, updater.fields[:homepage_style])
+          end
           updater.update_setting(:top_menu, top_menu)
         end
       end
 
       @wizard.append_step('emoji') do |step|
-        sets = step.add_field({
-          id: 'emoji_set',
-          type: 'radio',
-          required: true,
-          value: SiteSetting.emoji_set
-        })
+        sets = step.add_field(id: 'emoji_set',
+                              type: 'radio',
+                              required: true,
+                              value: SiteSetting.emoji_set)
 
         emoji = ["smile", "+1", "tada", "poop"]
 
@@ -200,10 +227,8 @@ class Wizard
             "<img src='/images/emoji/#{set[:value]}/#{e}.png'>"
           end
 
-          sets.add_choice(set[:value], {
-            label: I18n.t("js.#{set[:name]}"),
-            extra_label: "<span class='emoji-preview'>#{imgs.join}</span>"
-          })
+          sets.add_choice(set[:value],             label: I18n.t("js.#{set[:name]}"),
+                                                   extra_label: "<span class='emoji-preview'>#{imgs.join}</span>")
 
           step.on_update do |updater|
             updater.apply_settings(:emoji_set)
@@ -213,7 +238,7 @@ class Wizard
 
       @wizard.append_step('invites') do |step|
 
-        staff_count = User.where("moderator = true or admin = true").where("id <> ?", Discourse.system_user.id).count
+        staff_count = User.staff.human_users.where('username_lower not in (?)', reserved_usernames).count
         step.add_field(id: 'staff_count', type: 'component', value: staff_count)
 
         step.add_field(id: 'invite_list', type: 'component')
@@ -224,7 +249,11 @@ class Wizard
           users.each do |u|
             args = {}
             args[:moderator] = true if u['role'] == 'moderator'
-            Invite.create_invite_by_email(u['email'], @wizard.user, args)
+            begin
+              Invite.create_invite_by_email(u['email'], @wizard.user, args)
+            rescue => e
+              updater.errors.add(:invite_list, e.message.concat("<br>"))
+            end
           end
         end
       end
@@ -248,6 +277,9 @@ class Wizard
 
       raw.gsub!(old_value, new_value)
     end
+
+    def reserved_usernames
+      @reserved_usernames ||= SiteSetting.defaults[:reserved_usernames].split('|')
+    end
   end
 end
-

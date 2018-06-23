@@ -4,6 +4,11 @@ class Badge < ActiveRecord::Base
   # NOTE: These badge ids are not in order! They are grouped logically.
   #       When picking an id, *search* for it.
 
+  BasicUser = 1
+  Member = 2
+  Regular = 3
+  Leader = 4
+
   Welcome = 5
   NicePost = 6
   GoodPost = 7
@@ -29,7 +34,7 @@ class Badge < ActiveRecord::Base
   NiceShare = 21
   GoodShare = 22
   GreatShare = 23
-  OneYearAnniversary = 24
+  Anniversary = 24
 
   Promoter = 25
   Campaigner = 26
@@ -51,12 +56,21 @@ class Badge < ActiveRecord::Base
   GivesBack = 32
   Empathetic = 39
 
+  Enthusiast = 45
+  Aficionado = 46
+  Devotee = 47
+
+  NewUserOfTheMonth = 44
+
   # other consts
   AutobiographerMinBioLength = 10
 
+  # used by serializer
+  attr_accessor :has_badge
+
   def self.trigger_hash
     Hash[*(
-      Badge::Trigger.constants.map{|k|
+      Badge::Trigger.constants.map { |k|
         [k.to_s.underscore, Badge::Trigger.const_get(k)]
       }.flatten
     )]
@@ -93,14 +107,14 @@ class Badge < ActiveRecord::Base
   validates :allow_title, inclusion: [true, false]
   validates :multiple_grant, inclusion: [true, false]
 
-  scope :enabled, ->{ where(enabled: true) }
+  scope :enabled, -> { where(enabled: true) }
 
   before_create :ensure_not_system
 
   # fields that can not be edited on system badges
   def self.protected_system_fields
     [
-      :badge_type_id, :multiple_grant,
+      :name, :badge_type_id, :multiple_grant,
       :target_posts, :show_posts, :query,
       :trigger, :auto_revoke, :listable
     ]
@@ -121,6 +135,30 @@ class Badge < ActiveRecord::Base
     }
   end
 
+  def self.ensure_consistency!
+    DB.exec <<~SQL
+      DELETE FROM user_badges
+            USING user_badges ub
+        LEFT JOIN users u ON u.id = ub.user_id
+            WHERE u.id IS NULL
+              AND user_badges.id = ub.id
+    SQL
+
+    DB.exec <<~SQL
+      WITH X AS (
+          SELECT badge_id
+               , COUNT(user_id) users
+            FROM user_badges
+        GROUP BY badge_id
+      )
+      UPDATE badges
+         SET grant_count = X.users
+        FROM X
+       WHERE id = X.badge_id
+         AND grant_count <> X.users
+    SQL
+  end
+
   def awarded_for_trust_level?
     id <= 4
   end
@@ -137,12 +175,8 @@ class Badge < ActiveRecord::Base
   def default_icon=(val)
     unless self.image
       self.icon ||= val
-      self.icon = val if self.icon = "fa-certificate"
+      self.icon = val if self.icon == "fa-certificate"
     end
-  end
-
-  def default_name=(val)
-    self.name ||= val
   end
 
   def default_allow_title=(val)
@@ -156,17 +190,6 @@ class Badge < ActiveRecord::Base
     end
   end
 
-  def self.ensure_consistency!
-    exec_sql <<SQL
-    DELETE FROM user_badges
-    USING user_badges ub
-    LEFT JOIN users u ON u.id = ub.user_id
-    WHERE u.id IS NULL AND user_badges.id = ub.id
-SQL
-
-    Badge.find_each(&:reset_grant_count!)
-  end
-
   def display_name
     key = "badges.#{i18n_name}.name"
     I18n.t(key, default: self.name)
@@ -174,41 +197,36 @@ SQL
 
   def long_description
     key = "badges.#{i18n_name}.long_description"
-    I18n.t(key, default: self[:long_description] || '')
+    I18n.t(key, default: self[:long_description] || '', base_uri: Discourse.base_uri)
   end
 
   def long_description=(val)
-    if val != long_description
-      self[:long_description] = val
-    end
-
+    self[:long_description] = val if val != long_description
     val
   end
 
   def description
     key = "badges.#{i18n_name}.description"
-    I18n.t(key, default: self[:description] || '')
+    I18n.t(key, default: self[:description] || '', base_uri: Discourse.base_uri)
   end
 
   def description=(val)
-    if val != description
-      self[:description] = val
-    end
-
+    self[:description] = val if val != description
     val
   end
-
 
   def slug
     Slug.for(self.display_name, '-')
   end
 
+  def manually_grantable?
+    query.blank? && !system?
+  end
+
   protected
 
   def ensure_not_system
-    unless id
-      self.id = [Badge.maximum(:id) + 1, 100].max
-    end
+    self.id = [Badge.maximum(:id) + 1, 100].max unless id
   end
 
   def i18n_name

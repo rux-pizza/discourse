@@ -3,7 +3,6 @@ require_dependency 'new_post_manager'
 class CurrentUserSerializer < BasicUserSerializer
 
   attributes :name,
-             :total_unread_notifications,
              :unread_notifications,
              :unread_private_messages,
              :read_first_notification?,
@@ -19,6 +18,7 @@ class CurrentUserSerializer < BasicUserSerializer
              :external_links_in_new_tab,
              :dynamic_favicon,
              :trust_level,
+             :can_send_private_email_messages,
              :can_edit,
              :can_invite_to_forum,
              :no_password,
@@ -36,7 +36,20 @@ class CurrentUserSerializer < BasicUserSerializer
              :automatically_unpin_topics,
              :mailing_list_mode,
              :previous_visit_at,
-             :seen_notification_id
+             :seen_notification_id,
+             :primary_group_id,
+             :primary_group_name,
+             :can_create_topic,
+             :link_posting_access,
+             :external_id
+
+  def link_posting_access
+    scope.link_posting_access
+  end
+
+  def can_create_topic
+    scope.can_create_topic?(nil)
+  end
 
   def include_site_flagged_posts_count?
     object.staff?
@@ -86,6 +99,10 @@ class CurrentUserSerializer < BasicUserSerializer
     PostAction.flagged_posts_count
   end
 
+  def can_send_private_email_messages
+    scope.cand_send_private_messages_to_email?
+  end
+
   def can_edit
     true
   end
@@ -129,7 +146,7 @@ class CurrentUserSerializer < BasicUserSerializer
     end
 
     if fields.present?
-      User.custom_fields_for_ids([object.id], fields)[object.id]
+      User.custom_fields_for_ids([object.id], fields)[object.id] || {}
     else
       {}
     end
@@ -138,7 +155,7 @@ class CurrentUserSerializer < BasicUserSerializer
   def muted_category_ids
     @muted_category_ids ||= CategoryUser.where(user_id: object.id,
                                                notification_level: TopicUser.notification_levels[:muted])
-                                         .pluck(:category_id)
+      .pluck(:category_id)
   end
 
   def dismissed_banner_key
@@ -169,4 +186,23 @@ class CurrentUserSerializer < BasicUserSerializer
     object.user_option.mailing_list_mode
   end
 
+  def include_primary_group_id?
+    object.primary_group_id.present?
+  end
+
+  def primary_group_name
+    object.primary_group.name.downcase
+  end
+
+  def include_primary_group_name?
+    object.primary_group&.name.present?
+  end
+
+  def external_id
+    object&.single_sign_on_record&.external_id
+  end
+
+  def include_external_id?
+    SiteSetting.enable_sso
+  end
 end

@@ -15,6 +15,9 @@ describe AdminDashboardData do
 
       AdminDashboardData.fetch_problems
       expect(called).to eq(true)
+
+      AdminDashboardData.fetch_problems(check_force_https: true)
+      expect(called).to eq(true)
     end
 
     it 'calls the passed method' do
@@ -128,37 +131,37 @@ describe AdminDashboardData do
     shared_examples 'problem detection for login providers' do
       context 'when disabled' do
         it 'returns nil' do
-          SiteSetting.stubs(enable_setting).returns(false)
+          SiteSetting.public_send("#{enable_setting}=", false)
           expect(subject).to be_nil
         end
       end
 
       context 'when enabled' do
         before do
-          SiteSetting.stubs(enable_setting).returns(true)
+          SiteSetting.public_send("#{enable_setting}=", true)
         end
 
-        it 'returns nil key and secret are set' do
-          SiteSetting.stubs(key).returns('12313213')
-          SiteSetting.stubs(secret).returns('12312313123')
+        it 'returns nil when key and secret are set' do
+          SiteSetting.public_send("#{key}=", '12313213')
+          SiteSetting.public_send("#{secret}=", '12312313123')
           expect(subject).to be_nil
         end
 
         it 'returns a string when key is not set' do
-          SiteSetting.stubs(key).returns('')
-          SiteSetting.stubs(secret).returns('12312313123')
+          SiteSetting.public_send("#{key}=", '')
+          SiteSetting.public_send("#{secret}=", '12312313123')
           expect(subject).to_not be_nil
         end
 
         it 'returns a string when secret is not set' do
-          SiteSetting.stubs(key).returns('123123')
-          SiteSetting.stubs(secret).returns('')
+          SiteSetting.public_send("#{key}=", '123123')
+          SiteSetting.public_send("#{secret}=", '')
           expect(subject).to_not be_nil
         end
 
         it 'returns a string when key and secret are not set' do
-          SiteSetting.stubs(key).returns('')
-          SiteSetting.stubs(secret).returns('')
+          SiteSetting.public_send("#{key}=", '')
+          SiteSetting.public_send("#{secret}=", '')
           expect(subject).to_not be_nil
         end
       end
@@ -186,6 +189,124 @@ describe AdminDashboardData do
       let(:key) { :github_client_id }
       let(:secret) { :github_client_secret }
       include_examples 'problem detection for login providers'
+    end
+  end
+
+  describe 's3_config_check' do
+    shared_examples 'problem detection for s3-dependent setting' do
+      subject { described_class.new.s3_config_check }
+      let(:access_keys) { [:s3_access_key_id, :s3_secret_access_key] }
+      let(:all_cred_keys) { access_keys + [:s3_use_iam_profile] }
+      let(:all_setting_keys) { all_cred_keys + [bucket_key] }
+
+      def all_setting_permutations(keys)
+        ['a', ''].repeated_permutation(keys.size) do |*values|
+          hash = Hash[keys.zip(values)]
+          hash.each do |key, value|
+            SiteSetting.public_send("#{key}=", value)
+          end
+          yield hash
+        end
+      end
+
+      context 'when setting is enabled' do
+        let(:setting_enabled) { true }
+        before do
+          SiteSetting.public_send("#{setting_key}=", setting_enabled)
+          SiteSetting.public_send("#{bucket_key}=", bucket_value)
+        end
+
+        context 'when bucket is blank' do
+          let(:bucket_value) { '' }
+
+          it "always returns a string" do
+            all_setting_permutations(all_cred_keys) do
+              expect(subject).to_not be_nil
+            end
+          end
+        end
+
+        context 'when bucket is filled in' do
+          let(:bucket_value) { 'a' }
+          before do
+            SiteSetting.public_send("s3_use_iam_profile=", use_iam_profile)
+          end
+
+          context 'when using iam profile' do
+            let(:use_iam_profile) { true }
+
+            it 'always returns nil' do
+              all_setting_permutations(access_keys) do
+                expect(subject).to be_nil
+              end
+            end
+          end
+
+          context 'when not using iam profile' do
+            let(:use_iam_profile) { false }
+
+            it 'returns nil only if both access key fields are filled in' do
+              all_setting_permutations(access_keys) do |settings|
+                if settings.values.all?
+                  expect(subject).to be_nil
+                else
+                  expect(subject).to_not be_nil
+                end
+              end
+            end
+          end
+        end
+      end
+
+      context 'when setting is not enabled' do
+        before do
+          SiteSetting.public_send("#{setting_key}=", false)
+        end
+
+        it "always returns nil" do
+          all_setting_permutations(all_setting_keys) do
+            expect(subject).to be_nil
+          end
+        end
+      end
+    end
+
+    describe 'uploads' do
+      let(:setting_key) { :enable_s3_uploads }
+      let(:bucket_key) { :s3_upload_bucket }
+      include_examples 'problem detection for s3-dependent setting'
+    end
+
+    describe 'backups' do
+      let(:setting_key) { :enable_s3_backups }
+      let(:bucket_key) { :s3_backup_bucket }
+      include_examples 'problem detection for s3-dependent setting'
+    end
+  end
+
+  describe 'force_https_check' do
+    subject { described_class.new(check_force_https: true).force_https_check }
+
+    it 'returns nil if force_https site setting enabled' do
+      SiteSetting.force_https = true
+      expect(subject).to be_nil
+    end
+
+    it 'returns nil if force_https site setting not enabled' do
+      SiteSetting.force_https = false
+      expect(subject).to eq(I18n.t('dashboard.force_https_warning'))
+    end
+  end
+
+  describe 'ignore force_https_check' do
+    subject { described_class.new(check_force_https: false).force_https_check }
+
+    it 'returns nil' do
+      SiteSetting.force_https = true
+      expect(subject).to be_nil
+
+      SiteSetting.force_https = false
+      expect(subject).to be_nil
     end
   end
 

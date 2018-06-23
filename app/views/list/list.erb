@@ -13,24 +13,38 @@
 <% if @category %>
   <h1>
     <% if @category.parent_category %>
-    <%= link_to @category.parent_category.url, itemprop: 'item' do %>
-      <span itemprop='name'><%= @category.parent_category.name %></span>
+      <%= link_to @category.parent_category.url, itemprop: 'item' do %>
+        <span itemprop='name'><%= @category.parent_category.name %></span>
+      <% end %>
+      &nbsp;
     <% end %>
-    &nbsp;
-    <% end %>
+
     <%= link_to @category.url, itemprop: 'item' do %>
       <span itemprop='name'><%= @category.name %></span>
     <% end %>
   </h1>
   <br/>
+
+  <% if params[:page].to_i == 0 && @subcategories.present? %>
+    <% @subcategories.each do |subcategory| %>
+      <a href='<%= subcategory.url %>' itemprop='item'>
+        <span itemprop='name'><%= subcategory.name %></span>
+      </a>
+      <% if subcategory.description.present? %>
+        <span itemprop='description'><%= subcategory.description %></span>
+      <% end %>
+    <% end %>
+    <br/>
+  <% end %>
 <% end %>
 
 <div class='topic-list' itemscope itemtype='http://schema.org/ItemList'>
   <meta itemprop='itemListOrder' content='http://schema.org/ItemListOrderDescending'>
   <% @list.topics.each_with_index do |t,i| %>
     <div itemprop='itemListElement' itemscope itemtype='http://schema.org/ListItem'>
+      <meta itemprop='position' content='<%= i %>'>
       <meta itemprop='url' content='<%= t.url %>'>
-      <a href='<%= t.relative_url %>' itemprop='item'>
+      <a href='<%= t.url %>' itemprop='item'>
         <span itemprop='name'><%= t.title %></span>
       </a>
       <span class="page-links"><%= page_links(t) %></span>
@@ -49,9 +63,16 @@
     <% end %>
     <span itemprop='url'><b><a href='<%= @list.more_topics_url %>' rel='next' itemprop='name'><%= t 'next_page' %></a></b></span>
   </div>
+
+  <% content_for :head do %>
+    <% if params[:page].to_i > 0 %>
+      <link rel="prev" href="<%= @list.prev_topics_url -%>">
+    <% end %>
+    <link rel="next" href="<%= @list.more_topics_url -%>">
+  <% end %>
 <% end %>
 
-<%- end %>
+<%- end %> <!-- include_crawler_content? -->
 
 <% if @rss %>
   <% content_for :head do %>
@@ -65,6 +86,10 @@
     <%= auto_discovery_link_tag(:rss, { action: :category_feed }, title: t('rss_topics_in_category', category: @category.name)) %>
     <%= raw crawlable_meta_data(title: @category.name, description: @category.description) %>
   <% end %>
+<% elsif @tag_id %>
+  <% content_for :head do %>
+    <%= raw crawlable_meta_data(title: @title, description: @description_meta) %>
+  <% end %>
 <% else %>
   <% content_for :head do %>
     <%= raw crawlable_meta_data(title: SiteSetting.title, description: SiteSetting.site_description) %>
@@ -74,7 +99,7 @@
 <% if @title %>
   <% content_for :title do %><%= @title %><% end %>
 <% elsif @category %>
-  <% content_for :title do %><%= @category.name %><% end %>
-<% elsif params[:page] %>
-  <% content_for :title do %><%=t 'page_num', num: params[:page].to_i + 1 %><% end %>
+  <% content_for :title do %><%= @category.name %> - <%= SiteSetting.title %><% end %>
+<% elsif params[:page].to_i > 1 %>
+  <% content_for :title do %><%=t 'page_num', num: params[:page].to_i + 1 %> - <%= SiteSetting.title %><% end %>
 <% end %>

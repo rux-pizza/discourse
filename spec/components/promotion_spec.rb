@@ -15,7 +15,7 @@ describe Promotion do
 
   context "newuser" do
 
-    let(:user) { Fabricate(:user, trust_level: TrustLevel[0], created_at: 2.days.ago)}
+    let(:user) { Fabricate(:user, trust_level: TrustLevel[0], created_at: 2.days.ago) }
     let(:promotion) { Promotion.new(user) }
 
     it "doesn't raise an error with a nil user" do
@@ -53,7 +53,7 @@ describe Promotion do
       end
     end
 
-    context "that has done the requisite things" do
+    context "that has not done the requisite things" do
       it "does not promote the user" do
         user.created_at = 1.minute.ago
         stat = user.user_stat
@@ -66,11 +66,37 @@ describe Promotion do
       end
     end
 
+    context "may send tl1 promotion messages" do
+      before do
+        stat = user.user_stat
+        stat.topics_entered = SiteSetting.tl1_requires_topics_entered
+        stat.posts_read_count = SiteSetting.tl1_requires_read_posts
+        stat.time_read = SiteSetting.tl1_requires_time_spent_mins * 60
+      end
+      it "sends promotion message by default" do
+        SiteSetting.send_tl1_welcome_message = true
+        Jobs.expects(:enqueue).with(
+          :send_system_message,
+          user_id: user.id, message_type: "welcome_tl1_user"
+        ).once
+        @result = promotion.review
+      end
+
+      it "can be turned off" do
+        SiteSetting.send_tl1_welcome_message = false
+        Jobs.expects(:enqueue).with(
+          :send_system_message,
+          user_id: user.id, message_type: "welcome_tl1_user"
+        ).never
+        @result = promotion.review
+      end
+    end
+
   end
 
   context "basic" do
 
-    let(:user) { Fabricate(:user, trust_level: TrustLevel[1], created_at: 2.days.ago)}
+    let(:user) { Fabricate(:user, trust_level: TrustLevel[1], created_at: 2.days.ago) }
     let(:promotion) { Promotion.new(user) }
 
     context 'that has done nothing' do
@@ -131,7 +157,7 @@ describe Promotion do
   end
 
   context "regular" do
-    let(:user) { Fabricate(:user, trust_level: TrustLevel[2])}
+    let(:user) { Fabricate(:user, trust_level: TrustLevel[2]) }
     let(:promotion) { Promotion.new(user) }
 
     context "doesn't qualify for promotion" do

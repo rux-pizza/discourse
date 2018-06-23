@@ -1,18 +1,23 @@
-import { ajax } from 'discourse/lib/ajax';
-import ModalFunctionality from 'discourse/mixins/modal-functionality';
+import ModalFunctionality from "discourse/mixins/modal-functionality";
+import { resendActivationEmail } from "discourse/lib/user-activation";
 
 export default Ember.Controller.extend(ModalFunctionality, {
-  emailSent: false,
-
-  onShow() {
-    this.set("emailSent", false);
-  },
-
   actions: {
-    sendActivationEmail: function() {
-      ajax('/users/action/send_activation_email', {data: {username: this.get('username')}, type: 'POST'});
-      this.set('emailSent', true);
+    sendActivationEmail() {
+      resendActivationEmail(this.get("username")).then(() => {
+        const modal = this.showModal("activation-resent", { title: "log_in" });
+        modal.set("currentEmail", this.get("currentEmail"));
+      });
+    },
+
+    editActivationEmail() {
+      const modal = this.showModal("activation-edit", {
+        title: "login.change_email"
+      });
+
+      const currentEmail = this.get("currentEmail");
+      modal.set("currentEmail", currentEmail);
+      modal.set("newEmail", currentEmail);
     }
   }
-
 });

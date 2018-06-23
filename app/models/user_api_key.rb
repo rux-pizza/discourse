@@ -30,7 +30,7 @@ class UserApiKey < ActiveRecord::Base
     # not a rails route, special handling
     return true if action == "message_bus" && env["PATH_INFO"] =~ /^\/message-bus\/.*\/poll/
 
-    params  = env['action_dispatch.request.path_parameters']
+    params = env['action_dispatch.request.path_parameters']
 
     return false unless params
 
@@ -70,8 +70,8 @@ end
 #  key              :string           not null
 #  application_name :string           not null
 #  push_url         :string
-#  created_at       :datetime
-#  updated_at       :datetime
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
 #  revoked_at       :datetime
 #  scopes           :text             default([]), not null, is an Array
 #

@@ -1,12 +1,15 @@
 require_dependency 'rate_limiter'
 
 class AboutController < ApplicationController
-  skip_before_filter :check_xhr, only: [:index]
-  before_filter :ensure_logged_in, only: [:live_post_counts]
+
+  requires_login only: [:live_post_counts]
+
+  skip_before_action :check_xhr, only: [:index]
 
   def index
-    @about = About.new
+    return redirect_to path('/login') if SiteSetting.login_required? && current_user.nil?
 
+    @about = About.new
     respond_to do |format|
       format.html do
         render :index

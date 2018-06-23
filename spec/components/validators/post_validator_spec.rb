@@ -2,16 +2,44 @@ require 'rails_helper'
 require_dependency 'validators/post_validator'
 
 describe Validators::PostValidator do
-  let(:post) { build(:post) }
+  let(:post) { build(:post, topic: Fabricate(:topic)) }
   let(:validator) { Validators::PostValidator.new({}) }
 
-  context "when empty raw can bypass post body validation" do
-    let(:validator) { Validators::PostValidator.new(skip_post_body: true) }
-
-    it "should be allowed for empty raw based on site setting" do
+  context "#post_body_validator" do
+    it 'should not allow a post with an empty raw' do
       post.raw = ""
       validator.post_body_validator(post)
-      expect(post.errors).to be_empty
+      expect(post.errors).to_not be_empty
+    end
+
+    context "when empty raw can bypass validation" do
+      let(:validator) { Validators::PostValidator.new(skip_post_body: true) }
+
+      it "should be allowed for empty raw based on site setting" do
+        post.raw = ""
+        validator.post_body_validator(post)
+        expect(post.errors).to be_empty
+      end
+    end
+
+    describe "when post's topic is a PM between a human and a non human user" do
+      let(:robot) { Fabricate(:user, id: -3) }
+      let(:user) { Fabricate(:user) }
+
+      let(:topic) do
+        Fabricate(:private_message_topic, topic_allowed_users: [
+          Fabricate.build(:topic_allowed_user, user: robot),
+          Fabricate.build(:topic_allowed_user, user: user)
+        ])
+      end
+
+      it 'should allow a post with an empty raw' do
+        post = Fabricate.build(:post, topic: topic)
+        post.raw = ""
+        validator.post_body_validator(post)
+
+        expect(post.errors).to be_empty
+      end
     end
   end
 
@@ -63,7 +91,7 @@ describe Validators::PostValidator do
       expect(post.errors.count).to be > 0
     end
 
-    it "should be invalid when elder user exceeds max mentions limit" do
+    it "should be invalid when leader user exceeds max mentions limit" do
       post.acting_user = build(:trust_level_4)
       post.expects(:raw_mentions).returns(['jake', 'finn', 'jake_old', 'jake_new'])
       validator.max_mention_validator(post)
@@ -85,7 +113,7 @@ describe Validators::PostValidator do
       expect(post.errors.count).to be(0)
     end
 
-    it "should be valid when elder user does not exceed max mentions limit" do
+    it "should be valid when leader user does not exceed max mentions limit" do
       post.acting_user = build(:trust_level_4)
       post.expects(:raw_mentions).returns(['jake', 'finn', 'jake_old'])
       validator.max_mention_validator(post)
@@ -107,6 +135,49 @@ describe Validators::PostValidator do
     end
   end
 
+  context "too_many_images" do
+    before do
+      SiteSetting.min_trust_to_post_images = 0
+      SiteSetting.newuser_max_images = 2
+    end
+
+    it "should be invalid when new user exceeds max mentions limit" do
+      post.acting_user = build(:newuser)
+      post.expects(:image_count).returns(3)
+      validator.max_images_validator(post)
+      expect(post.errors.count).to be > 0
+    end
+
+    it "should be valid when new user does not exceed max mentions limit" do
+      post.acting_user = build(:newuser)
+      post.expects(:image_count).returns(2)
+      validator.max_images_validator(post)
+      expect(post.errors.count).to be(0)
+    end
+
+    it "should be invalid when user trust level is not sufficient" do
+      SiteSetting.min_trust_to_post_images = 4
+      post.acting_user = build(:leader)
+      post.expects(:image_count).returns(2)
+      validator.max_images_validator(post)
+      expect(post.errors.count).to be > 0
+    end
+
+    it "should be valid for moderator in all cases" do
+      post.acting_user = build(:moderator)
+      post.expects(:image_count).never
+      validator.max_images_validator(post)
+      expect(post.errors.count).to be(0)
+    end
+
+    it "should be valid for admin in all cases" do
+      post.acting_user = build(:admin)
+      post.expects(:image_count).never
+      validator.max_images_validator(post)
+      expect(post.errors.count).to be(0)
+    end
+  end
+
   context "invalid post" do
     it "should be invalid" do
       validator.validate(post)
@@ -116,7 +187,7 @@ describe Validators::PostValidator do
 
   describe "unique_post_validator" do
     before do
-      SiteSetting.stubs(:unique_posts_mins).returns(5)
+      SiteSetting.unique_posts_mins = 5
     end
 
     context "post is unique" do
@@ -156,7 +227,7 @@ describe Validators::PostValidator do
       validator.expects(:max_mention_validator).never
       validator.expects(:max_images_validator).never
       validator.expects(:max_attachments_validator).never
-      validator.expects(:max_links_validator).never
+      validator.expects(:newuser_links_validator).never
       validator.expects(:unique_post_validator).never
       validator.validate(post)
     end
@@ -165,7 +236,7 @@ describe Validators::PostValidator do
   context "admin editing a static page" do
     before do
       post.acting_user = build(:admin)
-      SiteSetting.stubs(:tos_topic_id).returns(post.topic_id)
+      SiteSetting.tos_topic_id = post.topic_id
     end
 
     include_examples "almost no validations"

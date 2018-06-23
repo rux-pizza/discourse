@@ -1,6 +1,6 @@
 module DiscoursePoll
   class PollsUpdater
-    VALID_POLLS_CONFIGS = %w{type min max public}.map(&:freeze)
+    VALID_POLLS_CONFIGS = %w{type min max public close}.map(&:freeze)
 
     def self.update(post, polls)
       # load previous polls
@@ -18,35 +18,18 @@ module DiscoursePoll
         poll_edit_window_mins = SiteSetting.poll_edit_window_mins
 
         if post.created_at < poll_edit_window_mins.minutes.ago && has_votes
-          # cannot add/remove/rename polls
-          if polls.keys.sort != previous_polls.keys.sort
-            post.errors.add(:base, I18n.t(
-              "poll.edit_window_expired.cannot_change_polls", minutes: poll_edit_window_mins
-            ))
-
-            return
-          end
-
           # deal with option changes
-          if User.staff.pluck(:id).include?(post.last_editor_id)
-            # staff can only edit options
+          if User.staff.where(id: post.last_editor_id).exists?
+            # staff can edit options
             polls.each_key do |poll_name|
-              if polls[poll_name]["options"].size != previous_polls[poll_name]["options"].size && previous_polls[poll_name]["voters"].to_i > 0
-                post.errors.add(:base, I18n.t(
-                  "poll.edit_window_expired.staff_cannot_add_or_remove_options",
-                  minutes: poll_edit_window_mins
-                ))
-
+              if polls.dig(poll_name, "options")&.size != previous_polls.dig(poll_name, "options")&.size && previous_polls.dig(poll_name, "voters").to_i > 0
+                post.errors.add(:base, I18n.t("poll.edit_window_expired.staff_cannot_add_or_remove_options", minutes: poll_edit_window_mins))
                 return
               end
             end
           else
             # OP cannot edit poll options
-            post.errors.add(:base, I18n.t(
-              "poll.edit_window_expired.op_cannot_edit_options",
-              minutes: poll_edit_window_mins
-            ))
-
+            post.errors.add(:base, I18n.t("poll.edit_window_expired.op_cannot_edit_options", minutes: poll_edit_window_mins))
             return
           end
         end
@@ -64,7 +47,10 @@ module DiscoursePoll
           end
 
           polls[poll_name]["voters"] = previous_polls[poll_name]["voters"]
-          polls[poll_name]["anonymous_voters"] = previous_polls[poll_name]["anonymous_voters"] if previous_polls[poll_name].has_key?("anonymous_voters")
+
+          if previous_polls[poll_name].has_key?("anonymous_voters")
+            polls[poll_name]["anonymous_voters"] = previous_polls[poll_name]["anonymous_voters"]
+          end
 
           previous_options = previous_polls[poll_name]["options"]
           public_poll = polls[poll_name]["public"] == "true"
@@ -72,7 +58,20 @@ module DiscoursePoll
           polls[poll_name]["options"].each_with_index do |option, index|
             previous_option = previous_options[index]
             option["votes"] = previous_option["votes"]
-            option["anonymous_votes"] = previous_option["anonymous_votes"] if previous_option.has_key?("anonymous_votes")
+
+            if previous_option["id"] != option["id"]
+              if votes_fields = post.custom_fields[DiscoursePoll::VOTES_CUSTOM_FIELD]
+                votes_fields.each do |key, value|
+                  next unless value[poll_name]
+                  index = value[poll_name].index(previous_option["id"])
+                  votes_fields[key][poll_name][index] = option["id"] if index
+                end
+              end
+            end
+
+            if previous_option.has_key?("anonymous_votes")
+              option["anonymous_votes"] = previous_option["anonymous_votes"]
+            end
 
             if public_poll && previous_option.has_key?("voter_ids")
               option["voter_ids"] = previous_option["voter_ids"]
@@ -84,8 +83,11 @@ module DiscoursePoll
         post.custom_fields[DiscoursePoll::POLLS_CUSTOM_FIELD] = polls
         post.save_custom_fields(true)
 
+        # re-schedule jobs
+        DiscoursePoll::Poll.schedule_jobs(post)
+
         # publish the changes
-        MessageBus.publish("/polls/#{post.topic_id}", { post_id: post.id, polls: polls })
+        MessageBus.publish("/polls/#{post.topic_id}", post_id: post.id, polls: polls)
       end
     end
 
@@ -93,9 +95,7 @@ module DiscoursePoll
       return true if (current_polls.keys.sort != previous_polls.keys.sort)
 
       current_polls.each_key do |poll_name|
-        if !previous_polls[poll_name] ||
-           (current_polls[poll_name].values_at(*VALID_POLLS_CONFIGS) != previous_polls[poll_name].values_at(*VALID_POLLS_CONFIGS))
-
+        if !previous_polls[poll_name] || (current_polls[poll_name].values_at(*VALID_POLLS_CONFIGS) != previous_polls[poll_name].values_at(*VALID_POLLS_CONFIGS))
           return true
         end
       end
@@ -115,15 +115,12 @@ module DiscoursePoll
 
     def self.private_to_public_poll?(post, previous_polls, current_polls, poll_name)
       previous_poll = previous_polls[poll_name]
-      current_poll = current_polls[poll_name]
+      current_poll  = current_polls[poll_name]
 
-      if previous_polls["public"].nil? && current_poll["public"] == "true"
-        error =
-          if poll_name == DiscoursePoll::DEFAULT_POLL_NAME
-            I18n.t("poll.default_cannot_be_made_public")
-          else
-            I18n.t("poll.named_cannot_be_made_public", name: poll_name)
-          end
+      if previous_poll["public"].nil? && current_poll["public"] == "true"
+        error = poll_name == DiscoursePoll::DEFAULT_POLL_NAME ?
+          I18n.t("poll.default_cannot_be_made_public") :
+          I18n.t("poll.named_cannot_be_made_public", name: poll_name)
 
         post.errors.add(:base, error)
         return true

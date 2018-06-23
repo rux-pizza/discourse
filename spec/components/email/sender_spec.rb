@@ -3,18 +3,41 @@ require 'email/sender'
 
 describe Email::Sender do
 
-  it "doesn't deliver mail when mails are disabled" do
-    SiteSetting.disable_emails = true
-    Mail::Message.any_instance.expects(:deliver_now).never
-    message = Mail::Message.new(to: "hello@world.com" , body: "hello")
-    expect(Email::Sender.new(message, :hello).send).to eq(nil)
-  end
+  context "disable_emails is enabled" do
+    let(:user) { Fabricate(:user) }
+    let(:moderator) { Fabricate(:moderator) }
 
-  it "delivers mail when mails are disabled but the email_type is admin_login" do
-    SiteSetting.disable_emails = true
-    Mail::Message.any_instance.expects(:deliver_now).once
-    message = Mail::Message.new(to: "hello@world.com" , body: "hello")
-    Email::Sender.new(message, :admin_login).send
+    context "disable_emails is enabled for everyone" do
+      before { SiteSetting.disable_emails = "yes" }
+
+      it "doesn't deliver mail when mails are disabled" do
+        Mail::Message.any_instance.expects(:deliver_now).never
+        message = Mail::Message.new(to: moderator.email , body: "hello")
+        expect(Email::Sender.new(message, :hello).send).to eq(nil)
+      end
+
+      it "delivers mail when mails are disabled but the email_type is admin_login" do
+        Mail::Message.any_instance.expects(:deliver_now).once
+        message = Mail::Message.new(to: moderator.email , body: "hello")
+        Email::Sender.new(message, :admin_login).send
+      end
+    end
+
+    context "disable_emails is enabled for non-staff users" do
+      before { SiteSetting.disable_emails = "non-staff" }
+
+      it "doesn't deliver mail to normal user" do
+        Mail::Message.any_instance.expects(:deliver_now).never
+        message = Mail::Message.new(to: user.email, body: "hello")
+        expect(Email::Sender.new(message, :hello).send).to eq(nil)
+      end
+
+      it "delivers mail to staff user" do
+        Mail::Message.any_instance.expects(:deliver_now).once
+        message = Mail::Message.new(to: moderator.email, body: "hello")
+        Email::Sender.new(message, :hello).send
+      end
+    end
   end
 
   it "doesn't deliver mail when the message is of type NullMail" do
@@ -96,9 +119,12 @@ describe Email::Sender do
     end
 
     context "adds a List-ID header to identify the forum" do
+      let(:category) { Fabricate(:category, name: 'Name With Space') }
+      let(:topic) { Fabricate(:topic, category: category) }
+      let(:post) { Fabricate(:post, topic: topic) }
+
       before do
-        category =  Fabricate(:category, name: 'Name With Space')
-        topic = Fabricate(:topic, category_id: category.id)
+        message.header['X-Discourse-Post-Id']  = post.id
         message.header['X-Discourse-Topic-Id'] = topic.id
       end
 
@@ -120,8 +146,12 @@ describe Email::Sender do
     end
 
     context "adds Precedence header" do
+      let(:topic) { Fabricate(:topic) }
+      let(:post) { Fabricate(:post, topic: topic) }
+
       before do
-        message.header['X-Discourse-Topic-Id'] = 5577
+        message.header['X-Discourse-Post-Id']  = post.id
+        message.header['X-Discourse-Topic-Id'] = topic.id
       end
 
       it 'should add the right header' do
@@ -131,8 +161,12 @@ describe Email::Sender do
     end
 
     context "removes custom Discourse headers from topic notification mails" do
+      let(:topic) { Fabricate(:topic) }
+      let(:post) { Fabricate(:post, topic: topic) }
+
       before do
-        message.header['X-Discourse-Topic-Id'] = 5577
+        message.header['X-Discourse-Post-Id']  = post.id
+        message.header['X-Discourse-Topic-Id'] = topic.id
       end
 
       it 'should remove the right headers' do
@@ -160,21 +194,18 @@ describe Email::Sender do
       let(:post_3) { Fabricate(:post, topic: topic, post_number: 3) }
       let(:post_4) { Fabricate(:post, topic: topic, post_number: 4) }
 
-      let!(:incoming_email) { IncomingEmail.create(topic: topic, post: post_4, message_id: "foobar") }
+      let!(:post_reply_1_4) { PostReply.create(post: post_1, reply: post_4) }
+      let!(:post_reply_2_4) { PostReply.create(post: post_2, reply: post_4) }
+      let!(:post_reply_3_4) { PostReply.create(post: post_3, reply: post_4) }
 
-      let!(:post_reply_1_3) { PostReply.create(post: post_1, reply: post_3) }
-      let!(:post_reply_2_3) { PostReply.create(post: post_2, reply: post_3) }
-
-      before do
-        message.header['X-Discourse-Topic-Id'] = topic.id
-      end
+      before { message.header['X-Discourse-Topic-Id'] = topic.id }
 
       it "doesn't set the 'In-Reply-To' and 'References' headers on the first post" do
         message.header['X-Discourse-Post-Id'] = post_1.id
 
         email_sender.send
 
-        expect(message.header['Message-Id'].to_s).to eq("<topic/#{topic.id}/#{post_1.id}@test.localhost>")
+        expect(message.header['Message-Id'].to_s).to eq("<topic/#{topic.id}@test.localhost>")
         expect(message.header['In-Reply-To'].to_s).to be_blank
         expect(message.header['References'].to_s).to be_blank
       end
@@ -189,34 +220,46 @@ describe Email::Sender do
       end
 
       it "sets the 'In-Reply-To' header to the newest replied post" do
-        message.header['X-Discourse-Post-Id'] = post_3.id
+        message.header['X-Discourse-Post-Id'] = post_4.id
 
         email_sender.send
 
-        expect(message.header['Message-Id'].to_s).to eq("<topic/#{topic.id}/#{post_3.id}@test.localhost>")
-        expect(message.header['In-Reply-To'].to_s).to eq("<topic/#{topic.id}/#{post_2.id}@test.localhost>")
+        expect(message.header['Message-Id'].to_s).to eq("<topic/#{topic.id}/#{post_4.id}@test.localhost>")
+        expect(message.header['In-Reply-To'].to_s).to eq("<topic/#{topic.id}/#{post_3.id}@test.localhost>")
       end
 
       it "sets the 'References' header to the topic and all replied posts" do
-        message.header['X-Discourse-Post-Id'] = post_3.id
+        message.header['X-Discourse-Post-Id'] = post_4.id
 
         email_sender.send
 
         references = [
           "<topic/#{topic.id}@test.localhost>",
+          "<topic/#{topic.id}/#{post_3.id}@test.localhost>",
           "<topic/#{topic.id}/#{post_2.id}@test.localhost>",
-          "<topic/#{topic.id}/#{post_1.id}@test.localhost>",
         ]
 
         expect(message.header['References'].to_s).to eq(references.join(" "))
       end
 
       it "uses the incoming_email message_id when available" do
+        topic_incoming_email  = IncomingEmail.create(topic: topic, post: post_1, message_id: "foo@bar")
+        post_2_incoming_email = IncomingEmail.create(topic: topic, post: post_2, message_id: "bar@foo")
+        post_4_incoming_email = IncomingEmail.create(topic: topic, post: post_4, message_id: "wat@wat")
+
         message.header['X-Discourse-Post-Id'] = post_4.id
 
         email_sender.send
 
-        expect(message.header['Message-Id'].to_s).to eq("<#{incoming_email.message_id}>")
+        expect(message.header['Message-Id'].to_s).to eq("<#{post_4_incoming_email.message_id}>")
+
+        references = [
+          "<#{topic_incoming_email.message_id}>",
+          "<topic/#{topic.id}/#{post_3.id}@test.localhost>",
+          "<#{post_2_incoming_email.message_id}>",
+        ]
+
+        expect(message.header['References'].to_s).to eq(references.join(" "))
       end
 
     end
@@ -260,17 +303,20 @@ describe Email::Sender do
     end
 
     context "email log with a post id and topic id" do
+      let(:topic) { Fabricate(:topic) }
+      let(:post) { Fabricate(:post, topic: topic) }
+
       before do
-        message.header['X-Discourse-Post-Id'] = 3344
-        message.header['X-Discourse-Topic-Id'] = 5577
+        message.header['X-Discourse-Post-Id'] = post.id
+        message.header['X-Discourse-Topic-Id'] = topic.id
       end
 
       let(:email_log) { EmailLog.last }
 
       it 'should create the right log' do
         email_sender.send
-        expect(email_log.post_id).to eq(3344)
-        expect(email_log.topic_id).to eq(5577)
+        expect(email_log.post_id).to eq(post.id)
+        expect(email_log.topic_id).to eq(topic.id)
       end
     end
 
@@ -286,7 +332,6 @@ describe Email::Sender do
         expect(email_log.reply_key).to eq(reply_key)
       end
     end
-
 
     context 'email parts' do
       it 'should contain the right message' do

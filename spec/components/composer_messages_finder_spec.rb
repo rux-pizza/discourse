@@ -15,6 +15,7 @@ describe ComposerMessagesFinder do
       finder.expects(:check_sequential_replies).once
       finder.expects(:check_dominating_topic).once
       finder.expects(:check_reviving_old_topic).once
+      finder.expects(:check_get_a_room).once
       finder.find
     end
 
@@ -27,7 +28,7 @@ describe ComposerMessagesFinder do
       let(:finder) { ComposerMessagesFinder.new(user, composer_action: 'createTopic') }
 
       before do
-        SiteSetting.stubs(:educate_until_posts).returns(10)
+        SiteSetting.educate_until_posts = 10
       end
 
       it "returns a message for a user who has not posted any topics" do
@@ -65,7 +66,7 @@ describe ComposerMessagesFinder do
       let(:finder) { ComposerMessagesFinder.new(user, composer_action: 'reply') }
 
       before do
-        SiteSetting.stubs(:educate_until_posts).returns(10)
+        SiteSetting.educate_until_posts = 10
       end
 
       it "returns a message for a user who has not posted any topics" do
@@ -126,7 +127,7 @@ describe ComposerMessagesFinder do
     end
 
     it "doesn't notify users who have been notified already" do
-      UserHistory.create!(action: UserHistory.actions[:notified_about_avatar], target_user_id: user.id )
+      UserHistory.create!(action: UserHistory.actions[:notified_about_avatar], target_user_id: user.id)
       expect(finder.check_avatar_notification).to be_blank
     end
 
@@ -151,13 +152,13 @@ describe ComposerMessagesFinder do
     let(:topic) { Fabricate(:topic) }
 
     before do
-      SiteSetting.stubs(:educate_until_posts).returns(10)
+      SiteSetting.educate_until_posts = 10
       user.stubs(:post_count).returns(11)
 
       Fabricate(:post, topic: topic, user: user)
       Fabricate(:post, topic: topic, user: user)
 
-      SiteSetting.stubs(:sequential_replies_threshold).returns(2)
+      SiteSetting.sequential_replies_threshold = 2
     end
 
     it "does not give a message for new topics" do
@@ -178,17 +179,17 @@ describe ComposerMessagesFinder do
       end
 
       it "doesn't notify a user it has already notified about sequential replies" do
-        UserHistory.create!(action: UserHistory.actions[:notified_about_sequential_replies], target_user_id: user.id, topic_id: topic.id )
+        UserHistory.create!(action: UserHistory.actions[:notified_about_sequential_replies], target_user_id: user.id, topic_id: topic.id)
         expect(finder.check_sequential_replies).to be_blank
       end
 
       it "will notify you if it hasn't in the current topic" do
-        UserHistory.create!(action: UserHistory.actions[:notified_about_sequential_replies], target_user_id: user.id, topic_id: topic.id+1 )
+        UserHistory.create!(action: UserHistory.actions[:notified_about_sequential_replies], target_user_id: user.id, topic_id: topic.id + 1)
         expect(finder.check_sequential_replies).to be_present
       end
 
       it "doesn't notify a user who has less than the `sequential_replies_threshold` threshold posts" do
-        SiteSetting.stubs(:sequential_replies_threshold).returns(5)
+        SiteSetting.sequential_replies_threshold = 5
         expect(finder.check_sequential_replies).to be_blank
       end
 
@@ -197,7 +198,7 @@ describe ComposerMessagesFinder do
         expect(finder.check_sequential_replies).to be_blank
       end
 
-      it "doesn't notify in message" do
+      it "doesn't notify in a message" do
         Topic.any_instance.expects(:private_message?).returns(true)
         expect(finder.check_sequential_replies).to be_blank
       end
@@ -223,16 +224,16 @@ describe ComposerMessagesFinder do
     let(:topic) { Fabricate(:topic) }
 
     before do
-      SiteSetting.stubs(:educate_until_posts).returns(10)
+      SiteSetting.educate_until_posts = 10
       user.stubs(:post_count).returns(11)
 
-      SiteSetting.stubs(:summary_posts_required).returns(1)
+      SiteSetting.summary_posts_required = 1
 
       Fabricate(:post, topic: topic, user: user)
       Fabricate(:post, topic: topic, user: user)
       Fabricate(:post, topic: topic, user: Fabricate(:user))
 
-      SiteSetting.stubs(:sequential_replies_threshold).returns(2)
+      SiteSetting.sequential_replies_threshold = 2
     end
 
     it "does not give a message for new topics" do
@@ -253,27 +254,27 @@ describe ComposerMessagesFinder do
       end
 
       it "does not notify if the `summary_posts_required` has not been reached" do
-        SiteSetting.stubs(:summary_posts_required).returns(100)
+        SiteSetting.summary_posts_required = 100
         expect(finder.check_dominating_topic).to be_blank
       end
 
       it "doesn't notify a user it has already notified in this topic" do
-        UserHistory.create!(action: UserHistory.actions[:notified_about_dominating_topic], topic_id: topic.id, target_user_id: user.id )
+        UserHistory.create!(action: UserHistory.actions[:notified_about_dominating_topic], topic_id: topic.id, target_user_id: user.id)
         expect(finder.check_dominating_topic).to be_blank
       end
 
       it "notifies a user if the topic is different" do
-        UserHistory.create!(action: UserHistory.actions[:notified_about_dominating_topic], topic_id: topic.id+1, target_user_id: user.id )
+        UserHistory.create!(action: UserHistory.actions[:notified_about_dominating_topic], topic_id: topic.id + 1, target_user_id: user.id)
         expect(finder.check_dominating_topic).to be_present
       end
 
       it "doesn't notify a user if the topic has less than `summary_posts_required` posts" do
-        SiteSetting.stubs(:summary_posts_required).returns(5)
+        SiteSetting.summary_posts_required = 5
         expect(finder.check_dominating_topic).to be_blank
       end
 
       it "doesn't notify a user if they've posted less than the percentage" do
-        SiteSetting.stubs(:dominating_topic_minimum_percent).returns(100)
+        SiteSetting.dominating_topic_minimum_percent = 100
         expect(finder.check_dominating_topic).to be_blank
       end
 
@@ -303,6 +304,122 @@ describe ComposerMessagesFinder do
 
   end
 
+  context '.check_get_a_room' do
+    let(:user) { Fabricate(:user) }
+    let(:other_user) { Fabricate(:user) }
+    let(:third_user) { Fabricate(:user) }
+    let(:topic) { Fabricate(:topic, user: other_user) }
+    let(:op) { Fabricate(:post, topic_id: topic.id, user: other_user) }
+
+    let!(:other_user_reply) do
+      Fabricate(:post, topic: topic, user: third_user, reply_to_user_id: op.user_id)
+    end
+
+    let!(:first_reply) do
+      Fabricate(:post, topic: topic, user: user, reply_to_user_id: op.user_id)
+    end
+
+    let!(:second_reply) do
+      Fabricate(:post, topic: topic, user: user, reply_to_user_id: op.user_id)
+    end
+
+    before do
+      SiteSetting.educate_until_posts = 10
+      user.stubs(:post_count).returns(11)
+      SiteSetting.get_a_room_threshold = 2
+    end
+
+    it "does not show the message for new topics" do
+      finder = ComposerMessagesFinder.new(user, composer_action: 'createTopic')
+      expect(finder.check_get_a_room(min_users_posted: 2)).to be_blank
+    end
+
+    it "does not give a message without a topic id" do
+      expect(ComposerMessagesFinder.new(user, composer_action: 'reply').check_get_a_room(min_users_posted: 2)).to be_blank
+    end
+
+    context "reply" do
+      let(:finder) { ComposerMessagesFinder.new(user, composer_action: 'reply', topic_id: topic.id, post_id: op.id) }
+
+      it "does not give a message to users who are still in the 'education' phase" do
+        user.stubs(:post_count).returns(9)
+        expect(finder.check_get_a_room(min_users_posted: 2)).to be_blank
+      end
+
+      it "doesn't notify a user it has already notified about sequential replies" do
+        UserHistory.create!(
+          action: UserHistory.actions[:notified_about_get_a_room],
+          target_user_id: user.id,
+          topic_id: topic.id
+        )
+        expect(finder.check_get_a_room(min_users_posted: 2)).to be_blank
+      end
+
+      it "will notify you if it hasn't in the current topic" do
+        UserHistory.create!(
+          action: UserHistory.actions[:notified_about_get_a_room],
+          target_user_id: user.id,
+          topic_id: topic.id + 1
+        )
+        expect(finder.check_get_a_room(min_users_posted: 2)).to be_present
+      end
+
+      it "won't notify you if you haven't had enough posts" do
+        SiteSetting.get_a_room_threshold = 10
+        expect(finder.check_get_a_room(min_users_posted: 2)).to be_blank
+      end
+
+      it "doesn't notify you if the posts aren't all to the same person" do
+        first_reply.update_column(:reply_to_user_id, user.id)
+        expect(finder.check_get_a_room(min_users_posted: 2)).to be_blank
+      end
+
+      it "doesn't notify you of posts to yourself" do
+        first_reply.update_column(:reply_to_user_id, user.id)
+        second_reply.update_column(:reply_to_user_id, user.id)
+        expect(finder.check_get_a_room(min_users_posted: 2)).to be_blank
+      end
+
+      it "doesn't notify in a message" do
+        topic.update_columns(category_id: nil, archetype: 'private_message')
+        expect(finder.check_get_a_room(min_users_posted: 2)).to be_blank
+      end
+
+      it "doesn't notify when replying to a different user" do
+        other_finder = ComposerMessagesFinder.new(
+          user,
+          composer_action: 'reply',
+          topic_id: topic.id,
+          post_id: other_user_reply.id
+        )
+
+        expect(other_finder.check_get_a_room(min_users_posted: 2)).to be_blank
+      end
+
+      context "with a default min_users_posted value" do
+        let!(:message) { finder.check_get_a_room }
+
+        it "works as expected" do
+          expect(message).to be_blank
+        end
+      end
+
+      context "success" do
+        let!(:message) { finder.check_get_a_room(min_users_posted: 2) }
+
+        it "works as expected" do
+          expect(message).to be_present
+          expect(message[:id]).to eq('get_a_room')
+          expect(message[:wait_for_typing]).to eq(true)
+          expect(message[:templateName]).to eq('education')
+
+          expect(UserHistory.exists_for_user?(user, :notified_about_get_a_room)).to eq(true)
+        end
+      end
+    end
+
+  end
+
   context '.check_reviving_old_topic' do
     let(:user)  { Fabricate(:user) }
     let(:topic) { Fabricate(:topic) }
@@ -315,7 +432,7 @@ describe ComposerMessagesFinder do
     context "a reply" do
       context "warn_reviving_old_topic_age is 180 days" do
         before do
-          SiteSetting.stubs(:warn_reviving_old_topic_age).returns(180)
+          SiteSetting.warn_reviving_old_topic_age = 180
         end
 
         it "does not notify if last post is recent" do
@@ -325,13 +442,15 @@ describe ComposerMessagesFinder do
 
         it "notifies if last post is old" do
           topic = Fabricate(:topic, last_posted_at: 181.days.ago)
-          expect(described_class.new(user, composer_action: 'reply', topic_id: topic.id).check_reviving_old_topic).not_to be_blank
+          message = described_class.new(user, composer_action: 'reply', topic_id: topic.id).check_reviving_old_topic
+          expect(message).not_to be_blank
+          expect(message[:body]).to match(/6 months ago/)
         end
       end
 
       context "warn_reviving_old_topic_age is 0" do
         before do
-          SiteSetting.stubs(:warn_reviving_old_topic_age).returns(0)
+          SiteSetting.warn_reviving_old_topic_age = 0
         end
 
         it "does not notify if last post is new" do

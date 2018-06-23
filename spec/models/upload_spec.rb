@@ -29,7 +29,7 @@ describe Upload do
   context ".create_thumbnail!" do
 
     it "does not create a thumbnail when disabled" do
-      SiteSetting.stubs(:create_thumbnails?).returns(false)
+      SiteSetting.create_thumbnails = false
       OptimizedImage.expects(:create_for).never
       upload.create_thumbnail!(100, 100)
     end
@@ -46,89 +46,16 @@ describe Upload do
 
   end
 
-  context "#create_for" do
+  it "extracts file extension" do
+    created_upload = UploadCreator.new(image, image_filename).create_for(user_id)
+    expect(created_upload.extension).to eq("png")
+  end
 
-    before do
-      Upload.stubs(:fix_image_orientation)
-      ImageOptim.any_instance.stubs(:optimize_image!)
-    end
+  it "should create an invalid upload when the filename is blank" do
+    SiteSetting.authorized_extensions = "*"
 
-    it "does not create another upload if it already exists" do
-      Upload.expects(:find_by).with(sha1: image_sha1).returns(upload)
-      Upload.expects(:save).never
-      expect(Upload.create_for(user_id, image, image_filename, image_filesize)).to eq(upload)
-    end
-
-    it "ensures images isn't huge before processing it" do
-      Upload.expects(:fix_image_orientation).never
-      upload = Upload.create_for(user_id, huge_image, huge_image_filename, huge_image_filesize)
-      expect(upload.errors.size).to be > 0
-    end
-
-    it "fix image orientation" do
-      Upload.expects(:fix_image_orientation).with(image.path)
-      Upload.create_for(user_id, image, image_filename, image_filesize)
-    end
-
-    it "computes width & height for images" do
-      ImageSizer.expects(:resize)
-      Upload.create_for(user_id, image, image_filename, image_filesize)
-    end
-
-    it "does not compute width & height for non-image" do
-      FastImage.any_instance.expects(:size).never
-      upload = Upload.create_for(user_id, attachment, attachment_filename, attachment_filesize)
-      expect(upload.errors.size).to be > 0
-    end
-
-    it "generates an error when the image is too large" do
-      SiteSetting.stubs(:max_image_size_kb).returns(1)
-      upload = Upload.create_for(user_id, image, image_filename, image_filesize)
-      expect(upload.errors.size).to be > 0
-    end
-
-    it "generates an error when the attachment is too large" do
-      SiteSetting.stubs(:max_attachment_size_kb).returns(1)
-      upload = Upload.create_for(user_id, attachment, attachment_filename, attachment_filesize)
-      expect(upload.errors.size).to be > 0
-    end
-
-    it "saves proper information" do
-      store = {}
-      Discourse.expects(:store).returns(store)
-      store.expects(:store_upload).returns(url)
-
-      upload = Upload.create_for(user_id, image, image_filename, image_filesize)
-
-      expect(upload.user_id).to eq(user_id)
-      expect(upload.original_filename).to eq(image_filename)
-      expect(upload.filesize).to eq(image_filesize)
-      expect(upload.width).to eq(244)
-      expect(upload.height).to eq(66)
-      expect(upload.url).to eq(url)
-    end
-
-    context "when svg is authorized" do
-
-      before { SiteSetting.stubs(:authorized_extensions).returns("svg") }
-
-      it "consider SVG as an image" do
-        store = {}
-        Discourse.expects(:store).returns(store)
-        store.expects(:store_upload).returns(url)
-
-        upload = Upload.create_for(user_id, image_svg, image_svg_filename, image_svg_filesize)
-
-        expect(upload.user_id).to eq(user_id)
-        expect(upload.original_filename).to eq(image_svg_filename)
-        expect(upload.filesize).to eq(image_svg_filesize)
-        expect(upload.width).to eq(100)
-        expect(upload.height).to eq(50)
-        expect(upload.url).to eq(url)
-      end
-
-    end
-
+    created_upload = UploadCreator.new(image, nil).create_for(user_id)
+    expect(created_upload.valid?).to eq(false)
   end
 
   context ".get_from_url" do
@@ -160,6 +87,8 @@ describe Upload do
 
     it "doesn't blow up with an invalid URI" do
       expect { Upload.get_from_url("http://ip:port/index.html") }.not_to raise_error
+      expect { Upload.get_from_url("mailto:admin%40example.com") }.not_to raise_error
+      expect { Upload.get_from_url("mailto:example") }.not_to raise_error
     end
 
     describe "s3 store" do
@@ -177,6 +106,13 @@ describe Upload do
         SiteSetting.enable_s3_uploads = false
       end
 
+      it "should return the right upload when using base url (not CDN) for s3" do
+        upload
+        url = "https://#{SiteSetting.s3_upload_bucket}.s3.amazonaws.com#{path}"
+
+        expect(Upload.get_from_url(url)).to eq(upload)
+      end
+
       it "should return the right upload when using a CDN for s3" do
         upload
         s3_cdn_url = 'https://mycdn.slowly.net'
@@ -184,12 +120,50 @@ describe Upload do
 
         expect(Upload.get_from_url(URI.join(s3_cdn_url, path).to_s)).to eq(upload)
       end
+
+      it "should return the right upload when using one CDN for both s3 and assets" do
+        begin
+          original_asset_host = Rails.configuration.action_controller.asset_host
+          cdn_url = 'http://my.cdn.com'
+          Rails.configuration.action_controller.asset_host = cdn_url
+          SiteSetting.s3_cdn_url = cdn_url
+          upload
+
+          expect(Upload.get_from_url(
+            URI.join(cdn_url, path).to_s
+          )).to eq(upload)
+        ensure
+          Rails.configuration.action_controller.asset_host = original_asset_host
+        end
+      end
     end
   end
 
   describe '.generate_digest' do
     it "should return the right digest" do
       expect(Upload.generate_digest(image.path)).to eq('bc975735dfc6409c1c2aa5ebf2239949bcbdbd65')
+    end
+  end
+
+  describe '.short_url' do
+    it "should generate a correct short url" do
+      upload = Upload.new(sha1: 'bda2c513e1da04f7b4e99230851ea2aafeb8cc4e', extension: 'png')
+      expect(upload.short_url).to eq('upload://r3AYqESanERjladb4vBB7VsMBm6.png')
+    end
+  end
+
+  describe '.sha1_from_short_url' do
+    it "should be able to look up sha1" do
+      sha1 = 'bda2c513e1da04f7b4e99230851ea2aafeb8cc4e'
+
+      expect(Upload.sha1_from_short_url('upload://r3AYqESanERjladb4vBB7VsMBm6.png')).to eq(sha1)
+      expect(Upload.sha1_from_short_url('upload://r3AYqESanERjladb4vBB7VsMBm6')).to eq(sha1)
+      expect(Upload.sha1_from_short_url('r3AYqESanERjladb4vBB7VsMBm6')).to eq(sha1)
+    end
+
+    it "should be able to look up sha1 even with leading zeros" do
+      sha1 = '0000c513e1da04f7b4e99230851ea2aafeb8cc4e'
+      expect(Upload.sha1_from_short_url('upload://1Eg9p8rrCURq4T3a6iJUk0ri6.png')).to eq(sha1)
     end
   end
 

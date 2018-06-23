@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 class Draft < ActiveRecord::Base
   NEW_TOPIC = 'new_topic'
   NEW_PRIVATE_MESSAGE = 'new_private_message'
   EXISTING_TOPIC = 'topic_'
 
   def self.set(user, key, sequence, data)
-    d = find_draft(user,key)
+    d = find_draft(user, key)
     if d
       return if d.sequence > sequence
-      exec_sql("UPDATE drafts
+      DB.exec("UPDATE drafts
                SET  data = :data,
                     sequence = :sequence,
                     revisions = revisions + 1
@@ -15,17 +17,19 @@ class Draft < ActiveRecord::Base
     else
       Draft.create!(user_id: user.id, draft_key: key, data: data, sequence: sequence)
     end
+
+    true
   end
 
   def self.get(user, key, sequence)
-    d = find_draft(user,key)
+    d = find_draft(user, key)
     if d && d.sequence == sequence
       d.data
     end
   end
 
   def self.clear(user, key, sequence)
-    d = find_draft(user,key)
+    d = find_draft(user, key)
     if d && d.sequence <= sequence
       d.destroy
     end
@@ -40,7 +44,7 @@ class Draft < ActiveRecord::Base
   end
 
   def self.cleanup!
-    exec_sql("DELETE FROM drafts where sequence < (
+    DB.exec("DELETE FROM drafts where sequence < (
                SELECT max(s.sequence) from draft_sequences s
                WHERE s.draft_key = drafts.draft_key AND
                      s.user_id = drafts.user_id

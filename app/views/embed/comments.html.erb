@@ -16,18 +16,18 @@
       <%- end %>
 
       <div class='author'>
-        <a href='<%= Discourse.base_url %>/users/<%= post.username %>' target="_blank"><img src='<%= post.user.small_avatar_url %>' alt=''></a>
+        <a href='<%= Discourse.base_url %>/u/<%= post.username %>' target="_blank"><img src='<%= post.user.small_avatar_url %>' alt=''></a>
       </div>
       <div class='cooked'>
         <h3 class='username'>
-          <a href='<%= Discourse.base_url %>/users/<%= post.username %>' target="_blank" class='<% if post.user.staff? %>staff<% end %><% if post.user.new_user? %>new-user<% end %>'><%= post.user.username %></a>
+          <a href='<%= Discourse.base_url %>/u/<%= post.username %>' target="_blank" class='<% if post.user.staff? %>staff<% end %><% if post.user.new_user? %>new-user<% end %>'><%= post.user.username %></a>
           <%- if post.user.title.present? %>
             <span class='title'><%= post.user.title %></span>
           <%- end %>
         </h3>
-        <%= get_html(post.cooked) %>
+        <%= get_html(post) %>
 
-        <%- if post.reply_count > 0 %>
+        <%- if post.reply_count > 0 && post.replies.exists? %>
           <%- if post.reply_count == 1 %>
             <%= link_to I18n.t('embed.replies', count: post.reply_count), post.full_url, 'data-link-to-post' => post.replies.first.id.to_s, :class => 'post-replies button' %>
           <% else %>

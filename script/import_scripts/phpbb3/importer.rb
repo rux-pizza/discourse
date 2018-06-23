@@ -46,6 +46,10 @@ module ImportScripts::PhpBB3
       settings[:max_image_size_kb] = [max_file_size_kb, SiteSetting.max_image_size_kb].max
       settings[:max_attachment_size_kb] = [max_file_size_kb, SiteSetting.max_attachment_size_kb].max
 
+      # temporarily disable validation since we want to import all existing images and attachments
+      SiteSetting.type_supervisor.load_setting(:max_image_size_kb, max: settings[:max_image_size_kb])
+      SiteSetting.type_supervisor.load_setting(:max_attachment_size_kb, max: settings[:max_attachment_size_kb])
+
       settings
     end
 

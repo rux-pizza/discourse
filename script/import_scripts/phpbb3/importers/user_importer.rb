@@ -21,7 +21,7 @@ module ImportScripts::PhpBB3
         email: row[:user_email],
         username: row[:username],
         password: @settings.import_passwords ? row[:user_password] : nil,
-        name: @settings.username_as_name ? row[:username] : '',
+        name: @settings.username_as_name ? row[:username] : row[:name].presence,
         created_at: Time.zone.at(row[:user_regdate]),
         last_seen_at: row[:user_lastvisit] == 0 ? Time.zone.at(row[:user_regdate]) : Time.zone.at(row[:user_lastvisit]),
         registration_ip_address: (IPAddr.new(row[:user_ip]) rescue nil),
@@ -51,7 +51,7 @@ module ImportScripts::PhpBB3
 
       {
         id: username,
-        email: "anonymous_no_email_#{SecureRandom.hex}",
+        email: "anonymous_#{SecureRandom.hex}@no-email.invalid",
         username: username,
         name: @settings.username_as_name ? username : '',
         created_at: Time.zone.at(row[:first_post_time]),

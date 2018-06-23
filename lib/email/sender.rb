@@ -15,20 +15,25 @@ SMTP_CLIENT_ERRORS = [Net::SMTPFatalError, Net::SMTPSyntaxError]
 module Email
   class Sender
 
-    def initialize(message, email_type, user=nil)
+    def initialize(message, email_type, user = nil)
       @message =  message
       @email_type = email_type
       @user = user
     end
 
     def send
-      return if SiteSetting.disable_emails && @email_type.to_s != "admin_login"
+      return if SiteSetting.disable_emails == "yes" && @email_type.to_s != "admin_login"
 
       return if ActionMailer::Base::NullMail === @message
       return if ActionMailer::Base::NullMail === (@message.message rescue nil)
 
       return skip(I18n.t('email_log.message_blank'))    if @message.blank?
       return skip(I18n.t('email_log.message_to_blank')) if @message.to.blank?
+
+      if SiteSetting.disable_emails == "non-staff"
+        user = User.find_by_email(to_address)
+        return unless user && user.staff?
+      end
 
       if @message.text_part
         return skip(I18n.t('email_log.text_part_body_blank')) if @message.text_part.body.to_s.blank?
@@ -51,14 +56,12 @@ module Email
         end
       end
 
-      @message.parts[0].body = @message.parts[0].body.to_s.gsub(/\[\/?email-indent\]/, '')
-
       # Fix relative (ie upload) HTML links in markdown which do not work well in plain text emails.
       # These are the links we add when a user uploads a file or image.
       # Ideally we would parse general markdown into plain text, but that is almost an intractable problem.
       url_prefix = Discourse.base_url
-      @message.parts[0].body = @message.parts[0].body.to_s.gsub(/<a class="attachment" href="(\/uploads\/default\/[^"]+)">([^<]*)<\/a>/, '[\2]('+url_prefix+'\1)')
-      @message.parts[0].body = @message.parts[0].body.to_s.gsub(/<img src="(\/uploads\/default\/[^"]+)"([^>]*)>/, '![]('+url_prefix+'\1)')
+      @message.parts[0].body = @message.parts[0].body.to_s.gsub(/<a class="attachment" href="(\/uploads\/default\/[^"]+)">([^<]*)<\/a>/, '[\2](' + url_prefix + '\1)')
+      @message.parts[0].body = @message.parts[0].body.to_s.gsub(/<img src="(\/uploads\/default\/[^"]+)"([^>]*)>/, '![](' + url_prefix + '\1)')
 
       @message.text_part.content_type = 'text/plain; charset=UTF-8'
 
@@ -67,8 +70,8 @@ module Email
 
       host = Email::Sender.host_for(Discourse.base_url)
 
-      topic_id = header_value('X-Discourse-Topic-Id')
-      post_id = header_value('X-Discourse-Post-Id')
+      post_id   = header_value('X-Discourse-Post-Id')
+      topic_id  = header_value('X-Discourse-Topic-Id')
       reply_key = header_value('X-Discourse-Reply-Key')
 
       # always set a default Message ID from the host
@@ -79,48 +82,65 @@ module Email
 
         post = Post.find_by(id: post_id)
         topic = Topic.find_by(id: topic_id)
+        first_post = topic.ordered_posts.first
 
-        topic_message_id = "<topic/#{topic_id}@#{host}>"
-        post_message_id = "<topic/#{topic_id}/#{post_id}@#{host}>"
+        topic_message_id = first_post.incoming_email&.message_id.present? ?
+          "<#{first_post.incoming_email.message_id}>" :
+          "<topic/#{topic_id}@#{host}>"
 
-        incoming_email = IncomingEmail.find_by(post_id: post_id, topic_id: topic_id)
-        incoming_message_id = "<#{incoming_email.message_id}>" if incoming_email&.message_id.present?
+        post_message_id = post.incoming_email&.message_id.present? ?
+          "<#{post.incoming_email.message_id}>" :
+          "<topic/#{topic_id}/#{post_id}@#{host}>"
 
         referenced_posts = Post.includes(:incoming_email)
-                               .where(id: PostReply.where(reply_id: post_id).select(:post_id))
-                               .order(id: :desc)
+          .where(id: PostReply.where(reply_id: post_id).select(:post_id))
+          .order(id: :desc)
 
         referenced_post_message_ids = referenced_posts.map do |post|
-          if post&.incoming_email&.message_id.present?
+          if post.incoming_email&.message_id.present?
             "<#{post.incoming_email.message_id}>"
           else
-            "<topic/#{topic_id}/#{post.id}@#{host}>"
+            if post.post_number == 1
+              "<topic/#{topic_id}@#{host}>"
+            else
+              "<topic/#{topic_id}/#{post.id}@#{host}>"
+            end
           end
         end
 
-        @message.header['Message-ID'] = incoming_message_id || post_message_id
-        if post && post.post_number > 1
-          @message.header['In-Reply-To'] = referenced_post_message_ids.first || topic_message_id
-          @message.header['References'] = [topic_message_id, referenced_post_message_ids].flatten.compact.uniq
+        # https://www.ietf.org/rfc/rfc2822.txt
+        if post.post_number == 1
+          @message.header['Message-ID']  = topic_message_id
+        else
+          @message.header['Message-ID']  = post_message_id
+          @message.header['In-Reply-To'] = referenced_post_message_ids[0] || topic_message_id
+          @message.header['References']  = [topic_message_id, referenced_post_message_ids].flatten.compact.uniq
         end
 
-        # http://www.ietf.org/rfc/rfc2919.txt
+        # https://www.ietf.org/rfc/rfc2919.txt
         if topic && topic.category && !topic.category.uncategorized?
-          list_id = "<#{topic.category.name.downcase.tr(' ', '-')}.#{host}>"
+          list_id = "#{SiteSetting.title} | #{topic.category.name} <#{topic.category.name.downcase.tr(' ', '-')}.#{host}>"
 
           # subcategory case
           if !topic.category.parent_category_id.nil?
             parent_category_name = Category.find_by(id: topic.category.parent_category_id).name
-            list_id = "<#{topic.category.name.downcase.tr(' ', '-')}.#{parent_category_name.downcase.tr(' ', '-')}.#{host}>"
+            list_id = "#{SiteSetting.title} | #{parent_category_name} #{topic.category.name} <#{topic.category.name.downcase.tr(' ', '-')}.#{parent_category_name.downcase.tr(' ', '-')}.#{host}>"
           end
         else
-          list_id = "<#{host}>"
+          list_id = "#{SiteSetting.title} <#{host}>"
         end
 
-        # http://www.ietf.org/rfc/rfc3834.txt
-        @message.header['Precedence']   = 'list'
-        @message.header['List-ID']      = list_id
-        @message.header['List-Archive'] = topic.url if topic
+        # https://www.ietf.org/rfc/rfc3834.txt
+        @message.header['Precedence'] = 'list'
+        @message.header['List-ID']    = list_id
+
+        if topic
+          if SiteSetting.private_email?
+            @message.header['List-Archive'] = "#{Discourse.base_url}#{topic.slugless_url}"
+          else
+            @message.header['List-Archive'] = topic.url
+          end
+        end
       end
 
       if reply_key.present? && @message.header['Reply-To'] =~ /\<([^\>]+)\>/
@@ -150,9 +170,9 @@ module Email
       when /\.mailjet\.com/
         @message.header['X-MJ-CustomID'] = @message.message_id
       when "smtp.mandrillapp.com"
-        merge_json_x_header('X-MC-Metadata', { message_id: @message.message_id })
+        merge_json_x_header('X-MC-Metadata', message_id: @message.message_id)
       when "smtp.sparkpostmail.com"
-        merge_json_x_header('X-MSYS-API', { metadata: { message_id: @message.message_id } })
+        merge_json_x_header('X-MSYS-API', metadata: { message_id: @message.message_id })
       end
 
       # Suppress images from short emails

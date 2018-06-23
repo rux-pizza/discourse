@@ -21,6 +21,13 @@ describe Jobs::NotifyMailingListSubscribers do
       UserNotifications.expects(:mailing_list_notify).with(mailing_list_user, post).once
       Jobs::NotifyMailingListSubscribers.new.execute(post_id: post.id)
     end
+
+    it "triggers :notify_mailing_list_subscribers" do
+      events = DiscourseEvent.track_events do
+        Jobs::NotifyMailingListSubscribers.new.execute(post_id: post.id)
+      end
+      expect(events).to include(event_name: :notify_mailing_list_subscribers, params: [[mailing_list_user], post])
+    end
   end
 
   context "when mailing list mode is globally disabled" do
@@ -31,10 +38,17 @@ describe Jobs::NotifyMailingListSubscribers do
   context "when mailing list mode is globally enabled" do
     before { SiteSetting.disable_mailing_list_mode = false }
 
-    context "with an invalid post_id" do
-      it "throws an error" do
-        expect { Jobs::NotifyMailingListSubscribers.new.execute(post_id: -1) }.to raise_error(Discourse::InvalidParameters)
+    context "when site requires approval and user is not approved" do
+      before do
+        SiteSetting.login_required = true
+        SiteSetting.must_approve_users = true
       end
+      include_examples "no emails"
+    end
+
+    context "with an invalid post_id" do
+      before { post.update(deleted_at: Time.now) }
+      include_examples "no emails"
     end
 
     context "with a deleted post" do
@@ -59,8 +73,8 @@ describe Jobs::NotifyMailingListSubscribers do
         include_examples "no emails"
       end
 
-      context "to a blocked user" do
-        before { mailing_list_user.update(blocked: true) }
+      context "to a silenced user" do
+        before { mailing_list_user.update(silenced_till: 1.year.from_now) }
         include_examples "no emails"
       end
 
@@ -76,11 +90,6 @@ describe Jobs::NotifyMailingListSubscribers do
 
       context "to an user who has disabled mailing list mode" do
         before { mailing_list_user.user_option.update(mailing_list_mode: false) }
-        include_examples "no emails"
-      end
-
-      context "to an user who has frequency set to 'daily'" do
-        before { mailing_list_user.user_option.update(mailing_list_mode_frequency: 0) }
         include_examples "no emails"
       end
 

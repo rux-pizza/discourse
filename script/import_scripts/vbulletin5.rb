@@ -5,11 +5,11 @@ require 'htmlentities'
 class ImportScripts::VBulletin < ImportScripts::Base
   BATCH_SIZE = 1000
   DBPREFIX = "vb_"
-  ROOT_NODE=2
+  ROOT_NODE = 2
 
   # CHANGE THESE BEFORE RUNNING THE IMPORTER
   DATABASE = "yourforum"
-  TIMEZONE = "America/Los_Angeles" 
+  TIMEZONE = "America/Los_Angeles"
   ATTACHMENT_DIR = '/home/discourse/yourforum/customattachments/'
   AVATAR_DIR = '/home/discourse/yourforum/avatars/'
 
@@ -25,7 +25,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
     @client = Mysql2::Client.new(
       host: "localhost",
       username: "root",
-      database: DATABASE, 
+      database: DATABASE,
       password: "password"
     )
 
@@ -123,7 +123,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
       file = Tempfile.new("profile-picture")
       file.write(picture["filedata"].encode("ASCII-8BIT").force_encoding("UTF-8"))
       file.rewind
-      upload = Upload.create_for(imported_user.id, file, picture["filename"], file.size)
+      upload = UploadCreator.new(file, picture["filename"]).create_for(imported_user.id)
     else
       filename = File.join(AVATAR_DIR, picture['filename'])
       unless File.exists?(filename)
@@ -160,7 +160,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
     file.write(background["filedata"].encode("ASCII-8BIT").force_encoding("UTF-8"))
     file.rewind
 
-    upload = Upload.create_for(imported_user.id, file, background["filename"], file.size)
+    upload = UploadCreator.new(file, background["filename"]).create_for(imported_user.id)
 
     return if !upload.persisted?
 
@@ -173,13 +173,13 @@ class ImportScripts::VBulletin < ImportScripts::Base
   def import_categories
     puts "", "importing top level categories..."
 
-    categories = mysql_query("SELECT nodeid AS forumid, title, description, displayorder, parentid 
-	      FROM #{DBPREFIX}node 
-          WHERE parentid=#{ROOT_NODE} 
-        UNION 
-          SELECT nodeid, title, description, displayorder, parentid 
-          FROM #{DBPREFIX}node 
-          WHERE contenttypeid = 23 
+    categories = mysql_query("SELECT nodeid AS forumid, title, description, displayorder, parentid
+	      FROM #{DBPREFIX}node
+          WHERE parentid=#{ROOT_NODE}
+        UNION
+          SELECT nodeid, title, description, displayorder, parentid
+          FROM #{DBPREFIX}node
+          WHERE contenttypeid = 23
             AND parentid IN (SELECT nodeid FROM #{DBPREFIX}node WHERE parentid=#{ROOT_NODE})").to_a
 
     top_level_categories = categories.select { |c| c["parentid"] == ROOT_NODE }
@@ -222,17 +222,17 @@ class ImportScripts::VBulletin < ImportScripts::Base
     # keep track of closed topics
     @closed_topic_ids = []
 
-    topic_count = mysql_query("select count(nodeid) cnt from #{DBPREFIX}node where parentid in (   
+    topic_count = mysql_query("select count(nodeid) cnt from #{DBPREFIX}node where parentid in (
         select nodeid from #{DBPREFIX}node where contenttypeid=23 ) and contenttypeid=22;").first["cnt"]
 
     batches(BATCH_SIZE) do |offset|
       topics = mysql_query <<-SQL
         SELECT t.nodeid AS threadid, t.title, t.parentid AS forumid,t.open,t.userid AS postuserid,t.publishdate AS dateline,
-            nv.count views, 1 AS visible, t.sticky, 
+            nv.count views, 1 AS visible, t.sticky,
             CONVERT(CAST(rawtext AS BINARY)USING utf8) AS raw
-        FROM #{DBPREFIX}node t 
-        LEFT JOIN #{DBPREFIX}nodeview nv ON nv.nodeid=t.nodeid 
-        LEFT JOIN #{DBPREFIX}text txt ON txt.nodeid=t.nodeid 
+        FROM #{DBPREFIX}node t
+        LEFT JOIN #{DBPREFIX}nodeview nv ON nv.nodeid=t.nodeid
+        LEFT JOIN #{DBPREFIX}text txt ON txt.nodeid=t.nodeid
         WHERE t.parentid in ( select nodeid from #{DBPREFIX}node where contenttypeid=23 )
           AND t.contenttypeid = 22
         ORDER BY t.nodeid
@@ -275,17 +275,17 @@ class ImportScripts::VBulletin < ImportScripts::Base
     rescue
     end
 
-    post_count = mysql_query("SELECT COUNT(nodeid) cnt FROM #{DBPREFIX}node WHERE parentid NOT IN (   
+    post_count = mysql_query("SELECT COUNT(nodeid) cnt FROM #{DBPREFIX}node WHERE parentid NOT IN (
         SELECT nodeid FROM #{DBPREFIX}node WHERE contenttypeid=23 ) AND contenttypeid=22;").first["cnt"]
 
     batches(BATCH_SIZE) do |offset|
       posts = mysql_query <<-SQL
-        SELECT p.nodeid AS postid, p.userid AS userid, p.parentid AS threadid, 
+        SELECT p.nodeid AS postid, p.userid AS userid, p.parentid AS threadid,
             CONVERT(CAST(rawtext AS BINARY)USING utf8) AS raw, p.publishdate AS dateline,
             1 AS visible, p.parentid AS parentid
-        FROM #{DBPREFIX}node p 
-        LEFT JOIN #{DBPREFIX}nodeview nv ON nv.nodeid=p.nodeid 
-        LEFT JOIN #{DBPREFIX}text txt ON txt.nodeid=p.nodeid 
+        FROM #{DBPREFIX}node p
+        LEFT JOIN #{DBPREFIX}nodeview nv ON nv.nodeid=p.nodeid
+        LEFT JOIN #{DBPREFIX}text txt ON txt.nodeid=p.nodeid
         WHERE p.parentid NOT IN ( select nodeid from #{DBPREFIX}node where contenttypeid=23 )
           AND p.contenttypeid = 22
         ORDER BY postid
@@ -299,7 +299,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
       # next if all_records_exist? :posts, posts.map {|p| p["postid"] }
 
       create_posts(posts, total: post_count, offset: offset) do |post|
-        raw = preprocess_post_raw(post["raw"]) 
+        raw = preprocess_post_raw(post["raw"])
         next if raw.blank?
         next unless topic = topic_lookup_from_imported_post_id("thread-#{post["threadid"]}")
         p = {
@@ -336,7 +336,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
     real_filename.prepend SecureRandom.hex if real_filename[0] == '.'
 
     unless File.exists?(filename)
-      if row['dbsize'].to_i == 0 
+      if row['dbsize'].to_i == 0
         puts "Attachment file #{row['filedataid']} doesn't exist"
         return nil
       end
@@ -394,7 +394,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
       end
 
       if new_raw != post.raw
-        PostRevisor.new(post).revise!(post.user, { raw: new_raw }, { bypass_bump: true, edit_reason: 'Import attachments from vBulletin' })
+        PostRevisor.new(post).revise!(post.user, { raw: new_raw }, bypass_bump: true, edit_reason: 'Import attachments from vBulletin')
       end
 
       success_count += 1
@@ -418,7 +418,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
       WHERE id IN (SELECT topic_id FROM closed_topic_ids)
     SQL
 
-    Topic.exec_sql(sql, @closed_topic_ids)
+    DB.exec(sql, @closed_topic_ids)
   end
 
   def post_process_posts
@@ -450,15 +450,15 @@ class ImportScripts::VBulletin < ImportScripts::Base
 
     # fix whitespaces
     raw = raw.gsub(/(\\r)?\\n/, "\n")
-             .gsub("\\t", "\t")
+      .gsub("\\t", "\t")
 
     # [HTML]...[/HTML]
     raw = raw.gsub(/\[html\]/i, "\n```html\n")
-             .gsub(/\[\/html\]/i, "\n```\n")
+      .gsub(/\[\/html\]/i, "\n```\n")
 
     # [PHP]...[/PHP]
     raw = raw.gsub(/\[php\]/i, "\n```php\n")
-             .gsub(/\[\/php\]/i, "\n```\n")
+      .gsub(/\[\/php\]/i, "\n```\n")
 
     # [HIGHLIGHT="..."]
     raw = raw.gsub(/\[highlight="?(\w+)"?\]/i) { "\n```#{$1.downcase}\n" }
@@ -466,7 +466,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
     # [CODE]...[/CODE]
     # [HIGHLIGHT]...[/HIGHLIGHT]
     raw = raw.gsub(/\[\/?code\]/i, "\n```\n")
-             .gsub(/\[\/?highlight\]/i, "\n```\n")
+      .gsub(/\[\/?highlight\]/i, "\n```\n")
 
     # [SAMP]...[/SAMP]
     raw = raw.gsub(/\[\/?samp\]/i, "`")
@@ -476,12 +476,12 @@ class ImportScripts::VBulletin < ImportScripts::Base
     #  - AFTER all the "code" processing
     #  - BEFORE the "quote" processing
     raw = raw.gsub(/`([^`]+)`/im) { "`" + $1.gsub("<", "\u2603") + "`" }
-             .gsub("<", "&lt;")
-             .gsub("\u2603", "<")
+      .gsub("<", "&lt;")
+      .gsub("\u2603", "<")
 
     raw = raw.gsub(/`([^`]+)`/im) { "`" + $1.gsub(">", "\u2603") + "`" }
-             .gsub(">", "&gt;")
-             .gsub("\u2603", ">")
+      .gsub(">", "&gt;")
+      .gsub("\u2603", ">")
 
     # [URL=...]...[/URL]
     raw.gsub!(/\[url="?(.+?)"?\](.+?)\[\/url\]/i) { "<a href=\"#{$1}\">#{$2}</a>" }
@@ -489,7 +489,7 @@ class ImportScripts::VBulletin < ImportScripts::Base
     # [URL]...[/URL]
     # [MP3]...[/MP3]
     raw = raw.gsub(/\[\/?url\]/i, "")
-             .gsub(/\[\/?mp3\]/i, "")
+      .gsub(/\[\/?mp3\]/i, "")
 
     # [MENTION]<username>[/MENTION]
     raw = raw.gsub(/\[mention\](.+?)\[\/mention\]/i) do

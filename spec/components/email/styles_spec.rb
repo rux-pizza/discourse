@@ -24,14 +24,19 @@ describe Email::Styles do
       expect(style.to_html).to be_blank
     end
 
-    # Pending due to email effort @coding-horror made in d2fb2bc4c
-    skip "adds a max-width to images" do
-      frag = basic_fragment("<img src='gigantic.jpg'>")
+    it "adds a max-width to large images" do
+      frag = basic_fragment("<img height='auto' width='auto' src='gigantic.jpg'>")
       expect(frag.at("img")["style"]).to match("max-width")
     end
 
-    it "adds a width and height to images with an emoji path" do
+    it "adds a width and height to emojis" do
       frag = basic_fragment("<img src='/images/emoji/fish.png' class='emoji'>")
+      expect(frag.at("img")["width"]).to eq("20")
+      expect(frag.at("img")["height"]).to eq("20")
+    end
+
+    it "adds a width and height to custom emojis" do
+      frag = basic_fragment("<img src='/uploads/default/_emoji/fish.png' class='emoji emoji-custom'>")
       expect(frag.at("img")["width"]).to eq("20")
       expect(frag.at("img")["height"]).to eq("20")
     end
@@ -111,7 +116,7 @@ describe Email::Styles do
 
     context "without https" do
       before do
-        SiteSetting.stubs(:force_https).returns(false)
+        SiteSetting.force_https = false
       end
 
       it "rewrites the href to have http" do
@@ -132,7 +137,7 @@ describe Email::Styles do
 
     context "with https" do
       before do
-        SiteSetting.stubs(:force_https).returns(true)
+        SiteSetting.force_https = true
       end
 
       it "rewrites the forum URL to have https" do
@@ -166,6 +171,13 @@ describe Email::Styles do
       style = Email::Styles.new(emoji)
       style.strip_avatars_and_emojis
       expect(style.to_html).to match_html("cry_cry")
+    end
+
+    it "works if img tag has no attrs" do
+      cooked = "Create a method for click on image and use ng-click in <img> in your slide box...it is simple"
+      style = Email::Styles.new(cooked)
+      style.strip_avatars_and_emojis
+      expect(style.to_html).to eq(cooked)
     end
   end
 

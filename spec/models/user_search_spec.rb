@@ -43,6 +43,16 @@ describe UserSearch do
     expect(search_for("under_").length).to eq(1)
   end
 
+  it 'allows filtering by group' do
+    group = Fabricate(:group)
+    sam = Fabricate(:user, username: 'sam')
+    _samantha = Fabricate(:user, username: 'samantha')
+    group.add(sam)
+
+    results = search_for("sam", group: group)
+    expect(results.count).to eq(1)
+  end
+
   # this is a seriously expensive integration test,
   # re-creating this entire test db is too expensive reuse
   it "operates correctly" do
@@ -124,6 +134,9 @@ describe UserSearch do
     # don't return staged users
     results = search_for(staged.username)
     expect(results).to be_blank
+
+    results = search_for(staged.username, include_staged_users: true)
+    expect(results.first.username).to eq(staged.username)
   end
 
 end

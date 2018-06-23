@@ -39,20 +39,27 @@ module I18n
         if @loaded_locales.empty?
           # load all rb files
           I18n.backend.load_translations(I18n.load_path.grep(/\.rb$/))
+
+          # load plural rules from plugins
+          DiscoursePluginRegistry.locales.each do |locale, options|
+            if options[:plural]
+              I18n.backend.store_translations(locale, i18n: { plural: options[:plural] })
+            end
+          end
         end
 
         # load it
-        I18n.backend.load_translations(I18n.load_path.grep Regexp.new("\\.#{locale}\\.yml$"))
+        I18n.backend.load_translations(I18n.load_path.grep(/\.#{Regexp.escape locale}\.yml$/))
 
         @loaded_locales << locale
       end
     end
 
     def ensure_all_loaded!
-      backend.fallbacks(locale).each {|l| ensure_loaded!(l) }
+      backend.fallbacks(locale).each { |l| ensure_loaded!(l) }
     end
 
-    def search(query, opts=nil)
+    def search(query, opts = nil)
       locale = opts[:locale] || config.locale
 
       load_locale(locale) unless @loaded_locales.include?(locale)
@@ -104,10 +111,9 @@ module I18n
       site = RailsMultisite::ConnectionManagement.current_db
 
       by_site = @overrides_by_site[site]
+      by_site ||= {}
 
-      if by_site.nil? || !by_site.has_key?(locale)
-        by_site = @overrides_by_site[site] = {}
-
+      if !by_site.has_key?(locale)
         # Load overrides
         translations_overrides = TranslationOverride.where(locale: locale).pluck(:translation_key, :value, :compiled_js)
 
@@ -119,13 +125,15 @@ module I18n
             by_locale[tuple[0]] = tuple[2] || tuple[1]
           end
         end
+
+        @overrides_by_site[site] = by_site
       end
 
       by_site[locale].with_indifferent_access
     end
 
     def client_overrides_json(locale)
-      client_json = (overrides_by_locale(locale) || {}).select {|k, _| k.starts_with?('js.') || k.starts_with?('admin_js.')}
+      client_json = (overrides_by_locale(locale) || {}).select { |k, _| k[/^(admin_js|js)\./] }
       MultiJson.dump(client_json)
     end
 
@@ -137,17 +145,25 @@ module I18n
       load_locale(locale) unless @loaded_locales.include?(locale)
 
       if @overrides_enabled
-        if by_locale = overrides_by_locale(locale)
+        overrides = {}
+
+        backend.fallbacks(locale).each do |l|
+          overrides[l] = overrides_by_locale(l)
+        end
+
+        if overrides.present?
           if options.present?
-            options[:overrides] = by_locale
+            options[:overrides] = overrides
 
             # I18n likes to use throw...
             catch(:exception) do
               return backend.translate(locale, key, options)
             end
           else
-            if result = by_locale[key]
-              return result
+            overrides.each do |_k, v|
+              if result = v[key]
+                return result
+              end
             end
           end
         end
@@ -158,7 +174,7 @@ module I18n
 
     alias_method :t, :translate
 
-    def exists?(key, locale=nil)
+    def exists?(key, locale = nil)
       locale ||= config.locale
       load_locale(locale) unless @loaded_locales.include?(locale)
       exists_no_cache?(key, locale)

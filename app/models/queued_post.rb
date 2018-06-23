@@ -47,11 +47,12 @@ class QueuedPost < ActiveRecord::Base
 
   def reject!(rejected_by)
     change_to!(:rejected, rejected_by)
+    StaffActionLogger.new(rejected_by).log_post_rejected(self)
     DiscourseEvent.trigger(:rejected_post, self)
   end
 
   def create_options
-    opts = {raw: raw}
+    opts = { raw: raw }
     opts.merge!(post_options.symbolize_keys)
 
     opts[:cooking_options].symbolize_keys! if opts[:cooking_options]
@@ -62,51 +63,60 @@ class QueuedPost < ActiveRecord::Base
   def approve!(approved_by)
     created_post = nil
 
-    creator = PostCreator.new(user, create_options.merge(skip_validations: true, skip_jobs: true))
+    creator = PostCreator.new(user, create_options.merge(
+      skip_validations: true,
+      skip_jobs: true,
+      skip_events: true
+    ))
+
     QueuedPost.transaction do
       change_to!(:approved, approved_by)
 
-      UserBlocker.unblock(user, approved_by) if user.blocked?
+      UserSilencer.unsilence(user, approved_by) if user.silenced?
 
       created_post = creator.create
 
       unless created_post && creator.errors.blank?
         raise StandardError.new(creator.errors.full_messages.join(" "))
+      else
+        # Log post approval
+        StaffActionLogger.new(approved_by).log_post_approved(created_post)
       end
     end
 
     # Do sidekiq work outside of the transaction
     creator.enqueue_jobs
+    creator.trigger_after_events
 
-    DiscourseEvent.trigger(:approved_post, self)
+    DiscourseEvent.trigger(:approved_post, self, created_post)
     created_post
   end
 
   private
 
-    def change_to!(state, changed_by)
-      state_val = QueuedPost.states[state]
+  def change_to!(state, changed_by)
+    state_val = QueuedPost.states[state]
 
-      updates = { state: state_val,
-                  "#{state}_by_id" => changed_by.id,
-                  "#{state}_at" => Time.now }
+    updates = { state: state_val,
+                "#{state}_by_id" => changed_by.id,
+                "#{state}_at" => Time.now }
 
-      # We use an update with `row_count` trick here to avoid stampeding requests to
-      # update the same row simultaneously. Only one state change should go through and
-      # we can use the DB to enforce this
-      row_count = QueuedPost.where('id = ? AND state <> ?', id, state_val).update_all(updates)
-      raise InvalidStateTransition.new if row_count == 0
+    # We use an update with `row_count` trick here to avoid stampeding requests to
+    # update the same row simultaneously. Only one state change should go through and
+    # we can use the DB to enforce this
+    row_count = QueuedPost.where('id = ? AND state <> ?', id, state_val).update_all(updates)
+    raise InvalidStateTransition.new if row_count == 0
 
-      if [:rejected, :approved].include?(state)
-        UserAction.where(queued_post_id: id).destroy_all
-      end
-
-      # Update the record in memory too, and clear the dirty flag
-      updates.each {|k, v| send("#{k}=", v) }
-      changes_applied
-
-      QueuedPost.broadcast_new! if visible?
+    if [:rejected, :approved].include?(state)
+      UserAction.where(queued_post_id: id).destroy_all
     end
+
+    # Update the record in memory too, and clear the dirty flag
+    updates.each { |k, v| send("#{k}=", v) }
+    changes_applied
+
+    QueuedPost.broadcast_new! if visible?
+  end
 
 end
 
@@ -125,8 +135,8 @@ end
 #  approved_at    :datetime
 #  rejected_by_id :integer
 #  rejected_at    :datetime
-#  created_at     :datetime
-#  updated_at     :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
 #
 # Indexes
 #

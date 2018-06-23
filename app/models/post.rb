@@ -1,4 +1,3 @@
-require_dependency 'jobs/base'
 require_dependency 'pretty_text'
 require_dependency 'rate_limiter'
 require_dependency 'post_revisor'
@@ -6,7 +5,6 @@ require_dependency 'enum'
 require_dependency 'post_analyzer'
 require_dependency 'validators/post_validator'
 require_dependency 'plugin/filter'
-require_dependency 'email_cook'
 
 require 'archetype'
 require 'digest/sha1'
@@ -14,11 +12,17 @@ require 'digest/sha1'
 class Post < ActiveRecord::Base
   include RateLimiter::OnCreateRecord
   include Trashable
+  include Searchable
   include HasCustomFields
   include LimitedEdit
 
+  cattr_accessor :permitted_create_params
+  self.permitted_create_params = Set.new
+
   # increase this number to force a system wide post rebake
-  BAKED_VERSION = 1
+  # Version 1, was the initial version
+  # Version 2 15-12-2017, introduces CommonMark and a huge number of onebox fixes
+  BAKED_VERSION = 2
 
   rate_limit
   rate_limit :limit_posts_per_day
@@ -37,7 +41,6 @@ class Post < ActiveRecord::Base
   has_many :post_uploads
   has_many :uploads, through: :post_uploads
 
-  has_one :post_search_data
   has_one :post_stat
 
   has_one :incoming_email
@@ -45,7 +48,7 @@ class Post < ActiveRecord::Base
   has_many :post_details
 
   has_many :post_revisions
-  has_many :revisions, foreign_key: :post_id, class_name: 'PostRevision'
+  has_many :revisions, -> { order(:number) }, foreign_key: :post_id, class_name: 'PostRevision'
 
   has_many :user_actions, foreign_key: :target_post_id
 
@@ -57,25 +60,52 @@ class Post < ActiveRecord::Base
   # We can pass several creating options to a post via attributes
   attr_accessor :image_sizes, :quoted_post_numbers, :no_bump, :invalidate_oneboxes, :cooking_options, :skip_unique_check
 
-  SHORT_POST_CHARS = 1200
+  LARGE_IMAGES      ||= "large_images".freeze
+  BROKEN_IMAGES     ||= "broken_images".freeze
+  DOWNLOADED_IMAGES ||= "downloaded_images".freeze
 
-  scope :by_newest, -> { order('created_at desc, id desc') }
+  SHORT_POST_CHARS ||= 1200
+
+  scope :private_posts_for_user, ->(user) {
+    where("posts.topic_id IN (SELECT topic_id
+             FROM topic_allowed_users
+             WHERE user_id = :user_id
+             UNION ALL
+             SELECT tg.topic_id
+             FROM topic_allowed_groups tg
+             JOIN group_users gu ON gu.user_id = :user_id AND
+                                      gu.group_id = tg.group_id)",
+                                              user_id: user.id)
+  }
+
+  scope :by_newest, -> { order('created_at DESC, id DESC') }
   scope :by_post_number, -> { order('post_number ASC') }
   scope :with_user, -> { includes(:user) }
-  scope :created_since, lambda { |time_ago| where('posts.created_at > ?', time_ago) }
+  scope :created_since, -> (time_ago) { where('posts.created_at > ?', time_ago) }
   scope :public_posts, -> { joins(:topic).where('topics.archetype <> ?', Archetype.private_message) }
   scope :private_posts, -> { joins(:topic).where('topics.archetype = ?', Archetype.private_message) }
   scope :with_topic_subtype, ->(subtype) { joins(:topic).where('topics.subtype = ?', subtype) }
   scope :visible, -> { joins(:topic).where('topics.visible = true').where(hidden: false) }
-  scope :secured, lambda { |guardian| where('posts.post_type in (?)', Topic.visible_post_types(guardian && guardian.user))}
+  scope :secured, -> (guardian) { where('posts.post_type IN (?)', Topic.visible_post_types(guardian&.user)) }
   scope :for_mailing_list, ->(user, since) {
-     created_since(since)
-    .joins(:topic)
-    .where(topic: Topic.for_digest(user, 100.years.ago)) # we want all topics with new content, regardless when they were created
-    .order('posts.created_at ASC')
+    q = created_since(since)
+      .joins(:topic)
+      .where(topic: Topic.for_digest(user, Time.at(0))) # we want all topics with new content, regardless when they were created
+
+    q = q.where.not(post_type: Post.types[:whisper]) unless user.staff?
+
+    q.order('posts.created_at ASC')
   }
-  scope :mailing_list_new_topics, ->(user, since) { for_mailing_list(user, since).where('topics.created_at > ?', since) }
-  scope :mailing_list_updates,    ->(user, since) { for_mailing_list(user, since).where('topics.created_at <= ?', since) }
+  scope :raw_match, -> (pattern, type = 'string') {
+    type = type&.downcase
+
+    case type
+    when 'string'
+      where('raw ILIKE ?', "%#{pattern}%")
+    when 'regex'
+      where('raw ~ ?', "(?n)#{pattern}")
+    end
+  }
 
   delegate :username, to: :user
 
@@ -129,18 +159,25 @@ class Post < ActiveRecord::Base
       updated_at: Time.now,
       user_id: user_id,
       last_editor_id: last_editor_id,
-      type: type
+      type: type,
+      version: version
     }.merge(options)
 
     if Topic.visible_post_types.include?(post_type)
-      MessageBus.publish(channel, msg, group_ids: topic.secure_group_ids)
+      if topic.private_message?
+        user_ids = User.where('admin or moderator').pluck(:id)
+        user_ids |= topic.allowed_users.pluck(:id)
+        MessageBus.publish(channel, msg, user_ids: user_ids)
+      else
+        MessageBus.publish(channel, msg, group_ids: topic.secure_group_ids)
+      end
     else
       user_ids = User.where('admin or moderator or id = ?', user_id).pluck(:id)
       MessageBus.publish(channel, msg, user_ids: user_ids)
     end
   end
 
-  def trash!(trashed_by=nil)
+  def trash!(trashed_by = nil)
     self.topic_links.each(&:destroy)
     super(trashed_by)
   end
@@ -168,7 +205,7 @@ class Post < ActiveRecord::Base
 
   def matches_recent_post?
     post_id = $redis.get(unique_post_key)
-    post_id != nil and post_id.to_i != id
+    post_id != (nil) && post_id.to_i != (id)
   end
 
   def raw_hash
@@ -177,7 +214,7 @@ class Post < ActiveRecord::Base
   end
 
   def self.white_listed_image_classes
-    @white_listed_image_classes ||= ['avatar', 'favicon', 'thumbnail']
+    @white_listed_image_classes ||= ['avatar', 'favicon', 'thumbnail', 'emoji']
   end
 
   def post_analyzer
@@ -185,7 +222,13 @@ class Post < ActiveRecord::Base
     @post_analyzers[raw_hash] ||= PostAnalyzer.new(raw, topic_id)
   end
 
-  %w{raw_mentions linked_hosts image_count attachment_count link_count raw_links}.each do |attr|
+  %w{raw_mentions
+    linked_hosts
+    image_count
+    attachment_count
+    link_count
+    raw_links
+    has_oneboxes?}.each do |attr|
     define_method(attr) do
       post_analyzer.send(attr)
     end
@@ -199,37 +242,32 @@ class Post < ActiveRecord::Base
     !add_nofollow?
   end
 
-  def cook(*args)
+  def cook(raw, opts = {})
     # For some posts, for example those imported via RSS, we support raw HTML. In that
     # case we can skip the rendering pipeline.
     return raw if cook_method == Post.cook_methods[:raw_html]
 
-    cooked = nil
-    if cook_method == Post.cook_methods[:email]
-      cooked = EmailCook.new(raw).cook
+    options = opts.dup
+    options[:cook_method] = cook_method
+
+    post_user = self.user
+    options[:user_id] = post_user.id if post_user
+
+    if add_nofollow?
+      cooked = post_analyzer.cook(raw, options)
     else
-      cloned = args.dup
-      cloned[1] ||= {}
-
-      post_user = self.user
-      cloned[1][:user_id] = post_user.id if post_user
-
-      cooked = if add_nofollow?
-                 post_analyzer.cook(*args)
-               else
-                 # At trust level 3, we don't apply nofollow to links
-                 cloned[1][:omit_nofollow] = true
-                 post_analyzer.cook(*cloned)
-               end
+      # At trust level 3, we don't apply nofollow to links
+      options[:omit_nofollow] = true
+      cooked = post_analyzer.cook(raw, options)
     end
 
     new_cooked = Plugin::Filter.apply(:after_post_cook, self, cooked)
 
     if post_type == Post.types[:regular]
       if new_cooked != cooked && new_cooked.blank?
-        Rails.logger.debug("Plugin is blanking out post: #{self.url}\nraw: #{self.raw}")
+        Rails.logger.debug("Plugin is blanking out post: #{self.url}\nraw: #{raw}")
       elsif new_cooked.blank?
-        Rails.logger.debug("Blank post detected post: #{self.url}\nraw: #{self.raw}")
+        Rails.logger.debug("Blank post detected post: #{self.url}\nraw: #{raw}")
       end
     end
 
@@ -253,10 +291,10 @@ class Post < ActiveRecord::Base
 
   def whitelisted_spam_hosts
     hosts = SiteSetting
-              .white_listed_spam_host_domains
-              .split('|')
-              .map{|h| h.strip}
-              .reject{|h| !h.include?('.')}
+      .white_listed_spam_host_domains
+      .split('|')
+      .map { |h| h.strip }
+      .reject { |h| !h.include?('.') }
 
     hosts << GlobalSetting.hostname
     hosts << RailsMultisite::ConnectionManagement.current_hostname
@@ -276,9 +314,9 @@ class Post < ActiveRecord::Base
     return hosts if hosts.length == 0
 
     TopicLink.where(domain: hosts.keys, user_id: acting_user.id)
-             .group(:domain, :post_id)
-             .count
-             .each_key do |tuple|
+      .group(:domain, :post_id)
+      .count
+      .each_key do |tuple|
       domain = tuple[0]
       hosts[domain] = (hosts[domain] || 0) + 1
     end
@@ -288,13 +326,14 @@ class Post < ActiveRecord::Base
 
   # Prevent new users from posting the same hosts too many times.
   def has_host_spam?
-    return false if acting_user.present? && (acting_user.staged? || acting_user.has_trust_level?(TrustLevel[1]))
+    return false if acting_user.present? && (acting_user.staged? || acting_user.mature_staged? || acting_user.has_trust_level?(TrustLevel[1]))
+    return false if topic&.private_message?
 
     total_hosts_usage.values.any? { |count| count >= SiteSetting.newuser_spam_host_threshold }
   end
 
   def archetype
-    topic.archetype
+    topic&.archetype
   end
 
   def self.regular_order
@@ -305,23 +344,31 @@ class Post < ActiveRecord::Base
     order('sort_order desc, post_number desc')
   end
 
-  def self.summary(topic_id=nil)
-    # PERF: if you pass in nil it is WAY slower
-    #  pg chokes getting a reasonable plan
-    topic_id = topic_id ? topic_id.to_i : "posts.topic_id"
+  def self.summary(topic_id)
+    topic_id = topic_id.to_i
 
     # percent rank has tons of ties
-    where(["post_number = 1 or id in (
+    where(topic_id: topic_id)
+      .where([
+        "id = ANY(
+          (
+            SELECT posts.id
+            FROM posts
+            WHERE posts.topic_id = #{topic_id.to_i}
+            AND posts.post_number = 1
+          ) UNION
+          (
             SELECT p1.id
             FROM posts p1
-            WHERE p1.percent_rank <= ? AND
-               p1.topic_id = #{topic_id}
+            WHERE p1.percent_rank <= ?
+            AND p1.topic_id = #{topic_id.to_i}
             ORDER BY p1.percent_rank
             LIMIT ?
-          )",
-           SiteSetting.summary_percent_filter.to_f / 100.0,
-           SiteSetting.summary_max_results
-    ])
+          )
+        )",
+        SiteSetting.summary_percent_filter.to_f / 100.0,
+        SiteSetting.summary_max_results
+      ])
   end
 
   def update_flagged_posts_count
@@ -367,6 +414,10 @@ class Post < ActiveRecord::Base
     Post.excerpt(cooked, maxlength, options)
   end
 
+  def excerpt_for_topic
+    Post.excerpt(cooked, 220, strip_links: true, strip_images: true)
+  end
+
   def is_first_post?
     post_number.blank? ?
       topic.try(:highest_post_number) == 0 :
@@ -378,11 +429,11 @@ class Post < ActiveRecord::Base
   end
 
   def is_flagged?
-    post_actions.where(post_action_type_id: PostActionType.flag_types.values, deleted_at: nil).count != 0
+    post_actions.where(post_action_type_id: PostActionType.flag_types_without_custom.values, deleted_at: nil).count != 0
   end
 
   def has_active_flag?
-    post_actions.active.where(post_action_type_id: PostActionType.flag_types.values).count != 0
+    post_actions.active.where(post_action_type_id: PostActionType.flag_types_without_custom.values).count != 0
   end
 
   def unhide!
@@ -396,9 +447,11 @@ class Post < ActiveRecord::Base
     "#{Discourse.base_url}#{url}"
   end
 
-  def url
+  def url(opts = nil)
+    opts ||= {}
+
     if topic
-      Post.url(topic.slug, topic.id, post_number)
+      Post.url(topic.slug, topic.id, post_number, opts)
     else
       "/404"
     end
@@ -408,17 +461,22 @@ class Post < ActiveRecord::Base
     "#{Discourse.base_url}/email/unsubscribe/#{UnsubscribeKey.create_key_for(user, self)}"
   end
 
-  def self.url(slug, topic_id, post_number)
-    "/t/#{slug}/#{topic_id}/#{post_number}"
+  def self.url(slug, topic_id, post_number, opts = nil)
+    opts ||= {}
+
+    result = "/t/"
+    result << "#{slug}/" unless !!opts[:without_slug]
+
+    "#{result}#{topic_id}/#{post_number}"
   end
 
   def self.urls(post_ids)
-    ids = post_ids.map{|u| u}
+    ids = post_ids.map { |u| u }
     if ids.length > 0
       urls = {}
       Topic.joins(:posts).where('posts.id' => ids).
-        select(['posts.id as post_id','post_number', 'topics.slug', 'topics.title', 'topics.id']).
-      each do |t|
+        select(['posts.id as post_id', 'post_number', 'topics.slug', 'topics.title', 'topics.id']).
+        each do |t|
         urls[t.post_id.to_i] = url(t.slug, t.id, t.post_number)
       end
       urls
@@ -427,24 +485,37 @@ class Post < ActiveRecord::Base
     end
   end
 
-  def revise(updated_by, changes={}, opts={})
+  def revise(updated_by, changes = {}, opts = {})
     PostRevisor.new(self).revise!(updated_by, changes, opts)
   end
 
   def self.rebake_old(limit)
     problems = []
     Post.where('baked_version IS NULL OR baked_version < ?', BAKED_VERSION)
-        .limit(limit).each do |p|
+      .order('id desc')
+      .limit(limit).pluck(:id).each do |id|
       begin
-        p.rebake!
+        post = Post.find(id)
+        post.rebake!
       rescue => e
-        problems << {post: p, ex: e}
+        problems << { post: post, ex: e }
+
+        attempts = post.custom_fields["rebake_attempts"].to_i
+
+        if attempts > 3
+          post.update_columns(baked_version: BAKED_VERSION)
+          Discourse.warn_exception(e, message: "Can not rebake post# #{p.id} after 3 attempts, giving up")
+        else
+          post.custom_fields["rebake_attempts"] = attempts + 1
+          post.save_custom_fields
+        end
+
       end
     end
     problems
   end
 
-  def rebake!(opts=nil)
+  def rebake!(opts = nil)
     opts ||= {}
 
     new_cooked = cook(raw, topic_id: topic_id, invalidate_oneboxes: opts.fetch(:invalidate_oneboxes, false))
@@ -464,19 +535,26 @@ class Post < ActiveRecord::Base
     new_cooked != old_cooked
   end
 
-  def set_owner(new_user, actor, skip_revision=false)
+  def set_owner(new_user, actor, skip_revision = false)
     return if user_id == new_user.id
 
-    edit_reason = I18n.t('change_owner.post_revision_text',
-      old_user: (self.user.username_lower rescue nil) || I18n.t('change_owner.deleted_user'),
-      new_user: new_user.username_lower
+    edit_reason = I18n.with_locale(SiteSetting.default_locale) do
+      I18n.t(
+        'change_owner.post_revision_text',
+        old_user: self.user&.username_lower || I18n.t('change_owner.deleted_user'),
+        new_user: new_user.username_lower
+      )
+    end
+
+    revise(
+      actor,
+      { raw: self.raw, user_id: new_user.id, edit_reason: edit_reason },
+      bypass_bump: true, skip_revision: skip_revision, skip_validations: true
     )
-    revise(actor, {raw: self.raw, user_id: new_user.id, edit_reason: edit_reason}, {bypass_bump: true, skip_revision: skip_revision})
 
     if post_number == topic.highest_post_number
       topic.update_columns(last_post_user_id: new_user.id)
     end
-
   end
 
   before_create do
@@ -495,13 +573,13 @@ class Post < ActiveRecord::Base
 
   # This calculates the geometric mean of the post timings and stores it along with
   # each post.
-  def self.calculate_avg_time(min_topic_age=nil)
+  def self.calculate_avg_time(min_topic_age = nil)
     retry_lock_error do
-      builder = SqlBuilder.new("UPDATE posts
+      builder = DB.build("UPDATE posts
                 SET avg_time = (x.gmean / 1000)
                 FROM (SELECT post_timings.topic_id,
                              post_timings.post_number,
-                             round(exp(avg(ln(msecs)))) AS gmean
+                             round(exp(avg(CASE WHEN msecs > 0 THEN ln(msecs) ELSE 0 END))) AS gmean
                       FROM post_timings
                       INNER JOIN posts AS p2
                         ON p2.post_number = post_timings.post_number
@@ -526,7 +604,7 @@ class Post < ActiveRecord::Base
   before_save do
     self.last_editor_id ||= user_id
 
-    if !new_record? && raw_changed?
+    if !new_record? && will_save_change_to_raw?
       self.cooked = cook(raw, topic_id: topic_id)
     end
 
@@ -556,7 +634,6 @@ class Post < ActiveRecord::Base
     self.quote_count = temp_collector.size
   end
 
-
   def save_reply_relationships
     add_to_quoted_post_numbers(reply_to_post_number)
     return if self.quoted_post_numbers.blank?
@@ -581,33 +658,85 @@ class Post < ActiveRecord::Base
     DiscourseEvent.trigger(:after_trigger_post_process, self)
   end
 
-  def self.public_posts_count_per_day(start_date, end_date, category_id=nil)
+  def self.public_posts_count_per_day(start_date, end_date, category_id = nil)
     result = public_posts.where('posts.created_at >= ? AND posts.created_at <= ?', start_date, end_date)
+      .where(post_type: Post.types[:regular])
     result = result.where('topics.category_id = ?', category_id) if category_id
-    result.group('date(posts.created_at)').order('date(posts.created_at)').count
+    result
+      .group('date(posts.created_at)')
+      .order('date(posts.created_at)')
+      .count
   end
 
   def self.private_messages_count_per_day(start_date, end_date, topic_subtype)
-    private_posts.with_topic_subtype(topic_subtype).where('posts.created_at >= ? AND posts.created_at <= ?', start_date, end_date).group('date(posts.created_at)').order('date(posts.created_at)').count
+    private_posts.with_topic_subtype(topic_subtype)
+      .where('posts.created_at >= ? AND posts.created_at <= ?', start_date, end_date)
+      .group('date(posts.created_at)')
+      .order('date(posts.created_at)')
+      .count
   end
 
-  def reply_history(max_replies=100, guardian=nil)
-    post_ids = Post.exec_sql("WITH RECURSIVE breadcrumb(id, reply_to_post_number) AS (
-                              SELECT p.id, p.reply_to_post_number FROM posts AS p
-                                WHERE p.id = :post_id
-                              UNION
-                                 SELECT p.id, p.reply_to_post_number FROM posts AS p, breadcrumb
-                                   WHERE breadcrumb.reply_to_post_number = p.post_number
-                                     AND p.topic_id = :topic_id
-                            ) SELECT id from breadcrumb ORDER by id", post_id: id, topic_id: topic_id).to_a
-
-    post_ids.map! {|r| r['id'].to_i }
-            .reject! {|post_id| post_id == id}
+  def reply_history(max_replies = 100, guardian = nil)
+    post_ids = DB.query_single(<<~SQL, post_id: id, topic_id: topic_id)
+    WITH RECURSIVE breadcrumb(id, reply_to_post_number) AS (
+          SELECT p.id, p.reply_to_post_number FROM posts AS p
+            WHERE p.id = :post_id
+          UNION
+             SELECT p.id, p.reply_to_post_number FROM posts AS p, breadcrumb
+               WHERE breadcrumb.reply_to_post_number = p.post_number
+                 AND p.topic_id = :topic_id
+        )
+    SELECT id from breadcrumb
+    WHERE id <> :post_id
+    ORDER by id
+    SQL
 
     # [1,2,3][-10,-1] => nil
-    post_ids = (post_ids[(0-max_replies)..-1] || post_ids)
+    post_ids = (post_ids[(0 - max_replies)..-1] || post_ids)
 
     Post.secured(guardian).where(id: post_ids).includes(:user, :topic).order(:id).to_a
+  end
+
+  MAX_REPLY_LEVEL ||= 1000
+
+  def reply_ids(guardian = nil, only_replies_to_single_post: true)
+    builder = DB.build(<<~SQL)
+      WITH RECURSIVE breadcrumb(id, level) AS (
+        SELECT :post_id, 0
+        UNION
+        SELECT reply_id, level + 1
+        FROM post_replies AS r
+          JOIN breadcrumb AS b ON (r.post_id = b.id)
+        WHERE r.post_id <> r.reply_id
+              AND b.level < :max_reply_level
+      ), breadcrumb_with_count AS (
+          SELECT
+            id,
+            level,
+            COUNT(*) AS count
+          FROM post_replies AS r
+            JOIN breadcrumb AS b ON (r.reply_id = b.id)
+          WHERE r.reply_id <> r.post_id
+          GROUP BY id, level
+      )
+      SELECT id, level
+      FROM breadcrumb_with_count
+      /*where*/
+      ORDER BY id
+    SQL
+
+    builder.where("level > 0")
+
+    # ignore posts that aren't replies to exactly one post
+    # for example it skips a post when it contains 2 quotes (which are replies) from different posts
+    builder.where("count = 1") if only_replies_to_single_post
+
+    replies = builder.query_hash(post_id: id, max_reply_level: MAX_REPLY_LEVEL)
+    replies.each { |r| r.symbolize_keys! }
+
+    secured_ids = Post.secured(guardian).where(id: replies.map { |r| r[:id] }).pluck(:id).to_set
+
+    replies.reject { |r| !secured_ids.include?(r[:id]) }
   end
 
   def revert_to(number)
@@ -622,11 +751,11 @@ class Post < ActiveRecord::Base
   def self.rebake_all_quoted_posts(user_id)
     return if user_id.blank?
 
-    Post.exec_sql <<-SQL
+    DB.exec(<<~SQL, user_id)
       WITH user_quoted_posts AS (
         SELECT post_id
           FROM quoted_posts
-         WHERE quoted_post_id IN (SELECT id FROM posts WHERE user_id = #{user_id})
+         WHERE quoted_post_id IN (SELECT id FROM posts WHERE user_id = ?)
       )
       UPDATE posts
          SET baked_version = NULL
@@ -647,6 +776,10 @@ class Post < ActiveRecord::Base
     UserActionCreator.log_post(self)
   end
 
+  def locked?
+    locked_by_id.present?
+  end
+
   private
 
   def parse_quote_into_arguments(quote)
@@ -665,7 +798,7 @@ class Post < ActiveRecord::Base
   end
 
   def create_reply_relationship_with(post)
-    return if post.nil?
+    return if post.nil? || self.deleted_at.present?
     post_reply = post.post_replies.new(reply_id: id)
     if post_reply.save
       if Topic.visible_post_types.include?(self.post_type)
@@ -731,6 +864,7 @@ end
 #  public_version          :integer          default(1), not null
 #  action_code             :string
 #  image_url               :string
+#  locked_by_id            :integer
 #
 # Indexes
 #

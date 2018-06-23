@@ -1,8 +1,12 @@
-export const emoji = <%= Emoji.standard.map(&:name).flatten.inspect %>;
-export const aliases = <%= Emoji.aliases.inspect.gsub("=>", ":") %>;
-export const translationsDisabled = {
+export const emojis = <%= Emoji.standard.map(&:name).flatten.inspect %>;
+export const tonableEmojis = <%= Emoji.tonable_emojis.flatten.inspect %>;
+export const aliases = <%= Emoji.aliases.inspect.gsub("=>", "&") %>;
+export const searchAliases = <%= Emoji.searchAliases.inspect.gsub("=>", "&") %>;
+export const translations = {
   ':)'   : 'slight_smile',
   ':-)'  : 'slight_smile',
+  '^_^'  : 'slight_smile',
+  '^__^' : 'slight_smile',
   ':('   : 'frowning',
   ':-('  : 'frowning',
   ';)'   : 'wink',

@@ -1,3 +1,6 @@
+# This is used in topic lists
+require_dependency 'topic_poster'
+
 class TopicPostersSummary
   attr_reader :topic, :options
 
@@ -16,6 +19,7 @@ class TopicPostersSummary
     TopicPoster.new.tap do |topic_poster|
       topic_poster.user = user
       topic_poster.description = descriptions_for(user)
+      topic_poster.primary_group = primary_group_lookup[user.id]
       if topic.last_post_user_id == user.id
         topic_poster.extras = 'latest'
         topic_poster.extras << ' single' if user_ids.uniq.size == 1
@@ -38,7 +42,7 @@ class TopicPostersSummary
 
   def shuffle_last_poster_to_back_in(summary)
     unless last_poster_is_topic_creator?
-      summary.reject!{ |u| u.id == topic.last_post_user_id }
+      summary.reject! { |u| u.id == topic.last_post_user_id }
       summary << avatar_lookup[topic.last_post_user_id]
     end
     summary
@@ -73,5 +77,9 @@ class TopicPostersSummary
 
   def avatar_lookup
     @avatar_lookup ||= options[:avatar_lookup] || AvatarLookup.new(user_ids)
+  end
+
+  def primary_group_lookup
+    @primary_group_lookup ||= options[:primary_group_lookup] || PrimaryGroupLookup.new(user_ids)
   end
 end

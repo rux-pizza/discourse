@@ -12,7 +12,7 @@ class HtmlPrettify < String
     new(html).to_html
   end
 
-    # Create a new RubyPants instance with the text in +string+.
+  # Create a new RubyPants instance with the text in +string+.
   #
   # Allowed elements in the options array:
   #
@@ -50,7 +50,7 @@ class HtmlPrettify < String
   # <tt>:ellipsis</tt>           :: <tt>&#8230;</tt>
   # <tt>:html_quote</tt>         :: <tt>&quot; </tt>
   #
-  def initialize(string, options=[2], entities = {})
+  def initialize(string, options = [2], entities = {})
     super string
 
     @options = [*options]
@@ -120,9 +120,6 @@ class HtmlPrettify < String
         unless in_pre
 
           t.gsub!("&#39;", "'")
-
-          t = process_escapes t
-
           t.gsub!("&quot;", '"')
 
           if do_dashes
@@ -175,23 +172,6 @@ class HtmlPrettify < String
   end
 
   protected
-
-  # Return the string, with after processing the following backslash
-  # escape sequences. This is useful if you want to force a "dumb" quote
-  # or other character to appear.
-  #
-  # Escaped are:
-  #      \\    \"    \'    \.    \-    \`
-  #
-  def process_escapes(str)
-    str = str.gsub('\\\\', '&#92;')
-    str.gsub!('\"',   '&#34;')
-    str.gsub!("\\\'", '&#39;')
-    str.gsub!('\.',   '&#46;')
-    str.gsub!('\-',   '&#45;')
-    str.gsub!('\`',   '&#96;')
-    str
-  end
 
   # The string, with each instance of "<tt>--</tt>" translated to an
   # em-dash HTML entity.
@@ -338,14 +318,14 @@ class HtmlPrettify < String
     new_str = str.dup
 
     {
-      :en_dash            => '-',
-      :em_dash            => '--',
-      :single_left_quote  => "'",
-      :single_right_quote => "'",
-      :double_left_quote  => '"',
-      :double_right_quote => '"',
-      :ellipsis           => '...'
-    }.each do |k,v|
+      en_dash: '-',
+      em_dash: '--',
+      single_left_quote: "'",
+      single_right_quote: "'",
+      double_left_quote: '"',
+      double_right_quote: '"',
+      ellipsis: '...'
+    }.each do |k, v|
       new_str.gsub!(/#{entity(k)}/, v)
     end
 

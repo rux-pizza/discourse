@@ -19,7 +19,13 @@ class BasicCategorySerializer < ApplicationSerializer
              :topic_template,
              :has_children,
              :sort_order,
-             :sort_ascending
+             :sort_ascending,
+             :show_subcategory_list,
+             :num_featured_topics,
+             :default_view,
+             :subcategory_list_style,
+             :default_top_period,
+             :minimum_required_tags
 
   has_one :uploaded_logo, embed: :object, serializer: CategoryUploadSerializer
   has_one :uploaded_background, embed: :object, serializer: CategoryUploadSerializer

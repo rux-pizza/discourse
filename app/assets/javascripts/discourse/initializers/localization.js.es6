@@ -1,38 +1,54 @@
-import PreloadStore from 'preload-store';
+import PreloadStore from "preload-store";
 
 export default {
-  name: 'localization',
-  after: 'inject-objects',
+  name: "localization",
+  after: "inject-objects",
 
-  initialize: function(container) {
-    const siteSettings = container.lookup('site-settings:main');
-    if (siteSettings.verbose_localization) {
-      I18n.enable_verbose_localization();
+  isVerboseLocalizationEnabled(container) {
+    const siteSettings = container.lookup("site-settings:main");
+    if (siteSettings.verbose_localization) return true;
+
+    try {
+      return sessionStorage && sessionStorage.getItem("verbose_localization");
+    } catch (e) {
+      return false;
+    }
+  },
+
+  initialize(container) {
+    if (this.isVerboseLocalizationEnabled(container)) {
+      I18n.enableVerboseLocalization();
     }
 
     // Merge any overrides into our object
-    const overrides = PreloadStore.get('translationOverrides') || {};
+    const overrides = PreloadStore.get("translationOverrides") || {};
     Object.keys(overrides).forEach(k => {
       const v = overrides[k];
 
       // Special case: Message format keys are functions
-      if (/\_MF$/.test(k)) {
-        k = k.replace(/^[a-z_]*js\./, '');
-        I18n._compiledMFs[k] = new Function('transKey', `return (${v})(transKey);`);
-
+      if (/_MF$/.test(k)) {
+        k = k.replace(/^[a-z_]*js\./, "");
+        I18n._compiledMFs[k] = new Function(
+          "transKey",
+          `return (${v})(transKey);`
+        );
         return;
       }
 
-      k = k.replace('admin_js', 'js');
-      const segs = k.split('.');
+      k = k.replace("admin_js", "js");
+
+      const segs = k.split(".");
+
       let node = I18n.translations[I18n.locale];
       let i = 0;
-      for (; node && i<segs.length-1; i++) {
+
+      for (; i < segs.length - 1; i++) {
+        if (!(segs[i] in node)) node[segs[i]] = {};
         node = node[segs[i]];
       }
 
-      if (node && i === segs.length-1) {
-        node[segs[segs.length-1]] = v;
+      if (typeof node === "object") {
+        node[segs[segs.length - 1]] = v;
       }
     });
   }

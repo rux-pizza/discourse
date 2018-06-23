@@ -1,43 +1,45 @@
 <div class="staff-action-logs-controls">
-  <a {{action "clearAllFilters"}} class="clear-filters filter {{unless filtersExists 'invisible'}}">
-    <span class="label">{{i18n 'admin.logs.staff_actions.clear_filters'}}</span>
-  </a>
-  {{#if actionFilter}}
-    <a {{action "clearFilter" "actionFilter"}} class="filter">
-      <span class="label">{{i18n 'admin.logs.action'}}</span>: {{actionFilter}}
-      {{fa-icon "times-circle"}}
+  {{#if filtersExists}}
+  <div class='staff-action-logs-filters'>
+    <a {{action "clearAllFilters"}} class="clear-filters filter">
+      <span class="label">{{i18n 'admin.logs.staff_actions.clear_filters'}}</span>
     </a>
+    {{#if actionFilter}}
+      <a {{action "clearFilter" "actionFilter"}} class="filter">
+        <span class="label">{{i18n 'admin.logs.action'}}</span>: {{actionFilter}}
+        {{d-icon "times-circle"}}
+      </a>
+    {{/if}}
+    {{#if filters.acting_user}}
+      <a {{action "clearFilter" "acting_user"}} class="filter">
+        <span class="label">{{i18n 'admin.logs.staff_actions.staff_user'}}</span>: {{filters.acting_user}}
+        {{d-icon "times-circle"}}
+      </a>
+    {{/if}}
+    {{#if filters.target_user}}
+      <a {{action "clearFilter" "target_user"}} class="filter">
+        <span class="label">{{i18n 'admin.logs.staff_actions.target_user'}}</span>: {{filters.target_user}}
+        {{d-icon "times-circle"}}
+      </a>
+    {{/if}}
+    {{#if filters.subject}}
+      <a {{action "clearFilter" "subject"}} class="filter">
+        <span class="label">{{i18n 'admin.logs.staff_actions.subject'}}</span>: {{filters.subject}}
+        {{d-icon "times-circle"}}
+      </a>
+    {{/if}}
+  </div>
+  {{else}}
+    {{i18n "admin.logs.staff_actions.filter"}} {{combo-box content=userHistoryActions value=filterActionId none="admin.logs.staff_actions.all"}}
   {{/if}}
-  {{#if filters.acting_user}}
-    <a {{action "clearFilter" "acting_user"}} class="filter">
-      <span class="label">{{i18n 'admin.logs.staff_actions.staff_user'}}</span>: {{filters.acting_user}}
-      {{fa-icon "times-circle"}}
-    </a>
-  {{/if}}
-  {{#if filters.target_user}}
-    <a {{action "clearFilter" "target_user"}} class="filter">
-      <span class="label">{{i18n 'admin.logs.staff_actions.target_user'}}</span>: {{filters.target_user}}
-      {{fa-icon "times-circle"}}
-    </a>
-  {{/if}}
-  {{#if filters.subject}}
-    <a {{action "clearFilter" "subject"}} class="filter">
-      <span class="label">{{i18n 'admin.logs.staff_actions.subject'}}</span>: {{filters.subject}}
-      {{fa-icon "times-circle"}}
-    </a>
-  {{/if}}
-</div>
 
-<div class="pull-right">
-  {{d-button action="exportStaffActionLogs" label="admin.export_csv.button_text" icon="download"}}
+  <div class="pull-right">
+    {{d-button action="exportStaffActionLogs" label="admin.export_csv.button_text" icon="download"}}
+  </div>
 </div>
-<br>
+<div class="clearfix"></div>
 
-<div class="staff-action-logs-instructions {{unless showInstructions 'invisible'}}">
-  {{i18n 'admin.logs.staff_actions.instructions'}}
-</div>
-
-<div class='table staff-actions'>
+{{#staff-actions}}
   <div class="heading-container">
     <div class="col heading first staff_user">{{i18n 'admin.logs.staff_actions.staff_user'}}</div>
     <div class="col heading action">{{i18n 'admin.logs.action'}}</div>
@@ -84,4 +86,4 @@
       {{i18n 'search.no_results'}}
     {{/each}}
   {{/conditional-loading-spinner}}
-</div>
+{{/staff-actions}}

@@ -1,49 +1,107 @@
+require "final_destination"
+require "mini_mime"
 require "open-uri"
 
 class FileHelper
+
+  def self.log(log_level, message)
+    Rails.logger.public_send(
+      log_level,
+      "#{RailsMultisite::ConnectionManagement.current_db}: #{message}"
+    )
+  end
 
   def self.is_image?(filename)
     filename =~ images_regexp
   end
 
-  def self.download(url, max_file_size, tmp_file_name, follow_redirect=false, read_timeout=5)
+  class FakeIO
+    attr_accessor :status
+  end
+
+  def self.download(url,
+                    max_file_size:,
+                    tmp_file_name:,
+                    follow_redirect: false,
+                    read_timeout: 5,
+                    skip_rate_limit: false,
+                    verbose: false)
+
+    url = "https:" + url if url.start_with?("//")
     raise Discourse::InvalidParameters.new(:url) unless url =~ /^https?:\/\//
 
-    uri = parse_url(url)
-    extension = File.extname(uri.path)
-    tmp = Tempfile.new([tmp_file_name, extension])
+    tmp = nil
 
-    File.open(tmp.path, "wb") do |f|
-      downloaded = uri.open("rb", read_timeout: read_timeout, redirect: follow_redirect, allow_redirections: :all)
-      while f.size <= max_file_size && data = downloaded.read(512.kilobytes)
-        f.write(data)
+    fd = FinalDestination.new(
+      url,
+      max_redirects: follow_redirect ? 5 : 1,
+      skip_rate_limit: skip_rate_limit,
+      verbose: verbose
+    )
+
+    fd.get do |response, chunk, uri|
+      if tmp.nil?
+        # error handling
+        if uri.blank?
+          if response.code.to_i >= 400
+            # attempt error API compatibility
+            io = FakeIO.new
+            io.status = [response.code, ""]
+            raise OpenURI::HTTPError.new("#{response.code} Error", io)
+          else
+            log(:error, "FinalDestination did not work for: #{url}") if verbose
+            throw :done
+          end
+        end
+
+        # first run
+        tmp_file_ext = File.extname(uri.path)
+
+        if tmp_file_ext.blank? && response.content_type.present?
+          ext = MiniMime.lookup_by_content_type(response.content_type)&.extension
+          ext = "jpg" if ext == "jpe"
+          tmp_file_ext = "." + ext if ext.present?
+        end
+
+        tmp = Tempfile.new([tmp_file_name, tmp_file_ext])
+        tmp.binmode
       end
-      # tiny files are StringIO, no close! on them
-      downloaded.try(:close!) rescue nil
+
+      tmp.write(chunk)
+
+      throw :done if tmp.size > max_file_size
     end
 
+    tmp&.rewind
     tmp
+  end
+
+  def self.optimize_image!(filename)
+    ImageOptim.new(
+      # GLOBAL
+      timeout: 15,
+      skip_missing_workers: true,
+      # PNG
+      optipng: { level: 2, strip: SiteSetting.strip_image_metadata },
+      advpng: false,
+      pngcrush: false,
+      pngout: false,
+      pngquant: false,
+      # JPG
+      jpegoptim: { strip: SiteSetting.strip_image_metadata ? "all" : "none" },
+      jpegtran: false,
+      jpegrecompress: false,
+    ).optimize_image!(filename)
   end
 
   private
 
   def self.images
-    @@images ||= Set.new ["jpg", "jpeg", "png", "gif", "tif", "tiff", "bmp", "svg", "webp", "ico"]
+    @@images ||= Set.new %w{jpg jpeg png gif tif tiff bmp svg webp ico}
   end
 
   def self.images_regexp
     @@images_regexp ||= /\.(#{images.to_a.join("|")})$/i
-  end
-
-  # HACK to support underscores in URLs
-  # cf. http://stackoverflow.com/a/18938253/11983
-  def self.parse_url(url)
-    URI.parse(url)
-  rescue URI::InvalidURIError
-    host = url.match(".+\:\/\/([^\/]+)")[1]
-    uri = URI.parse(url.sub(host, 'valid-host'))
-    uri.instance_variable_set("@host", host)
-    uri
   end
 
 end

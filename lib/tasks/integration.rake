@@ -6,7 +6,7 @@ task 'integration:create_fixtures' => :environment do
   fixtures = {
     discovery: ["/latest.json", "/categories.json", "/c/bug/l/latest.json"],
     topic: ["/t/280.json"],
-    user: ["/users/eviltrout.json",
+    user: ["/u/eviltrout.json",
            "/user_actions.json",
            "/topics/created-by/eviltrout.json"],
     static: ["/faq", '/tos', '/privacy'],
@@ -37,7 +37,6 @@ task 'integration:create_fixtures' => :environment do
   end
 
 end
-
 
 def fake_xhr(url)
   uri = URI(url)

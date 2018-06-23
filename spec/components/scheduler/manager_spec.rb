@@ -19,7 +19,7 @@ describe Scheduler::Manager do
       every 5.minutes
 
       def perform
-        self.class.runs+=1
+        self.class.runs += 1
         sleep 0.001
       end
     end
@@ -58,20 +58,14 @@ describe Scheduler::Manager do
     Scheduler::Manager.new(DiscourseRedis.new, enable_stats: false)
   }
 
-  before {
+  before do
     expect(ActiveRecord::Base.connection_pool.connections.length).to eq(1)
-  }
+    @thread_count = Thread.list.count
 
-  after {
-    expect(ActiveRecord::Base.connection_pool.connections.length).to eq(1)
-  }
-
-  it 'can disable stats' do
-    manager = Scheduler::Manager.new(DiscourseRedis.new, enable_stats: false)
-    expect(manager.enable_stats).to eq(false)
-
-    manager = Scheduler::Manager.new(DiscourseRedis.new)
-    expect(manager.enable_stats).to eq(true)
+    @backtraces = {}
+    Thread.list.each do |t|
+      @backtraces[t.object_id] = t.backtrace
+    end
   end
 
   after do
@@ -80,13 +74,64 @@ describe Scheduler::Manager do
     manager.remove(Testing::SuperLongJob)
     manager.remove(Testing::PerHostJob)
     $redis.flushall
+
+    # connections that are not in use must be removed
+    # otherwise active record gets super confused
+    ActiveRecord::Base.connection_pool.connections.reject { |c| c.in_use? }.each do |c|
+      ActiveRecord::Base.connection_pool.remove(c)
+    end
+    expect(ActiveRecord::Base.connection_pool.connections.length).to (be <= 1)
+
+    on_thread_mismatch = lambda do
+      current = Thread.list.map { |t| t.object_id }
+
+      old_threads = @backtraces.keys
+      extra = current - old_threads
+
+      missing = old_threads - current
+
+      if missing.length > 0
+        STDERR.puts "\nMissing Threads #{missing.length} thread/s"
+        missing.each do |id|
+          STDERR.puts @backtraces[id]
+          STDERR.puts
+        end
+      end
+
+      if extra.length > 0
+        Thread.list.each do |thread|
+          if extra.include?(thread.object_id)
+            STDERR.puts "\nExtra Thread Backtrace:"
+            STDERR.puts thread.backtrace
+            STDERR.puts
+          end
+        end
+      end
+    end
+
+    wait_for(on_fail: on_thread_mismatch) do
+      @thread_count == Thread.list.count
+    end
+  end
+
+  it 'can disable stats' do
+    manager = Scheduler::Manager.new(DiscourseRedis.new, enable_stats: false)
+    expect(manager.enable_stats).to eq(false)
+    manager.stop!
+
+    manager = Scheduler::Manager.new(DiscourseRedis.new)
+    expect(manager.enable_stats).to eq(true)
+    manager.stop!
   end
 
   describe 'per host jobs' do
     it "correctly schedules on multiple hosts" do
+
+      freeze_time
+
       Testing::PerHostJob.runs = 0
 
-      hosts = ['a','b','c']
+      hosts = ['a', 'b', 'c']
 
       hosts.map do |host|
 
@@ -94,7 +139,7 @@ describe Scheduler::Manager do
         manager.ensure_schedule!(Testing::PerHostJob)
 
         info = manager.schedule_info(Testing::PerHostJob)
-        info.next_run = Time.now.to_i - 1
+        info.next_run = Time.now.to_i - 10
         info.write!
 
         manager
@@ -107,7 +152,6 @@ describe Scheduler::Manager do
       end
 
       expect(Testing::PerHostJob.runs).to eq(3)
-
     end
   end
 
@@ -126,7 +170,7 @@ describe Scheduler::Manager do
       expect($redis.zcard(Scheduler::Manager.queue_key)).to eq(0)
     end
 
-    skip 'should recover from crashed manager' do
+    it 'should recover from crashed manager' do
 
       info = manager.schedule_info(Testing::SuperLongJob)
       info.next_run = Time.now.to_i - 1
@@ -142,10 +186,11 @@ describe Scheduler::Manager do
 
       info = manager.schedule_info(Testing::SuperLongJob)
       expect(info.next_run).to be <= Time.now.to_i
+
+      manager.stop!
     end
 
-    # something about logging jobs causing a leak in connection pool in test
-    skip 'should log when job finishes running' do
+    it 'should log when job finishes running' do
 
       Testing::RandomJob.runs = 0
 

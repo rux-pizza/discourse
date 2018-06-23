@@ -17,25 +17,28 @@ module Email
   class MessageBuilder
     attr_reader :template_args
 
-    def initialize(to, opts=nil)
+    def initialize(to, opts = nil)
       @to = to
       @opts = opts || {}
 
       @template_args = {
-        site_name: SiteSetting.email_prefix.presence || SiteSetting.title,
+        site_name: SiteSetting.title,
+        email_prefix: SiteSetting.email_prefix.presence || SiteSetting.title,
         base_url: Discourse.base_url,
         user_preferences_url: "#{Discourse.base_url}/my/preferences",
         hostname: Discourse.current_hostname,
       }.merge!(@opts)
 
       if @template_args[:url].present?
-        @template_args[:header_instructions] = I18n.t('user_notifications.header_instructions', @template_args)
+        @template_args[:header_instructions] ||= I18n.t('user_notifications.header_instructions', @template_args)
 
         if @opts[:include_respond_instructions] == false
           @template_args[:respond_instructions] = ''
+          @template_args[:respond_instructions] = I18n.t('user_notifications.pm_participants', @template_args) if @opts[:private_reply]
         else
           if @opts[:only_reply_by_email]
             string = "user_notifications.only_reply_by_email"
+            string << "_pm" if @opts[:private_reply]
           else
             string = allow_reply_by_email? ? "user_notifications.reply_by_email" : "user_notifications.visit_link_to_respond"
             string << "_pm" if @opts[:private_reply]
@@ -59,9 +62,9 @@ module Email
     def subject
       if @opts[:use_site_subject]
         subject = String.new(SiteSetting.email_subject)
-        subject.gsub!("%{site_name}", @template_args[:site_name])
+        subject.gsub!("%{site_name}", @template_args[:email_prefix])
         subject.gsub!("%{optional_re}", @opts[:add_re_to_subject] ? I18n.t('subject_re', @template_args) : '')
-        subject.gsub!("%{optional_pm}", @opts[:private_reply] ? I18n.t('subject_pm', @template_args) : '')
+        subject.gsub!("%{optional_pm}", @opts[:private_reply] ? @template_args[:subject_pm] : '')
         subject.gsub!("%{optional_cat}", @template_args[:show_category_in_subject] ? "[#{@template_args[:show_category_in_subject]}] " : '')
         subject.gsub!("%{topic_title}", @template_args[:topic_title]) if @template_args[:topic_title] # must be last for safety
       else
@@ -165,7 +168,6 @@ module Email
       result
     end
 
-
     protected
 
     def reply_key
@@ -194,24 +196,32 @@ module Email
 
       @reply_by_email_address = SiteSetting.reply_by_email_address.dup
       @reply_by_email_address.gsub!("%{reply_key}", reply_key)
-      @reply_by_email_address = if private_reply?
-                                  alias_email(@reply_by_email_address)
-                                else
-                                  site_alias_email(@reply_by_email_address)
-                                end
+
+      @reply_by_email_address =
+        if private_reply?
+          alias_email(@reply_by_email_address)
+        else
+          site_alias_email(@reply_by_email_address)
+        end
     end
 
     def alias_email(source)
-      return source if @opts[:from_alias].blank? && SiteSetting.email_site_title.blank?
+      return source if @opts[:from_alias].blank? &&
+        SiteSetting.email_site_title.blank? &&
+        SiteSetting.title.blank?
+
       if !@opts[:from_alias].blank?
-        "#{Email.cleanup_alias(@opts[:from_alias])} <#{source}>"
+        "\"#{Email.cleanup_alias(@opts[:from_alias])}\" <#{source}>"
+      elsif source == SiteSetting.notification_email || source == SiteSetting.reply_by_email_address
+        site_alias_email(source)
       else
-        "#{Email.cleanup_alias(SiteSetting.email_site_title)} <#{source}>"
+        source
       end
     end
 
     def site_alias_email(source)
-      "#{Email.cleanup_alias(SiteSetting.email_site_title.presence || SiteSetting.title)} <#{source}>"
+      from_alias = SiteSetting.email_site_title.presence || SiteSetting.title
+      "\"#{Email.cleanup_alias(from_alias)}\" <#{source}>"
     end
 
   end

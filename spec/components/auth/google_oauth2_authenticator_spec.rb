@@ -14,16 +14,16 @@ describe Auth::GoogleOAuth2Authenticator do
     user = Fabricate(:user)
 
     hash = {
-      :uid => "123456789",
-      :info => {
-          :name => "John Doe",
-          :email => user.email
+      uid: "123456789",
+      info: {
+          name: "John Doe",
+          email: user.email
       },
-      :extra => {
-        :raw_info => {
-          :email => user.email,
-          :email_verified => false,
-          :name => "John Doe"
+      extra: {
+        raw_info: {
+          email: user.email,
+          email_verified: false,
+          name: "John Doe"
         }
       }
     }
@@ -39,16 +39,16 @@ describe Auth::GoogleOAuth2Authenticator do
       user = Fabricate(:user)
 
       hash = {
-        :uid => "123456789",
-        :info => {
-            :name => "John Doe",
-            :email => user.email
+        uid: "123456789",
+        info: {
+            name: "John Doe",
+            email: user.email
         },
-        :extra => {
-          :raw_info => {
-            :email => user.email,
-            :email_verified => true,
-            :name => "John Doe"
+        extra: {
+          raw_info: {
+            email: user.email,
+            email_verified: true,
+            name: "John Doe"
           }
         }
       }
@@ -60,16 +60,16 @@ describe Auth::GoogleOAuth2Authenticator do
 
     it 'can create a proper result for non existing users' do
       hash = {
-        :uid => "123456789",
-        :info => {
-            :name => "Jane Doe",
-            :email => "jane.doe@the.google.com"
+        uid: "123456789",
+        info: {
+            name: "Jane Doe",
+            email: "jane.doe@the.google.com"
         },
-        :extra => {
-          :raw_info => {
-            :email => "jane.doe@the.google.com",
-            :email_verified => true,
-            :name => "Jane Doe"
+        extra: {
+          raw_info: {
+            email: "jane.doe@the.google.com",
+            email_verified: true,
+            name: "Jane Doe"
           }
         }
       }
@@ -81,5 +81,4 @@ describe Auth::GoogleOAuth2Authenticator do
       expect(result.extra_data[:name]).to eq("Jane Doe")
     end
   end
-
 end

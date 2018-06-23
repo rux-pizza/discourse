@@ -1,6 +1,6 @@
 class ActionDispatch::Session::DiscourseCookieStore < ActionDispatch::Session::CookieStore
-  def initialize(app, options={})
-    super(app,options)
+  def initialize(app, options = {})
+    super(app, options)
   end
 
   private
@@ -9,6 +9,9 @@ class ActionDispatch::Session::DiscourseCookieStore < ActionDispatch::Session::C
     if Hash === cookie
       if SiteSetting.force_https
         cookie[:secure] = true
+      end
+      unless SiteSetting.same_site_cookies == "Disabled"
+        cookie[:same_site] = SiteSetting.same_site_cookies
       end
     end
     cookie_jar(request)[@key] = cookie

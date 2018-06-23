@@ -7,7 +7,6 @@
 @import "mobile/banner";
 @import "mobile/compose";
 @import "mobile/discourse";
-@import "mobile/faqs";
 @import "mobile/header";
 @import "mobile/login";
 @import "mobile/modal";
@@ -18,13 +17,18 @@
 @import "mobile/user";
 @import "mobile/history";
 @import "mobile/directory";
-@import "mobile/menu-panel";
 @import "mobile/search";
 @import "mobile/emoji";
 @import "mobile/ring";
 @import "mobile/group";
+@import "mobile/groups";
 
-/* These files doesn't actually exist, they are injected by DiscourseSassImporter. */
+// Import all component-specific files
+@import "mobile/components/*";
+
+@import "mobile/select-kit/*";
+
+/* These files doesn't actually exist, they are injected by Stylesheet::Compiler. */
 
 @import "plugins";
 @import "plugins_mobile";

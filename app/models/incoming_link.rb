@@ -20,6 +20,7 @@ class IncomingLink < ActiveRecord::Base
       u = User.select(:id).find_by(username_lower: username.downcase)
       user_id = u.id if u
     end
+    ip_address = opts[:ip_address]
 
     if opts[:referer].present?
       begin
@@ -35,10 +36,10 @@ class IncomingLink < ActiveRecord::Base
       post_id = opts[:post_id]
       post_id ||= Post.where(topic_id: opts[:topic_id],
                              post_number: opts[:post_number] || 1)
-                            .pluck(:id).first
+        .pluck(:id).first
 
       cid = current_user ? (current_user.id) : (nil)
-
+      ip_address = nil if cid
 
       unless cid && cid == user_id
 
@@ -46,13 +47,12 @@ class IncomingLink < ActiveRecord::Base
                user_id: user_id,
                post_id: post_id,
                current_user_id: cid,
-               ip_address: opts[:ip_address]) if post_id
+               ip_address: ip_address) if post_id
 
       end
     end
 
   end
-
 
   def referer=(referer)
     self.incoming_referer_id = nil
@@ -67,8 +67,8 @@ class IncomingLink < ActiveRecord::Base
     if parsed.scheme == "http" || parsed.scheme == "https"
       domain = IncomingDomain.add!(parsed)
 
-      referer = IncomingReferer.add!(path: parsed.path, incoming_domain: domain) if domain
-      self.incoming_referer_id = referer.id if referer
+      referer_record = IncomingReferer.add!(path: parsed.path, incoming_domain: domain) if domain
+      self.incoming_referer_id = referer_record.id if referer_record
     end
 
   rescue URI::InvalidURIError
@@ -87,13 +87,12 @@ class IncomingLink < ActiveRecord::Base
     end
   end
 
-
   # Internal: Update appropriate link counts.
   def update_link_counts
-    exec_sql("UPDATE topics
+    DB.exec("UPDATE topics
               SET incoming_link_count = incoming_link_count + 1
               WHERE id = (SELECT topic_id FROM posts where id = ?)", post_id)
-    exec_sql("UPDATE posts
+    DB.exec("UPDATE posts
               SET incoming_link_count = incoming_link_count + 1
               WHERE id = ?", post_id)
   end

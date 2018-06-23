@@ -2,10 +2,23 @@ require 'rails_helper'
 
 describe Jobs::Tl3Promotions do
 
+  def create_qualifying_stats(user)
+    user.create_user_stat if user.user_stat.nil?
+    user.user_stat.update_attributes!(
+      days_visited: 1000,
+      topic_reply_count: 1000,
+      topics_entered: 1000,
+      posts_read_count: 1000,
+      likes_given: 1000,
+      likes_received: 1000
+    )
+  end
+
   subject(:run_job) { described_class.new.execute({}) }
 
   it "promotes tl2 user who qualifies for tl3" do
     _tl2_user = Fabricate(:user, trust_level: TrustLevel[2])
+    create_qualifying_stats(_tl2_user)
     TrustLevel3Requirements.any_instance.stubs(:requirements_met?).returns(true)
     Promotion.any_instance.expects(:change_trust_level!).with(TrustLevel[3], anything).once
     run_job
@@ -14,6 +27,8 @@ describe Jobs::Tl3Promotions do
   it "doesn't promote tl1 and tl0 users who have met tl3 requirements" do
     _tl1_user = Fabricate(:user, trust_level: TrustLevel[1])
     _tl0_user = Fabricate(:user, trust_level: TrustLevel[0])
+    create_qualifying_stats(_tl1_user)
+    create_qualifying_stats(_tl0_user)
     TrustLevel3Requirements.any_instance.expects(:requirements_met?).never
     Promotion.any_instance.expects(:change_trust_level!).never
     run_job
@@ -33,7 +48,8 @@ describe Jobs::Tl3Promotions do
 
     it "demotes if was promoted more than X days ago" do
       user = nil
-      Timecop.freeze(4.days.ago) do
+
+      freeze_time 4.days.ago do
         user = create_leader_user
       end
 
@@ -45,7 +61,7 @@ describe Jobs::Tl3Promotions do
 
     it "doesn't demote if user was promoted recently" do
       user = nil
-      Timecop.freeze(1.day.ago) do
+      freeze_time 1.day.ago do
         user = create_leader_user
       end
 
@@ -57,7 +73,7 @@ describe Jobs::Tl3Promotions do
 
     it "doesn't demote if user hasn't lost requirements (low water mark)" do
       user = nil
-      Timecop.freeze(4.days.ago) do
+      freeze_time(4.days.ago) do
         user = create_leader_user
       end
 

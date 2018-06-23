@@ -6,7 +6,7 @@ describe Jobs::EnqueueDigestEmails do
   describe '#target_users' do
 
     context 'disabled digests' do
-      before { SiteSetting.stubs(:default_email_digest_frequency).returns(0) }
+      before { SiteSetting.default_email_digest_frequency = 0 }
       let!(:user_no_digests) { Fabricate(:active_user, last_emailed_at: 8.days.ago, last_seen_at: 10.days.ago) }
 
       it "doesn't return users with email disabled" do
@@ -18,12 +18,7 @@ describe Jobs::EnqueueDigestEmails do
       let!(:unapproved_user) { Fabricate(:active_user, approved: false, last_emailed_at: 8.days.ago, last_seen_at: 10.days.ago) }
 
       before do
-        @original_value = SiteSetting.must_approve_users
         SiteSetting.must_approve_users = true
-      end
-
-      after do
-        SiteSetting.must_approve_users = @original_value
       end
 
       it 'should enqueue the right digest emails' do
@@ -38,7 +33,7 @@ describe Jobs::EnqueueDigestEmails do
         expect(Jobs::EnqueueDigestEmails.new.target_user_ids.include?(unapproved_user.id)).to eq(true)
 
         # As an approved user
-        unapproved_user.update_attributes(admin: false, moderator: false, approved: true )
+        unapproved_user.update_attributes(admin: false, moderator: false, approved: true)
         expect(Jobs::EnqueueDigestEmails.new.target_user_ids.include?(unapproved_user.id)).to eq(true)
       end
     end
@@ -102,6 +97,15 @@ describe Jobs::EnqueueDigestEmails do
       end
     end
 
+    context 'too many bounces' do
+      let!(:bounce_user) { Fabricate(:active_user, last_seen_at: 6.month.ago) }
+
+      it "doesn't return users with too many bounces" do
+        bounce_user.user_stat.update(bounce_score: SiteSetting.bounce_score_threshold + 1)
+        expect(Jobs::EnqueueDigestEmails.new.target_user_ids.include?(bounce_user.id)).to eq(false)
+      end
+    end
+
   end
 
   describe '#execute' do
@@ -114,8 +118,19 @@ describe Jobs::EnqueueDigestEmails do
       end
 
       it "enqueues the digest email job" do
-        SiteSetting.stubs(:disable_digest_emails?).returns(false)
+        SiteSetting.disable_digest_emails = false
         Jobs.expects(:enqueue).with(:user_email, type: :digest, user_id: user.id)
+        Jobs::EnqueueDigestEmails.new.execute({})
+      end
+    end
+
+    context "private email" do
+      before do
+        Jobs::EnqueueDigestEmails.any_instance.expects(:target_user_ids).never
+        SiteSetting.private_email = true
+        Jobs.expects(:enqueue).with(:user_email, type: :digest, user_id: user.id).never
+      end
+      it "doesn't return users with email disabled" do
         Jobs::EnqueueDigestEmails.new.execute({})
       end
     end
@@ -123,16 +138,15 @@ describe Jobs::EnqueueDigestEmails do
     context "digest emails are disabled" do
       before do
         Jobs::EnqueueDigestEmails.any_instance.expects(:target_user_ids).never
+        SiteSetting.disable_digest_emails = true
       end
 
       it "does not enqueue the digest email job" do
-        SiteSetting.stubs(:disable_digest_emails?).returns(true)
         Jobs.expects(:enqueue).with(:user_email, type: :digest, user_id: user.id).never
         Jobs::EnqueueDigestEmails.new.execute({})
       end
     end
 
   end
-
 
 end

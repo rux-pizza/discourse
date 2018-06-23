@@ -13,6 +13,7 @@ class Embedding < OpenStruct
        embed_classname_whitelist
        feed_polling_enabled
        feed_polling_url
+       feed_polling_frequency_mins
        embed_username_key_from_feed)
   end
 
@@ -37,7 +38,7 @@ class Embedding < OpenStruct
   def self.find
     embedding_args = { id: 'default' }
 
-    Embedding.settings.each {|s| embedding_args[s] = SiteSetting.send(s) }
+    Embedding.settings.each { |s| embedding_args[s] = SiteSetting.send(s) }
     Embedding.new(embedding_args)
   end
 end
