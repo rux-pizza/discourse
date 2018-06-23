@@ -132,7 +132,7 @@ class UserProfile < ActiveRecord::Base
         self.bio_cooked_version = BAKED_VERSION
       end
     else
-      self.bio_cooked = nil
+      self.bio_cooked = BAKED_VERSION
     end
   end
 
