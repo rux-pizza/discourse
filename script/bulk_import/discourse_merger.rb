@@ -285,7 +285,9 @@ class BulkImport::DiscourseMerger < BulkImport::Base
     source_raw_connection.exec("SELECT * FROM uploads").each do |row|
       user_id = row['user_id'].to_i
       user_id = user_id_from_imported_id(user_id) if user_id > 0
-      absolute_filename = File.join(@uploads_path, row['url'].gsub(/^\/uploads\/[^\/]+\//, ''))
+      rel_filename = row['url'].gsub(/^\/uploads\/[^\/]+\//, '')
+      rel_filename = rel_filename.gsub(/^\/\/[^\/]+\.amazonaws\.com\//, '')
+      absolute_filename = File.join(@uploads_path, rel_filename)
       print '.'
 
       next unless File.exists?(absolute_filename)
@@ -349,7 +351,7 @@ class BulkImport::DiscourseMerger < BulkImport::Base
 
     @sequences[Badge.sequence_name] = last_id + 1
 
-    copy_model(UserBadge, is_a_user_model: true, skip_if_merged: true)
+    copy_model(UserBadge, is_a_user_model: true)
   end
 
   def copy_model(klass, skip_if_merged: false, is_a_user_model: false, skip_processing: false, mapping: nil, select_sql: nil)
@@ -435,7 +437,7 @@ class BulkImport::DiscourseMerger < BulkImport::Base
   end
 
   def process_topic(topic)
-    return nil if topic['category_id'].nil?
+    return nil if topic['category_id'].nil? && topic['archetype'] != Archetype.private_message
     topic
   end
 
@@ -590,6 +592,7 @@ class BulkImport::DiscourseMerger < BulkImport::Base
   def process_user_badge(user_badge)
     user_badge['granted_by_id'] = user_id_from_imported_id(user_badge['granted_by_id']) if user_badge['granted_by_id']
     user_badge['notification_id'] = notification_id_from_imported_id(user_badge['notification_id']) if user_badge['notification_id']
+    return nil if UserBadge.where(user_id: user_badge['user_id'], badge_id: user_badge['badge_id']).exists?
     user_badge
   end
 

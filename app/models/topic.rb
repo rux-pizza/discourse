@@ -13,6 +13,9 @@ require_dependency 'topic_posters_summary'
 require_dependency 'topic_featured_users'
 
 class Topic < ActiveRecord::Base
+  # TODO remove 01-01-2019
+  self.ignored_columns = ["percent_rank", "vote_count"]
+
   class UserExists < StandardError; end
   include ActionView::Helpers::SanitizeHelper
   include RateLimiter::OnCreateRecord
@@ -39,10 +42,6 @@ class Topic < ActiveRecord::Base
         Topic.update_all(slug: nil)
       end
     end
-  end
-
-  def self.max_sort_order
-    @max_sort_order ||= (2**31) - 1
   end
 
   def self.max_fancy_title_length
@@ -910,9 +909,16 @@ class Topic < ActiveRecord::Base
     post_mover = PostMover.new(self, moved_by, post_ids)
 
     if opts[:destination_topic_id]
-      post_mover.to_topic opts[:destination_topic_id]
+      topic = post_mover.to_topic(opts[:destination_topic_id])
+
+      DiscourseEvent.trigger(:topic_merged,
+        post_mover.original_topic,
+        post_mover.destination_topic
+      )
+
+      topic
     elsif opts[:title]
-      post_mover.to_new_topic(opts[:title], opts[:category_id])
+      post_mover.to_new_topic(opts[:title], opts[:category_id], opts[:tags])
     end
   end
 
@@ -1426,14 +1432,12 @@ end
 #  archived                  :boolean          default(FALSE), not null
 #  bumped_at                 :datetime         not null
 #  has_summary               :boolean          default(FALSE), not null
-#  vote_count                :integer          default(0), not null
 #  archetype                 :string           default("regular"), not null
 #  featured_user4_id         :integer
 #  notify_moderators_count   :integer          default(0), not null
 #  spam_count                :integer          default(0), not null
 #  pinned_at                 :datetime
 #  score                     :float
-#  percent_rank              :float            default(1.0), not null
 #  subtype                   :string
 #  slug                      :string
 #  deleted_by_id             :integer

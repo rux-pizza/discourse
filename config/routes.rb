@@ -680,6 +680,7 @@ Discourse::Application.routes.draw do
   get "t/:slug/:topic_id/:post_number" => "topics#show", constraints: { topic_id: /\d+/, post_number: /\d+/ }
   get "t/:slug/:topic_id/last" => "topics#show", post_number: 99999999, constraints: { topic_id: /\d+/ }
   get "t/:topic_id/posts" => "topics#posts", constraints: { topic_id: /\d+/ }, format: :json
+  get "t/:topic_id/post_ids" => "topics#post_ids", constraints: { topic_id: /\d+/ }, format: :json
   get "t/:topic_id/excerpts" => "topics#excerpts", constraints: { topic_id: /\d+/ }, format: :json
   post "t/:topic_id/timings" => "topics#timings", constraints: { topic_id: /\d+/ }
   post "t/:topic_id/invite" => "topics#invite", constraints: { topic_id: /\d+/ }
@@ -803,7 +804,7 @@ Discourse::Application.routes.draw do
   get "/safe-mode" => "safe_mode#index"
   post "/safe-mode" => "safe_mode#enter", as: "safe_mode_enter"
 
-  get "/themes/assets/:key" => "themes#assets"
+  get "/themes/assets/:id" => "themes#assets"
 
   if Rails.env == "test" || Rails.env == "development"
     get "/qunit" => "qunit#index"
